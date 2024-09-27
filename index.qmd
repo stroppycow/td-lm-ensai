@@ -1,0 +1,66 @@
+---
+title: "TD 2"
+lang: fr
+author: "Théo Leroy"
+date: "8 octbre 2024"
+format:
+  live-html:
+    code-background: true
+    toc: true
+webr:
+  render-df: gt-interactive
+  resources:
+    - data/eucalyptus.txt
+fig-align: center
+editor: 
+  markdown: 
+    wrap: 72
+
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(gt)
+```
+
+## Ressources
+
+[Énoncé du TP
+1](https://foad-moodle.ensai.fr/mod/resource/view.php?id=15462)
+
+[Données `chdage` pour l'activité
+1](https://foad-moodle.ensai.fr/pluginfile.php/19354/mod_folder/content/0/chdage.txt?forcedownload=1)
+
+[Notes de
+cours](https://foad-moodle.ensai.fr/mod/resource/view.php?id=15230)
+
+## Exercice 1
+
+### Question 1
+
+On charge les données du fichier `eucalyptus.txt` en R sous forme de
+`data.frame`.
+
+```{webr}
+data <- read.csv(
+  file = "data/eucalyptus.txt",
+  header = TRUE,
+  sep = " ",
+  quote = '"'
+)
+data
+```
+Le fichier chargé contient bien 1 429 observations avec les variables `ht` pour la hauteur et `circ` pour la circonférence des eucalyptus.
+
+On représente ces données dans le plan.
+
+```{webr}
+plot(
+  x = data$circ,
+  y = data$ht,
+  type ="p",
+  xlab = "Circonférence",
+  ylab = "Hauteur"
+)
+```
