@@ -2,6 +2,9 @@ project:
   type: website
   resources: 
     - "./data/**"
+  render: 
+    - index.qmd
+    - posts/td2-exo1.qmd
 
 website:
   title: "td-lm-ensai"

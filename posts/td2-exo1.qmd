@@ -1,0 +1,233 @@
+---
+title: "TD 2"
+lang: fr
+author: "Théo Leroy"
+date: "8 octbre 2024"
+format:
+  live-html:
+    code-background: true
+    toc: true
+webr:
+  render-df: gt-interactive
+  resources:
+    - ./../data/eucalyptus.txt
+  packages:
+      - dplyr
+      - readr
+      - ggplot2
+fig-align: center
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+![](/static/img/eucalyptus.jpg){fig-align="center"}
+
+## Ressources
+
+[Énoncé du TP
+1](https://foad-moodle.ensai.fr/mod/resource/view.php?id=15462)
+
+[Données `chdage` pour l'activité
+1](https://foad-moodle.ensai.fr/pluginfile.php/19354/mod_folder/content/0/chdage.txt?forcedownload=1)
+
+[Notes de
+cours](https://foad-moodle.ensai.fr/mod/resource/view.php?id=15230)
+
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
+## Exercice 1
+
+### Question 1
+
+On charge les données du fichier `eucalyptus.txt` en R sous forme de
+`data.frame`.
+
+::: {.panel-tabset group="language"}
+#### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+
+data_eucalyptus <- read.csv(
+  file = "data/eucalyptus.txt",
+  header = TRUE,
+  sep = " ",
+  quote = '"'
+)
+data_eucalyptus
+```
+
+#### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+data_eucalyptus <- readr::read_delim(
+  file = "data/eucalyptus.txt",
+  col_types = "_nnic",
+  col_names = c("ht", "circ", "bloc", "clone"),
+  skip = 1,
+  delim = " ",
+  quote = '"'
+)
+data_eucalyptus
+```
+:::
+
+Le fichier chargé contient bien 1 429 observations avec les variables
+`ht` pour la hauteur et `circ` pour la circonférence des eucalyptus.
+
+On représente ces données dans le plan.
+
+::: {.panel-tabset group="language"}
+#### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+plot(
+  x = data_eucalyptus$circ,
+  y = data_eucalyptus$ht,
+  type ="p",
+  xlab = "Circonférence",
+  ylab = "Hauteur"
+)
+```
+
+#### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+ggplot2::ggplot(
+  data = data_eucalyptus,
+  mapping = aes(x = circ, y = ht)
+) +
+  ggplot2::labs(x = "Circonférence", y = "Hauteur") + 
+  ggplot2::geom_point()
+```
+:::
+
+### Question 2
+
+On effectue la régression $y = \beta_1+\beta_2x+\varepsilon$ à l'aide de
+la fonction `lm` disponible nativement dans
+{{< iconify logos:r-lang >}}. On cherche ainsi une estimation de
+$\beta_1$ et $\beta_2$ à l'aide de la méthode des moindres carrés
+ordinaires (MCO).
+
+::: {.panel-tabset group="language"}
+#### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+fit_lm_eucalyptus <- lm(ht ~ circ, data = data_eucalyptus) 
+summary(fit_lm_eucalyptus)
+```
+
+#### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+fit_lm_eucalyptus <- lm(ht ~ circ, data = data_eucalyptus) 
+summary(fit_lm_eucalyptus)
+```
+:::
+
+Commentons la sortie détaillée donnée par la fonction générique
+`summary`.
+
+-   La première partie du tableau <tt>Residuals</tt> donne quelques
+    statistiques descriptives sur la distribution des résidus de la
+    régression linéaire Pour rappel, le résidu $\widehat{\varepsilon}_i$
+    de l'observation $i$ est la différence entre la variable à expliquer
+    $Y_i$ et la valeur ajustée de $Y_i$ par le modèle c'est à dire :
+
+    $$
+    \widehat{\varepsilon}_i = Y_i- \underbrace{(\widehat{\beta}_1 + \widehat{\beta}_2X_i)}_{\widehat{Y}_i}
+    $$
+
+-   La seconde partie notée <tt>Coefficients</tt> est présentée sous
+    forme de tableau. Elle nous renseigne sur l'estimation des
+    coefficients et la significativité de ces derniers sous l'hypothèse
+    de gaussianité des erreurs. Ce tableau comporte autant de lignes que
+    de coefficient à estimer dans le modèle de régression linéaire (ce
+    nombre est noté $p$ dans le cours). Ici, il y a deux lignes car deux
+    coefficients interviennent dans notre modélisation, la première
+    ligne correpond à l'estimation de $\beta_1$ pour l'ordonnée à
+    l'origine <tt>Intercept</tt>, et la deuxième sur l'estimation de
+    $\beta_2$ , l'effet de la circonférence <tt>circ</tt> sur la hauteur
+    de l'arbre.
+
+    -   La première colonne (colonne <tt>Estimate</tt>) contient les
+        estimations des paramètres i.e. les estimations
+        $\widehat{\beta}_1 \approx 9,03$ et
+        $\widehat{\beta}_2 \approx 0,26$.
+
+    -   La seconde colonne ( <tt>Std. Error</tt>) contient les
+        écarts-types estimés des estimateurs $\widehat{\beta}_1$ et
+        $\widehat{\beta}_2$ . Ils sont donnés par
+
+        $$
+        \forall\ j \in \{1, \dots, p\}, \  \widehat{\sigma}_{\widehat{\beta}_j} = \widehat{\sigma}\sqrt{(X'X)^{-1}_{j,j}} \ \textrm{avec} \ \widehat{\sigma} = \sqrt{\frac{1}{n-p}\sum\limits_{i=1}^n \widehat{\varepsilon}_i^2}
+        $$
+
+    -   Dans la troisième colonne (<tt>t. value</tt>) figure la valeur
+        observée de la statistique de test de Student d'hypothèse
+        $H_0 : \beta_ j = 0$ contre $H_1 : \beta_j \neq 0$.
+
+        ::: callout-important
+        Ce test est valable uniquement si sous l'hypothèse de normalité
+        et independence des erreurs, c'est à dire si on suppose que :
+
+        $$
+        \varepsilon  = \begin{pmatrix} 
+        \varepsilon_1 \\
+        \vdots \\
+        \varepsilon_n
+        \end{pmatrix} \sim \mathcal{N}\left(0, \sigma^2 I_n \right)
+        $$
+        :::
+
+        La statistique de test $T_j$ est donnée par
+
+        $$
+        T_j = \frac{{\widehat{\beta}}_j}{\widehat{\sigma}_{\widehat{\beta}_j}}
+        $$
+
+        Sous l'hypothèse nulle, la variable alétoire $T_j$ suit une loi
+        de Student à $n-p$ degrés de liberté (voir corrolaire 2.2.10 du
+        cours).
+
+```{ojs}
+//| echo: false
+viewof t = Inputs.range([-5, 5], {step: 0.1, label: "Statistique de test (t)"})
+viewof ddl = Inputs.range([1, 50], {step: 1, label: "Degré de liberté (ddl)"})
+```
+
+```{webr}
+#| envir: demo1
+#| autorun: true
+#| input:
+#|   - t
+#|   - ddl
+
+x <- seq(from = -4, to = 4, by = 0.01)
+# Tracer la densité de la loi de Student
+curve(
+  dt(x = x, df = ddl),
+  from = min(x),
+  to = max(x),
+  col = "blue",
+  lwd = 2,
+  ylab = "Densité", xlab = "x",
+  main = paste("Densité de la loi de Student (df =", ddl, ")")
+)
+
+# Ajouter une grille pour faciliter la lecture
+grid()
+```
