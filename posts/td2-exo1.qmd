@@ -1,5 +1,5 @@
 ---
-title: "TD 2"
+title: "TD 2 - Exercice 1"
 lang: fr
 author: "Théo Leroy"
 date: "8 octbre 2024"
@@ -7,6 +7,7 @@ format:
   live-html:
     code-background: true
     toc: true
+    page-layout: full
 webr:
   render-df: gt-interactive
   resources:
@@ -15,6 +16,7 @@ webr:
       - dplyr
       - readr
       - ggplot2
+      - cowplot
 fig-align: center
 editor: 
   markdown: 
@@ -23,33 +25,19 @@ editor:
 
 ![](/static/img/eucalyptus.jpg){fig-align="center"}
 
-## Ressources
-
-[Énoncé du TP
-1](https://foad-moodle.ensai.fr/mod/resource/view.php?id=15462)
-
-[Données `chdage` pour l'activité
-1](https://foad-moodle.ensai.fr/pluginfile.php/19354/mod_folder/content/0/chdage.txt?forcedownload=1)
-
-[Notes de
-cours](https://foad-moodle.ensai.fr/mod/resource/view.php?id=15230)
-
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-## Exercice 1
-
-### Question 1
+## Question 1
 
 On charge les données du fichier `eucalyptus.txt` en R sous forme de
 `data.frame`.
 
 ::: {.panel-tabset group="language"}
-#### Base R
+### Base R
 
 ```{webr}
 #| envir: baser
 #| autorun: true
-
 data_eucalyptus <- read.csv(
   file = "data/eucalyptus.txt",
   header = TRUE,
@@ -59,7 +47,7 @@ data_eucalyptus <- read.csv(
 data_eucalyptus
 ```
 
-#### Tidyverse
+### Tidyverse
 
 ```{webr}
 #| envir: tdv
@@ -77,30 +65,35 @@ data_eucalyptus
 :::
 
 Le fichier chargé contient bien 1 429 observations avec les variables
-`ht` pour la hauteur et `circ` pour la circonférence des eucalyptus.
+`ht` pour la hauteur (exprimée en mètre) et `circ` pour la circonférence
+des eucalyptus.
 
 On représente ces données dans le plan.
 
 ::: {.panel-tabset group="language"}
-#### Base R
+### Base R
 
 ```{webr}
 #| envir: baser
 #| autorun: true
+#| fig-align: center
 plot(
   x = data_eucalyptus$circ,
   y = data_eucalyptus$ht,
   type ="p",
   xlab = "Circonférence",
-  ylab = "Hauteur"
+  ylab = "Hauteur",
+  pch = 3
 )
+grid()
 ```
 
-#### Tidyverse
+### Tidyverse
 
 ```{webr}
 #| envir: tdv
 #| autorun: true
+#| fig-align: center
 ggplot2::ggplot(
   data = data_eucalyptus,
   mapping = aes(x = circ, y = ht)
@@ -110,7 +103,7 @@ ggplot2::ggplot(
 ```
 :::
 
-### Question 2
+## Question 2
 
 On effectue la régression $y = \beta_1+\beta_2x+\varepsilon$ à l'aide de
 la fonction `lm` disponible nativement dans
@@ -119,7 +112,7 @@ $\beta_1$ et $\beta_2$ à l'aide de la méthode des moindres carrés
 ordinaires (MCO).
 
 ::: {.panel-tabset group="language"}
-#### Base R
+### Base R
 
 ```{webr}
 #| envir: baser
@@ -128,7 +121,7 @@ fit_lm_eucalyptus <- lm(ht ~ circ, data = data_eucalyptus)
 summary(fit_lm_eucalyptus)
 ```
 
-#### Tidyverse
+### Tidyverse
 
 ```{webr}
 #| envir: tdv
@@ -158,7 +151,7 @@ Commentons la sortie détaillée donnée par la fonction générique
     de coefficient à estimer dans le modèle de régression linéaire (ce
     nombre est noté $p$ dans le cours). Ici, il y a deux lignes car deux
     coefficients interviennent dans notre modélisation, la première
-    ligne correpond à l'estimation de $\beta_1$ pour l'ordonnée à
+    ligne correspond à l'estimation de $\beta_1$ pour l'ordonnée à
     l'origine <tt>Intercept</tt>, et la deuxième sur l'estimation de
     $\beta_2$ , l'effet de la circonférence <tt>circ</tt> sur la hauteur
     de l'arbre.
@@ -167,6 +160,8 @@ Commentons la sortie détaillée donnée par la fonction générique
         estimations des paramètres i.e. les estimations
         $\widehat{\beta}_1 \approx 9,03$ et
         $\widehat{\beta}_2 \approx 0,26$.
+
+        Le coefficient signifie que lorsque
 
     -   La seconde colonne ( <tt>Std. Error</tt>) contient les
         écarts-types estimés des estimateurs $\widehat{\beta}_1$ et
@@ -182,7 +177,7 @@ Commentons la sortie détaillée donnée par la fonction générique
 
         ::: callout-important
         Ce test est valable uniquement si sous l'hypothèse de normalité
-        et independence des erreurs, c'est à dire si on suppose que :
+        et indépendance des erreurs, c'est à dire si on suppose que :
 
         $$
         \varepsilon  = \begin{pmatrix} 
@@ -199,35 +194,44 @@ Commentons la sortie détaillée donnée par la fonction générique
         T_j = \frac{{\widehat{\beta}}_j}{\widehat{\sigma}_{\widehat{\beta}_j}}
         $$
 
-        Sous l'hypothèse nulle, la variable alétoire $T_j$ suit une loi
-        de Student à $n-p$ degrés de liberté (voir corrolaire 2.2.10 du
+        Sous l'hypothèse nulle, la variable aléatoire $T_j$ suit une loi
+        de Student à $n-p$ degrés de liberté (voir corollaire 2.2.10 du
         cours).
 
-```{ojs}
-//| echo: false
-viewof t = Inputs.range([-5, 5], {step: 0.1, label: "Statistique de test (t)"})
-viewof ddl = Inputs.range([1, 50], {step: 1, label: "Degré de liberté (ddl)"})
-```
+        On rejette $H_0$ pour un risque de première espèce $\alpha$ si
+        $\left|T_j\right| > q_{1-\alpha/2}^{(\mathcal{T}_{n-p})}$. C'est
+        le cas ici pour $\beta_1$ et $\beta_2$ au niveau $\alpha = 5 \%$
+        : $$\begin{align*}
+        \left|T_1\right| \approx 50,26 &>  q_{0,975}^{(\mathcal{T}_{1427})} \approx 1,961 \\
+        \left|T_2\right| \approx 68,78 &>  q_{0,975}^{(\mathcal{T}_{1427})} \approx 1,961
+        \end{align*}
+        $$
 
-```{webr}
-#| envir: demo1
-#| autorun: true
-#| input:
-#|   - t
-#|   - ddl
+    -   La quatrième colonne (colonne <tt>Pr(\>\|t\|)</tt>) contient la
+        p-value pour ces mêmes tests de Student. C'est la probabilité
+        pour la statistique de test sous $H_0$ de dépasser la valeur
+        estimée c'est à dire explicitement :
+        $$P(\mathcal{T}_{n-p}>|t|)=2\left(1-\mathcal{F}^{\mathcal{T}_{n-p}}(t)\right)$$
 
-x <- seq(from = -4, to = 4, by = 0.01)
-# Tracer la densité de la loi de Student
-curve(
-  dt(x = x, df = ddl),
-  from = min(x),
-  to = max(x),
-  col = "blue",
-  lwd = 2,
-  ylab = "Densité", xlab = "x",
-  main = paste("Densité de la loi de Student (df =", ddl, ")")
-)
+        De manière équivalente à la troisième colonne, ces tests de
+        nullité des deux coefficients indiquent qu'ils semblent tous
+        deux significativement non nuls (quand l'autre coefficient est
+        fixé à la valeur estimée). En effet, les p-values sont bien
+        inférieures au niveau de risque de première espèce $\alpha$
+        fixé.
 
-# Ajouter une grille pour faciliter la lecture
-grid()
-```
+-   La ligne
+
+    <td>Residual standard error</td>
+
+    correspond à l'estimation de l'écart-type $\sigma$ des erreurs de
+    modélisation $\varepsilon_i$ . On lit donc
+    $\widehat{\sigma} \approx 1,199$. Le nombre de degré de liberté
+    inscrit sur la même ligne $n-p = 1~429-2 = 1~427$ car
+
+    $$
+    (n-p)\frac{\widehat{\sigma}}{\sigma} \sim \chi^2\left(n-p \right)
+    $$
+
+-   La ligne suivante donne la valeur du coefficient de détermination
+    $R^2$ ce coefficient est

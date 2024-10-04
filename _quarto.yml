@@ -5,7 +5,6 @@ project:
   render: 
     - index.qmd
     - posts/td2-exo1.qmd
-
 website:
   title: "td-lm-ensai"
   navbar:
@@ -13,12 +12,15 @@ website:
       - href: index.qmd
         text: Home
       - about.qmd
-
 format:
   html:
     theme: cosmo
     css: styles.css
     toc: true
-
+    grid:
+      sidebar-width: 300px
+      body-width: 900px
+      margin-width: 100px
+      gutter-width: 1.5rem
 editor: visual
 
