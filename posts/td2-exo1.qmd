@@ -161,7 +161,10 @@ Commentons la sortie détaillée donnée par la fonction générique
         $\widehat{\beta}_1 \approx 9,03$ et
         $\widehat{\beta}_2 \approx 0,26$.
 
-        Le coefficient signifie que lorsque
+        L'estimation du coefficient estimété $\widehat{\beta}_2$
+        interprète de la manière suivante : "Lorsque la circonférence
+        d'un arbre augmente d'un centimètre sa hauteur gagne 26
+        centimètres."
 
     -   La seconde colonne ( <tt>Std. Error</tt>) contient les
         écarts-types estimés des estimateurs $\widehat{\beta}_1$ et
@@ -220,18 +223,115 @@ Commentons la sortie détaillée donnée par la fonction générique
         inférieures au niveau de risque de première espèce $\alpha$
         fixé.
 
--   La ligne
-
-    <td>Residual standard error</td>
-
-    correspond à l'estimation de l'écart-type $\sigma$ des erreurs de
-    modélisation $\varepsilon_i$ . On lit donc
-    $\widehat{\sigma} \approx 1,199$. Le nombre de degré de liberté
-    inscrit sur la même ligne $n-p = 1~429-2 = 1~427$ car
+-   La ligne <tt>Residual standard error</tt> correspond à l'estimation
+    de l'écart-type $\sigma$ des erreurs de modélisation $\varepsilon_i$
+    . On lit donc $\widehat{\sigma} \approx 1,199$. Le nombre de degré
+    de liberté inscrit sur la même ligne $n-p = 1~429-2 = 1~427$ car
 
     $$
     (n-p)\frac{\widehat{\sigma}}{\sigma} \sim \chi^2\left(n-p \right)
     $$
 
 -   La ligne suivante donne la valeur du coefficient de détermination
-    $R^2$ ce coefficient est
+    $R^2$ (<tt>Multiple R-squared</tt>). Il est définit par
+
+    $$
+    \begin{align*}
+    R^2 &=\frac{SCE}{SCT}= \frac{\left\| \widehat{Y}-\overline{y}\mathbb{1}\right\|^2}{\left\| Y-\overline{y}\mathbb{1}\right\|^2} = \frac{\sum\limits_{i=1}^n \left(\widehat{y}_i-\overline{y} \right)^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y} \right)^2} \\
+    &= 1 - \frac{SCR}{SCT} = 1-\frac{\left\|\widehat{\varepsilon} \right\|^2}{\left\|Y - \overline{y}\mathbb{1}\right\|^2}=1-\frac{\sum\limits_{i=1}^n \widehat{\varepsilon}_i^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y} \right)^2}
+    \end{align*}
+    $$
+
+    On peut lire $R^2 \approx 0,77$. Cela signifie que 77 % de la
+    variance des hauteurs des eucalyptus dans le jeu de données est
+    expliquée par la circonférence.
+
+    On trouve ensuite sur la même ligne le coefficient de détermination
+    ajusté $R_a^2$ (<tt>Adjusted R-squared</tt>) défini par
+
+    $$R_a^2=1-\frac{n-1}{n-p}\frac{SCR}{SCT} = 1-\frac{n-1}{n-p}\frac{\left\|\widehat{\varepsilon} \right\|^2}{\left\|Y - \overline{y}\mathbb{1}\right\|^2}=1-\frac{n-1}{n-p}\frac{\sum\limits_{i=1}^n \widehat{\varepsilon}_i^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y} \right)^2}$$
+
+    Cet ajustement permet de contrebalancer l'effet de l'ajout d'une
+    variable dans la modélisation même non significative sur la valeur
+    de ce coefficient. Comme $\frac{n-1}{n-p}$ est proche de 1 ici,
+    $R_a^2$ et $R^2$ sont proches.
+
+-   La dernière ligne pour la statistique de test $F$
+    (<tt>F-Statistic</tt>), surtout utile en régression linéaire
+    multiple, rend compte du test entre le modèle utilisé et le modèle
+    ne content que la constante. Ce test permet de contrôler la
+    significatiité globale du modèle. Il n'est pas très utile car il est
+    équivalent au test de Student $H_0 : \beta_2 = 0$ contre
+    $H_1 : \beta_2 \neq 0$.
+
+## Question 3
+
+Pour le modèle linéaire simple, on a :
+
+$$
+\begin{align*}
+\widehat{\beta}_1 &= \overline{Y} -  \widehat{\beta}_2\overline{x} = \overline{Y} -  \frac{\textrm{Cov}(x, Y)}{\textrm{Var}(x)}\overline{x}\\
+\widehat{\beta}_2 &=  \frac{\sum\limits_{i=1}^n \left(x_i-\overline{x}\right)\left(Y_i-\overline{Y}\right)}{\sum\limits_{i=1}^n \left(x_i-\overline{x}\right)^2}=\frac{\textrm{Cov}(x, Y)}{\textrm{Var}(x)} 
+\end{align*}
+$$
+
+
+::: {.panel-tabset group="language"}
+
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+y_bar <- mean(data_eucalyptus$ht)
+x_bar <- mean(data_eucalyptus$circ)
+cov_xy <- cov(data_eucalyptus$ht, data_eucalyptus$circ)
+var_x <- var(data_eucalyptus$circ)
+beta_2_hat <- cov_xy/var_x
+beta_1_hat <- y_bar - beta_2_hat*x_bar
+c(beta_1_hat, beta_2_hat)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+y_bar <- mean(data_eucalyptus$ht)
+x_bar <- mean(data_eucalyptus$circ)
+cov_xy <- cov(data_eucalyptus$ht, data_eucalyptus$circ)
+var_x <- var(data_eucalyptus$circ)
+beta_2_hat <- cov_xy/var_x
+beta_1_hat <- y_bar - beta_2_hat*x_bar
+c(beta_1_hat, beta_2_hat)
+```
+:::
+
+Plus généralement pour une régression linéaire multiple, on a
+matriciellement :
+
+$$
+\widehat{\beta} =  \begin{pmatrix} \widehat{\beta}_1 \\ \widehat{\beta}_2  \\ \end{pmatrix} = \left(X'X \right)^{-1}X'Y 
+$$
+
+::: {.panel-tabset group="language"}
+
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+cbind(1, data_eucalyptus$circ)
+
+
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+fit_lm_eucalyptus <- lm(ht ~ circ, data = data_eucalyptus) 
+summary(fit_lm_eucalyptus)
+```
+:::

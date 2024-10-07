@@ -5,12 +5,15 @@ project:
   render: 
     - index.qmd
     - posts/td2-exo1.qmd
+  preview: 
+    timeout: 3600
+    navigate: false
 website:
-  title: "td-lm-ensai"
+  title: "Régression linéaire et généralisée"
   navbar:
     left:
       - href: index.qmd
-        text: Home
+        text: Accueil
       - about.qmd
 format:
   html:
