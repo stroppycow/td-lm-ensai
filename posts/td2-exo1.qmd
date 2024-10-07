@@ -27,6 +27,7 @@ editor:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
+
 ## Question 1
 
 On charge les données du fichier `eucalyptus.txt` en R sous forme de
@@ -102,6 +103,9 @@ ggplot2::ggplot(
   ggplot2::geom_point()
 ```
 :::
+
+Une régression semble semble indiquée, les points étant disposés
+grossièrement le long d'une droite.
 
 ## Question 2
 
@@ -237,8 +241,8 @@ Commentons la sortie détaillée donnée par la fonction générique
 
     $$
     \begin{align*}
-    R^2 &=\frac{SCE}{SCT}= \frac{\left\| \widehat{Y}-\overline{y}\mathbb{1}\right\|^2}{\left\| Y-\overline{y}\mathbb{1}\right\|^2} = \frac{\sum\limits_{i=1}^n \left(\widehat{y}_i-\overline{y} \right)^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y} \right)^2} \\
-    &= 1 - \frac{SCR}{SCT} = 1-\frac{\left\|\widehat{\varepsilon} \right\|^2}{\left\|Y - \overline{y}\mathbb{1}\right\|^2}=1-\frac{\sum\limits_{i=1}^n \widehat{\varepsilon}_i^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y} \right)^2}
+    R^2 &=\frac{SCE}{SCT}= \frac{\left\| \widehat{Y}-\overline{y}\mathbb{1}\right\|^2}{\left\| Y-\overline{y}\mathbb{1}\right\|^2} = \frac{\sum\limits_{i=1}^n \left(\widehat{y}_i-\overline{y_n} \right)^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y_n} \right)^2} \\
+    &= 1 - \frac{SCR}{SCT} = 1-\frac{\left\|\widehat{\varepsilon} \right\|^2}{\left\|Y - \overline{y_n}\mathbb{1}\right\|^2}=1-\frac{\sum\limits_{i=1}^n \widehat{\varepsilon}_i^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y_n} \right)^2}
     \end{align*}
     $$
 
@@ -249,7 +253,7 @@ Commentons la sortie détaillée donnée par la fonction générique
     On trouve ensuite sur la même ligne le coefficient de détermination
     ajusté $R_a^2$ (<tt>Adjusted R-squared</tt>) défini par
 
-    $$R_a^2=1-\frac{n-1}{n-p}\frac{SCR}{SCT} = 1-\frac{n-1}{n-p}\frac{\left\|\widehat{\varepsilon} \right\|^2}{\left\|Y - \overline{y}\mathbb{1}\right\|^2}=1-\frac{n-1}{n-p}\frac{\sum\limits_{i=1}^n \widehat{\varepsilon}_i^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y} \right)^2}$$
+    $$R_a^2=1-\frac{n-1}{n-p}\frac{SCR}{SCT} = 1-\frac{n-1}{n-p}\frac{\left\|\widehat{\varepsilon} \right\|^2}{\left\|Y - \overline{y_n}\mathbb{1}\right\|^2}=1-\frac{n-1}{n-p}\frac{\sum\limits_{i=1}^n \widehat{\varepsilon}_i^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y_n} \right)^2}$$
 
     Cet ajustement permet de contrebalancer l'effet de l'ajout d'une
     variable dans la modélisation même non significative sur la valeur
@@ -270,14 +274,12 @@ Pour le modèle linéaire simple, on a :
 
 $$
 \begin{align*}
-\widehat{\beta}_1 &= \overline{Y} -  \widehat{\beta}_2\overline{x} = \overline{Y} -  \frac{\textrm{Cov}(x, Y)}{\textrm{Var}(x)}\overline{x}\\
-\widehat{\beta}_2 &=  \frac{\sum\limits_{i=1}^n \left(x_i-\overline{x}\right)\left(Y_i-\overline{Y}\right)}{\sum\limits_{i=1}^n \left(x_i-\overline{x}\right)^2}=\frac{\textrm{Cov}(x, Y)}{\textrm{Var}(x)} 
+\widehat{\beta}_1 &= \overline{Y_n} -  \widehat{\beta}_2\overline{x_n} = \overline{Y}_n -  \frac{\textrm{Cov}(x, Y)}{\textrm{Var}(x)}\overline{x_n}\\
+\widehat{\beta}_2 &=  \frac{\sum\limits_{i=1}^n \left(x_i-\overline{x_n}\right)\left(Y_i-\overline{Y_n}\right)}{\sum\limits_{i=1}^n \left(x_i-\overline{x_n}\right)^2}=\frac{\textrm{Cov}(x, Y)}{\textrm{Var}(x)} 
 \end{align*}
 $$
 
-
 ::: {.panel-tabset group="language"}
-
 ### Base R
 
 ```{webr}
@@ -289,7 +291,7 @@ cov_xy <- cov(data_eucalyptus$ht, data_eucalyptus$circ)
 var_x <- var(data_eucalyptus$circ)
 beta_2_hat <- cov_xy/var_x
 beta_1_hat <- y_bar - beta_2_hat*x_bar
-c(beta_1_hat, beta_2_hat)
+matrix(data = c(beta_1_hat, beta_2_hat), ncol = 1)
 ```
 
 ### Tidyverse
@@ -303,25 +305,29 @@ cov_xy <- cov(data_eucalyptus$ht, data_eucalyptus$circ)
 var_x <- var(data_eucalyptus$circ)
 beta_2_hat <- cov_xy/var_x
 beta_1_hat <- y_bar - beta_2_hat*x_bar
-c(beta_1_hat, beta_2_hat)
+matrix(data = c(beta_1_hat, beta_2_hat), ncol = 1)
 ```
 :::
 
-Plus généralement pour une régression linéaire multiple, on a
-matriciellement :
+Les résultats sont cohérents avec la sortie {{< iconify logos:r-lang >}}
+de la fonction `lm`.
+
+On pouvait raisonner aussi matriciellement . Plus généralement pour une
+régression linéaire multiple, on a :
 
 $$
 \widehat{\beta} =  \begin{pmatrix} \widehat{\beta}_1 \\ \widehat{\beta}_2  \\ \end{pmatrix} = \left(X'X \right)^{-1}X'Y 
 $$
 
 ::: {.panel-tabset group="language"}
-
 ### Base R
 
 ```{webr}
 #| envir: baser
 #| autorun: true
-cbind(1, data_eucalyptus$circ)
+X <- cbind(1, data_eucalyptus$circ)
+Y <- matrix(data = data_eucalyptus$ht, ncol=1)
+solve(t(X)%*%X)%*%t(X)%*%Y
 
 
 ```
@@ -331,7 +337,449 @@ cbind(1, data_eucalyptus$circ)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-fit_lm_eucalyptus <- lm(ht ~ circ, data = data_eucalyptus) 
-summary(fit_lm_eucalyptus)
+X <- cbind(1, data_eucalyptus$circ)
+Y <- matrix(data = data_eucalyptus$ht, ncol=1)
+solve(t(X)%*%X)%*%t(X)%*%Y
 ```
 :::
+
+On retrouve les mêmes valeurs.
+
+## Question 4
+
+La formule de l'intervalle de confiance pour le coefficient $\beta_j$ sous l'hypothèse d'erreurs gaussiennes, centrées et homoscédastiques est :
+$$
+I C_{1-\alpha}\left(\beta_j\right)=\left[\hat{\beta}_j \pm q_{1-\alpha/2}^{\mathcal{T}_{n-p}} \hat{\sigma}_{\hat{\beta}_j}\right]
+$$
+où $\hat{\sigma}_{\hat{\beta}_j}=\hat{\sigma} \sqrt{\left(X^{\prime} X\right)_{j j}^{-1}}$ est l'estimateur de l'écart-type de $\hat{\beta}_j$.
+
+En reportant les résultats du modèle de régression, on obtient pour $\alpha=0,05\ \ %$ 
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+beta_1_hat <- 9.037476
+beta_2_hat <- 0.257138
+sigma_beta_1_hat <- 0.179802
+sigma_beta_2_hat <- 0.003738
+qt975 <- qt(p = 0.975, df = nrow(data_eucalyptus)-2L)
+matrix(
+  data = c(
+    beta_1_hat - qt975*sigma_beta_1_hat,
+    beta_1_hat + qt975*sigma_beta_1_hat,
+    beta_2_hat - qt975*sigma_beta_2_hat,
+    beta_2_hat + qt975*sigma_beta_2_hat
+  ),
+  nrow = 2L,
+  ncol = 2L,
+  byrow = TRUE,
+  dimnames = list(
+    c("beta_1", "beta_2"),
+    c("Borne inférieure de l'IC", "Borne supérieure de l'IC")
+  )
+)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+beta_1_hat <- 9.037476
+beta_2_hat <- 0.257138
+sigma_beta_1_hat <- 0.179802
+sigma_beta_2_hat <- 0.003738
+qt975 <- qt(p = 0.975, df = nrow(data_eucalyptus)-2L)
+matrix(
+  data = c(
+    beta_1_hat - qt975*sigma_beta_1_hat,
+    beta_1_hat + qt975*sigma_beta_1_hat,
+    beta_2_hat - qt975*sigma_beta_2_hat,
+    beta_2_hat + qt975*sigma_beta_2_hat
+  ),
+  nrow = 2L,
+  ncol = 2L,
+  byrow = TRUE,
+  dimnames = list(
+    c("beta_1", "beta_2"),
+    c("Borne inférieure de l'IC", "Borne supérieure de l'IC")
+  )
+)
+```
+:::
+
+
+On peut aussi appliquer cette formule en récupérant les coefficients estimés automatiquement à partir de l'objet  {{< iconify logos:r-lang >}} de l'estimation du modèle en sortie de la fonction `lm`.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+beta_1_hat <- fit_lm_eucalyptus$coefficients[1]
+beta_2_hat <- fit_lm_eucalyptus$coefficients[2]
+sigma_beta_1_hat <- sqrt(vcov(fit_lm_eucalyptus)[1, 1])
+sigma_beta_2_hat <- sqrt(vcov(fit_lm_eucalyptus)[2, 2])
+qt975 <- qt(p = 0.975, df = nrow(data_eucalyptus)-2L)
+matrix(
+  data = c(
+    beta_1_hat - qt975*sigma_beta_1_hat,
+    beta_1_hat + qt975*sigma_beta_1_hat,
+    beta_2_hat - qt975*sigma_beta_2_hat,
+    beta_2_hat + qt975*sigma_beta_2_hat
+  ),
+  nrow = 2L,
+  ncol = 2L,
+  byrow = TRUE,
+  dimnames = list(
+    c("beta_1", "beta_2"),
+    c("Borne inférieure de l'IC", "Borne supérieure de l'IC")
+  )
+)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+beta_1_hat <- fit_lm_eucalyptus$coefficients[1]
+beta_2_hat <- fit_lm_eucalyptus$coefficients[2]
+sigma_beta_1_hat <- sqrt(vcov(fit_lm_eucalyptus)[1, 1])
+sigma_beta_2_hat <- sqrt(vcov(fit_lm_eucalyptus)[2, 2])
+qt975 <- qt(p = 0.975, df = nrow(data_eucalyptus)-2L)
+matrix(
+  data = c(
+    beta_1_hat - qt975*sigma_beta_1_hat,
+    beta_1_hat + qt975*sigma_beta_1_hat,
+    beta_2_hat - qt975*sigma_beta_2_hat,
+    beta_2_hat + qt975*sigma_beta_2_hat
+  ),
+  nrow = 2L,
+  ncol = 2L,
+  byrow = TRUE,
+  dimnames = list(
+    c("beta_1", "beta_2"),
+    c("Borne inférieure de l'IC", "Borne supérieure de l'IC")
+  )
+)
+```
+:::
+
+On peut aussi utiliser directement la fonction `confint`.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+confint(fit_lm_eucalyptus)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+confint(fit_lm_eucalyptus)
+```
+:::
+
+Quelle que soit la méthode, on trouve :
+
+$$
+\begin{align*}
+I C_{95\ \%}\left(\beta_1\right)&=\left[8,685\ ;\ 9,390\right] \\
+I C_{95\ \%}\left(\beta_2\right)&=\left[0,250\ ;\ 0,264\right]
+\end{align*}
+$$
+
+## Question 5
+
+Pour que ces intervalles de confiances soient exacts, l'erreur doit être gausienne. Cependant, ils le deviennent asymptotiquement sous certaines conditions assez faible de régularité grâce au théorème central limite (cf. remarque 2.2.8 du cours). Comme, ici $n=1\ 429 \gg 30$ , on peut se fier à ces intervalles de confiance même si la normalité des erreurs n'est pas vérifiée.
+
+## Question 6
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| fig-align: center
+plot(
+  x = data_eucalyptus$circ,
+  y = data_eucalyptus$ht,
+  type = "p",
+  xlab = "Circonférence",
+  ylab = "Hauteur",
+  pch = 3,
+  col = "grey60"
+)
+abline(fit_lm_eucalyptus, col = "red")
+newdata <- data.frame(circ = seq(from = 25, to = 70, by = 0.1))
+confint_val <- predict(
+  object = fit_lm_eucalyptus,
+  newdata = newdata,
+  interval = "confidence"
+)
+
+lines(newdata$circ, confint_val[, "lwr"], col = "red", lty = 2)
+lines(newdata$circ, confint_val[, "upr"], col = "red", lty = 2)
+grid()
+
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#| fig-align: center
+newdata <- data.frame(circ = seq(from = 25, to = 80, by = 0.1))
+confint_val <- predict(
+  object = fit_lm_eucalyptus,
+  newdata = newdata,
+  interval = "confidence"
+) |>
+  tibble::as_tibble() |>
+  cbind(newdata)
+
+ggplot2::ggplot() +
+  ggplot2::labs(x = "Circonférence", y = "Hauteur") + 
+  ggplot2::geom_point(
+    data = data_eucalyptus,
+    mapping = aes(x = circ, y = ht),
+    col = "grey70"
+  ) + 
+ ggplot2::geom_ribbon(
+   data = confint_val,
+   mapping = aes(ymin = lwr, ymax = upr, x = circ),
+   fill = "red",
+   alpha = 0.5
+ ) +
+ ggplot2::geom_abline(
+    intercept = fit_lm_eucalyptus$coefficients[1],
+    slope = fit_lm_eucalyptus$coefficients[2],
+    col = "red"
+  ) + 
+ ggplot2::theme_light()
+```
+:::
+
+
+On constate une faible incertitude sur la droite estimée.
+
+
+## Question 7
+
+La prévision $\widehat{y}_{n+1}^p$ pour une circonférence $x_{n+1}$ est donnée par la formule 
+$$\widehat{y}_{n+1}^p = \widehat{\beta}_1+\widehat{\beta}_2x_{n+1}$$
+
+Sous l'hypothèse de gaussianité des erreurs, un IC de $y_{n+1}$ est donné par 
+$$I C_{1-\alpha}\left(y_{n+1}\right)=\left[\widehat{y}_{n+1}^p \pm q_{1-\alpha/2}^{\mathcal{T}_{n-p}} \hat{\sigma}\sqrt{1+\frac{1}{n}+\frac{\left(x_{n+1}-\overline{x_n}\right)^2}{\sum\limits_{i=1}^n \left(x_i - \overline{x_n} \right)^2}}\right]$$
+
+::: {.panel-tabset group="language"}
+
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| fig-align: center
+n <- nrow(data_eucalyptus)
+p <- 2L
+beta_1_hat <- fit_lm_eucalyptus$coefficients[1] 
+beta_2_hat <- fit_lm_eucalyptus$coefficients[2]
+x_bar <- mean(data_eucalyptus$circ)
+var_x <- var(data_eucalyptus$circ)
+q975 <- qt(p = 0.975, df = n-p)
+sigma_hat <- sigma(fit_lm_eucalyptus)
+
+newdata <- data.frame(circ = c(50, 100, 150, 200))
+newdata$hauteurs_predites <- beta_1_hat + newdata$circ*beta_2_hat
+newdata$pm <- q975*sigma_hat*sqrt(1+1/n+(newdata$circ-x_bar)**2/(n*var_x))
+newdata$borne_inf_pred <- newdata$hauteurs_predites - newdata$pm
+newdata$borne_sup_pred <- newdata$hauteurs_predites + newdata$pm
+newdata$pm <- NULL
+newdata
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#| fig-align: center
+n <- nrow(data_eucalyptus)
+p <- 2L
+beta_1_hat <- fit_lm_eucalyptus$coefficients[1] 
+beta_2_hat <- fit_lm_eucalyptus$coefficients[2]
+x_bar <- mean(data_eucalyptus$circ)
+var_x <- var(data_eucalyptus$circ)
+q975 <- qt(p = 0.975, df = n-p)
+sigma_hat <- sigma(fit_lm_eucalyptus)
+
+newdata <- tibble::tibble(circ = c(50, 100, 150, 200)) |>
+  dplyr::mutate(
+    hauteurs_predites = beta_1_hat + circ*beta_2_hat,
+    pm = q975*sigma_hat*sqrt(1+1/n+(circ-x_bar)**2/(n*var_x)),
+    borne_inf_pred = hauteurs_predites - pm,
+    borne_sup_pred = hauteurs_predites + pm 
+) |>
+  dplyr::select(-pm)
+
+newdata
+```
+:::
+
+
+On peut obtenir ces résultats plus simplement avec la fonction `predict` avec l'option `interval="prediction"` qui permet de calculer les intervalles de prévision autour des prévisions.  
+
+::: {.panel-tabset group="language"}
+
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| fig-align: center
+
+newdata <- data.frame(circ = c(50, 100, 150, 200))
+predict(
+  object = fit_lm_eucalyptus,
+  newdata = newdata,
+  interval = "prediction"
+) |> as.data.frame()
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#| fig-align: center
+newdata <- tibble::tibble(circ = c(50, 100, 150, 200))
+predict(
+  object = fit_lm_eucalyptus,
+  newdata = newdata,
+  interval = "prediction"
+) |> tibble::as_tibble()
+```
+:::
+
+On remarque que les intervalles de prévision sont plus élevés pour les
+valeurs de circonférences loin de la moyenne des données. Pour rappel l’erreur de prévision cumule deux erreurs : 
+
+  - l’erreur due à l’estimation de la droite (celle-ci est moins précise loin de la moyenne des données) ;
+  - l’erreur due à $\varepsilon_{n+1}$: elle est stable quelle que soit la valeur de `circ` et incompressible car $\mathrm{Var}(\varepsilon_{n+1})=\sigma^2$.
+
+## Question 8
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| fig-align: center
+plot(
+  x = data_eucalyptus$circ,
+  y = data_eucalyptus$ht,
+  type = "p",
+  xlab = "Circonférence",
+  ylab = "Hauteur",
+  pch = 3,
+  col = "grey60"
+)
+abline(fit_lm_eucalyptus, col = "red")
+newdata <- data.frame(circ = seq(from = 25, to = 70, by = 0.1))
+confint_val <- predict(
+  object = fit_lm_eucalyptus,
+  newdata = newdata,
+  interval = "confidence"
+)
+
+lines(newdata$circ, confint_val[, "lwr"], col = "red", lty = 2)
+lines(newdata$circ, confint_val[, "upr"], col = "red", lty = 2)
+
+predint_val <- predict(
+  object = fit_lm_eucalyptus,
+  newdata = newdata,
+  interval = "prediction"
+)
+
+lines(newdata$circ, predint_val[, "lwr"], col = "blue", lty = 2)
+lines(newdata$circ, predint_val[, "upr"], col = "blue", lty = 2)
+grid()
+
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#| fig-align: center
+newdata <- data.frame(circ = seq(from = 25, to = 80, by = 0.1))
+confint_val <- predict(
+  object = fit_lm_eucalyptus,
+  newdata = newdata,
+  interval = "confidence"
+) |>
+  tibble::as_tibble() |>
+  cbind(newdata)
+predint_val <- predict(
+  object = fit_lm_eucalyptus,
+  newdata = newdata,
+  interval = "prediction"
+) |>
+  tibble::as_tibble() |>
+  cbind(newdata)
+
+
+ggplot2::ggplot() +
+  ggplot2::labs(x = "Circonférence", y = "Hauteur") + 
+  ggplot2::geom_point(
+    data = data_eucalyptus,
+    mapping = aes(x = circ, y = ht),
+    col = "grey70"
+  ) + 
+ ggplot2::geom_ribbon(
+   data = predint_val,
+   mapping = aes(ymin = lwr, ymax = upr, x = circ),
+   fill = "blue",
+   alpha = 0.5
+ ) +
+ ggplot2::geom_ribbon(
+   data = confint_val,
+   mapping = aes(ymin = lwr, ymax = upr, x = circ),
+   fill = "red",
+   alpha = 0.5
+ ) +
+ ggplot2::geom_abline(
+    intercept = fit_lm_eucalyptus$coefficients[1],
+    slope = fit_lm_eucalyptus$coefficients[2],
+    col = "red"
+  ) + 
+ ggplot2::theme_light()
+```
+:::
+
+
+## Question 9
+
+Non, les intervalles de confiance pour les prévisions ne sont plus du tout valable si l'hypothèse Gaussienne n'est plus vérifiée. Comme nous l'avons mentionné à la question 6, l’erreur de prévision cumule deux erreurs : 
+
+  - l’erreur due à l’estimation de la droite i.e. l'erreur liée à $\widehat{\beta}$. Cet estimateur suit asymptotiquement une loi gaussienne même si les erreurs ne sont pas gaussienne.
+  - l’erreur due à $\varepsilon_{n+1}$: cette erreur suit sa propre loi et il n'y a pas de convergence lorsque $n$ augmente.
+  
+À cause de cette deuxième erreur, $Y_{n+1}-\widehat{Y}_{n+1}$ ne suit pas une loi Gaussienne et donc les intervalles de confiance de la prédiction ne sont plus valables.
+
+
