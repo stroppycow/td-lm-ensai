@@ -4,6 +4,7 @@ project:
     - "./data/**"
   render: 
     - index.qmd
+    - posts/test-student.qmd
     - posts/td2-exo1.qmd
     - posts/td2-exo3.qmd
   preview: 

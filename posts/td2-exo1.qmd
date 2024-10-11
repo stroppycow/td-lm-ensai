@@ -28,6 +28,8 @@ editor:
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 
+
+
 ## Question 1
 
 On charge les données du fichier `eucalyptus.txt` en R sous forme de
@@ -107,6 +109,9 @@ ggplot2::ggplot(
 Une régression semble semble indiquée, les points étant disposés
 grossièrement le long d'une droite.
 
+
+
+
 ## Question 2
 
 On effectue la régression $y = \beta_1+\beta_2x+\varepsilon$ à l'aide de
@@ -114,6 +119,7 @@ la fonction `lm` disponible nativement dans
 {{< iconify logos:r-lang >}}. On cherche ainsi une estimation de
 $\beta_1$ et $\beta_2$ à l'aide de la méthode des moindres carrés
 ordinaires (MCO).
+
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -183,7 +189,7 @@ Commentons la sortie détaillée donnée par la fonction générique
         $H_0 : \beta_ j = 0$ contre $H_1 : \beta_j \neq 0$.
 
         ::: callout-important
-        Ce test est valable uniquement si sous l'hypothèse de normalité
+        Ce test exact est valable uniquement sous l'hypothèse de normalité
         et indépendance des erreurs, c'est à dire si on suppose que :
 
         $$
@@ -262,11 +268,13 @@ Commentons la sortie détaillée donnée par la fonction générique
 
 -   La dernière ligne pour la statistique de test $F$
     (<tt>F-Statistic</tt>), surtout utile en régression linéaire
-    multiple, rend compte du test entre le modèle utilisé et le modèle
-    ne content que la constante. Ce test permet de contrôler la
-    significatiité globale du modèle. Il n'est pas très utile car il est
+    multiple, rend compte du test entre le modèle complet et le modèle
+    ne contenant que la constante. Ce test permet de contrôler la
+    significativité globale du modèle. Il n'est pas très utile ici car il est
     équivalent au test de Student $H_0 : \beta_2 = 0$ contre
     $H_1 : \beta_2 \neq 0$.
+
+
 
 ## Question 3
 
@@ -278,6 +286,7 @@ $$
 \widehat{\beta}_2 &=  \frac{\sum\limits_{i=1}^n \left(x_i-\overline{x_n}\right)\left(Y_i-\overline{Y_n}\right)}{\sum\limits_{i=1}^n \left(x_i-\overline{x_n}\right)^2}=\frac{\textrm{Cov}(x, Y)}{\textrm{Var}(x)} 
 \end{align*}
 $$
+
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -344,6 +353,7 @@ solve(t(X)%*%X)%*%t(X)%*%Y
 :::
 
 On retrouve les mêmes valeurs.
+
 
 ## Question 4
 
@@ -499,9 +509,11 @@ I C_{95\ \%}\left(\beta_2\right)&=\left[0,250\ ;\ 0,264\right]
 \end{align*}
 $$
 
+
 ## Question 5
 
 Pour que ces intervalles de confiances soient exacts, l'erreur doit être gausienne. Cependant, ils le deviennent asymptotiquement sous certaines conditions assez faible de régularité grâce au théorème central limite (cf. remarque 2.2.8 du cours). Comme, ici $n=1\ 429 \gg 30$ , on peut se fier à ces intervalles de confiance même si la normalité des erreurs n'est pas vérifiée.
+
 
 ## Question 6
 
@@ -574,6 +586,7 @@ ggplot2::ggplot() +
 
 
 On constate une faible incertitude sur la droite estimée.
+
 
 
 ## Question 7
@@ -678,6 +691,8 @@ valeurs de circonférences loin de la moyenne des données. Pour rappel l’erre
 
   - l’erreur due à l’estimation de la droite (celle-ci est moins précise loin de la moyenne des données) ;
   - l’erreur due à $\varepsilon_{n+1}$: elle est stable quelle que soit la valeur de `circ` et incompressible car $\mathrm{Var}(\varepsilon_{n+1})=\sigma^2$.
+  
+
 
 ## Question 8
 
@@ -773,6 +788,7 @@ ggplot2::ggplot() +
 :::
 
 
+
 ## Question 9
 
 Non, les intervalles de confiance pour les prévisions ne sont plus du tout valable si l'hypothèse Gaussienne n'est plus vérifiée. Comme nous l'avons mentionné à la question 6, l’erreur de prévision cumule deux erreurs : 
@@ -781,5 +797,4 @@ Non, les intervalles de confiance pour les prévisions ne sont plus du tout vala
   - l’erreur due à $\varepsilon_{n+1}$: cette erreur suit sa propre loi et il n'y a pas de convergence lorsque $n$ augmente.
   
 À cause de cette deuxième erreur, $Y_{n+1}-\widehat{Y}_{n+1}$ ne suit pas une loi Gaussienne et donc les intervalles de confiance de la prédiction ne sont plus valables.
-
 

@@ -27,6 +27,9 @@ editor:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
+::: {.content-hidden when-format="html"}
+
+
 ## Question 1
 
 On charge les données du fichier `icecream-R.dat` en R sous forme de
@@ -62,16 +65,14 @@ data_icecream
 ```
 :::
 
-Le fichier chargé contient bien 30 observations avec les variables : 
+Le fichier chargé contient bien 30 observations avec les variables :
 
-- `Period` pour la période (de la semaine 1 à la
-semaine 30)
-- `Consumption` pour la consommation moyenne de glaces par personne en 1/2 litre (c'est la variable à expliquer)
-- `Price` pour le prix moyen des glaces en dollars 
-- `Income` pour le salaire hebdomadaire
-moyen par ménage
-- `Temp` pour la température moyenne en degré
-Fahrenheit
+-   `Period` pour la période (de la semaine 1 à la semaine 30)
+-   `Consumption` pour la consommation moyenne de glaces par personne en
+    1/2 litre (c'est la variable à expliquer)
+-   `Price` pour le prix moyen des glaces en dollars
+-   `Income` pour le salaire hebdomadaire moyen par ménage
+-   `Temp` pour la température moyenne en degré Fahrenheit
 
 On représente ces données dans des nuages de points.
 
@@ -101,18 +102,25 @@ GGally::ggpairs(
 ```
 :::
 
+Tracer tous les nuages de points 2 à 2 et pas seulement les nuages de
+points avec la variable d’intérêt peut permettre de détecter des
+problèmes de colinéarité. On note que ce potentiel phénomène n'est pas
+présent ici.
 
-Tracer tous les nuages de points 2 à 2 et pas seulement les nuages de points avec la variable d’intérêt peut permettre de détecter des problèmes de colinéarité. On note que ce potentiel  phénomène n'est pas présent ici.
-
-Un lien linéaire semble exister ici entre la consommation de glaces et la température, ce qui paraît assez naturel, mais il n'y a pas de relation évidente avec les autres variables. De plus, il n'y a pas de raison convaincante d'explorer une relation non-linéaire (carré, racine, logarithme...).
+Un lien linéaire semble exister ici entre la consommation de glaces et
+la température, ce qui paraît assez naturel, mais il n'y a pas de
+relation évidente avec les autres variables. De plus, il n'y a pas de
+raison convaincante d'explorer une relation non-linéaire (carré, racine,
+logarithme...).
 
 ## Question 2
 
-On effectue la régression $\texttt{Consumption}_i = \beta_1+\beta_2\texttt{Price}_i+\beta_3\texttt{Income}_i+\beta_4\texttt{Temp}_i+\varepsilon_i$ à l'aide de
-la fonction `lm` disponible nativement dans
+On effectue la régression
+$\texttt{Consumption}_i = \beta_1+\beta_2\texttt{Price}_i+\beta_3\texttt{Income}_i+\beta_4\texttt{Temp}_i+\varepsilon_i$
+à l'aide de la fonction `lm` disponible nativement dans
 {{< iconify logos:r-lang >}}. On cherche ainsi une estimation de
-$\beta_1$, $\beta_2$, $\beta_3$ et $\beta_4$ à l'aide de la méthode des moindres carrés
-ordinaires (MCO).
+$\beta_1$, $\beta_2$, $\beta_3$ et $\beta_4$ à l'aide de la méthode des
+moindres carrés ordinaires (MCO).
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -134,27 +142,41 @@ summary(fit_lm_icecream)
 ```
 :::
 
-La première colonne de la partie notée <tt>Coefficients</tt> de la sortie `summary` donne la valeur des coefficients estimés.
+La première colonne de la partie notée <tt>Coefficients</tt> de la
+sortie `summary` donne la valeur des coefficients estimés.
 
-Sans regarder les valeurs, on peut d'abord observer les signes des estimations comme le propose l'énoncé. La consommation semble décroître avec l'augmentation du prix (signe négatif pour $\widehat{\beta}_2 < 0$), augmenter avec les revenus des ménages (signe positif $\widehat{\beta}_3 > 0$) et avec la température (signe positif $\widehat{\beta}_4 > 0$). 
+Sans regarder les valeurs, on peut d'abord observer les signes des
+estimations comme le propose l'énoncé. La consommation semble décroître
+avec l'augmentation du prix (signe négatif pour
+$\widehat{\beta}_2 < 0$), augmenter avec les revenus des ménages (signe
+positif $\widehat{\beta}_3 > 0$) et avec la température (signe positif
+$\widehat{\beta}_4 > 0$).
 
-Néanmoins, le coefficient $\widehat{\beta}_2$ n'est pas significativement différent de 0 donc l'effet du prix sur la consommation n'est donc pas confirmé. On ne devrait pas le commenter (cf. question 4).
+Néanmoins, le coefficient $\widehat{\beta}_2$ n'est pas
+significativement différent de 0 donc l'effet du prix sur la
+consommation n'est donc pas confirmé. On ne devrait pas le commenter
+(cf. question 4).
 
 ## Question 3
 
-On teste $H_0: \ \beta_2 = \beta_3 = \beta_4 = 0$ contre $H_1: \ \beta_2 \neq 0 \ \textrm{ou} \ \beta_3 \neq 0 \ \textrm{ou} \ \beta_4 \neq 0$ à l'aide d'un test de Fisher global. La dernière ligne de la sortie du `summary` rend compte de ce test.
+On teste $H_0: \ \beta_2 = \beta_3 = \beta_4 = 0$ contre
+$H_1: \ \beta_2 \neq 0 \ \textrm{ou} \ \beta_3 \neq 0 \ \textrm{ou} \ \beta_4 \neq 0$
+à l'aide d'un test de Fisher global. La dernière ligne de la sortie du
+`summary` rend compte de ce test.
 
-La p-value est bien inférieure à $0,05$ donc on rejette $H_0$. Ainsi, au moins un coefficient (autre que la constante) est significatif.
+La p-value est bien inférieure à $0,05$ donc on rejette $H_0$. Ainsi, au
+moins un coefficient (autre que la constante) est significatif.
 
 ## Question 4
 
-On applique un test de Student de significativité à chaque coefficient associé. C’est le
-test proposé dans la sortie {{< iconify logos:r-lang >}} (troisième et quatrième colonne). A la lecture des p-values par exemple, au seuil de 5 %, les variables
-<tt>Income</tt> et <tt>Temp</tt> sont significatives (les p-values sont inférieures à 0,05). 
-
+On applique un test de Student de significativité à chaque coefficient
+associé. C’est le test proposé dans la sortie
+{{< iconify logos:r-lang >}} (troisième et quatrième colonne). A la
+lecture des p-values par exemple, au seuil de 5 %, les variables
+<tt>Income</tt> et <tt>Temp</tt> sont significatives (les p-values sont
+inférieures à 0,05).
 
 ## Question 5
-
 
 On estime un modèle sans la variable <tt>Price</tt>.
 
@@ -178,21 +200,24 @@ summary(fit_lm_icecream_without_price)
 ```
 :::
 
-**Test de Fisher en basant le calcul sur la somme des carrés résiduelle de chaque modèle**
+**Test de Fisher en basant le calcul sur la somme des carrés résiduelle
+de chaque modèle**
 
-La statistique du test de Fisher vaut :
-$$
+La statistique du test de Fisher vaut : $$
 F=\frac{n-p}{q} \frac{SCR_c-SCR}{SCR}
 $$
 
+-   $n=30$ car il y a 30 observations
+-   $p=4$ car il y a paramètres dans le modèle complet (trois variables
+    plus la constante)
+-   $q=1$ car il y a une seule contrainte dans le modèle contraint (le
+    coefficient associé au prix est nul $\beta_{2}=0$)
+-   $SCR$ est la somme des carrés des résidus $\widehat{\varepsilon}_i$
+    dans le modèle complet et $SCR_c$ dans l'équivalent dans le modèle
+    contraint
 
-- $n=30$ car il y a 30 observations
-- $p=4$ car il y a paramètres dans le modèle complet (trois variables plus la constante)
-- $q=1$ car il y a une seule contrainte dans le modèle contraint (le coefficient associé au prix est nul $\beta_{2}=0$)
-- $SCR$ est la somme des carrés des résidus $\widehat{\varepsilon}_i$ dans le modèle complet et $SCR_c$ dans l'équivalent dans le modèle contraint
-
-On compare cette statistique au quantile $0,95$ d'une loi de Fisher $(q, \ n-p)$.
-
+On compare cette statistique au quantile $0,95$ d'une loi de Fisher
+$(q, \ n-p)$.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -218,18 +243,21 @@ qf(p = 0.95, df1 = 1, df2 = nrow(data_icecream) - 4)
 ```
 :::
 
-On ne rejette pas $H_0$ car $F \leq q_{0,95}^{\mathcal{F}(q, \ n-p)}$ ainsi $\beta_2$ n'est pas significatif au seuil $5\ \%$.
+On ne rejette pas $H_0$ car $F \leq q_{0,95}^{\mathcal{F}(q, \ n-p)}$
+ainsi $\beta_2$ n'est pas significatif au seuil $5\ \%$.
 
+**Test de Fisher en basant le calcul sur le coefficient de détermination
+de chaque modèle**
 
-**Test de Fisher en basant le calcul sur le coefficient de détermination de chaque modèle**
-
-On utilise la formule de $F$ faisant intervenir le $R^2$ déterminée à l'exercice précédent.
+On utilise la formule de $F$ faisant intervenir le $R^2$ déterminée à
+l'exercice précédent.
 
 $$
 F=\frac{R^2-R_c^2}{1-R^2} \frac{n-p}{q}
 $$
 
-On relève dans les sorties des deux modèles : $R^2=0,719$ et $R_c^2=0,7021$, ce qui se fait de façon automatique par 
+On relève dans les sorties des deux modèles : $R^2=0,719$ et
+$R_c^2=0,7021$, ce qui se fait de façon automatique par
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -261,9 +289,14 @@ F2
 ```
 :::
 
-**Test de Fisher en utilisant la fonction `linearHypothesis` de la librairie `car`**
+**Test de Fisher en utilisant la fonction `linearHypothesis` de la
+librairie `car`**
 
-On renseigne la matrice de contrainte $R$ que l'on souhaite dans le test $H_0: R \beta=0$. Il s'agit d'une matrice de taille $(q, p)$. Ici, on souhaite simplement tester si $\beta_{2}=0$ c'est à dire si le deuxième coefficient du vecteur $\beta$ est nul. La matrice $R$ est donc un vecteur ligne valant $R=(0,1,0,0)$.
+On renseigne la matrice de contrainte $R$ que l'on souhaite dans le test
+$H_0: R \beta=0$. Il s'agit d'une matrice de taille $(q, p)$. Ici, on
+souhaite simplement tester si $\beta_{2}=0$ c'est à dire si le deuxième
+coefficient du vecteur $\beta$ est nul. La matrice $R$ est donc un
+vecteur ligne valant $R=(0,1,0,0)$.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -285,10 +318,10 @@ car::linearHypothesis(fit_lm_icecream, c(0,1,0,0))
 
 On ne rejette pas $H_0$ car la p-value est supérieure à $0,05$.
 
-
 **Test de Fisher en utilisant la fonction `anova`**
 
-De la même manière, la fonction `anova` permet de comparer deux modèles emboités. 
+De la même manière, la fonction `anova` permet de comparer deux modèles
+emboités.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -308,11 +341,13 @@ anova(fit_lm_icecream, fit_lm_icecream_without_price)
 ```
 :::
 
-La significativité d’un seul coefficient est équivalent au test de Student associé, on a d'ailleurs $T_2^2=F$.
+La significativité d’un seul coefficient est équivalent au test de
+Student associé, on a d'ailleurs $T_2^2=F$.
 
 ## Question 6
 
-On estime un modèle sans la variable <tt>Price</tt> et la constante. On teste
+On estime un modèle sans la variable <tt>Price</tt> et la constante. On
+teste
 $$H_0: \ \beta_1 = \beta_2  = 0 \textrm{ contre } H_1: \ \beta_1 \neq 0 \ \textrm{ou} \ \beta_2 \neq 0$$
 
 On a $q=2$ désormais.
@@ -343,8 +378,8 @@ summary(fit_lm_icecream_without_price_and_intercept)
 ```
 :::
 
-**Test de Fisher en basant le calcul sur la somme des carrés résiduelle de chaque modèle**
-
+**Test de Fisher en basant le calcul sur la somme des carrés résiduelle
+de chaque modèle**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -370,11 +405,11 @@ qf(p = 0.95, df1 = 2, df2 = nrow(data_icecream) - 4)
 ```
 :::
 
-On ne rejette pas $H_0$ car $F \leq q_{0,95}^{\mathcal{F}(q, \ n-p)}$ ainsi $\beta_1$ et $\beta_2$ ne sont pas significatifs au seuil $5\ \%$.
+On ne rejette pas $H_0$ car $F \leq q_{0,95}^{\mathcal{F}(q, \ n-p)}$
+ainsi $\beta_1$ et $\beta_2$ ne sont pas significatifs au seuil $5\ \%$.
 
-
-**Test de Fisher en basant le calcul sur le coefficient de détermination de chaque modèle**
-
+**Test de Fisher en basant le calcul sur le coefficient de détermination
+de chaque modèle**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -406,9 +441,13 @@ F2
 ```
 :::
 
-La valeur de $F$ obtenue n'est pas la même. Celle-ci n'est pas bonne car la formule utilisée n’est pas valable : l’expression avec le $R^2$ n’est bonne que si la constante est présente dans les deux modèles (le contraint et le non contraint), ce qui n’est pas le cas ici.
+La valeur de $F$ obtenue n'est pas la même. Celle-ci n'est pas bonne car
+la formule utilisée n’est pas valable : l’expression avec le $R^2$ n’est
+bonne que si la constante est présente dans les deux modèles (le
+contraint et le non contraint), ce qui n’est pas le cas ici.
 
-**Test de Fisher en utilisant la fonction `linearHypothesis` de la librairie `car`**
+**Test de Fisher en utilisant la fonction `linearHypothesis` de la
+librairie `car`**
 
 La matrice $R$ vaut désormais
 
@@ -418,7 +457,6 @@ R=\begin{pmatrix}
 0 & 1 & 0 & 0 \\
 \end{pmatrix}
 $$
-
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -448,7 +486,8 @@ On ne rejette pas $H_0$ car la p-value est supérieure à $0,05$.
 
 **Test de Fisher en utilisant la fonction `anova`**
 
-De la même manière, la fonction `anova` permet de comparer deux modèles emboités. 
+De la même manière, la fonction `anova` permet de comparer deux modèles
+emboités.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -473,10 +512,12 @@ anova(
 )
 ```
 :::
-  
+
 ## Question 7
 
-D'après la question précédente, le modèle sans la constante et le coefficient associé à la variable prix semble meilleur (car significatif et plus parcimonieux)
+D'après la question précédente, le modèle sans la constante et le
+coefficient associé à la variable prix semble meilleur (car significatif
+et plus parcimonieux)
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -506,16 +547,18 @@ predict(
 ```
 :::
 
-On prédit une consommation de $0,41$ avec $IC = [0,33; \ 0,49]$ à $95\ \%$.
+On prédit une consommation de $0,41$ avec $IC = [0,33; \ 0,49]$ à
+$95\ \%$.
 
 ## Question 8
 
-L'intervalle de prévision est valable uniquement sous hypothèse gaussienne.
+L'intervalle de prévision est valable uniquement sous hypothèse
+gaussienne.
 
-On peut examiner cette hypothèse avec un QQ-plot ou avec le test de Shapiro-Wilk. 
+On peut examiner cette hypothèse avec un QQ-plot ou avec le test de
+Shapiro-Wilk.
 
 ::: {.panel-tabset group="language"}
-
 ### Base R
 
 ```{webr}
@@ -531,23 +574,28 @@ qqnorm(fit_lm_icecream_without_price_and_intercept$residuals)
 #| autorun: true
 qqnorm(fit_lm_icecream_without_price_and_intercept$residuals)
 ```
-
 :::
 
-Même si le diagramme quantile-quantile n'est pas très convaincant, le test de Shapiro Wilk ne permet pas de rejeter l’hypothèse nulle de Gaussianité des résidus.
+Même si le diagramme quantile-quantile n'est pas très convaincant, le
+test de Shapiro Wilk ne permet pas de rejeter l’hypothèse nulle de
+Gaussianité des résidus.
 
 ## Question 9
 
 **Analyse de l'absence de multicolinéarité**
 
-Le VIF pour la variable $X^{(j)}$ vaut
-$$
+Le VIF pour la variable $X^{(j)}$ vaut $$
 VIF_j=\frac{1}{1-R_j^2}
-$$
-où $R_j^2$ est le $R^2$ dans la régression de $X^{(j)}$ par rapport aux autres variables explicatives. $R_j^2$ peut être vu comme la mesure de la corrélation entre $X^{(j)}$ est les autres variables, de telle sorte que $VIF_j$ explose si $R_j^2$ est proche de 1 , c'est à dire s'il y a un problème de multicolinéarité entre la variable $X^{(j)}$ et les autres variables. On a toujours $VIF_j \geq 1$ et on considère qu'il y a un problème de multicolinéarité lorsque $VIF_j>5$ (ce seuil n'est pas strict, c'est juste un seuil d'alerte).
+$$ où $R_j^2$ est le $R^2$ dans la régression de $X^{(j)}$ par rapport
+aux autres variables explicatives. $R_j^2$ peut être vu comme la mesure
+de la corrélation entre $X^{(j)}$ est les autres variables, de telle
+sorte que $VIF_j$ explose si $R_j^2$ est proche de 1 , c'est à dire s'il
+y a un problème de multicolinéarité entre la variable $X^{(j)}$ et les
+autres variables. On a toujours $VIF_j \geq 1$ et on considère qu'il y a
+un problème de multicolinéarité lorsque $VIF_j>5$ (ce seuil n'est pas
+strict, c'est juste un seuil d'alerte).
 
 ::: {.panel-tabset group="language"}
-
 ### Base R
 
 ```{webr}
@@ -563,13 +611,11 @@ qqnorm(fit_lm_icecream_without_price_and_intercept$residuals)
 #| autorun: true
 qqnorm(fit_lm_icecream_without_price_and_intercept$residuals)
 ```
-
 :::
 
 **Analyse de l'absence des résidus**
 
 ::: {.panel-tabset group="language"}
-
 ### Base R
 
 ```{webr}
@@ -587,12 +633,11 @@ plot(fit_lm_icecream_without_price_and_intercept)
 par(mfrow= c(2, 2))
 plot(fit_lm_icecream_without_price_and_intercept)
 ```
-
 :::
 
 ## Question 10
-::: {.panel-tabset group="language"}
 
+::: {.panel-tabset group="language"}
 ### Base R
 
 ```{webr}
@@ -618,6 +663,6 @@ car::scatter3d(
   surface = TRUE
 )
 ```
-
 :::
 
+:::

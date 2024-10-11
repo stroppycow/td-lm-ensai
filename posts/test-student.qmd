@@ -2,7 +2,6 @@
 title: "Complément sur le test de Student"
 lang: fr
 author: "Théo Leroy"
-date: "8 octbre 2024"
 format:
   live-html:
     code-background: true
@@ -10,8 +9,6 @@ format:
     page-layout: full
 webr:
   render-df: gt-interactive
-  resources:
-    - ./../data/eucalyptus.txt
   packages:
       - dplyr
       - readr
@@ -23,11 +20,42 @@ editor:
     wrap: 72
 ---
 
-
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-
 ## Énoncé du test
+
+Dans la régression linéaire,
+
+$$Y= \sum\limits_{j=1}^p \beta_j x_{j} + \varepsilon$$
+
+On souhaite tester 
+$$H_0 : \beta_ j = 0 \textrm{ contre } H_1 : \beta_j \neq 0$$
+
+::: callout-important
+Ce test exact est valable uniquement sous l'hypothèse de normalité
+et indépendance des erreurs mais il reste approximativement valide lorsqu'on atteint un régime asymptotique. 
+
+$$
+\varepsilon  = \begin{pmatrix} 
+\varepsilon_1 \\
+\vdots \\
+\varepsilon_n
+\end{pmatrix} \sim \mathcal{N}\left(0, \sigma^2 I_n \right)
+$$
+:::
+
+La statistique de test $T_j$ est donnée par
+
+$$
+T_j = \frac{{\widehat{\beta}}_j}{\widehat{\sigma}_{\widehat{\beta}_j}}
+$$
+
+Sous l'hypothèse nulle, la variable aléatoire $T_j$ suit une loi
+de Student à $n-p$ degrés de liberté (voir corollaire 2.2.10 du
+cours).
+
+On rejette $H_0$ pour un risque de première espèce $\alpha$ si
+$\left|T_j\right| > q_{1-\alpha/2}^{(\mathcal{T}_{n-p})}$.
 
 ## Représentation graphique
 
@@ -418,8 +446,6 @@ cowplot::plot_grid(
   rel_heights = c(3, 3, 1)
 )
 ```
-
-
 :::
 
 ```{ojs}
