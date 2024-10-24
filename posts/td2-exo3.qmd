@@ -16,7 +16,7 @@ webr:
       - tidyverse
       - car
       - GGally
-      - rgl
+      - scatterplot3d
 fig-align: center
 editor: 
   markdown: 
@@ -27,7 +27,6 @@ editor:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-::::::::::::::::::::: {.content-hidden when-format="html"}
 ## Question 1
 
 On charge les données du fichier `icecream-R.dat` en R sous forme de
@@ -599,7 +598,10 @@ strict, c'est juste un seuil d'alerte).
 ```{webr}
 #| envir: baser
 #| autorun: true
-qqnorm(fit_lm_icecream_without_price_and_intercept$residuals)
+car::vif(fit_lm_icecream)
+car::vif(fit_lm_icecream_without_price)
+car::vif(fit_lm_icecream_without_price_and_intercept)
+
 ```
 
 ### Tidyverse
@@ -607,11 +609,21 @@ qqnorm(fit_lm_icecream_without_price_and_intercept$residuals)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-qqnorm(fit_lm_icecream_without_price_and_intercept$residuals)
+car::vif(fit_lm_icecream)
+car::vif(fit_lm_icecream_without_price)
+car::vif(fit_lm_icecream_without_price_and_intercept)
+
 ```
 :::
 
-**Analyse de l'absence des résidus**
+
+On constate que les VIF dans le modèle global ne sont pas élevés (le plus grand étant de 1,14), ce qui indique l'absence de colinéarité entre les variables explicatives. Cette observation est cohérente avec les nuages de points analysés au début de l'exercice, qui ne montraient pas de relations fortes entre ces variables.
+
+Cette conclusion est également confirmée par le calcul des VIF pour le sous-modèle `fit_lm_icecream_without_price`, car si aucune colinéarité n'existe dans un modèle, elle ne peut pas apparaître dans un sous-modèle.
+
+En revanche, le résultat est différent pour le sous-modèle `fit_lm_icecream_without_price_and_intercept`, car celui-ci ne comporte pas de constante. Par conséquent, les $R_j^2$ utilisés dans le calcul des $VIF_j$ ne se basent pas sur la formule habituelle du $R^2$, mais sur une version sans constante, qui est différente. En particulier, le $R^2$ sans constante est souvent beaucoup plus élevé que le $R^2$ avec constante (voir exercice 4), ce qui explique l'augmentation significative des VIF dans ce cas. Un avertissement dans R signale ce problème. En conclusion, il ne faut pas calculer les VIF dans un modèle sans constante. L'analyse réalisée sur le modèle global (ainsi que sur le sous-modèle `fit_lm_icecream_without_price`) garantit qu'il n'y a pas de problème de colinéarité entre les variables explicatives.
+
+**Analyse des résidus**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -632,6 +644,8 @@ par(mfrow= c(2, 2))
 plot(fit_lm_icecream_without_price_and_intercept)
 ```
 :::
+
+On peut réaliser une analyse graphique rapide des résidus en utilisant la fonction plot sur le modèle estimé. Quatre graphiques sont générés. Le premier montre la répartition des résidus en fonction des valeurs ajustées $\widehat{y}_i$ : les résidus sont ici distribués de manière aléatoire, sans structure apparente, ce qui est attendu pour des résidus "corrects". Le deuxième graphique est le QQ-plot des résidus, que nous avons déjà réalisé. Le troisième graphique est similaire au premier et n'apporte généralement pas beaucoup d'informations supplémentaires. Enfin, le quatrième graphique permet d'identifier des individus aberrants ou trop influents pour l'estimation : s'il n'y a pas de points isolés (ce qui est le cas ici), il n'y a pas de problème particulier. Dans ce dernier graphique, on voit des pointillés en haut à droite, correspondant à la ligne de niveau de la distance de Cook, qui a une forme d'hyperbole. Si un point se trouve au-delà de ces pointillés, cela indiquerait qu'il est influent et/ou aberrant, mais ce n'est pas le cas ici.
 
 ## Question 10
 
@@ -641,12 +655,12 @@ plot(fit_lm_icecream_without_price_and_intercept)
 ```{webr}
 #| envir: baser
 #| autorun: true
-car::scatter3d(
+scatterplot3d::scatterplot3d(
   data_icecream$Income,
   data_icecream$Consumption,
-  data_icecream$Temp,
-  surface = TRUE
+  data_icecream$Temp
 )
+
 ```
 
 ### Tidyverse
@@ -654,12 +668,13 @@ car::scatter3d(
 ```{webr}
 #| envir: tdv
 #| autorun: true
-car::scatter3d(
+scatterplot3d::scatterplot3d(
   data_icecream$Income,
   data_icecream$Consumption,
-  data_icecream$Temp,
-  surface = TRUE
+  data_icecream$Temp
 )
+
 ```
 :::
-:::::::::::::::::::::
+
+
