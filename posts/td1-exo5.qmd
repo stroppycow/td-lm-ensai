@@ -1,0 +1,124 @@
+---
+title: "TD 1 - Exercice 5"
+lang: fr
+author: "Théo Leroy"
+date: "8 octbre 2024"
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+webr:
+  render-df: gt-interactive
+  resources:
+    - ./../data/eucalyptus.txt
+  packages:
+      - dplyr
+      - readr
+      - ggplot2
+      - cowplot
+fig-align: center
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+![](/static/img/eucalyptus.jpg){fig-align="center"}
+
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
+## Question 1
+
+L'erreur quadratique moyenne vaut
+
+$$
+\textrm{EQM}\left(\widehat{\beta} \right) = \mathbb{E}\left(\left[\widehat{\beta} -\beta \right]^2\right) =  \mathbb{V}\left(\widehat{\beta} \right) + \underbrace{\left(\mathbb{E}\left(\widehat{\beta} -\beta \right)\right)^2}_{=0 \textrm{ car } \widehat{\beta} \textrm{ est sans biais}}=\mathbb{V}\left(\widehat{\beta} \right) = \sigma^2\left(X^{'}X \right)^{-1}
+$$
+
+## Question 2
+
+Dans le cas où $x_i=i$ pour tout $i=1, \dots, n$, on a :
+
+$$
+\begin{align*}
+\overline{x_n} &= \frac{1}{n}\sum\limits_{i=1}^n x_i = \frac{1}{n}\sum\limits_{i=1}^n i =\frac{1}{n}\frac{n(n+1)}{2}=\frac{n+1}{2} \\
+\sum\limits_{i=1} x_i^2 &= \sum\limits_{i=1} i^2 = \frac{n(n+1)(2n+1)}{6} \\ 
+\sum\limits_{i=1}^n (x_i-\overline{x_n})^2&=\sum\limits_{i=1}^n x_i^2-n\overline{x_n}^2=\frac{n(n+1)(2n+1)}{6}-\frac{n(n+1)^2}{4}=\frac{n(n-1)(n+1)}{12} 
+\end{align*}
+$$
+
+Ainsi,
+
+$$
+\textrm{EQM}\left(\widehat{\beta} \right) =\sigma^2\left(X^{'}X \right)^{-1}=
+\sigma^2
+\begin{pmatrix}
+\frac{2(2n+1)}{n(n-1)} &
+-\frac{6}{n(n-1)} \\
+-\frac{6}{n(n-1)} &
+\frac{12}{n(n-1)(n+1)}
+\end{pmatrix}
+$$
+
+Asymptotiquement, on a alors
+
+$$
+\textrm{EQM}\left(\widehat{\beta} \right)  \underset{n\ \to\ + \infty}{\sim}\sigma^2\left(X^{'}X \right)^{-1}=
+\sigma^2
+\begin{pmatrix}
+\frac{4}{n} &
+-\frac{6}{n^2} \\
+-\frac{6}{n^2} &
+\frac{12}{n^3}
+\end{pmatrix}
+$$
+
+## Question 3
+
+Dans le cas où $x_i=\frac{i}{n}$ pour tout $i=1, \dots, n$, on a :
+
+$$
+\begin{align*}
+\overline{x_n} &= \frac{1}{n}\sum\limits_{i=1}^n x_i = \frac{1}{n}\sum\limits_{i=1}^n \frac{i}{n} =\frac{1}{n^2}\frac{n(n+1)}{2}=\frac{n+1}{2n} \\
+\sum\limits_{i=1} x_i^2 &= \sum\limits_{i=1} \frac{i^2}{n^2} = \frac{(n+1)(2n+1)}{6n} \\ 
+\sum\limits_{i=1}^n (x_i-\overline{x_n})^2&=\sum\limits_{i=1}^n x_i^2-n\overline{x_n}^2=\frac{(n+1)(2n+1)}{6n}-\frac{(n+1)^2}{4n}=\frac{(n-1)(n+1)}{12n} 
+\end{align*}
+$$
+
+Ainsi,
+
+$$
+\textrm{EQM}\left(\widehat{\beta} \right) =\sigma^2\left(X^{'}X \right)^{-1}=
+\sigma^2
+\begin{pmatrix}
+\frac{2(2n+1)}{n(n-1)} &
+-\frac{6}{n-1} \\
+-\frac{6}{n-1} &
+\frac{12n}{(n-1)(n+1)}
+\end{pmatrix}
+$$
+
+Asymptotiquement, on a alors
+
+$$
+\textrm{EQM}\left(\widehat{\beta} \right)  \underset{n\ \to\ + \infty}{\sim}\sigma^2\left(X^{'}X \right)^{-1}=
+\sigma^2
+\begin{pmatrix}
+\frac{4}{n} &
+-\frac{6}{n} \\
+-\frac{6}{n} &
+\frac{12}{n}
+\end{pmatrix}
+$$
+
+## Question 4
+
+Dans le cas où $x_i=\frac{1}{i}$ pour tout $i=1, \dots, n$, on a :
+
+$$
+\begin{align*}
+\overline{x_n} &= \frac{1}{n}\sum\limits_{i=1}^n x_i = \frac{1}{n}\sum\limits_{i=1}^n \frac{1}{i}  \\
+\sum\limits_{i=1} x_i^2 &= \sum\limits_{i=1} \frac{1}{i^2} \\
+\sum\limits_{i=1}^n (x_i-\overline{x_n})^2&=\sum\limits_{i=1}^n x_i^2-n\overline{x_n}^2=\frac{(n+1)(2n+1)}{6n}-\frac{(n+1)^2}{4n}=\frac{(n-1)(n+1)}{12n} 
+\end{align*}
+$$

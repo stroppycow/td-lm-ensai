@@ -1,0 +1,349 @@
+---
+title: "TD 2 - Exercice 7 - Modélisation de la concentration maximale journalière en ozone"
+lang: fr
+author: "Théo Leroy"
+date: "8 octbre 2024"
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+webr:
+  render-df: gt-interactive
+  resources:
+    - ./../data/ozone.txt
+  packages:
+      - dplyr
+      - readr
+      - ggplot2
+      - cowplot
+      - GGally
+      - car
+      - leaps
+editor: 
+  markdown: 
+    wrap: 72
+  wrap: 72
+---
+
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
+## Question 1
+
+On charge les données du fichier `ozone.txt` en R sous forme de
+`data.frame`.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+data_ozone <- read.csv(
+  file = "data/ozone.txt",
+  header = TRUE,
+  sep = " ",
+  quote = '"'
+)
+data_ozone
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+data_ozone <- readr::read_delim(
+  file = "data/ozone.txt",
+  col_types = "_cnnnnnnnnnncc",
+  col_names = c(
+    "date","maxO3","T9","T12","T15","Ne9","Ne12","Ne15",
+    "Vx9","Vx12","Vx15","vent","pluie"
+  ),
+  skip = 1,
+  delim = " ",
+  quote = '"'
+)
+data_ozone
+```
+:::
+
+Le fichier chargé contient bien 122 observations avec les variables
+`maxO3` pour la concentration maximale d’ozone mesuré chaque jour (exprimée en mètre), `T9`, `T12`, `T15` pour les températures, `Ne9`, `Ne12`, `Ne15` pour les nébulosités et `Vx9`, `Vx12`, `Vx15` pour la vitesse du vent.
+
+On représente ces données dans des plans ou l'axe des ordonnées est toujours `maxO3` : la variable à expliquer.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| fig-align: center
+#| fig-height: 8
+par(mfrow = c(3,3), mar = c(4,4,1,1))
+lapply(
+  X = c("T9", "T12", "T15", "Ne9", "Ne12", "Ne15", "Vx9", "Vx12", "Vx15"),
+  FUN = function(nom_var_x){
+    plot(
+      x = data_ozone[[nom_var_x]],
+      y = data_ozone[["maxO3"]],
+      type ="p",
+      xlab = nom_var_x,
+      ylab = "maxO3",
+      pch = 3
+    )
+    grid()
+  }
+) |> invisible()
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#| fig-align: center
+#| fig-height: 8
+plots <- lapply(
+  X = c("T9", "T12", "T15", "Ne9", "Ne12", "Ne15", "Vx9", "Vx12", "Vx15"),
+  FUN = function(nom_var_x){
+   ggplot2::ggplot(
+      data = data_ozone,
+      mapping = ggplot2::aes(x = .data[[nom_var_x]], y = maxO3)
+    ) +
+    ggplot2::labs(x = nom_var_x, y = "maxO3") + 
+    ggplot2::geom_point(na.rm = TRUE)
+  }
+) 
+cowplot::plot_grid(plotlist = plots)
+```
+:::
+
+On observe une relation linéaire croissante assez prononcée avec `T9`, `T12` et `T15`, une légère relation décroissante avec `Ne9`, `Ne12` et `Ne15`, ainsi qu'une faible relation linéaire avec `Vx9`, `Vx12` et `Vx15`. Aucun lien non-linéaire ne semble ressortir de manière évidente.
+
+## Question 2 
+
+
+On effectue la régression 
+$$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T9}_i+\beta_3\texttt{T12}_i+\beta_4\texttt{T15}_i+\beta_5\texttt{Ne9}_i+\beta_6\texttt{Ne12}_i+\beta_7\texttt{Ne15}_i+\beta_8\texttt{Vx9}_i+\beta_9\texttt{Vx12}_i+\beta_{10}\texttt{Vx15}_i+\varepsilon_i$$ 
+à l'aide de la fonction `lm` disponible nativement dans {{< iconify logos:r-lang >}}. On cherche ainsi une estimation du vecteur $\beta$ à l'aide de la méthode des moindres carrés ordinaires (MCO).
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+modele_q2 <- lm(
+  maxO3 ~ T9 + T12 + T15 + Ne9 + Ne12 + Ne15 + Vx9 + Vx12 + Vx15,
+  data = data_ozone
+)
+summary(modele_q2)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_q2 <- lm(
+  maxO3 ~ T9 + T12 + T15 + Ne9 + Ne12 + Ne15 + Vx9 + Vx12 + Vx15,
+  data = data_ozone
+)
+summary(modele_q2)
+```
+:::
+
+Les résultats de cette estimations sont assez peut cohérentes avec les intuitions de la question 1. Selon le test de significativité de Student, aucune variable ne semble significative dans ce modèle, à l'exception peut-être de `Vx9` au seuil $\alpha =0,05$. Ces résultats sont assez surprenants, surtout compte tenu des  nuages de points observés précédemment. En particulier,`Vx9` ne semblait pas être la variable la plus pertinente pour expliquer `maxO3`.
+
+Par ailleurs le test de significativité globale de Fisher (dernière ligne de la sortie) donne une p-value bien inférieure à $0,05$ donc on rejette l'hypothèse nulle $H_0: \ \beta_2 = \dots =  \beta_{10}=0$. Ce issue du test de Fisher semble également entrer en contradiction avec les tests de Student précédents.
+
+Le phénomène observé est dû au problème de multicolinéarité : certaines variables explicatives sont très corrélées, on peut l'observer graphiquement.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+pairs(
+  x = data_ozone[,c("T9", "T12", "T15")],
+  main = "Matrice des nuages de points sur les températures"
+)
+
+pairs(
+  x = data_ozone[,c("Ne9", "Ne12", "Ne15")],
+  main = "Matrice des nuages de points sur les nébuloistés"
+)
+
+pairs(
+  x = data_ozone[,c("Vx9", "Vx12", "Vx15")],
+  main = "Matrice des nuages de points sur les vitesses du vent"
+)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#| timelimit: 60
+GGally::ggpairs(
+    data = {data_ozone |> dplyr::filter(!is.na(T9) & !is.na(T12) & !is.na(T15))},
+    columns  = c("T9", "T12", "T15"),
+    title = "Matrice des nuages de points sur les températures",
+    upper = list(continuous = "cor"),
+    diag = NULL
+)
+GGally::ggpairs(
+    data = {data_ozone |> dplyr::filter(!is.na(Ne9) & !is.na(Ne12) & !is.na(Ne15))},
+    columns  = c("Ne9", "Ne12", "Ne15"),
+    title = "Matrice des nuages de points sur les nébuloistés",
+    upper = list(continuous = "cor"),
+    diag = NULL
+)
+GGally::ggpairs(
+    data = {data_ozone |> dplyr::filter(!is.na(Vx9) & !is.na(Vx12) & !is.na(Vx15))},
+    columns  = c("Vx9", "Vx12", "Vx15"),
+    title = "Matrice des nuages de points sur les vitesses du vent",
+    upper = list(continuous = "cor"),
+    diag = NULL
+)
+```
+:::
+
+
+
+Comme la multicolinéarité n'est pas parfaite $X^{\prime} X$, reste inversible mais a une inverse qui prend de très grandes valeurs. La conséquence est que la variance des estimateurs est très grande (puisque $\mathbb{V}(\hat{\beta})=\sigma^2\left(X^{\prime} X\right)^{-1}$ ). Autrement dit, il y a une grande incertitude concernant l'estimation de chaque coefficient. Ainsi lors du test de Student, l'hypothèse $H_0: \beta_j=0$ est plausible et n'est pas rejetée. Il faut donc régler ce problème de multicolinéarité.
+
+
+## Question 3
+
+On peut détecter cette multicolinéarité à l'aide du VIF (Variance Inflation Factor) 
+pour chacune des variables explicatives du modèle précédent.
+
+Le VIF pour la variable $X^{(j)}$ vaut $$
+VIF_j=\frac{1}{1-R_j^2}
+$$ où $R_j^2$ est le $R^2$ dans la régression de $X^{(j)}$ par rapport
+aux autres variables explicatives
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+car::vif(modele_q2)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#| timelimit: 60
+car::vif(modele_q2)
+```
+:::
+
+Certaines valeurs sont élevées (un premier seuil d’alerte est
+généralement 5), ce qui confirme qu’il y a un problème de multicolinéarité entre certaines variables et donc que les tests de Student ne sont pas rejetés.
+
+## Question 4
+
+On peut retenir, une variable parmi chaque groupe (température, nébulosité et vitesse du vente). On peut sélectionner par exemple celle qui est le plus correlée avec la variable `maxO3` à chaque fois.
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+cor(data_ozone[,
+  c("maxO3", "T9", "T12", "T15", "Ne9", "Ne12", "Ne15", "Vx9", "Vx12", "Vx15")
+], use = "complete.obs")
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#| timelimit: 60
+data_ozone |>
+  dplyr::select(maxO3, T9, T12, T15, Ne9, Ne12, Ne15, Vx9, Vx12, Vx15) |>
+  cor(use = "complete.obs")
+```
+:::
+
+On retient alors `T12`, `Ne12` et `Vx9`.
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+modele_q4 <- lm(
+  maxO3 ~ T12 + Ne12 + Vx9,
+  data = data_ozone
+)
+summary(modele_q4)
+car::vif(modele_q4)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#| timelimit: 60
+modele_q4 <- lm(
+  maxO3 ~ T12 + Ne12 + Vx9,
+  data = data_ozone
+)
+summary(modele_q4)
+car::vif(modele_q4)
+```
+:::
+
+Pour commencer, l'analyse des VIF montre que ce modèle n'est plus affecté par la multicolinéarité. En outre, les variables sélectionnées sont significatives, à l'exception de `Ne12`, qui est à la limite. Il serait possible d'affiner davantage le modèle, mais il est pertinent de comparer les valeurs de $R^2$ et $R_a^2$ avec celles du modèle global présenté précédemment. Comme attendu, le $R^2$ est plus faible, car il tend à diminuer lorsqu'on retire des variables, même si celles-ci ne sont pas significatives. Toutefois, il est plus pertinent de se concentrer sur le $R_a^2$ : celui-ci reste similaire entre le sous-modèle (0.6612) et le modèle global (0.6633), ce qui valide notre approche. Nous n'avons pas perdu vraiment d'information $66\  \%$ de la variance reste expliquée par le modèle.
+
+## Question 5
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+res_regsubset <- leaps::regsubsets(
+  maxO3 ~ T9 + T12 + T15 + Ne9 + Ne12 + Ne15 + Vx9 + Vx12 + Vx15,
+  data = data_ozone,
+  nvmax = 9L
+)
+plot(res_regsubset)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+res_regsubset <- leaps::regsubsets(
+  maxO3 ~ T9 + T12 + T15 + Ne9 + Ne12 + Ne15 + Vx9 + Vx12 + Vx15,
+  data = data_ozone,
+  nvmax = 9L
+)
+plot(res_regsubset)
+```
+:::
+  
+  Cette sortie présente le meilleur modèle à 1 variable, le meilleur modèle
+à 2 variables,... en les classant du pire (en bas) au meilleur (en haut), selon le critère BIC. Les variables sélectionnées dans chaque modèle sont grisées. Si on se réfère à cette sélection, on choisirait donc le modèle avec les variables `T12`, `Ne9` et `Vx9` (ce choix est donc différent du modèle que l’on avait retenu de façon naive ci-dessus)
+
