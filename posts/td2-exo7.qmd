@@ -20,6 +20,7 @@ webr:
       - GGally
       - car
       - leaps
+      - lmtest
 editor: 
   markdown: 
     wrap: 72
@@ -27,6 +28,7 @@ editor:
 ---
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
 
 ## Question 1
 
@@ -400,6 +402,516 @@ donc le modèle avec les variables `T12`, `Ne9` et `Vx9` (ce choix est
 donc différent du modèle que l’on avait retenu de façon naive ci-dessus)
 
 **Rechecrche pas à pas (à privilégier quand il y a beaucoup de
-variable)**
+variables)**
 
-La fonction \`step\` res_regsubsetres_regsubset
+La fonction `step` permet de sélectionner un modèle pas à pas.  Il existe plusieurs types  (backward, forward, hybride). Contrairement à la procédure exhaustive, les procédures pas à pas ne parcourent pas tous les sous-modèles possibles. Ils peuvent donc ´eventuellement "rater" le meilleur modèle.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#BIC backward
+cat("BIC backward\n")
+step(
+  object = modele_q2,
+  k = log(nobs(modele_q2)),
+  direction = "backward"
+)
+
+#BIC forward
+cat("BIC forward\n")
+step(
+  object = lm(maxO3 ~ 1, data = data_ozone),
+  scope = formula(modele_q2),
+  k = log(nobs(modele_q2)),
+  direction = "forward"
+)
+
+#BIC forward hybride
+cat("BIC forward hybride\n")
+step(
+  object = lm(maxO3 ~ 1, data = data_ozone),
+  scope = formula(modele_q2),
+  k = log(nobs(modele_q2)),
+  direction = "both"
+)
+
+#BIC backward hybride
+cat("BIC backward hybride\n")
+step(
+  object = modele_q2,
+  k = log(nobs(modele_q2)),
+  direction = "both"
+)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#BIC backward
+cat("BIC backward\n")
+step(
+  object = modele_q2,
+  k = log(nobs(modele_q2)),
+  direction = "backward"
+)
+
+#BIC forward
+cat("BIC forward\n")
+step(
+  object = lm(maxO3 ~ 1, data = data_ozone),
+  scope = formula(modele_q2),
+  k = log(nobs(modele_q2)),
+  direction = "forward"
+)
+
+#BIC forward hybride
+cat("BIC forward hybride\n")
+step(
+  object = lm(maxO3 ~ 1, data = data_ozone),
+  scope = formula(modele_q2),
+  k = log(nobs(modele_q2)),
+  direction = "both"
+)
+
+#BIC backward hybride
+cat("BIC backward hybride\n")
+step(
+  object = modele_q2,
+  k = log(nobs(modele_q2)),
+  direction = "both"
+)
+```
+:::
+
+Avec ces quatre méthodes pas à pas sur le critère BIC, on retrouve les mêmes résultats que précédemment avec la recherche exhaustive.
+
+On retient le modèle :
+
+$$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T12}_i+\beta_3\texttt{Ne9}_i+\beta_4\texttt{Vx9}_i+\varepsilon_i$$
+
+
+
+## Question 6
+
+Pour la méthode exhaustive, il est possible d'afficher le classement selon d'autres critères en ajustant l'option `scale`de la fonction `regsubsets`.
+
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+plot(res_regsubset, scale = "adjr2")
+plot(res_regsubset, scale = "Cp")
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+plot(res_regsubset, scale = "adjr2")
+plot(res_regsubset, scale = "Cp")
+```
+:::
+
+Le résultat est identique avec les $R^2$ ajustés et les $C_p$ de Mallows mais l'issue diffusée par rapport à la question précédente avec le critère BIC. On retiendrait aussi la variable $\texttt{T9}$. Comme elle est très corrélée à la variable $\texttt{T12}$, il semble raisonnable de prendre plutôt le modèle obtenu à la question 5, plus parcimonieux.
+
+## Question 7
+
+**Analyse graphique des résidus**
+
+On analyse les résidus graphiquement avec la fonction `plot`.
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_q5 <- lm(formula  = maxO3 ~T12 + Ne9 + Vx9, data = data_ozone) 
+par(mfrow= c(2, 2))
+plot(modele_q5)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_q5 <- lm(formula  = maxO3 ~ T12 + Ne9 + Vx9, data = data_ozone)
+par(mfrow= c(2, 2))
+plot(modele_q5)
+```
+:::
+
+Un examen graphique des résidus révèle une distribution aléatoire satisfaisante car 
+
+ * aucune structure ni hétéroscédasticité n'est apparente (graphique en haut à droite des résidus et valeurs ajustées) ;
+ * compatible avec une loi normale, bien que cela importe peu compte tenu du nombre d’observations (graphique en haut à droite - QQ plot) ;
+ * aucun individu atypique n'est détecté (graphique en bas à droite - distances de Cook)
+
+**Test d’homoscédasticité des résidus**
+
+::: {.callout-note}
+### Test de Breusch-Pagan
+Le test de Breusch-Pagan permet de tester l’homoscédasticité. Il s'implémente sous R avec la fonction `bptest` de la librairie `lmtest`.
+
+On suppose que $\varepsilon_i$ a une variance $\sigma_i^2=\sigma^2+z_i'\gamma$
+
+- $z_i$ est un vecteur de $k$ variables à choisir qui pourraient expliquer l'hétéroscédasticité (si elle est présente)
+- $\gamma$ est un paramètre inconnu, de dimension $k$, à estimer.
+
+Par défaut sous R : $z_i$ est simplement le vecteur des variables explicatives $\left(X_i^{(1)}, \ldots, X_i^{(p)}\right)$, et donc $k=p$. Mais on peut proposer autre chose.
+
+Le test de Breusch-Pagan consiste à tester
+$$
+H_0: \gamma=0 \quad \text { contre } \quad H_1: \gamma \neq 0 .
+$$
+
+:::
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+lmtest::bptest(modele_q5)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+lmtest::bptest(modele_q5)
+```
+:::
+
+On ne rejette pas $H_0$ au seuil 5 %. L'homoscédasticité est vérifiée.
+
+
+**Test de non-corrélation des résidus**
+
+
+::: {.callout-note}
+### Tests de Durbin-Watson et Breusch-Godfrey
+Le tests de Durbin-Watson et Breusch-Godfrey permettent de tester la non corrélation des résidus. Ils s'implémentent sous R avec la fonction `dwtest` et `bgtest` de la librairie `lmtest`.
+
+On suppose que $\varepsilon_i$ sont auto-corrélées à l'ordre $r$, i.e.
+
+$$\varepsilon_i = \rho_1\varepsilon_{i-1}+\dots+\rho_r\varepsilon_{i-r}+\eta_i$$
+où les $\eta_i$ sont $\texttt{iid}$ suivant une $\mathcal{N}\left(0, \sigma^2\right)$. 
+
+**Test de Durbin-Watson** : il ne concerne que le cas $r=1$ et teste
+$$
+H_0: \rho_1=0 \quad \text { contre } \quad H_1: \rho_1 \neq 0 .
+$$
+**Test de Breusch-Godfrey** : il teste (différemment),
+
+$$
+H_0: \rho_1= \dots = \rho_r = 0 \quad \text { contre } \quad H_1: \textrm{le contraire}
+$$
+
+
+:::
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+lmtest::dwtest(modele_q5)
+lmtest::bgtest(modele_q5)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+lmtest::dwtest(modele_q5)
+lmtest::bgtest(modele_q5)
+```
+:::
+
+Dans les deux cas on rejette $H_0$ au seuil 5 %. Il semble donc exister une auto-corrélation dans les résidus, ce qui n’est pas surprenant puisque la variable d’intérêt, $\texttt{maxO3}$, est temporelle : la valeur d'un jour donné est liée à celle de la veille, et cela se manifeste dans les résidus du modèle. Cette observation indique que l’hypothèse usuelle $\mathbb{V}(\varepsilon)=\sigma^2I_n$ n'est pas respectée ici. Bien qu'on puisse voir cela comme une contrainte, c’est en réalité une occasion d'améliorer le modèle initial : la corrélation temporelle n'a pas été prise en compte, offrant ainsi un levier pour enrichir notre modélisation en intégrant cette dépendance.
+
+
+## Question 8
+
+On peut créer une variable retard $\texttt{maxO3v}$ correspondant au maximum d'ozone de la veille.
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+data_ozone_q8 <- data_ozone
+data_ozone_q8$maxO3v <- c(NA, data_ozone$maxO3[1:(nrow(data_ozone)-1)])
+plot(data_ozone_q8$maxO3, data_ozone_q8$maxO3v)
+cor(data_ozone_q8$maxO3, data_ozone_q8$maxO3v, use='pairwise.complete.obs')
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+data_ozone_q8 <- data_ozone |>
+  dplyr::mutate(
+    maxO3v = dplyr::lag(maxO3)
+  )
+ggplot2::ggplot(
+  data = data_ozone_q8,
+  mapping = ggplot2::aes(x = maxO3, y = maxO3v)
+) + geom_point()
+cor(data_ozone_q8$maxO3, data_ozone_q8$maxO3v, use = 'pairwise.complete.obs')
+```
+:::
+
+Le nuage de points et la corrélation linéaire confirment l'existence d'un lien linéaire fort entre $\texttt{maxO3}$ et sa valeur de la veille.
+
+## Question 9
+
+On ajoute la covariable `maxO3v` au modèle de la question 5.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_q9 <- lm(formula  = maxO3 ~ T12 + Ne9 + Vx9 + maxO3v, data = data_ozone_q8)
+summary(modele_q9)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_q9 <- lm(formula  = maxO3 ~ T12 + Ne9 + Vx9 + maxO3v, data = data_ozone_q8)
+summary(modele_q9)
+```
+:::
+
+On constate que toutes les variables sont significatives. On effectue l’analyse des
+résidus.
+
+**Analyse graphique des résidus**
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+par(mfrow= c(2, 2))
+plot(modele_q9)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+plot(modele_q9)
+```
+:::
+
+Un examen graphique des résidus révèle une distribution aléatoire satisfaisante car 
+
+ * aucune structure ni hétéroscédasticité n'est apparente (graphique en haut à droite des résidus et valeurs ajustées) ;
+ * compatible avec une loi normale, bien que cela importe peu compte tenu du nombre d’observations (graphique en haut à droite - QQ plot) ;
+ * aucun individu atypique n'est détecté (graphique en bas à droite - distances de Cook)
+
+**Test d’homoscédasticité des résidus**
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+lmtest::bptest(modele_q5)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+lmtest::bptest(modele_q5)
+```
+:::
+
+On ne rejette pas $H_0$ au seuil 5 %. L'homoscédasticité est confirmée.
+
+
+**Test de non-corrélation des résidus**
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+lmtest::dwtest(modele_q9)
+lmtest::bgtest(modele_q9)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+lmtest::dwtest(modele_q9)
+lmtest::bgtest(modele_q9)
+```
+:::
+
+
+On ne rejette pas $H_0$ au seuil 5 % dans les deux cas. L'absence d'autocorrélation est confirmée.
+
+## Question 10
+
+
+**Test de Fisher sur des modèles emboités**
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+car::linearHypothesis(
+  modele_q9,
+  matrix(c(0, 0, 0, 0, 1), nrow = 1, byrow = TRUE)
+)
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+car::linearHypothesis(
+  modele_q9,
+  matrix(c(0, 0, 0, 0, 1), nrow = 1, byrow = TRUE)
+)```
+
+:::
+
+
+Le test de Fisher sur les modèle emboité confirme la significativité de la variable `maxO3v`.
+
+
+
+**Critères de sélection**
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+cp_mallows <- function(lm_model, lm_full) {
+  # Nombre d'observations
+  n <- length(residuals(lm_model))
+  
+  # Nombre de paramètres (y compris l'intercept)
+  p <- length(coef(lm_model))
+  
+  # Somme des carrés des résidus
+  RSS <- sum(residuals(lm_model)**2)
+  
+  # Estimation de la variance des erreurs à partir du modèle complet
+  sigma_hat2 <- summary(lm_full)$sigma**2
+  
+  # Calcul de Cp de Mallows
+  Cp <- RSS / sigma_hat2 - (n - 2 * p)
+  
+  return(Cp)
+}
+modele_full <- lm(
+  maxO3 ~ T9 + T12 + T15 + Ne9 + Ne12 + Ne15 + Vx9 + Vx12 + Vx15 + maxO3v,
+  data = data_ozone_q8
+)
+data.frame(
+  `Critère` = c("AIC", "BIC", "Cp de Mallows", "R²-adj"),
+  `Modèle Q5` = c(
+    AIC(modele_q5),
+    BIC(modele_q5),
+    cp_mallows(modele_q5,modele_full),
+    summary(modele_q5)$adj.r.squared
+  ),
+  `Modèle Q9` = c(
+    AIC(modele_q9),
+    BIC(modele_q9),
+    cp_mallows(modele_q9, modele_full),
+    summary(modele_q9)$adj.r.squared
+  )
+)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+cp_mallows <- function(lm_model, lm_full) {
+  # Nombre d'observations
+  n <- length(residuals(lm_model))
+  
+  # Nombre de paramètres (y compris l'intercept)
+  p <- length(coef(lm_model))
+  
+  # Somme des carrés des résidus
+  RSS <- sum(residuals(lm_model)**2)
+  
+  # Estimation de la variance des erreurs à partir du modèle complet
+  sigma_hat2 <- summary(lm_full)$sigma**2
+  
+  # Calcul de Cp de Mallows
+  Cp <- RSS / sigma_hat2 - (n - 2 * p)
+  
+  return(Cp)
+}
+modele_full <- lm(
+  maxO3 ~ T9 + T12 + T15 + Ne9 + Ne12 + Ne15 + Vx9 + Vx12 + Vx15 + maxO3v,
+  data = data_ozone_q8
+)
+tibble::tibble(
+  `Critère` = c("AIC", "BIC", "Cp de Mallows", "R²-adj"),
+  `Modèle Q5` = c(
+    AIC(modele_q5),
+    BIC(modele_q5),
+    cp_mallows(modele_q5,modele_full),
+    summary(modele_q5)$adj.r.squared
+  ),
+  `Modèle Q9` = c(
+    AIC(modele_q9),
+    BIC(modele_q9),
+    cp_mallows(modele_q9, modele_full),
+    summary(modele_q9)$adj.r.squared
+  )
+)
+```
+:::
+
+Quel que soit le critère le modèle avec l’introduction de la variable $\texttt{maxO3v}$ est meilleur.
