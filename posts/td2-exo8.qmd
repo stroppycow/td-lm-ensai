@@ -1,0 +1,113 @@
+---
+title: "TD 2 - Exercice 8 - Comparaison des critères de sélection d'un modèle"
+lang: fr
+author: "Théo Leroy"
+date: "8 octobre 2024"
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+editor: 
+  markdown: 
+    wrap: 72
+  wrap: 72
+---
+
+## Question 1
+
+Dans le modèle
+
+$$Y= \beta_1X^{(1)}+\dots+\beta_pX^{(p)}+\varepsilon \qquad \textrm{avec} \ \varepsilon \sim \mathcal{N}(0,\sigma^2I_n)$$
+
+On teste $H_0 \ : \ \beta_p=0 \ vs \ H_1 \ : \beta_p \neq 0$
+
+La variable $X^{(p)}$ est incluse si l'hypothèse $H_{1}$ est retenue, c'est-à-dire si $F > q_{1-\alpha}^{\mathcal{F}\left(1, \ n-p\right)}$, où $q_{1-\alpha}^{\mathcal{F}\left(1, \ n-p\right)}$ représente le quantile d'ordre $1-\alpha$ de la loi de Fisher $(1, n-p)$. Cette règle de décision exige de fixer le niveau de test $\alpha$. On choisi souvent par convention à $\alpha=0.05$.
+
+## Question 2
+
+
+On inclut $X^{(p)}$ si $R_{a}^{2}$ dans le modèle avec $X^{(p)}$ est supérieur au $R_{a}^{2}$ dans le modèle sans $X^{(p)}$, c'est à dire si
+
+$$
+\underbrace{1-\frac{n-1}{n-p} \frac{\textrm{SCR}}{\textrm{SCT}}}_{R_a^{2} \textrm{ dans le modèle avec } X^{(p)}}>\underbrace{1-\frac{n-1}{n-(p-1)} \frac{\textrm{SCR}_{c}}{\textrm{SCT}}}_{R_a^{2} \textrm{ dans le modèle sans } X^{(p)}}
+$$
+
+où l'on note comme dans la question précédente $\textrm{SCR}$ la somme des carrés résiduelle dans le modèle avec $X^{(p)}$, et $\textrm{SCR}_{c}$ la somme des carrés résiduelle dans le modèle
+sans $X^{(p)}$.
+
+On simplifie l'inégalité précédente :
+
+$$
+\begin{align*}
+-\frac{n-1}{n-p} \frac{\textrm{SCR}}{\textrm{SCT}} & >-\frac{n-1}{n-(p-1)} \frac{\textrm{SCR}_{c}}{\textrm{SCT}} \\
+\frac{\textrm{SCR}}{n-p} & < \frac{\textrm{SCR}_{c}}{n-(p-1)} \\
+(n-p+1)\textrm{SCR} & <(n-p) \textrm{SCR}_{c} \\
+(n-p) \textrm{SCR}+\textrm{SCR} & >(n-p) \textrm{SCR}_{c} \\
+\textrm{SCR} & <(n-p)\left(\textrm{SCR}_{c}-\textrm{SCR}\right) \\
+1 & <F
+\end{align*}
+$$
+
+## Question 3
+
+On inclut $X^{(p)}$ si le $C_p$ dans le modèle avec $X^{(p)}$ est inférieur au $C_p$ dans le modèle sans $X^{(p)}$, c'est à dire si
+
+$$
+\begin{align*}
+\underbrace{\frac{\textrm{SCR}}{\hat{\sigma}^{2}}-n+2p}_{C_p \textrm{ dans le modèle avec } X^{(p)}} &< \underbrace{\frac{\textrm{SCR}_c}{\hat{\sigma}^{2}}-n+2(p-1)}_{C_p \textrm{ dans le modèle sans } X^{(p)}} \\
+\frac{\textrm{SCR}}{\hat{\sigma}^{2}} &< \frac{\textrm{SCR}_c}{\hat{\sigma}^{2}}-2 \\
+2 &< \frac{\textrm{SCR}_c-SRC}{\hat{\sigma}^{2}}
+\end{align*} 
+$$
+Or $\hat{\sigma}^{2}=\frac{SCR}{n-p}$ donc $F>2$ .
+
+## Question 4 
+
+On inclut $X^{(p)}$ si l'AIC dans le modèle avec $X^{(p)}$ est inférieur à l'AIC dans le modèle sans $X^{(p)}$, c'est à dire si
+
+
+$$
+\begin{align*}
+\underbrace{n(1+\log (2 \pi))+n \log\left(\frac{\textrm{SCR}}{n}\right)+2(p+1)}_{AIC \textrm{ dans le modèle avec } X^{(p)}} &< \underbrace{n(1+\log (2 \pi))+n \log\left(\frac{\textrm{SCR}_c}{n}\right)+2p}_{AIC \textrm{ dans le modèle sans } X^{(p)}} \\
+n \log\left(\frac{\textrm{SCR}}{n}\right)+2 &< n \log\left(\frac{\textrm{SCR}_c}{n}\right) \\
+2 &< n\log\left(\frac{\textrm{SCR}_c}{\textrm{SCR}}\right) \\
+e^{\frac{2}{n}} &< \frac{\textrm{SCR}_c}{\textrm{SCR}} \\
+(n-p)\left(e^{\frac{2}{n}} - 1\right) &< (n-p)\left(\frac{\textrm{SCR}_c}{\textrm{SCR}} - 1\right) \\
+\end{align*} 
+$$
+
+Donc $F > (n-p)\left(e^{\frac{2}{n}} - 1\right)$
+
+## Question 5
+
+On inclut $X^{(p)}$ si le BIC dans le modèle avec $X^{(p)}$ est inférieur au BIC dans le modèle sans $X^{(p)}$, c'est à dire si
+
+
+$$
+\begin{align*}
+\underbrace{n(1+\log (2 \pi))+n \log\left(\frac{\textrm{SCR}}{n}\right)+\log(n)(p+1)}_{BIC \textrm{ dans le modèle avec } X^{(p)}} &< \underbrace{n(1+\log (2 \pi))+n \log\left(\frac{\textrm{SCR}_c}{n}\right)+\log(n)p}_{BIC \textrm{ dans le modèle sans } X^{(p)}} \\
+n \log\left(\frac{\textrm{SCR}}{n}\right)+\log(n) &< n \log\left(\frac{\textrm{SCR}_c}{n}\right) \\
+\log(n) &< n\log\left(\frac{\textrm{SCR}_c}{\textrm{SCR}}\right) \\
+e^{\frac{\log(n)}{n}} &< \frac{\textrm{SCR}_c}{\textrm{SCR}} \\
+(n-p)\left(e^{\frac{\log(n)}{n}} - 1\right) &< (n-p)\left(\frac{\textrm{SCR}_c}{\textrm{SCR}} - 1\right) \\
+\end{align*} 
+$$
+
+Donc $F > (n-p)\left(e^{\frac{\log(n)}{n}} - 1\right)$
+
+## Question 6
+
+Pour le critère AIC, on a vu que l'on inclut $X^{(p)}$ si $F>(n-p)\left(e^{2 / n}-1\right)$. Or, lorsque $n \rightarrow \infty,\left(e^{2 / n}-1\right) \sim 2 / n$, de telle sorte que le seuil est équivalent à 2 . Ainsi lorsque $n$ est grand, le critère AIC devient similaire au critère du $C_{p}$ de Mallows.
+
+Pour le critère BIC, le seuil est $(n-p)\left(e^{\log n / n}-1\right)$, or $\left(e^{\log n / n}-1\right) \sim \log n / n$ et le seuil est équivalent à $\log n$. Selon BIC (et si $n$ est grand) on inclut donc $X^{(p)}$ si $F>\log n$.
+
+
+Pour les critères considérés, on a d'autant plus de facilité à inclure $X^{(p)}$ que le seuil $s$ dans la règle $F>s$ est faible. Etant donné les seuils calculés précédemment, les
+critères se classent donc ainsi, du plus conservatif (tendance à rejeter plus facilement $X^{(p)}$ ), au moins conservatif (tendance à l'accepter) :
+
+$$
+\textrm{BIC} \leq \text { test } F \leq C_{p} \approx \textrm{AIC} \leq R_{a}^{2}
+$$
+
+dès que $\log n > 5$. Cette hiérarchie peut aussi s’interpréter en fonction de la tendance à conserver des modèles plus complexes : le critère $R_{a}^{2}$ privilégie généralement les modèles les plus complets, tandis que le BIC favorise des modèles plus parcimonieux. Ces critères peuvent être tous d'accord sur le fait qu'il est préférable d'inclure ou non $X^{(p)}$, mais si jamais ils divergent, c'est dans le sens des inégalités précédentes.
