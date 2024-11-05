@@ -58,3 +58,30 @@ Le critère AIC est similaire au critère du $C_{p}$ de Mallows lorsque $n \righ
 
 ## Question 6
 
+D'après la question 6 de l'exercice 8, quand $n$ est grand, on inclut $X^{(p)}$ selon le BIC si $F>\log(n)$.
+
+**Intuition**
+
+La suite d'évènements $(F>\log(n))_{n\in \mathbb{N}}$ est une suite d'évènements décroissante et donc $(F>\log(n)) \underset{n \to\infty}{\rightarrow} \emptyset$  et ainsi la probabilité $\mathbb{P}(F>\log n) \rightarrow 0$.
+
+
+
+Plus rigoureusement, comme $F$ dépend de $n$, $(F>\log(n))_{n\in \mathbb{N}}$ n'est pas une suite décroissante d'évènements. On a vu que $F_{1, n-p}(x) \rightarrow F_{\chi^{2}(1)}(x)$ pour tout $x$ (c'est la convergence en loi). La fonction $F_{\chi^{2}(1)}(.)$ étant continue et croissante, cette convergence simple implique la convergence uniforme d'après le second théorème de Dini. Ainsi, $$\left\|F_{1, n-p}-F_{\chi^{2}(1)}\right\|_{\infty} \rightarrow 0$$
+
+Donc,
+
+$$
+\begin{align*}
+\mathbb{P}(F > \log(n)) &= 1 - F_{1, n-p}(\log(n)) \\
+&=\left|F_{1, n-p}(\log n)-F_{\chi^{2}(1)}(\log n)+F_{\chi^{2}(1)}(\log n)-1\right| \\
+&\leq\left|F_{1, n-p}(\log n)-F_{\chi^{2}(1)}(\log n)\right|+\left|F_{\chi^{2}(1)}(\log n)-1\right| \\
+&\leq\left\|F_{1, n-p}-F_{\chi^{2}(1)}\right\|_{\infty}+\left|F_{\chi^{2}(1)}(\log n)-1\right|
+\end{align*}
+$$
+
+Le premier terme tend vers 0 par convergence uniforme, et le second aussi car $F_{\chi^{2}(1)}(x) \rightarrow 1$ lorsque $x \rightarrow \infty$.
+
+## Question 7
+
+Pour tous les critères, à l'exception du BIC, la probabilité de sélectionner le mauvais modèle (celui incluant $X^{(p)}$) demeure positive même lorsque $n \rightarrow \infty$. Seul le BIC assure la sélection du bon modèle lorsque  $n \rightarrow \infty$, ce qui en fait le critère préférable sous cet aspect.
+

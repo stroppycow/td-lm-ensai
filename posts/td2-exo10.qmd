@@ -1,0 +1,82 @@
+---
+title: "TD 2 - Exercice 10 - ANCOVA : Retour à la modélisation de l'ozone"
+lang: fr
+author: "Théo Leroy"
+date: "8 octobre 2024"
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+webr:
+  render-df: gt-interactive
+  resources:
+    - ./../data/ozone.txt
+  packages:
+      - dplyr
+      - readr
+      - ggplot2
+      - cowplot
+      - GGally
+      - car
+      - leaps
+      - lmtest
+editor: 
+  markdown: 
+    wrap: 72
+  wrap: 72
+---
+
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
+## Question 1
+
+On charge les données du fichier `ozone.txt` en R sous forme de
+`data.frame`.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+data_ozone <- read.csv(
+  file = "data/ozone.txt",
+  header = TRUE,
+  sep = " ",
+  quote = '"'
+)
+data_ozone$maxO3v <- c(NA, data_ozone$maxO3[1:(nrow(data_ozone)-1)])
+data_ozone
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+data_ozone <- readr::read_delim(
+  file = "data/ozone.txt",
+  col_types = "_cnnnnnnnnnncc",
+  col_names = c(
+    "date","maxO3","T9","T12","T15","Ne9","Ne12","Ne15",
+    "Vx9","Vx12","Vx15","vent","pluie"
+  ),
+  skip = 1,
+  delim = " ",
+  quote = '"'
+)  |>
+  dplyr::mutate(
+    maxO3v = dplyr::lag(maxO3)
+  )
+data_ozone
+```
+:::
+
+Le fichier chargé contient bien 122 observations avec les variables
+`maxO3` pour la concentration maximale d’ozone mesurée chaque jour
+(exprimée en mètre), `T9`, `T12`, `T15` pour les températures, `Ne9`, `Ne12`, `Ne15` pour les nébulosités, `Vx9`, `Vx12`, `Vx15` pour la vitesse du vent, `vent` pour la direction du vent et `pluie` pour le niveau de pluie.
+
+On ajoute également la concentration maximale d’ozone mesurée la veille.
+
+
