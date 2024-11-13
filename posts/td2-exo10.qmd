@@ -29,6 +29,9 @@ editor:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
+::: {.content-hidden when-format="html"}
+
+
 ## Question 1
 
 On charge les données du fichier `ozone.txt` en R sous forme de
@@ -79,4 +82,4 @@ Le fichier chargé contient bien 122 observations avec les variables
 
 On ajoute également la concentration maximale d’ozone mesurée la veille.
 
-
+:::

@@ -24,7 +24,6 @@ editor:
 ---
 
 ::: {.content-hidden when-format="html"}
-
 ![](/static/img/eucalyptus.jpg){fig-align="center"}
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
@@ -124,6 +123,4 @@ $$
 \sum\limits_{i=1}^n (x_i-\overline{x_n})^2&=\sum\limits_{i=1}^n x_i^2-n\overline{x_n}^2=\frac{(n+1)(2n+1)}{6n}-\frac{(n+1)^2}{4n}=\frac{(n-1)(n+1)}{12n} 
 \end{align*}
 $$
-
-
 :::

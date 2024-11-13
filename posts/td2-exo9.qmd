@@ -14,15 +14,20 @@ editor:
   wrap: 72
 ---
 
+::: {.content-hidden when-format="html"}
+
+
 ## Question 1
 
-Si le modèle est Gaussien, alors sous $H_{0}: \beta_{p}=0, F$ suit une loi $F(1, n-p)$. Or par définition d'une loi de Fisher,
+Si le modèle est Gaussien, alors sous $H_{0}: \beta_{p}=0, F$ suit une
+loi $F(1, n-p)$. Or par définition d'une loi de Fisher,
 
 $$
 F(1, n-p)=\frac{\chi^{2}(1) / 1}{\chi^{2}(n-p) /(n-p)}
 $$
 
-En notant $U_{n}$ une variable aléatoire suivant une loi $\chi^{2}(n-p) /(n-p)$, on a la représentation
+En notant $U_{n}$ une variable aléatoire suivant une loi
+$\chi^{2}(n-p) /(n-p)$, on a la représentation
 
 $$
 U_{n}=\frac{1}{n-p} \sum_{i=1}^{n-p} Z_{i}^{2}
@@ -30,43 +35,63 @@ $$
 
 où les $Z_{i}$ sont iid $\mathcal{N}(0,1)$.
 
-Par application de la loi faible des grands nombres, on a donc $U_{n} \rightarrow \mathbb{E}\left(Z_{1}^{2}\right)=1$ en probabilité. D'après le lemme de Slutsky,  $n \rightarrow \infty, F(1, n-p) \rightarrow \chi^{2}(1)$ en loi.
+Par application de la loi faible des grands nombres, on a donc
+$U_{n} \rightarrow \mathbb{E}\left(Z_{1}^{2}\right)=1$ en probabilité.
+D'après le lemme de Slutsky,
+$n \rightarrow \infty, F(1, n-p) \rightarrow \chi^{2}(1)$ en loi.
 
 ## Question 2
 
-On décide (à tort) d'inclure la variable $X^{(p)}$ si $F>f_{1, n-p}(1-\alpha)$ où $f_{1, n-p}(1-\alpha)$ est le quantile d'ordre $1-\alpha$ d'une loi $F(1, n-p)$. La probabilité que cela se produise vaut $\alpha$.  $\alpha$ est l'erreur de première espèce que l'on choisit.
+On décide (à tort) d'inclure la variable $X^{(p)}$ si
+$F>f_{1, n-p}(1-\alpha)$ où $f_{1, n-p}(1-\alpha)$ est le quantile
+d'ordre $1-\alpha$ d'une loi $F(1, n-p)$. La probabilité que cela se
+produise vaut $\alpha$. $\alpha$ est l'erreur de première espèce que
+l'on choisit.
 
 ## Question 3
 
-On inclut la variable $X^{(p)}$ selon le critère du $R^{2}$ ajusté si $F>1$. En notant $F_{1, n-p}$ la fonction de répartition d'une $F(1, n-p)$ et $F_{\chi^{2}(1)}$ la fonction de répartition d'une $\chi^{2}(1)$, on a
-$$
+On inclut la variable $X^{(p)}$ selon le critère du $R^{2}$ ajusté si
+$F>1$. En notant $F_{1, n-p}$ la fonction de répartition d'une
+$F(1, n-p)$ et $F_{\chi^{2}(1)}$ la fonction de répartition d'une
+$\chi^{2}(1)$, on a $$
 \mathbb{P}(F>1)=1-F_{1, n-p}(1) \underset{n \rightarrow \infty}{\longrightarrow} 1-F_{\chi^{2}(1)}(1) \approx 0,32
 $$
 
-
 ## Question 4
 
-On inclut la variable $X^{(p)}$ selon le critère du $C_p$ de Mallows si $F>2$. En notant $F_{1, n-p}$ la fonction de répartition d'une $F(1, n-p)$ et $F_{\chi^{2}(1)}$ la fonction de répartition d'une $\chi^{2}(1)$, on a
-$$
+On inclut la variable $X^{(p)}$ selon le critère du $C_p$ de Mallows si
+$F>2$. En notant $F_{1, n-p}$ la fonction de répartition d'une
+$F(1, n-p)$ et $F_{\chi^{2}(1)}$ la fonction de répartition d'une
+$\chi^{2}(1)$, on a $$
 \mathbb{P}(F>2)=1-F_{1, n-p}(2) \underset{n \rightarrow \infty}{\longrightarrow} 1-F_{\chi^{2}(1)}(2) \approx 0,16
 $$
 
 ## Question 5
 
-Le critère AIC est similaire au critère du $C_{p}$ de Mallows lorsque $n \rightarrow \infty$, on obtient donc le même résultat que dans la question précédente.
-
+Le critère AIC est similaire au critère du $C_{p}$ de Mallows lorsque
+$n \rightarrow \infty$, on obtient donc le même résultat que dans la
+question précédente.
 
 ## Question 6
 
-D'après la question 6 de l'exercice 8, quand $n$ est grand, on inclut $X^{(p)}$ selon le BIC si $F>\log(n)$.
+D'après la question 6 de l'exercice 8, quand $n$ est grand, on inclut
+$X^{(p)}$ selon le BIC si $F>\log(n)$.
 
 **Intuition**
 
-La suite d'évènements $(F>\log(n))_{n\in \mathbb{N}}$ est une suite d'évènements décroissante et donc $(F>\log(n)) \underset{n \to\infty}{\rightarrow} \emptyset$  et ainsi la probabilité $\mathbb{P}(F>\log n) \rightarrow 0$.
+La suite d'évènements $(F>\log(n))_{n\in \mathbb{N}}$ est une suite
+d'évènements décroissante et donc
+$(F>\log(n)) \underset{n \to\infty}{\rightarrow} \emptyset$ et ainsi la
+probabilité $\mathbb{P}(F>\log n) \rightarrow 0$.
 
-
-
-Plus rigoureusement, comme $F$ dépend de $n$, $(F>\log(n))_{n\in \mathbb{N}}$ n'est pas une suite décroissante d'évènements. On a vu que $F_{1, n-p}(x) \rightarrow F_{\chi^{2}(1)}(x)$ pour tout $x$ (c'est la convergence en loi). La fonction $F_{\chi^{2}(1)}(.)$ étant continue et croissante, cette convergence simple implique la convergence uniforme d'après le second théorème de Dini. Ainsi, $$\left\|F_{1, n-p}-F_{\chi^{2}(1)}\right\|_{\infty} \rightarrow 0$$
+Plus rigoureusement, comme $F$ dépend de $n$,
+$(F>\log(n))_{n\in \mathbb{N}}$ n'est pas une suite décroissante
+d'évènements. On a vu que $F_{1, n-p}(x) \rightarrow F_{\chi^{2}(1)}(x)$
+pour tout $x$ (c'est la convergence en loi). La fonction
+$F_{\chi^{2}(1)}(.)$ étant continue et croissante, cette convergence
+simple implique la convergence uniforme d'après le second théorème de
+Dini. Ainsi,
+$$\left\|F_{1, n-p}-F_{\chi^{2}(1)}\right\|_{\infty} \rightarrow 0$$
 
 Donc,
 
@@ -79,9 +104,14 @@ $$
 \end{align*}
 $$
 
-Le premier terme tend vers 0 par convergence uniforme, et le second aussi car $F_{\chi^{2}(1)}(x) \rightarrow 1$ lorsque $x \rightarrow \infty$.
+Le premier terme tend vers 0 par convergence uniforme, et le second
+aussi car $F_{\chi^{2}(1)}(x) \rightarrow 1$ lorsque
+$x \rightarrow \infty$.
 
 ## Question 7
 
-Pour tous les critères, à l'exception du BIC, la probabilité de sélectionner le mauvais modèle (celui incluant $X^{(p)}$) demeure positive même lorsque $n \rightarrow \infty$. Seul le BIC assure la sélection du bon modèle lorsque  $n \rightarrow \infty$, ce qui en fait le critère préférable sous cet aspect.
+Pour tous les critères, à l'exception du BIC, la probabilité de
+sélectionner le mauvais modèle (celui incluant $X^{(p)}$) demeure positive même lorsque $n \rightarrow \infty$. Seul le BIC assure la sélection du bon modèle lorsque $n \rightarrow \infty$, ce qui en fait le critère préférable sous cet aspect.
 
+
+:::

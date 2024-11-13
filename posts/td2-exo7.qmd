@@ -27,7 +27,10 @@ editor:
   wrap: 72
 ---
 
+
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
+
 
 ## Question 1
 
@@ -70,7 +73,7 @@ data_ozone
 :::
 
 Le fichier chargé contient bien 122 observations avec les variables
-`maxO3` pour la concentration maximale d’ozone mesuré chaque jour
+`maxO3` pour la concentration maximale d’ozone mesurée chaque jour
 (exprimée en mètre), `T9`, `T12`, `T15` pour les températures, `Ne9`,
 `Ne12`, `Ne15` pour les nébulosités et `Vx9`, `Vx12`, `Vx15` pour la
 vitesse du vent.
@@ -101,6 +104,11 @@ lapply(
     grid()
   }
 ) |> invisible()
+cor(
+  x = data_ozone$maxO3,
+  y = data_ozone[,c("T9", "T12", "T15", "Ne9", "Ne12", "Ne15", "Vx9", "Vx12", "Vx15")],
+  use = "complete.obs"
+)
 ```
 
 ### Tidyverse
@@ -129,6 +137,8 @@ On observe une relation linéaire croissante assez prononcée avec `T9`,
 `T12` et `T15`, une légère relation décroissante avec `Ne9`, `Ne12` et
 `Ne15`, ainsi qu'une faible relation linéaire avec `Vx9`, `Vx12` et
 `Vx15`. Aucun lien non-linéaire ne semble ressortir de manière évidente.
+
+
 
 ## Question 2
 
@@ -164,7 +174,7 @@ summary(modele_q2)
 ```
 :::
 
-Les résultats de cette estimations sont assez peut cohérentes avec les
+Les résultats de cette estimations sont assez peut cohérents avec les
 intuitions de la question 1. Selon le test de significativité de
 Student, aucune variable ne semble significative dans ce modèle, à
 l'exception peut-être de `Vx9` au seuil $\alpha =0,05$. Ces résultats
@@ -243,6 +253,7 @@ chaque coefficient. Ainsi lors du test de Student, l'hypothèse
 $H_0: \beta_j=0$ est plausible et n'est pas rejetée. Il faut donc régler
 ce problème de multicolinéarité.
 
+
 ## Question 3
 
 On peut détecter cette multicolinéarité à l'aide du VIF (Variance
@@ -277,6 +288,8 @@ Certaines valeurs sont élevées (un premier seuil d’alerte est
 généralement 5), ce qui confirme qu’il y a un problème de
 multicolinéarité entre certaines variables et donc que les tests de
 Student ne sont pas rejetés.
+
+
 
 ## Question 4
 
@@ -348,8 +361,11 @@ tend à diminuer lorsqu'on retire des variables, même si celles-ci ne
 sont pas significatives. Toutefois, il est plus pertinent de se
 concentrer sur le $R_a^2$ : celui-ci reste similaire entre le
 sous-modèle (0.6612) et le modèle global (0.6633), ce qui valide notre
-approche. Nous n'avons pas perdu vraiment d'information $66\  \%$ de la
+approche. Nous n'avons pas perdu vraiment d'information $67\  \%$ de la
 variance reste expliquée par le modèle.
+
+
+
 
 ## Question 5
 
@@ -400,13 +416,16 @@ modèle sont grisées. Si on se réfère à cette sélection, on choisirait
 donc le modèle avec les variables `T12`, `Ne9` et `Vx9` (ce choix est
 donc différent du modèle que l’on avait retenu de façon naive ci-dessus)
 
-**Rechecrche pas à pas (à privilégier quand il y a beaucoup de
+
+
+
+**Recherche pas à pas (à privilégier quand il y a beaucoup de
 variables)**
 
 La fonction `step` permet de sélectionner un modèle pas à pas. Il existe
 plusieurs types (backward, forward, hybride). Contrairement à la
 procédure exhaustive, les procédures pas à pas ne parcourent pas tous
-les sous-modèles possibles. Ils peuvent donc ´eventuellement "rater" le
+les sous-modèles possibles. Ils peuvent donc éventuellement "rater" le
 meilleur modèle.
 
 ::: {.panel-tabset group="language"}
@@ -498,6 +517,8 @@ On retient le modèle :
 
 $$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T12}_i+\beta_3\texttt{Ne9}_i+\beta_4\texttt{Vx9}_i+\varepsilon_i$$
 
+
+
 ## Question 6
 
 Pour la méthode exhaustive, il est possible d'afficher le classement
@@ -525,10 +546,13 @@ plot(res_regsubset, scale = "Cp")
 :::
 
 Le résultat est identique avec les $R^2$ ajustés et les $C_p$ de Mallows
-mais l'issue diffusée par rapport à la question précédente avec le
+mais l'issue est différente par rapport à la question précédente avec le
 critère BIC. On retiendrait aussi la variable $\texttt{T9}$. Comme elle
 est très corrélée à la variable $\texttt{T12}$, il semble raisonnable de
 prendre plutôt le modèle obtenu à la question 5, plus parcimonieux.
+
+
+
 
 ## Question 7
 
@@ -668,6 +692,9 @@ en réalité une occasion d'améliorer le modèle initial : la corrélation
 temporelle n'a pas été prise en compte, offrant ainsi un levier pour
 enrichir notre modélisation en intégrant cette dépendance.
 
+
+
+
 ## Question 8
 
 On peut créer une variable retard $\texttt{maxO3v}$ correspondant au
@@ -681,7 +708,7 @@ maximum d'ozone de la veille.
 #| autorun: true
 data_ozone_q8 <- data_ozone
 data_ozone_q8$maxO3v <- c(NA, data_ozone$maxO3[1:(nrow(data_ozone)-1)])
-plot(data_ozone_q8$maxO3, data_ozone_q8$maxO3v)
+plot(data_ozone_q8$maxO3v, data_ozone_q8$maxO3)
 cor(data_ozone_q8$maxO3, data_ozone_q8$maxO3v, use='pairwise.complete.obs')
 ```
 
@@ -705,6 +732,8 @@ cor(data_ozone_q8$maxO3, data_ozone_q8$maxO3v, use = 'pairwise.complete.obs')
 Le nuage de points et la corrélation linéaire confirment l'existence
 d'un lien linéaire fort entre $\texttt{maxO3}$ et sa valeur de la
 veille.
+
+
 
 ## Question 9
 
@@ -781,7 +810,7 @@ lmtest::bptest(modele_q5)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-lmtest::bptest(modele_q5)
+lmtest::bptest(modele_q9)
 ```
 :::
 
@@ -812,6 +841,8 @@ lmtest::bgtest(modele_q9)
 On ne rejette pas $H_0$ au seuil 5 % dans les deux cas. L'absence
 d'autocorrélation est confirmée.
 
+
+
 ## Question 10
 
 **Test de Fisher sur des modèles emboités**
@@ -836,8 +867,8 @@ car::linearHypothesis(
 car::linearHypothesis(
   modele_q9,
   matrix(c(0, 0, 0, 0, 1), nrow = 1, byrow = TRUE)
-)```
-
+)
+```
 :::
 
 
@@ -850,6 +881,7 @@ Le test de Fisher sur les modèle emboité confirme la significativité de la va
 ::: {.panel-tabset group="language"}
 ### Base R
 
+```{webr}
 #| envir: tdv
 #| autorun: true
 cp_mallows <- function(lm_model, lm_full) {
@@ -936,5 +968,5 @@ tibble::tibble(
 ```
 :::
 
-Quel que soit le critère le modèle avec l’introduction de la variable
-$\texttt{maxO3v}$ est meilleur.
+Quel que soit le critère le modèle avec l’introduction de la variable $\texttt{maxO3v}$ est meilleur.
+
