@@ -14,7 +14,6 @@ editor:
 ---
 
 
-
 ## Question 1
 
 Dans le modèle
@@ -28,8 +27,7 @@ c'est-à-dire si $F > q_{1-\alpha}^{\mathcal{F}\left(1, \ n-p\right)}$,
 où $q_{1-\alpha}^{\mathcal{F}\left(1, \ n-p\right)}$ représente le
 quantile d'ordre $1-\alpha$ de la loi de Fisher $(1, n-p)$. Cette règle
 de décision exige de fixer le niveau de test $\alpha$. On choisi souvent
-par convention  $\alpha=0.05$.
-
+par convention $\alpha=0.05$.
 
 
 ## Question 2
@@ -74,7 +72,6 @@ $$
 $$ Or $\hat{\sigma}^{2}=\frac{SCR}{n-p}$ donc $F>2$ .
 
 
-
 ## Question 4
 
 On inclut $X^{(p)}$ si l'AIC dans le modèle avec $X^{(p)}$ est inférieur
@@ -92,6 +89,7 @@ $$
 
 Donc $F > (n-p)\left(e^{\frac{2}{n}} - 1\right)$
 
+
 ## Question 5
 
 On inclut $X^{(p)}$ si le BIC dans le modèle avec $X^{(p)}$ est
@@ -108,7 +106,6 @@ e^{\frac{\log(n)}{n}} &< \frac{\textrm{SCR}_c}{\textrm{SCR}} \\
 $$
 
 Donc $F > (n-p)\left(e^{\frac{\log(n)}{n}} - 1\right)$
-
 
 
 
@@ -142,5 +139,4 @@ complets, tandis que le BIC favorise des modèles plus parcimonieux. Ces
 critères peuvent être tous d'accord sur le fait qu'il est préférable
 d'inclure ou non $X^{(p)}$, mais si jamais ils divergent, c'est dans le
 sens des inégalités précédentes.
-
 
