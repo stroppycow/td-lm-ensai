@@ -22,7 +22,6 @@ Il s’agit d’une matrice diagonale dont les éléments sur la diagonale
 sont les valeurs du vecteur
 $\left(\sigma_{1}^{2}, \ldots, \sigma_{n}^{2}\right)$.
 
-
 ## Question 2
 
 L'estimateur des MCO vaut
@@ -49,7 +48,6 @@ $$
 &=\left(X^{\prime} X\right)^{-1} X^{\prime} \Sigma X\left(X^{\prime} X\right)^{-1}
 \end{align*}
 $$
-
 
 ## Question 3
 
@@ -89,8 +87,6 @@ et $$
 $$
 
 ::: {.content-hidden when-format="html"}
-
-
 ## Question 4
 
 Par définition

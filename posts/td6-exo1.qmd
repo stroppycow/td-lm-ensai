@@ -1,0 +1,1700 @@
+---
+title: "TD 6 - Exercice 1 - Maladie coronarienne"
+lang: fr
+author: "Théo Leroy"
+date: "19 novembre 2024"
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+webr:
+  render-df: gt-interactive
+  resources:
+    - ./../data/chdage.txt
+  packages:
+      - dplyr
+      - readr
+      - ggplot2
+      - cowplot
+      - GGally
+      - car
+      - leaps
+      - lmtest
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+## Question 1
+
+On charge les données du fichier `chdage.txt` en R sous forme de
+`data.frame`.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+data_chdage <- read.csv(
+  file = "data/chdage.txt",
+  header = TRUE,
+  sep = " ",
+  colClasses = c("id"="integer", "age"="integer", "agegrp"="factor", "chd"="factor")
+)
+data_chdage
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+data_chdage <- readr::read_delim(
+  file = "data/chdage.txt",
+  col_names = c("id", "age", "agegrp", "chd"),
+  col_types = readr::cols(
+    readr::col_skip(),
+    readr::col_integer(),
+    readr::col_integer(),
+    readr::col_factor(),
+    readr::col_factor()
+  ),
+  delim = " ",
+  skip = 1
+)
+data_chdage
+```
+:::
+
+## Question 2
+
+Une possibilité est de visualiser les données sous forme de boîtes à
+moustache pour comparer les distributions de l'âge des individus dans
+les populations ayant ou non une maladie coronarienne.
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+boxplot(age ~ chd, data = data_chdage)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+ggplot2::ggplot(data = data_chdage, mapping = ggplot2::aes(x=chd, y=age)) +
+  ggplot2::geom_boxplot(fill='#F2F2F2') +
+  ggplot2::labs(x="Présence de maladie coronarienne", y="Âge") +
+  ggplot2::scale_x_discrete(labels = c("Yes"="Oui", "No"="Non")) +
+  ggplot2::theme_light() 
+```
+
+:::
+
+::: {.callout-note collapse="true"}
+### Rappel sur les diagrammes en boîte
+
+La boîte à moustaches résume seulement quelques indicateurs de position
+sur une variable quantitative. Le *package* `ggplot2` représente les
+statistiques ci-dessous :
+
+![](/static/img/boxplot.svg){fig-align="center"}
+:::
+
+On peut également représenter la proportion d'individus malades par
+classe d'âge.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+# Calcul des proportions par groupe d'âge
+prop_data <- prop.table(table(data_chdage$chd,data_chdage$agegrp), margin= 2) |> as.data.frame()
+colnames(prop_data) <- c("chd", "agegrp", "prop")
+prop_data <- tapply(prop_data$prop, list(prop_data$chd, prop_data$agegrp), identity)
+
+# Couleurs pour les barres
+fill_colors <- c("Yes" = "#F24B4B", "No" = "#F2F2F2")
+
+# Graphique
+barplot(
+  height = prop_data[c(2,1), ],
+  beside = FALSE, # Empilé
+  col = fill_colors,
+  border = "white",
+  horiz = TRUE, # Barres horizontales
+  xlab = "Proportion",
+  ylab = "Catégorie d'âge",
+  las = 1
+)
+
+# Légende
+legend(
+  "bottom", 
+  legend = c("Oui", "Non"), 
+  fill = fill_colors,
+  bty = "n", 
+  title = "Atteint par une maladie coronarienne", 
+  horiz = TRUE
+)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+ggplot2::ggplot(
+  data = data_chdage,
+  mapping = ggplot2::aes(y = agegrp, fill = chd)
+) +
+  ggplot2::geom_bar(, position = "fill") +
+  ggplot2::labs(
+    x = "Proportion",
+    y = "Catégorie d'âge",
+    fill = "Présence de maladie coronarienne"
+  ) +
+  ggplot2::scale_fill_manual(
+    values = c("Yes"="#F24B4B", "No"="#F2F2F2"),
+    labels = c("Yes"="Oui", "No"="Non"),
+    name = "Atteint par une maladie coronarienne"
+  ) +
+  ggplot2::theme_light() +
+  ggplot2::theme(legend.position = "bottom")
+```
+
+:::
+
+
+## Question 3
+
+Dans la question précédente, on observe graphiquement que les individus
+malades sont plus âgés que les individus sains. On souhaiterait tester
+si cette différence est significative. Un test simple à mettre en place
+est le test de Student pour comparer deux moyennes dans des
+échantillons.
+
+$$H_0: \mu_{\textrm{malade}} = \mu_{\textrm{sain}} $$
+
+$$H_1: \mu_{\textrm{malade}} \neq \mu_{\textrm{sain}} $$
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+t.test(age ~ chd, data = data_chdage, var.equal = TRUE)
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+t.test(age ~ chd, data = data_chdage, var.equal = TRUE)
+```
+:::
+
+On rejette l'hypothèse nulle au seuil 5 %. Les moyennes d'âge des deux
+populations sont différentes.
+
+Néanmoins, ce test est valable pour des lois normales avec des variances
+égales. Regardons graphiquement si ces conditions sont vérifiées.
+
+::: panel-tabset
+### Histogramme
+
+::: {.panel-tabset group="language"}
+#### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+# Préparer les facettes : diviser les données par la variable `chd`
+data_split <- split(data_chdage, data_chdage$chd)
+
+# Configurer les facettes avec `par()`
+par(mfrow = c(2, 1), mar = c(4, 4, 2, 1)) # 2 lignes, 1 colonne
+
+# Histogramme pour les individus malades ("Yes")
+hist(
+  data_split$Yes$age, breaks = seq(20, 85, by = 5), col = "#F24B4B", border = "black",
+  main = "Individus malades", xlab = "Âge", ylab = "Effectif", xlim = c(20, 85)
+)
+
+# Histogramme pour les individus sains ("No")
+hist(
+  data_split$No$age, breaks = seq(20, 85, by = 5), col = "#F24B4B", border = "black",
+  main = "Individus sains", xlab = "Âge", ylab = "Effectif", xlim = c(20, 85)
+)
+```
+
+#### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+ggplot2::ggplot(data = data_chdage, mapping = ggplot2::aes(x=age)) +
+  ggplot2::geom_histogram(binwidth = 5 ,boundary = 20, color = "black", fill = "#F24B4B") +
+  ggplot2::facet_grid(
+    chd ~ .,
+    labeller = ggplot2::labeller(chd=c("Yes"="Individus malades", "No"="Individus sains"))
+  ) +
+  ggplot2::labs(x = "Âge", y = "Effectif") +
+  ggplot2::theme_light()
+```
+
+:::
+
+### Diagramme quantile-quantile
+
+::: {.panel-tabset group="language"}
+
+#### Base R
+
+
+```{webr}
+#| envir: baser
+#| autorun: true
+# Diviser les données par la variable `chd`
+data_split <- split(data_chdage, data_chdage$chd)
+
+# Configurer les facettes avec `par()`
+par(mfrow = c(2, 1), mar = c(4, 4, 2, 1)) # 2 lignes, 1 colonne
+
+# QQ plot pour les individus malades ("Yes")
+qqnorm(data_split$Yes$age, main = "Individus malades", xlab = "Quantiles théoriques",
+       ylab = "Quantiles observés", col = "black", pch = 16)
+qqline(data_split$Yes$age, col = "#F24B4B", lwd = 2)
+
+# QQ plot pour les individus sains ("No")
+qqnorm(data_split$No$age, main = "Individus sains", xlab = "Quantiles théoriques",
+       ylab = "Quantiles observés", col = "black", pch = 16)
+qqline(data_split$No$age, col = "#F24B4B", lwd = 2)
+```
+
+#### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+ggplot2::ggplot(data = data_chdage, mapping = ggplot2::aes(sample =age)) +
+  ggplot2::stat_qq() +
+  ggplot2::stat_qq_line(color = "#F24B4B") +
+  ggplot2::facet_grid(
+    chd ~ .,
+    labeller = ggplot2::labeller(chd=c("Yes"="Individus malades", "No"="Individus sains"))
+  ) +
+  ggplot2::labs(x = "Quantiles théoriques", y = "Quantiles observés") +
+  ggplot2::theme_light()
+```
+
+:::
+
+:::
+
+La normalité est sujette à débat, cependant, on peut dire qu'elle n'est
+pas complètement éloignée, étant donné que les lois semblent être en
+grande partie unimodales et pas excessivement asymétriques (bien que
+légèrement asymétriques tout de même pour les individus malade). De plus, l'égalité des variances semble plausible au vu des boxplots.
+
+## Question 4
+
+Le support de la variable aléatoire $Y|(\texttt{age}=x)$ est $\{0, 1\}$
+donc :
+
+$$Y|(\texttt{age}=x) \sim \mathcal{B}(p(x))$$
+
+
+## Question 5
+
+Les variables aléatoires
+$\left(Y_i|(\texttt{age}=x)\right)_{i \in \{1, \dots, n\}}$ sont
+indépendantes de fonction de masse
+$$\mathbb{P}(Y_i=y_i |\texttt{age}=x_i)=p(x_i)^{y_i}(1-p(x_i))^{1-y_i}$$
+
+Ainsi, 
+$$
+\begin{align*}
+L_n\left(p(x_1), \dots, p(x_n)\right)&=\prod\limits_{i=1}^n \mathbb{P}(Y_i=y_i | \texttt{age}=x_i) \\
+&=\prod\limits_{i=1}^n p(x_i)^{y_i}(1-p(x_i))^{1-y_i}
+\end{align*}
+$$
+
+## Question 6
+
+Les milieux des 8 classes d'âges sont :
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+classes_age <- data_chdage$agegrp |> levels()
+bornes_classes <- strsplit(classes_age, split = "-")
+borne_inf <- sapply(bornes_classes, FUN = function(x){sum(as.numeric(x[1]))})
+borne_sup <- sapply(bornes_classes, FUN = function(x){sum(as.numeric(x[2]))})
+
+milieu_classe <- sapply(bornes_classes, FUN = function(x){sum(as.numeric(x))/2})
+data_milieu_classe <- data.frame(
+  classe = classes_age,
+  borne_inf = borne_inf,
+  borne_sup = borne_sup,
+  milieu = milieu_classe
+)
+data_milieu_classe
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+data_milieu_classe <- data_chdage |>
+  dplyr::distinct(agegrp) |>
+  dplyr::mutate(
+    borne_inf = as.numeric(stringr::str_split_i(string = as.character(agegrp), pattern = "-", i = 1)),
+    borne_sup = as.numeric(stringr::str_split_i(string = as.character(agegrp), pattern = "-", i = 2)),
+    milieu = (borne_sup + borne_inf)/2
+  ) |>
+  dplyr::rename(classe = "agegrp")
+data_milieu_classe
+```
+
+:::
+
+
+On calcule les proportions de malade par classe d'âge.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+data_prop <- table(data_chdage$agegrp[data_chdage$chd=="Yes"])/table(data_chdage$agegrp)
+data_prop <- data.frame(
+  classe = classes_age,
+  proportion = as.numeric(data_prop[classes_age])
+)
+data_prop
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+data_prop <- data_chdage |>
+  dplyr::group_by(agegrp) |>
+  dplyr::summarise(n = dplyr::n(), .groups = "drop") |>
+  dplyr::left_join(
+    y = {
+          data_chdage |>
+            dplyr::filter(chd == "Yes") |>
+            dplyr::group_by(agegrp) |>
+            dplyr::summarise(n_malade = dplyr::n(), .groups = "drop")
+    },
+    by = dplyr::join_by(agegrp)
+  ) |>
+  dplyr::mutate(proportion = ifelse(is.na(n_malade),0, n_malade/n)) |>
+  dplyr::rename(classe = "agegrp") |>
+  dplyr::select(classe, proportion)
+data_prop
+```
+
+:::
+
+
+On peut fusionner les deux tables obtenues dans cette question.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+data_milieu_classe_prop <- data_milieu_classe |> merge(y = data_prop, by = "classe")
+data_milieu_classe_prop
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+data_milieu_classe_prop <- data_milieu_classe |> dplyr::left_join(y = data_prop, by = dplyr::join_by(classe))
+data_milieu_classe_prop
+```
+
+:::
+
+## Question 7
+
+Dans cette question et la précédente, on modélise en fait la loi de d'être
+atteint par une maladie coronarienne conditionnellement à la classe
+d'âge des individus (i.e. la variable aléatoire
+$Y|(\texttt{agegrp}=x))$.
+
+Comme le découpage proposé dans l'exercice contient 8 classes d'âge,
+huit paramètres interviennent dans cette modélisation. De façon analogue
+à la question 4, on a donc :
+$$\forall \ k \in \{1, \dots, 8\}, \quad Y|(\texttt{agegrp}=k) \sim \mathcal{B}(p_k) \qquad  \textrm{avec} \ p_k \in \ ]0, \ 1[$$
+Si on estime ($p_1, \dots, p_8$), par la méthode du maximum de
+vraisemblance, chaque paramètre $p_k$ est estimé par la fréquence
+empirique calculée à la question 6.(b).
+
+::: {.callout-note collapse="true"}
+### Preuve
+
+$$
+\begin{align*}
+L_n\left(p_1, \dots, p_8\right)&=\prod\limits_{i=1}^n P(Y_i=y_i | \texttt{agegrp}=x_i) \\
+&=\prod\limits_{i=1}^n p_{x_i}^{y_i}(1-p_{x_i})^{1-y_i}
+\end{align*}
+$$ Comme $\left(p_1, \dots, p_8\right) \in \ ]0,1[^8$, cette quantité
+est strictement positive, ainsi en appliquant la fonction logarithme de
+part et d'autre de l'égalité, on a :
+
+$$
+\begin{align*}
+\ln L_n\left(p_1, \dots, p_8\right)&=\sum\limits_{i=1}^n y_i\ln(p_{x_i})+(1-y_i)\ln(1-p_{x_i}) \\
+&=\sum_{k=1}^8\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} y_i\ln(p_k)+(1-y_i)\ln(1-p_k)
+\end{align*}
+$$ On cherche à maximiser la vraisemblance (cela revient à maximiser la
+log-vraisemblance car la fonction $x \mapsto \ln(x)$ est croissante).
+
+[Condition du premier ordre]{.underline} :
+
+Déterminons les points critiques.
+$$\nabla \ln L_n\left(\hat{p}_1 \dots, \hat{p}_8\right) = 0$$ Pour tout
+$k \in \{1, \dots, n \}$,
+
+$$
+\begin{align*}
+\frac{\partial \ln L_n}{\partial p_k} \left(\hat{p}_1, \dots, \hat{p}_8\right) &= 0 \\
+\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} \left[\frac{y_i}{\hat{p}_k}-\frac{1-y_i}{1-\hat{p}_k}\right] &= 0 \\
+\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} \frac{y_i-\hat{p}_k }{\hat{p}_k(1-\hat{p}_k)} &= 0
+\end{align*}
+$$
+
+D'où $$
+\hat{p}_k = \frac{\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} y_i}{\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} 1}
+$$ $\hat{p}_k$ correspond à la fréquence empirque d'individus malades
+dans la classe $k$ calculée à la question 6.(b).
+
+[Condition du second ordre]{.underline} :
+
+On calcule les dérivées partielles d'ordre 2 :
+$$\forall\ k \in \{1, \dots, 8\}, \frac{\partial^2 \ln L_n}{\partial p_k^2}\left(p_1, \dots, p_8\right)=-\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} \frac{y_i}{p_k^2}+\frac{1-y_i}{(1-p_k)^2} $$
+$$\forall\ (i,j) \in \{1, \dots, 8\}^2 \ \textrm{avec} \ i \neq j, \frac{\partial^2 \ln L_n}{\partial p_i\partial p_j}\left(p_1, \dots, p_8\right)=0 $$
+La matrice hessienne $H$ de la fonction
+$(p_1, \dots, p_8) \mapsto \ln L_n\left(p_1 \dots, p_8\right)$ est donc
+diagonale. De plus comme l'expression
+$-\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} \frac{y_i}{p_k^2}+\frac{1-y_i}{(1-p_k)^2}$
+est toujours strictement négative,
+$\forall \ \left(p_1, \dots, p_8\right) \in ]0, 1[^8, H\left(p_1, \dots, p_8\right)$
+est strictement définie négative donc la fonction
+$(p_1, \dots, p_8) \mapsto \ln L_n\left(p_1 \dots, p_8\right)$ est
+concave.
+
+**Ainsi, le point critique** $\left(\hat{p}_1, \dots, \hat{p}_8\right)$
+est l'unique point de maximum global dans $]0, \ 1[^8$.
+:::
+
+Le graphique demandé est proche d'un de ceux réalisés pour la deuxième
+question avec les classes d'âge.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+plot(
+  data_chdage$age, as.numeric(data_chdage$chd)-1, 
+  xlab = "Âge", 
+  ylab = "Valeur observée ou probabilité prédite", 
+  pch = 19, 
+  col = "black", 
+  ylim = c(-0.2, 1.2) # Ajustement des limites pour inclure les segments
+)
+grid()
+
+# Ajouter les segments horizontaux
+segments(
+  x0 = data_milieu_classe_prop$borne_inf, 
+  x1 = data_milieu_classe_prop$borne_sup, 
+  y0 = data_milieu_classe_prop$proportion, 
+  y1 = data_milieu_classe_prop$proportion, 
+  col = "#F24B4B", 
+  lwd = 1.2
+)
+
+# Ajouter les points aux bornes inférieures
+points(
+  data_milieu_classe_prop$borne_inf, data_milieu_classe_prop$proportion, 
+  col = "#F24B4B", 
+  pch = 19, 
+  cex = 1.5
+)
+
+# Ajouter les points aux bornes supérieures (vides à l'intérieur)
+points(
+  data_milieu_classe_prop$borne_sup, data_milieu_classe_prop$proportion, 
+  col = "#F24B4B", 
+  pch = 21, 
+  bg = "white", 
+  cex = 1.5
+)
+
+# Légende
+legend(
+  "bottom", 
+  legend = c("Valeur observée", "Probabilité prédite"), 
+  pch = c(19, NA), 
+  lty = c(NA, 1), 
+  col = c("black", "#F24B4B"), 
+  pt.bg = c(NA, "white"), 
+  horiz = TRUE, 
+  bty = "n"
+)
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+graphique_q7 <-
+  ggplot2::ggplot() +
+   ggplot2::geom_point(
+    mapping =  ggplot2::aes(x=age, y=as.numeric(chd)-1L, shape="obs"),
+    data = data_chdage
+  ) +
+   ggplot2::geom_segment(
+    data = data_milieu_classe_prop,
+    mapping = aes(
+      x = borne_inf,
+      xend=borne_sup,
+      y=proportion,
+      yend=proportion,
+      lty="p_hat_q7",
+      color="p_hat_q7"
+    ),
+    lineend  = "square",
+    linewidth = 1.2
+  ) +
+   ggplot2::geom_point(
+    data = data_milieu_classe_prop,
+    mapping = aes(x=borne_inf,y=proportion),
+    color= "#F24B4B",
+    size=2
+  ) +
+   ggplot2::geom_point(
+    data = data_milieu_classe_prop,
+    mapping = aes(x=borne_sup, y=proportion),
+    color= "#F24B4B",
+    size=2,
+    shape=21,
+    fill='white'
+  ) +
+  ggplot2::labs(x="Âge" , y="Valeur observée ou probabilité prédite") +
+  ggplot2::scale_shape_manual("obs", values=c("obs"=19), labels=c("obs"="Valeur observée"), name = "") +
+  ggplot2::scale_linetype_manual(values=c("p_hat_q7"=1), name="", labels= c("p_hat_q7"="Probabilité prédite")) +
+  ggplot2::scale_color_manual(values=c("p_hat_q7"="#F24B4B"), name="", labels= c("p_hat_q7"="Probabilité prédite")) +
+  ggplot2::theme_light() +
+  ggplot2::theme(legend.position = "bottom")
+
+graphique_q7
+
+```
+
+:::
+
+
+**Points positifs de cette estimation :**
+
+-   Cette estimation est simple à réaliser car elle ne requiert qu'un
+    calcul des fréquences empiriques.
+-   L'hypothèse du modèle est simple à formuler : tous les individus
+    d'un classe d'âge ont la même probabilité d'être malade.
+
+**Points négatifs de cette estimation :**
+
+-   La contrepartie de cette hypothèse simple est qu'elle produit une
+    estimation peu réaliste en raison de la discontinuité systématique
+    lors d'une passage d'une classe d'âge à la suivante et l'homogénéité
+    imposée au sein de chaque classe d'âge. L'estimation est donc assez
+    grossière.
+-   Le modèle est peu parcimonieux car il fait intervenir 8 paramètres
+    pour 100 observations.
+-   Ce type de modèle se généralise mal au cas où l'on souhaite faire
+    intervenir plus d'une variable explicative continue. Le nombre de
+    groupe d'individus issus des croisements des variables discrétisées
+    explose rapidement. L'estimation devient alors peu robuste car
+    certains regroupements risquent de rassembler peu d'individus. Par
+    ailleurs, il devient difficile d'isoler les effets marginaux d'une
+    variable explicative sur la variable à expliquer et donc
+    d'interpréter les résultats.
+    
+## Question 8
+
+Le modèle logistique s'écrit :
+
+$$Y|(\mathtt{age}=x) \sim \mathcal{B}(p(x))$$ avec
+$$ \textrm{logit}(p(x))= \beta_0+\beta_1x \quad \textrm{où} \ \textrm{logit}: p \longmapsto \ln\left(\frac{p}{1-p} \right)$$
+Ce modèle fait intervenir deux pamètres : une constante et un
+coefficient associé à l'âge de l'individu.
+
+Pour déterminer l'hypothèse sur l'expression de $p(x)$, il suffit
+d'inverser la fonction $\textrm{logit}$ (qui est strictement croissante
+et continue sur $]0,1[$ donc est une bijection de $]0,1[$ vers
+$\mathbb{R}$).
+
+$$
+\begin{align*}
+\textrm{logit}(p(x))= \beta_0+\beta_1x &\Longleftrightarrow  \ln\left(\frac{p(x)}{1-p(x)} \right) = \beta_0+\beta_1x \\
+&\Longleftrightarrow \frac{p(x)}{1-p(x)} = \exp(\beta_0+\beta_1x) \\
+&\Longleftrightarrow  p(x) =\exp(\beta_0+\beta_1x) (1-p(x)) \\
+&\Longleftrightarrow  p(x)(1+\exp(\beta_0+\beta_1x)) =\exp(\beta_0+\beta_1x) \\
+&\Longleftrightarrow  p(x) = \frac{\exp(\beta_0+\beta_1x)}{1+\exp(\beta_0+\beta_1x)} \\
+\end{align*}
+$$
+
+Cette expression de $p(x)$ conduit à une courbe en S (c'est une
+sigmoïde). Elle est partiellement compatible avec le graphique précédent
+si $\beta_1>0$. En effet, dans les deux cas, la probabilité estimée est
+croissante avec $x$ (i.e. l'âge) et elles tendent vers $0$ lorsque
+$x \to -\infty$ et vers $1$ lorsque $x \to + \infty$. Néanmoins elles
+diffèrent notamment car il n'y a plus les effets de seuil comme à la
+question 7.
+
+```{ojs}
+//| echo: false
+
+viewof a = Inputs.range([-10, 10], { value: -5.309, step: 0.001, label: tex`\beta_0:`}) ;
+viewof b = Inputs.range([-1, 1], { value: 0.111, step: 0.001, label: tex`\beta_1:`}) ;
+
+arrayRange = (start, stop, step) =>
+    Array.from(
+    { length: (stop - start) / step + 1 },
+    (value, index) => start + index * step
+);
+    
+{
+  // The function that we are sampling is sin(a * x), where the symbol a
+  // refers to the valu of the slider below.
+  let x_value = arrayRange(2000,7000,1).map(x => x/100) ;
+  let samples = x_value.map((x) => [x, Math.exp((a +b*x))/(1+Math.exp((a +b*x)))]);
+  let w = 900;
+  let h = 0.5 * w;
+  let plot = Plot.plot({
+    y: { domain: [0, 1] },
+    width: w,
+    height: h,
+    marks: [
+      Plot.line([[20,0.1],[30,0.1]],{
+        strokeWidth: 2,
+        stroke: "#F24B4B",
+        markerStart: "dot",
+        markerEnd: "circle-stroke"
+      }),
+      Plot.line([[30,0.133],[35,0.133]],{
+        strokeWidth: 2,
+        stroke: "#F24B4B",
+        markerStart: "dot",
+        markerEnd: "circle-stroke"
+      }),
+      Plot.line([[35,0.25],[40,0.25]],{
+        strokeWidth: 2,
+        stroke: "#F24B4B",
+        markerStart: "dot",
+        markerEnd: "circle-stroke"
+      }),
+      Plot.line([[40,0.333],[45,0.333]],{
+        strokeWidth: 2,
+        stroke: "#F24B4B",
+        markerStart: "dot",
+        markerEnd: "circle-stroke"
+      }),
+      Plot.line([[45,0.462],[50,0.462]],{
+        strokeWidth: 2,
+        stroke: "#F24B4B",
+        markerStart: "dot",
+        markerEnd: "circle-stroke"
+      }),
+      Plot.line([[50,0.625],[55,0.625]],{
+        strokeWidth: 2,
+        stroke: "#F24B4B",
+        markerStart: "dot",
+        markerEnd: "circle-stroke"
+      }),
+      Plot.line([[55,0.765],[60,0.765]],{
+        strokeWidth: 2,
+        stroke: "#F24B4B",
+        markerStart: "dot",
+        markerEnd: "circle-stroke"
+      }),
+      Plot.line([[60,0.8],[70,0.8]],{
+        strokeWidth: 2,
+        stroke: "#F24B4B",
+        markerStart: "dot",
+        markerEnd: "circle-stroke"
+      }),
+      Plot.line(samples, {
+        strokeWidth: 3,
+        stroke: "steelblue",
+      }),
+      Plot.ruleX([20]),
+      Plot.ruleY([0])
+    ]
+  });
+
+  return plot;
+}
+```
+
+D'autres fonctions en forme de «S» à valeur dans $\mathbb{R}$ vers
+$]0,1[$ auraient pu être appropriées, notamment des fonctions de
+répartition telles que la fonction de répartition d'une loi Gaussienne
+standard (modèle probit) ou la fonction de répartition d'une loi de
+Gumbel standard (modèle log-log complémentaire), qui sont parmi les plus
+couramment utilisées.
+
+Il peut être utile de définrir en R, les deux fonctions vectorielles
+suivantes :
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+logit <- function(x){log(x/(1-x))}
+logit_inv <- function(x){exp(x)/(1+exp(x))}
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+logit <- function(x){log(x/(1-x))}
+logit_inv <- function(x){exp(x)/(1+exp(x))}
+```
+
+:::
+
+## Question 9
+
+On injecte l'expression de $p(x)$ pour le modèle logistique dans
+l'expression de la vraisemblance "générale" pour des variables
+aléatoires suivant des lois de Bernoulli déterminée à la question 5.
+
+$$
+\begin{align*}
+L_n\left(\beta_0, \beta_1\right)
+&=\prod\limits_{i=1}^n p(x_i)^{y_i}(1-p(x_i))^{1-y_i} \\
+&= \prod\limits_{i=1}^n\left(\frac{\exp(\beta_0+\beta_1x_i)}{1+\exp(\beta_0+\beta_1x_i)}\right)^{y_i}\left(1-\frac{\exp(\beta_0+\beta_1x_i)}{1+\exp(\beta_0+\beta_1x_i)}\right)^{1-y_i} \\
+&=\prod\limits_{i=1}^n\left(\frac{\exp(\beta_0+\beta_1x_i)}{1+\exp(\beta_0+\beta_1x_i)}\right)^{y_i}\left(\frac{1}{1+\exp(\beta_0+\beta_1x_i)}\right)^{1-y_i}
+\end{align*}
+$$
+
+En appliquant la fonction $\ln$ de part et d'autre de l'égalité,
+
+$$
+\begin{align*}
+\ln L_n\left(\beta_0, \beta_1\right)&=\sum\limits_{i=1}^n \left[ y_i\ln\left(\frac{\exp(\beta_0+\beta_1x_i)}{1+\exp(\beta_0+\beta_1x_i)}\right)+(1-y_i)\ln\left(\frac{1}{1+\exp(\beta_0+\beta_1x_i)}\right)\right] \\
+&=\sum\limits_{i=1}^n \left[ y_i(\beta_0+\beta_1x_i)-y_i\ln\left(1+\exp(\beta_0+\beta_1x_i)\right)-(1-y_i)\ln\left(1+\exp(\beta_0+\beta_1x_i)\right)\right] \\
+&=\sum\limits_{i=1}^n \left[ y_i(\beta_0+\beta_1x_i)-\ln\left(1+\exp(\beta_0+\beta_1x_i)\right) \right]
+\end{align*}
+$$
+
+On cherche un point critique $(\widehat{\beta_0}, \widehat{\beta_1})$ de
+cette fonction de la log-vraisemblance c'est à dire tel que
+$\nabla \ln L_n\left(\widehat{\beta_0}, \widehat{\beta_1}\right)=0$.
+
+$$
+\nabla \ln L_n\left(\widehat{\beta_0}, \widehat{\beta_1}\right) =
+\begin{pmatrix}
+\frac{\partial \ln L_n}{\partial \beta_0}\left(\widehat{\beta_0}, \widehat{\beta_1}\right) \\
+\frac{\partial \ln L_n}{\partial \beta_1}\left(\widehat{\beta_0}, \widehat{\beta_1}\right) 
+\end{pmatrix} = 
+\begin{pmatrix}
+\sum\limits_{i=1}^n  \left[y_i-\frac{\exp(\widehat{\beta_0}+\widehat{\beta_1}x_i)}{1+\exp(\widehat{\beta_0}+\widehat{\beta_1}x_i)}\right] \\
+\sum\limits_{i=1}^n  \left[y_i-\frac{\exp(\widehat{\beta_0}+\widehat{\beta_1}x_i)}{1+\exp(\widehat{\beta_0}+\widehat{\beta_1}x_i)}\right]x_i
+\end{pmatrix}
+=
+\begin{pmatrix}
+0 \\
+0
+\end{pmatrix}
+$$
+
+On ne peut pas déterminer une solution analytique de l'estimateur du
+maximum de vraisemblance
+$\hat{\boldsymbol{\beta}}=\left(\widehat{\beta_0}, \widehat{\beta_1}\right)$
+car les équations ne sont pas linéaires en $\boldsymbol{\beta}$.
+
+On va rechercher des solutions approchées numériquement dans la question
+suivante.
+
+## Question 10
+
+On peut utiliser la fonction `glm` de R pour l'approximation numérique.
+C'est ce qu'on doit faire en pratique.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+modele_logit <- glm(
+  (as.integer(chd)-1L) ~ age,
+  family = binomial(link="logit"),
+  data = data_chdage
+)
+summary(modele_logit)
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_logit <- glm(
+  (as.integer(chd)-1L) ~ age,
+  family = binomial(link="logit"),
+  data = data_chdage
+)
+summary(modele_logit)
+```
+
+:::
+
+
+On peut lire $\widehat{\beta_0} = -5,30945$ et
+$\widehat{\beta_1} = 0,11092$.
+
+
+## Question 11
+
+La cote (l'odds) pour un individu avec des caractéristiques $x$ est le ratio entre la probabilité que l'événement (ici avoir un maladie coronarienne) se produise et la probabilité qu'il ne se produise pas.
+
+$$\textrm{odds}(x)=\frac{p(x)}{1-p(x)}$$
+
+L'odds-ratio (OR) d'avoir une maladie coronarienne entre un individu d'âge $x_1$ et un autre individu d'âge $x_2$ est le rapport :
+
+$$OR(x_1, x_2) = \frac{\textrm{odds}(x_1)}{\textrm{odds}(x_2)} = \frac{\frac{p(x_1)}{1-p(x_1)}}{\frac{p(x_2)}{1-p(x_2)}}$$
+
+Dans le cadre du modèle logistique,
+
+$$\textrm{odds(x)}=\exp(\beta_0+\beta_1x)$$
+Donc 
+
+$$OR(x_1, x_2) = \frac{\exp(\beta_0+\beta_1x_1)}{\exp(\beta_0+\beta_1x_2)} = \exp(\beta_1(x_1-x_2))$$
+
+Pour des individus qui ont 10 ans d'écart, on trouve :
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+exp(10*modele_logit$coefficients[2])
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+exp(10*modele_logit$coefficients[2])
+```
+
+:::
+
+On peut donc affirmer que la cote de survenue de la maladie coronarienne est environ multipliée par 3 tous les 10 ans toutes choses égales par ailleurs.
+
+
+## Question 12
+
+D'après la question 6, pour le modèle logistique, on a 
+
+$$
+p(x) = \frac{\exp(\beta_0+\beta_1x)}{1+\exp(\beta_0+\beta_1x)}=\frac{1}{1+\exp(-(\beta_0+\beta_1x))}
+$$
+Le rapport de probabilité vaut 
+
+
+$$
+\frac{p(x_2+10)}{p(x_2)} = \frac{1+\exp(-(\beta_0+\beta_1x_2))}{1+\exp(-(\beta_0+\beta_1(x_2+10))}
+$$
+
+Contrairement au rapport de cote, le rapport de probabilité dépend de l'âge $x_2$.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+vecteur_ages <- seq(from = 20 , to = 70, by = 0.1)
+beta_0 <- coef(modele_logit)[1]
+beta_1 <- coef(modele_logit)[2]
+plot(
+  x = vecteur_ages,
+  y = (1+exp(-beta_0-beta_1*vecteur_ages))/(1+exp(-beta_0-beta_1*(vecteur_ages+10))),
+  xlab = "Âge",
+  ylab = "Rapport de probabilités"
+)
+grid()
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+vecteur_ages <- seq(from = 20 , to = 70, by = 0.1)
+beta_0 <- coef(modele_logit)[1]
+beta_1 <- coef(modele_logit)[2]
+
+# Calcul du rapport de probabilités pour chaque âge
+data_ages <- data.frame(
+  age = vecteur_ages,
+  rapport_probabilites = (1 + exp(-beta_0 - beta_1 * vecteur_ages)) / 
+                         (1 + exp(-beta_0 - beta_1 * (vecteur_ages + 10)))
+)
+
+# Tracer le graphique avec ggplot2
+ggplot2::ggplot(
+  data = data_ages,
+  mapping = ggplot2::aes(x = age, y = rapport_probabilites)
+) +
+  ggplot2::geom_line(color = "blue", linewidth = 1) +  # Ajouter la courbe
+  ggplot2::labs(
+    x = "Âge", 
+    y = "Rapport de probabilités"
+  ) +
+  ggplot2::theme_light()
+```
+
+:::
+
+
+## Question 13
+
+D'après la convergence en loi rappelée dans l'énoncé, on a
+approximatovement :
+$$\boldsymbol{V}(\boldsymbol{\beta})^{1/2}(\boldsymbol{\hat{\beta}}-\boldsymbol{\beta}) \approx \mathcal{N}(0_2, I_2)$$
+
+En multipliant par $\boldsymbol{V}(\boldsymbol{\beta})^{-1/2}$, on a :
+$$\boldsymbol{\hat{\beta}}-\boldsymbol{\beta} \approx \mathcal{N}(0_2, \boldsymbol{V}(\boldsymbol{\beta})^{-1})$$
+
+## Question 14
+
+ - On estime la matrice $J_n(\beta)$ par $J_n(\widehat{\beta})=\boldsymbol{X}'W_{\widehat{\beta}}\boldsymbol{X}$. Pour cela, on remplace les $p_\beta(x_i)$ dans $W_\beta$ par $p_{\widehat{\beta}}(x_i)=\frac{e^{\widehat{\beta}'x_i}}{1+e^{\widehat{\beta}'x_i}}$
+ 
+ - On calcule l'inverse de $J_n(\widehat{\beta})$ qui correspond à une estimation de la matrice de variance covariance de asymptotique de $\widehat{\beta}$.
+ 
+ - L'élément diagonal numéro $j$ de cette dernière matrice correspond donc à une
+estimation de la variance asymptotique de la coordonnée $\widehat{\beta}_j$ . Sa racine carrée constitue ainsi une estimation de l'écart-type de $\widehat{\beta}_j$.
+
+## Question 15
+
+Il s'agit de la deuxième colonne dans la sortie de `summary`. Cela nous donne
+un écart type estimé de 1,13365 pour $\widehat{\beta}_0$ et de 0,02406 pour $\widehat{\beta}_1$.
+
+## Question 16
+
+L'intervalle de confiance asymptotique au niveau de confiance
+$1 − \alpha$ pour $\hat{\beta_1}$ est donnée par :
+$$\left[\hat{\beta}_1 - q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \ ; \ \hat{\beta}_1 + q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \right]$$
+
+Cela donne numériquement :
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+alpha <- 0.05
+beta_mle_1 <- modele_logit$coefficients[2]
+sigma_est_1 <- sqrt(vcov(modele_logit)[2,2])
+quantile_alpha <- qnorm(mean = 0, sd = 1, p = 1-alpha/2) 
+
+paste0(
+  "[",
+  beta_mle_1-quantile_alpha*sigma_est_1,
+  " ; ",
+  beta_mle_1+quantile_alpha*sigma_est_1,
+  "]"
+)
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+alpha <- 0.05
+beta_mle_1 <- modele_logit$coefficients[2]
+sigma_est_1 <- sqrt(vcov(modele_logit)[2,2])
+quantile_alpha <- qnorm(mean = 0, sd = 1, p = 1-alpha/2) 
+
+paste0(
+  "[",
+  beta_mle_1-quantile_alpha*sigma_est_1,
+  " ; ",
+  beta_mle_1+quantile_alpha*sigma_est_1,
+  "]"
+)
+```
+
+:::
+
+Ou plus simplement en R,
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+confint.default(modele_logit, parm = "age")
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+confint.default(modele_logit, parm = "age")
+```
+
+:::
+
+## Question 17
+
+Comme $0$ n'appartient pas à l'intervalle de confiance précédent, $\beta_1$ est différent de $0$ au seuil d'erreur asymptotique 5 %.
+
+Le test qui consiste à regarder si un paramètre est nul en s'appuyant sur la normalité asymptotique de son estimateur est connue sous le nom de "test de Wald".
+
+La p-valeur vaut
+$$2\left(1-F_{\mathcal{N(0,1)}}(T)\right) \quad \textrm{avec} \ T=\frac{\widehat{\beta_1}}{\widehat{\sigma_1}}$$
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+2*(1-pnorm(beta_mle_1/sigma_est_1, mean = 0, sd = 1))
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+2*(1-pnorm(beta_mle_1/sigma_est_1, mean = 0, sd = 1))
+```
+
+:::
+
+Numériquement on obtient $\textit{p-valeur} = 4,022426\times10^{-06}$. C'est la même valeur que dans
+la sortie GLM.
+
+## Question 18
+
+::: {.callout-note collapse="true"}
+#### Fonction de répartition et quantiles pour des lois du chi-2 sous R
+
+Pour une loi du chi-2 à $d$ degrés de liberté, l'image de la fonction de
+répartition de la loi $\mathcal{\chi}^2(d)$ en $x$ est calculable sous R
+avec la fonction `pchisq`.
+$F_{\mathcal{\chi}^2(d)}(x) =\mathbb{P}\left(\mathcal{\chi}^2(d) < x\right)$
+s'obtient avec l'expression :
+
+```
+pchisq(q = x, df = d)
+```
+
+Pour cette même loi $\mathcal{\chi}^2(d)$, le quantile
+$q_{\alpha}^{\mathcal{\chi}^2(d)}$ avec $\alpha \in ]0, 1[$ tel que
+$F_{\mathcal{\chi}^2(d)}\left(q_{\alpha}^{\mathcal{\chi}^2(d)}\right)= \alpha$
+est calculable sous R grâce à la fonction `qchisq` via l'expression
+
+```
+qchisq(p = alpha, df = d)
+```
+:::
+
+On veut tester la significativité globale du modèle avec un test du
+rapport de vraisemblance. On veut vérifier ou non qu'au moins une des
+variables du modèle explique l'évènement d'intérêt. Ici, on a qu'un
+paramètre dans le modèle en dehors de la constante donc on veut tester :
+
+$$H_0: \beta_1 = 0 $$ contre $$H_1: \beta_1 \neq 0 $$
+
+Sous $H_0$, on a :
+
+$$2\left( \ln L \left(\hat{\beta}\right) -  \ln L \left(\hat{\beta}_{H_0}\right) \right) \overset{\mathcal{L}}{\longrightarrow} \chi^2(1)$$
+Le nombre de degrés de liberté correspond à la différence de paramètres
+entre les deux modèles : ici c'est 1.
+
+Pour $n$ suffisamment grand, on rejette $H_0$ au seuil $\alpha$ si
+
+$$2\left( \ln L \left(\hat{\beta}\right) -  \ln L \left(\hat{\beta}_{H_0}\right) \right) > q_{1-\alpha}^{\chi^2(1)}$$
+
+Cette statistique s'exprime en fonction des déviances du modèle nul $D_{H_0}$ et la déviance du modèle estimé $D_{H_1}$. En effet, la défiance $D$ d'un modèle (logistque ou autre) vaut :
+
+$$D = 2(\ln(L_{sat})-\ln(L_{mod}))$$
+
+
+La statistique de test $D_{H_0}-D_{H_1}$  vaut
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+stat_test_deviance <- summary(modele_logit)$null.deviance-summary(modele_logit)$deviance
+stat_test_deviance
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+stat_test_deviance <- summary(modele_logit)$null.deviance-summary(modele_logit)$deviance
+stat_test_deviance
+```
+
+:::
+
+à comparer avec 
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+qchisq(p = c(0.9, 0.95, 0.99), df = 1)
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+qchisq(p = c(0.9, 0.95, 0.99), df = 1)
+```
+:::
+
+On rejette donc l'hypothèse nulle aux seuils 10 %, 5 % et 1 %. 
+
+
+La p-valeur vaut $1-F_{\mathcal{N}(0,1)}(T)$ où $T$ est la statistique de test.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+1-pnorm(stat_test_deviance, mean = 0, sd = 1)
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+1-pnorm(stat_test_deviance, mean = 0, sd = 1)
+```
+:::
+
+On retrouve la même p-valeur avec la foncion `anova`.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+anova(modele_logit, test = "Chisq")
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+anova(modele_logit, test = "Chisq")
+```
+:::
+
+## Question 19
+
+On ajoute les valeurs prédites par le modèle logistique.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| fig-width: 9
+# Valeurs observées
+plot(
+  data_chdage$age, as.numeric(data_chdage$chd)-1, 
+  xlab = "Âge", 
+  ylab = "Valeur observée ou probabilité prédite", 
+  pch = 19, 
+  col = "black", 
+  ylim = c(-0.2, 1.2) # Ajustement des limites pour inclure les segments
+)
+grid()
+
+# Ajouter les segments horizontaux des valeurs prédites Q7
+segments(
+  x0 = data_milieu_classe_prop$borne_inf, 
+  x1 = data_milieu_classe_prop$borne_sup, 
+  y0 = data_milieu_classe_prop$proportion, 
+  y1 = data_milieu_classe_prop$proportion, 
+  col = "#F24B4B", 
+  lwd = 1.2
+)
+
+# Ajouter les points aux bornes inférieures
+points(
+  data_milieu_classe_prop$borne_inf, data_milieu_classe_prop$proportion, 
+  col = "#F24B4B", 
+  pch = 19, 
+  cex = 1.5
+)
+
+# Ajouter les points aux bornes supérieures (vides à l'intérieur)
+points(
+  data_milieu_classe_prop$borne_sup, data_milieu_classe_prop$proportion, 
+  col = "#F24B4B", 
+  pch = 21, 
+  bg = "white", 
+  cex = 1.5
+)
+
+# Ajout des prédictions de la Q8
+fake_data <- data.frame(age = seq(from = 20, to = 70, by = 0.1))
+fake_data$p_hat <- predict(modele_logit, newdata=fake_data, type = "response")
+
+lines(
+  x = fake_data$age,
+  y = fake_data$p_hat,
+  col = "#3854A6", 
+  lwd = 1.2
+)
+
+# Légende
+legend(
+  "bottom", 
+  legend = c("Valeur observée", "Probabilité prédite (Q7)", "Probabilité prédite (Q8)"), 
+  pch = c(19, NA, NA), 
+  lty = c(NA, 1, 1), 
+  col = c("black", "#F24B4B", "#3854A6"), 
+  pt.bg = c(NA, "white", "white"), 
+  horiz = TRUE, 
+  bty = "n"
+)
+```
+
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#| fig-width: 8
+fake_data <- data.frame(age = seq(from = 20, to = 70, by = 0.1))
+fake_data$p_hat <- predict(modele_logit, newdata=fake_data, type = "response")
+
+
+graphique_q19 <- graphique_q7 +
+  ggplot2::geom_line(
+    data = fake_data,
+    mapping = ggplot2::aes(x = age, y=p_hat, lty="p_hat_q8", color="p_hat_q8"),
+    linewidth = 1.2
+  ) + 
+  ggplot2::scale_linetype_manual(values=c("p_hat_q7"=1, "p_hat_q8"=1), name="", labels= c("p_hat_q7"="Probabilité prédite (modèle Q7)", "p_hat_q8"="Probabilité prédite (modèle Q8)")) +
+  ggplot2::scale_color_manual(values=c("p_hat_q7"="#F24B4B", "p_hat_q8"="#3854A6"), name="", labels= c("p_hat_q7"="Probabilité prédite (modèle Q7)", "p_hat_q8"="Probabilité prédite (modèle Q8)")) +
+  ggplot2::theme_light() +
+  ggplot2::theme(legend.position = "bottom")
+graphique_q19
+```
+:::
+
+
+## Question 20
+
+On note $$
+\boldsymbol{V}(\boldsymbol{\beta})^{-1}=(\mathbb{X}'\boldsymbol{W}(\boldsymbol{\beta})\mathbb{X})^{-1}=\begin{pmatrix}
+\sigma_0^2 & \gamma \\ \gamma & \sigma_{1}^2
+\end{pmatrix}
+$$
+
+Asymptotiquement,
+
+$$
+\begin{align*}
+\boldsymbol{V}(\boldsymbol{\beta})^{1/2}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}) \approx \mathcal{N}(0, I_2)
+&\Longrightarrow \hat{\boldsymbol{\beta}}-\boldsymbol{\beta} \approx \mathcal{N}(0, \boldsymbol{V}(\boldsymbol{\beta})^{-1}) \\
+&\Longrightarrow \begin{pmatrix}1 & x\end{pmatrix}\begin{pmatrix}\hat{\beta_0}-\beta_0 \\ \hat{\beta_1}-\beta_1\end{pmatrix}\approx \mathcal{N}\left(0, \begin{pmatrix}1 & x\end{pmatrix}\boldsymbol{V}(\boldsymbol{\beta})^{-1}\begin{pmatrix}1 \\ x\end{pmatrix}\right) \\
+&\Longrightarrow (\hat{\beta}_0 +\hat{\beta_1}x)-(\beta_0+\beta_1x) \approx \mathcal{N}\left(0, \sigma_0^2 + 2\gamma x+\sigma_{1}^2x^2\right) \\
+&\Longrightarrow \frac{(\hat{\beta}_0 +\hat{\beta_1}x)-(\beta_0+\beta_1x)}{\sqrt{\sigma_0^2 + 2\gamma x+\sigma_{1}^2x^2}} \approx \mathcal{N}\left(0, 1\right) \\
+\end{align*}
+$$
+
+En remplaçant, les coefficients de la matrice
+$\boldsymbol{V}(\boldsymbol{\beta})^{-1}$ par ceux estimés, on a :
+
+$$
+\begin{align*}
+\tiny
+& \mathbb{P}\left(q_{\alpha/2}^{\mathcal{N}(0,1)} \leq \frac{(\hat{\beta}_0 +\hat{\beta_1}x)-(\beta_0+\beta_1x)}{\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}} \leq q_{1-\alpha/2}^{\mathcal{N}(0,1)} \right) \simeq 1- \alpha \\
+&\Rightarrow \mathbb{P}\left(q_{\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2} \leq \underbrace{(\hat{\beta}_0 +\hat{\beta_1}x)}_{\textrm{logit}(\hat{p}(x))}-\underbrace{(\beta_0+\beta_1x)}_{\textrm{logit}(p(x))} \leq q_{1-\alpha/2}^{\mathcal{N}(0,1)\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}} \right) \simeq 1- \alpha \\
+&\Rightarrow \mathbb{P}\left(\hat{\beta}_0 +\hat{\beta_1}x-q_{1-\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2} \leq \beta_0+\beta_1x \leq \hat{\beta}_0 +\hat{\beta_1}x -q_{\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2} \right) \simeq 1- \alpha \\
+&\Rightarrow \mathbb{P}\left(\textrm{logit}^{-1}\left(\hat{\beta}_0 +\hat{\beta_1}x-q_{1-\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}\right) \leq p(x) \leq \textrm{logit}^{-1}\left(\hat{\beta}_0 +\hat{\beta_1}x -q_{\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2} \right)\right) \simeq 1- \alpha \\
+&\Rightarrow \textrm{IC}_{1-\alpha}\left[p(x)\right] \simeq \left[\textrm{logit}^{-1}\left(\hat{\beta}_0 +\hat{\beta_1}x-q_{1-\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}\right) ; \ \textrm{logit}^{-1}\left( \hat{\beta}_0 +\hat{\beta_1}x+q_{1-\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}\right) \right]
+\end{align*}
+$$
+
+Pour faire ce calcul dans R deux options sont envisageables :
+
+-   On peut calculer les bornes de l'intervalle de confiance avec
+    l'expression qu'on vient d'obtenir.
+-   On peut utiliser l'option `type='link'` et `se=TRUE` dans la
+    fonction `predict` qui permet de calculer les termes
+    $\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}$ via l'attribut `se.fit` et $\widehat{\beta}_0+\widehat{\beta}_1x$ via l'attribut `fit`.
+
+::: panel-tabset
+### À la main
+
+
+::: {.panel-tabset group="language"}
+#### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| fig-width: 9
+# Valeurs observées
+plot(
+  data_chdage$age, as.numeric(data_chdage$chd)-1, 
+  xlab = "Âge", 
+  ylab = "Valeur observée ou probabilité prédite", 
+  pch = 19, 
+  col = "black", 
+  ylim = c(-0.2, 1.2) # Ajustement des limites pour inclure les segments
+)
+grid()
+
+# Ajouter les segments horizontaux des valeurs prédites Q7
+segments(
+  x0 = data_milieu_classe_prop$borne_inf, 
+  x1 = data_milieu_classe_prop$borne_sup, 
+  y0 = data_milieu_classe_prop$proportion, 
+  y1 = data_milieu_classe_prop$proportion, 
+  col = "#F24B4B", 
+  lwd = 1.2
+)
+
+# Ajouter les points aux bornes inférieures
+points(
+  data_milieu_classe_prop$borne_inf, data_milieu_classe_prop$proportion, 
+  col = "#F24B4B", 
+  pch = 19, 
+  cex = 1.5
+)
+
+# Ajouter les points aux bornes supérieures (vides à l'intérieur)
+points(
+  data_milieu_classe_prop$borne_sup, data_milieu_classe_prop$proportion, 
+  col = "#F24B4B", 
+  pch = 21, 
+  bg = "white", 
+  cex = 1.5
+)
+
+# Ajout des prédictions de la Q8
+fake_data <- data.frame(age = seq(from = 20, to = 70, by = 0.1))
+fake_data$p_hat <- predict(modele_logit, newdata=fake_data, type = "response")
+
+beta_mle <- matrix(modele_logit$coefficients, nrow=2)
+
+W_beta <- diag(
+  exp(beta_mle[1,1]+data_chdage$age*beta_mle[2,1])/(1+exp(beta_mle[1,1]+data_chdage$age*beta_mle[2,1]))**2
+)
+
+n_obs <- nrow(data_chdage)
+design_matix <- matrix(
+  data = c(rep(1.0, length = n_obs), data_chdage$age),
+  ncol = 2,
+  byrow = FALSE
+)
+Vn <- t(design_matix) %*% W_beta  %*%  design_matix
+
+Vn_inv <- solve(Vn)
+
+fake_data$p_hat_inf <- logit_inv(
+  modele_logit$coefficients[1] +
+  fake_data$age*modele_logit$coefficients[2] -
+  qnorm(0.975, mean = 0, sd = 1)*sqrt(
+    Vn_inv[1,1]+
+      2*Vn_inv[1,2]*fake_data$age+
+      Vn_inv[2,2]*(fake_data$age**2)
+  )
+)
+  
+fake_data$p_hat_sup <- logit_inv(
+  modele_logit$coefficients[1] +
+  fake_data$age*modele_logit$coefficients[2] +
+  qnorm(0.975, mean = 0, sd = 1)*sqrt(
+    Vn_inv[1,1]+
+      2*Vn_inv[1,2]*fake_data$age+
+      Vn_inv[2,2]*(fake_data$age**2)
+  )
+)
+
+lines(
+  x = fake_data$age,
+  y = fake_data$p_hat,
+  col = "#3854A6", 
+  lwd = 1.2
+)
+
+polygon(
+  c(fake_data$age, rev(fake_data$age)),
+  c(fake_data$p_hat_sup, rev(fake_data$p_hat_inf)), 
+  col = rgb(0, 0, 1, 0.2),
+  border = NA
+)
+
+# Légende
+legend(
+  "bottom", 
+  legend = c("Valeur observée", "Probabilité prédite (Q7)", "Probabilité prédite (Q8)"), 
+  pch = c(19, NA, NA), 
+  lty = c(NA, 1, 1), 
+  col = c("black", "#F24B4B", "#3854A6"), 
+  pt.bg = c(NA, "white", "white"), 
+  horiz = TRUE, 
+  bty = "n"
+)
+```
+
+
+#### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+beta_mle <- matrix(modele_logit$coefficients, nrow=2)
+
+W_beta <- diag(
+  exp(beta_mle[1,1]+data_chdage$age*beta_mle[2,1])/(1+exp(beta_mle[1,1]+data_chdage$age*beta_mle[2,1]))**2
+)
+
+n_obs <- nrow(data_chdage)
+design_matix <- matrix(
+  data = c(rep(1.0, length = n_obs), data_chdage$age),
+  ncol = 2,
+  byrow = FALSE
+)
+Vn <- t(design_matix) %*% W_beta  %*%  design_matix
+
+Vn_inv <- solve(Vn)
+
+fake_data$p_hat_inf <- logit_inv(
+  modele_logit$coefficients[1] +
+  fake_data$age*modele_logit$coefficients[2] -
+  qnorm(0.975, mean = 0, sd = 1)*sqrt(
+    Vn_inv[1,1]+
+      2*Vn_inv[1,2]*fake_data$age+
+      Vn_inv[2,2]*(fake_data$age**2)
+  )
+)
+  
+fake_data$p_hat_sup <- logit_inv(
+  modele_logit$coefficients[1] +
+  fake_data$age*modele_logit$coefficients[2] +
+  qnorm(0.975, mean = 0, sd = 1)*sqrt(
+    Vn_inv[1,1]+
+      2*Vn_inv[1,2]*fake_data$age+
+      Vn_inv[2,2]*(fake_data$age**2)
+  )
+)
+
+graphique_q20 <- graphique_q19 +
+  geom_ribbon(
+    data = fake_data,
+    mapping = aes(x = age, ymin=p_hat_inf, ymax=p_hat_sup),
+    alpha = 0.5,
+    fill = "#3854A6"
+  )
+
+graphique_q20
+```
+:::
+
+
+### En utilisant `predict`
+
+::: {.panel-tabset group="language"}
+#### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| fig-width: 9
+# Valeurs observées
+plot(
+  data_chdage$age, as.numeric(data_chdage$chd)-1, 
+  xlab = "Âge", 
+  ylab = "Valeur observée ou probabilité prédite", 
+  pch = 19, 
+  col = "black", 
+  ylim = c(-0.2, 1.2) # Ajustement des limites pour inclure les segments
+)
+grid()
+
+# Ajouter les segments horizontaux des valeurs prédites Q7
+segments(
+  x0 = data_milieu_classe_prop$borne_inf, 
+  x1 = data_milieu_classe_prop$borne_sup, 
+  y0 = data_milieu_classe_prop$proportion, 
+  y1 = data_milieu_classe_prop$proportion, 
+  col = "#F24B4B", 
+  lwd = 1.2
+)
+
+# Ajouter les points aux bornes inférieures
+points(
+  data_milieu_classe_prop$borne_inf, data_milieu_classe_prop$proportion, 
+  col = "#F24B4B", 
+  pch = 19, 
+  cex = 1.5
+)
+
+# Ajouter les points aux bornes supérieures (vides à l'intérieur)
+points(
+  data_milieu_classe_prop$borne_sup, data_milieu_classe_prop$proportion, 
+  col = "#F24B4B", 
+  pch = 21, 
+  bg = "white", 
+  cex = 1.5
+)
+
+# Ajout des prédictions de la Q8
+fake_data <- data.frame(age = seq(from = 20, to = 70, by = 0.1))
+fake_data$p_hat <- predict(modele_logit, newdata=fake_data, type = "response")
+
+predictions <- predict(modele_logit, newdata=fake_data, type = "link", se = TRUE)
+fake_data$p_hat_inf <- logit_inv(
+  predictions$fit-qnorm(0.975, mean = 0, sd = 1)*predictions$se.fit
+)
+fake_data$p_hat_sup <- logit_inv(
+  predictions$fit+qnorm(0.975, mean = 0, sd = 1)*predictions$se.fit
+)
+
+lines(
+  x = fake_data$age,
+  y = fake_data$p_hat,
+  col = "#3854A6", 
+  lwd = 1.2
+)
+
+polygon(
+  c(fake_data$age, rev(fake_data$age)),
+  c(fake_data$p_hat_sup, rev(fake_data$p_hat_inf)), 
+  col = rgb(0, 0, 1, 0.2),
+  border = NA
+)
+
+# Légende
+legend(
+  "bottom", 
+  legend = c("Valeur observée", "Probabilité prédite (Q7)", "Probabilité prédite (Q8)"), 
+  pch = c(19, NA, NA), 
+  lty = c(NA, 1, 1), 
+  col = c("black", "#F24B4B", "#3854A6"), 
+  pt.bg = c(NA, "white", "white"), 
+  horiz = TRUE, 
+  bty = "n"
+)
+```
+
+
+#### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+predictions <- predict(modele_logit, newdata=fake_data, type = "link", se = TRUE)
+fake_data$p_hat_inf <- logit_inv(
+  predictions$fit-qnorm(0.975, mean = 0, sd = 1)*predictions$se.fit
+)
+fake_data$p_hat_sup <- logit_inv(
+  predictions$fit+qnorm(0.975, mean = 0, sd = 1)*predictions$se.fit
+)
+  
+graphique_q20 <- graphique_q19 +
+  geom_ribbon(
+    data = fake_data,
+    mapping = aes(x = age, ymin=p_hat_inf, ymax=p_hat_sup),
+    alpha = 0.5,
+    fill = "#3854A6"
+  )
+graphique_q20
+```
+:::
+
+:::

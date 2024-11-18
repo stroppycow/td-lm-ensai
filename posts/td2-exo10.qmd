@@ -26,7 +26,6 @@ editor:
     wrap: 72
 ---
 
-
 ## Question 1
 
 On charge les données du fichier `ozone.txt` en R sous forme de
@@ -108,7 +107,6 @@ $$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T12}_i+\beta_3\texttt{Ne9}_i+\beta_4
 {{< iconify logos:r-lang >}}. On cherche ainsi une estimation du vecteur
 $\beta$ à l'aide de la méthode des moindres carrés ordinaires (MCO).
 
-
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -129,13 +127,11 @@ summary(fit_q1)
 ```
 :::
 
-
-
 ## Question 2
 
 On peut faire une boite à moustaches de la variable `maxO3` selon les
-modalités de pluie. On peut également représenter les distributions de `maxO3` par groupe (Sec/Pluie) avec des histogrammes.
-
+modalités de pluie. On peut également représenter les distributions de
+`maxO3` par groupe (Sec/Pluie) avec des histogrammes.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -208,13 +204,16 @@ ggplot2::ggplot(
 ```
 :::
 
+Graphiquement, on constate un lien. La quantité maximale d'ozone sur une
+journée (`maxO3`) est moindre lorsque le temps est pluvieux.
 
-
-Graphiquement, on constate un lien. La quantité maximale d'ozone sur une journée (`maxO3`) est moindre lorsque le temps est pluvieux.
-
-Afin de confirmer cette analyse graphique on pourrait effectuer un test de Student d'égalité des moyennes dans deux groupes (slide 27 du cours) sous l'hypothèse que la distribution de `maxO3` est gaussienne et de même variance $\sigma^2$ dans chaque groupe.
-Toutefois l’égalité des variances ici ne semble pas vraiment vérifiée ici au vu des boxplots. On peut d'ailleurs  tester cette égalité des variances avec le test de Levene ou le test de Bartlett (slide 146).
-
+Afin de confirmer cette analyse graphique on pourrait effectuer un test
+de Student d'égalité des moyennes dans deux groupes (slide 27 du cours)
+sous l'hypothèse que la distribution de `maxO3` est gaussienne et de
+même variance $\sigma^2$ dans chaque groupe. Toutefois l’égalité des
+variances ici ne semble pas vraiment vérifiée ici au vu des boxplots. On
+peut d'ailleurs tester cette égalité des variances avec le test de
+Levene ou le test de Bartlett (slide 146).
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -239,10 +238,12 @@ bartlett.test(maxO3 ~ pluie, data = data_ozone)
 ```
 :::
 
+L'hypothèse nulle d'égalité des variance est rejetée pour ces deux tests
+au niveau $\alpha=0.05$ car les p-valeurs sont bien inférieures à
+$\alpha$.
 
-L'hypothèse nulle d'égalité des variance est rejetée pour ces deux tests au niveau $\alpha=0.05$ car les p-valeurs sont bien inférieures à $\alpha$.
-
-On peut alors effectuer un test de Welch qui est une adapatation du test de Student lorsque les deux populations ont des variances différentes.
+On peut alors effectuer un test de Welch qui est une adapatation du test
+de Student lorsque les deux populations ont des variances différentes.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -262,16 +263,17 @@ t.test(maxO3 ~ pluie, data = data_ozone, var.equal = FALSE)
 ```
 :::
 
-On rejette l'hypothèse nulle du test de Welch : les moyennes de la variable `maxO3`  diffèrent entre les journées avec et sans pluie.
-
-
-
+On rejette l'hypothèse nulle du test de Welch : les moyennes de la
+variable `maxO3` diffèrent entre les journées avec et sans pluie.
 
 ## Question 3
 
-On ajoute la variable `pluie` en incluant l'effet sur la constante et les interactions avec les variables continues initiales (`T12`, `Ne9`, `Vx9` et `maxO3v`).
+On ajoute la variable `pluie` en incluant l'effet sur la constante et
+les interactions avec les variables continues initiales (`T12`, `Ne9`,
+`Vx9` et `maxO3v`).
 
-En prenant la modalité $\texttt{Pluie}$ comme référence, le modèle peut s'écrire alors 
+En prenant la modalité $\texttt{Pluie}$ comme référence, le modèle peut
+s'écrire alors
 
 $$
 \begin{align*}
@@ -309,10 +311,10 @@ $$
 \end{cases}
 $$
 
-
-
-On ajuste ce modèle avec la fonction `lm` par défaut R va considérer la première modalité (dans l'ordre alphabétique) de la variable `pluie` comme référence pour rendre le modèle identifiable (c'est à dire `pluie=Pluie` comme nous venons de l'écrire).
-
+On ajuste ce modèle avec la fonction `lm` par défaut R va considérer la
+première modalité (dans l'ordre alphabétique) de la variable `pluie`
+comme référence pour rendre le modèle identifiable (c'est à dire
+`pluie=Pluie` comme nous venons de l'écrire).
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -338,10 +340,8 @@ summary(fit_q3)
 ```
 :::
 
-
-
-
-On constate qu'il n'y a pas beaucoup de coefficients significatifs. On peut suspecter des problèmes de multicolinéarité.
+On constate qu'il n'y a pas beaucoup de coefficients significatifs. On
+peut suspecter des problèmes de multicolinéarité.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -361,8 +361,6 @@ car::vif(fit_q3)
 ```
 :::
 
-
-
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -381,13 +379,14 @@ anova(fit_q1, fit_q3)
 ```
 :::
 
-La p-value élevée (0.7367) confirme que l’on peut accepter les contraintes, et donc privilégier le modèle initial sans pluie, ni les interactions associées.
-
-
+La p-value élevée (0.7367) confirme que l’on peut accepter les
+contraintes, et donc privilégier le modèle initial sans pluie, ni les
+interactions associées.
 
 ## Question 4
 
-En prenant la modalité $\texttt{Pluie}$ comme référence, le modèle peut s'écrire alors 
+En prenant la modalité $\texttt{Pluie}$ comme référence, le modèle peut
+s'écrire alors
 
 $$
 \begin{align*}
@@ -401,8 +400,6 @@ $$
 \varepsilon_i
 \end{align*}
 $$
-
-
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -426,9 +423,18 @@ anova(fit_q1, fit_q4)
 ```
 :::
 
-Le résultat du modèle montre que le coefficient de la variable pluie pour la condition "Sec" n'est pas significativement différent de celui pour "Pluie" (le coefficient estimé représente leur différence et n'est pas significatif). De plus, le test de comparaison avec le modèle initial confirme que la variable pluie n’apporte pas d’information utile. Ce constat peut sembler surprenant par rapport à la question 2, mais il n’y a pas de contradiction : l’effet de la pluie est absorbé par les autres variables (température, nébulosité, vitesse du vent). Une fois ces variables intégrées, la présence ou non de pluie ne fournit aucune information supplémentaire. En revanche, si ces variables ne sont pas prises en compte, l’effet de la pluie devient très perceptible (voir question 2), ce qui en fait un facteur de confusion.
-
-
+Le résultat du modèle montre que le coefficient de la variable pluie
+pour la condition "Sec" n'est pas significativement différent de celui
+pour "Pluie" (le coefficient estimé représente leur différence et n'est
+pas significatif). De plus, le test de comparaison avec le modèle
+initial confirme que la variable pluie n’apporte pas d’information
+utile. Ce constat peut sembler surprenant par rapport à la question 2,
+mais il n’y a pas de contradiction : l’effet de la pluie est absorbé par
+les autres variables (température, nébulosité, vitesse du vent). Une
+fois ces variables intégrées, la présence ou non de pluie ne fournit
+aucune information supplémentaire. En revanche, si ces variables ne sont
+pas prises en compte, l’effet de la pluie devient très perceptible (voir
+question 2), ce qui en fait un facteur de confusion.
 
 ## Question 5
 
@@ -468,7 +474,11 @@ ggplot2::ggplot(
 ```
 :::
 
-Un test de Student n'est pas approprié ici, car il y a quatre modalités. Nous effectuons donc un test ANOVA pour déterminer si les moyennes de maxO3 diffèrent significativement selon les directions du vent. Avant cela, il est nécessaire de vérifier l'égalité des variances, une hypothèse essentielle pour l'ANOVA.
+Un test de Student n'est pas approprié ici, car il y a quatre modalités.
+Nous effectuons donc un test ANOVA pour déterminer si les moyennes de
+maxO3 diffèrent significativement selon les directions du vent. Avant
+cela, il est nécessaire de vérifier l'égalité des variances, une
+hypothèse essentielle pour l'ANOVA.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -490,7 +500,8 @@ bartlett.test(maxO3 ~ vent, data = data_ozone)
 ```
 :::
 
-L'égalité des variances est confirmée dans ces deux tests. On peut réaliser le test ANOVA.
+L'égalité des variances est confirmée dans ces deux tests. On peut
+réaliser le test ANOVA.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -510,10 +521,11 @@ anova(lm(maxO3 ~ vent, data = data_ozone))
 ```
 :::
 
+La non-égalité des moyennes selon les directions de vent est
+significative.
 
-La non-égalité des moyennes selon les directions de vent est significative.
-
-On lance à présent le modèle de régression avec vent et toutes les interactions possibles.
+On lance à présent le modèle de régression avec vent et toutes les
+interactions possibles.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -537,5 +549,6 @@ anova(fit_q1, fit_q5)
 ```
 :::
 
-Les conclusions sont similaires à celles obtenues avec la variable pluie : il ne paraît pas pertinent d’ajouter la variable `vent` ni les interactions associées dans le modèle.
-
+Les conclusions sont similaires à celles obtenues avec la variable pluie
+: il ne paraît pas pertinent d’ajouter la variable `vent` ni les
+interactions associées dans le modèle.
