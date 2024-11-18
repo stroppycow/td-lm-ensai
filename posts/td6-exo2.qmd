@@ -1,0 +1,62 @@
+---
+title: "TD 6 - Exercice 2 - Le modèle logistique est naturel"
+lang: fr
+author: "Théo Leroy"
+date: "19 novembre 2024"
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+## Question 1
+
+En notant, $p = P(Y = 1)$, $f_0(.)$ la densité conditionnelle de $X$ sachant que $Y = 0$ et
+$f_1(.)$ la densité conditionnelle de $X$ sachant que $Y = 1$.
+
+
+D'après la formule de Bayes, $$
+\begin{aligned}
+\mathbb{P}(Y=1 \mid X = x) &= 
+\frac{f_1(x) p}{f_1(x) p+f_0(x)(1-p)} \\
+& =\frac{1}{1+\frac{f_0(x)(1-p)}{f_1(x) p}} \\
+& =\frac{1}{1+\exp \left(\log \left(\frac{f_0(x)(1-p)}{f_1(x) p}\right)\right)} \\
+& =\frac{1}{1+\exp \left(\log \left(\frac{f_0(x)}{f_1(x)}\right)+\log \left(\frac{p}{1-p}\right)\right)} \\
+& =\frac{1}{1+e^{-h(x)}} \textrm{ car } h(x) = \log\left(\frac{f_1(x)}{f_2(x)}\right)+\log\left(\frac{p)}{1-p}\right).
+\end{aligned}
+$$
+
+## Question 2
+
+D'après l'énoncé
+$$f_0(x)=a(x) b\left(\theta_0\right) e^{\theta_0 \cdot T(x)} \textrm{ et }
+f_1(x)=a(x) b\left(\theta_1\right) e^{\theta_1 \cdot T(x)}$$
+
+pour deux paramètres $\theta_0$ et $\theta_1$ distincts.
+
+La fonction $h$ de la question précédente s'écrit donc :
+
+$$
+\begin{align*}
+h(x)&=\log\left(\frac{a(x) b\left(\theta_1\right) e^{\theta_1 \cdot T(x)}p}{a(x) b\left(\theta_0\right) e^{\theta_0 \cdot T(x)}(1-p)}\right) \\
+&= \log\left(\frac{b\left(\theta_1\right)p}{b\left(\theta_0\right)(1-p)} \right)+(\theta_1-\theta_0)T(x) \\
+&= \beta'\tilde{T}(x)
+\end{align*}
+$$
+
+où
+$\beta=\left(\log \frac{b\left(\theta_1\right) p}{b\left(\theta_0\right)(1-p)}, \theta_1-\theta_0\right)$
+est un vecteur de taille $q+1$ et $\tilde{T}(x)=(1, T(x))$.
+
+On a donc d'après la question précédente
+
+$$
+\mathbb{P}(Y=1 \mid X=x)=\frac{1}{1+e^{-\beta^{\prime} \cdot \tilde{T}(x)}},
+$$
+
+qui est bien un modèle logistique associé aux variables $\tilde{T}(x)$
+et au paramètre $\beta$. 
