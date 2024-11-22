@@ -1,0 +1,536 @@
+---
+title: "TD 6 - Exercice 4 - Pannes de voiture"
+lang: fr
+author: "Théo Leroy"
+date: "19 novembre 2024"
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+webr:
+  render-df: gt-interactive
+  resources:
+    - ./../data/Mental.txt
+  packages:
+      - dplyr
+      - readr
+      - ggplot2
+      - VGAM
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+## Question 1
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+data_mental <- read.csv(
+  file = 'data/Mental.txt',
+  sep = " ",
+  header = TRUE,
+  colClasses = "character"
+)
+data_mental
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+data_mental <- readr::read_delim(
+  file = "data/Mental.txt",
+  col_types = readr::cols(
+    readr::col_factor(),
+    readr::col_integer(),
+    readr::col_factor()
+  ),
+  delim = " "
+)
+data_mental
+```
+:::
+
+La variable `ses` (statut socio-économique) est qualitative. On peut la
+charger comme `factor` ou comme `integer` car cette variable ne comporte
+que deux modalités.
+
+À l'inverse, on peut voir la variable `life`comme quantitative. On
+suppose que l'accroissement d'une unité de cette variable a du sens et
+correspond à une augmentation de la fréquence d'évènements troublants
+pour un individu. Considérer la variable `life` comme qualitative ne
+serait pas une erreur mais ferait exploser le nombre de regresseurs dans
+la modélisation alors qu'il n'y a que 40 observations.
+
+
+## Question 2
+
+### Lien entre `ses` et `impair`
+
+
+::: {.panel-tabset group="language"}
+#### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+2+2
+```
+
+#### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+ggplot2::ggplot(
+  data = data_mental,
+  mapping = ggplot2::aes(y = impair, fill = ses, by = impair)
+) +
+  ggplot2::geom_bar(position = "fill") +
+  ggplot2::geom_text(
+    mapping = ggplot2::aes(label = after_stat(count)),
+    stat = "count",
+    position = position_fill(vjust = 0.5)
+  ) +
+  ggplot2::labs(x = "Proportion", y = "État mental") +
+  ggplot2::scale_fill_manual(
+    values = c("1"="#F24B4B", "0"="#949FA6"),
+    labels = c("1"="Élevé", "0"="Faible"),
+    name = "Statut socio-économique"
+  ) +
+  ggplot2::theme_light() +
+  ggplot2::theme(legend.position = "bottom")
+```
+:::
+
+### Lien entre `life` et `impair`
+
+
+::: {.panel-tabset group="language"}
+#### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+2+2
+```
+
+#### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+ggplot2::ggplot(
+  data = data_mental,
+  mapping = ggplot2::aes(x = life, y = impair, group = impair)
+) +
+  ggplot2::geom_boxplot(fill = "#F2F2F2") +
+  ggplot2::labs(x = "Score de troubles vécus `life`", y = "État mental") +
+  ggplot2::scale_y_discrete(
+    labels = c(
+      "1"="Sain",
+      "2"="Plutôt sain",
+      "3"="Plutôt en mauvaise santé",
+      "4"="En mauvaise santé"
+      )
+  ) +
+  ggplot2::theme_light() 
+```
+:::
+
+
+Ce graphique illustre une relation empirique positive entre les
+variables `life` et `impair`. Plus la fréquence et l'intensité des
+bouleversements vécus sont importants et plus les personnes sont dans
+une situation de mauvaise santé mentale.
+
+## Question 3
+
+La loi décrivant l'état mental d'un individu conditionnellement à son
+statut économique (`ses`) et le nombre et l'intensité des
+bouleversements qu'il a connu au cours des trois dernières années
+(`life`) est une loi de multinomiale.
+
+Le modèle de régression logistique cumulatif avec structure
+proportionnelle s'écrit :
+
+$$
+\begin{align*}
+\texttt{impair}&|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}) \sim \mathcal{M}( \\
+&n=1, \\
+&\mathbb{P}(\texttt{impair}\leq 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
+&\mathbb{P}(\texttt{impair}\leq 2|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))-\mathbb{P}(\texttt{impair}\leq 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
+&\mathbb{P}(\texttt{impair}\leq 3|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))-\mathbb{P}(\texttt{impair}\leq 2|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
+&1 - \mathbb{P}(\texttt{impair}\leq 3|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))) \\
+\end{align*}
+$$
+
+avec
+
+$$
+\forall\ k \in \{1,2,3\}, \ \textrm{logit}\left(\mathbb{P}(\texttt{impair}\leq k | (\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))\right) = \beta_0^{(k)}+\beta_1x_{\texttt{ses}}+\beta_2x_\texttt{life}
+$$
+
+Il y a 5 paramètres à estimer : $\beta_0^{(1)}$, $\beta_0^{(2)}$,
+$\beta_0^{(3)}$, $\beta_1$ et $\beta_2$.
+
+## Question 4 {#question-4}
+
+Nous allons estimer ce modèle, toutefois, les fonctionnalités R de base
+ne permettent pas d'estimer ce modèle directement avec une fontion comme
+`lm` ou `glm`. Le cours nous invite, par exemple, à utiliser le package
+`VGAM` et la fonction `vglm` en son sein.
+
+On charge la librarie.
+
+```{r q3_1_load, output=F}
+library(VGAM)
+```
+
+On peut alors estimer le modèle. La syntaxe s'apparente à celle de
+`glm`. Il faut faire attention comme souvent au paramètre `family` pour
+spécifier le type de modèle.
+
+```{r q3_1}
+modele_q4 <- vglm(
+  formula = impair ~ ses + life,
+  family = cumulative(parallel = TRUE),
+  data = data_mental
+)
+summary(modele_q4)
+```
+
+On peut lire les valeurs des 5 coefficients attendus dans la colonne
+`Estimate` (3 pour les constantes de chaque probabilité cumulée et 2
+associées à chaque régresseur).
+
+```{r}
+modele_nul_q4 <- vglm(
+  formula = impair ~ 1,
+  family = cumulative(parallel = TRUE),
+  data = data_mental
+)
+summary(modele_nul_q4)
+```
+
+## Question 5
+
+L'odds de l'évènement
+$\texttt{impair}\leq k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})$
+est :
+
+$$
+\begin{align*}
+\texttt{odds}_k(\textbf{x}) &= \frac{\mathbb{P}(\texttt{impair}\leq k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))}{1-\mathbb{P}(\texttt{impair}\leq k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))} \\
+&=\exp\left(\textrm{logit}\left(\mathbb{P}(\texttt{impair}\leq k | (\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))\right)\right) \\
+&= \exp\left(\beta_0^{(k)}+\beta_1x_{\texttt{ses}=1}+\beta_2x_\texttt{life} \right)
+\end{align*}
+$$
+
+Ainsi pour un individu avec des caractéristiques
+$\textbf{x}=(\texttt{ses}=1, \texttt{life}=x_{\texttt{life}})$ et un
+autre individu avec les caractéristiques
+$\textbf{x}'=(\texttt{ses}=0, \texttt{life}=x_{\texttt{life}})$, on a :
+
+$$\texttt{OR}(\textbf{x},\textbf{x}') = \frac{\texttt{odds}_k(\textbf{x})}{\texttt{odds}_k(\textbf{x}')}=\frac{\exp(\beta_0^{(k)}+\beta_1+\beta_2x_\texttt{life})}{\exp(\beta_0^{(k)}+\beta_2x_\texttt{life})}=\exp(\beta_1)$$
+
+Ainsi un estimateur de $\texttt{OR}(\textbf{x},\textbf{x}')$ est
+$\exp\left(\hat{\beta}_1\right)$
+
+```{r q4}
+exp(modele_q4@coefficients[4])
+```
+
+::: {.callout-note appearance="simple"}
+## Remarque
+
+Les objets retournés par la méthode `vglm` sont de type S4 contrairement
+à ceux retournés par `glm` (qui sont de type S3). Pour accéder au
+attributs, on utilise le symbole `@` au lieu de `$`.
+:::
+
+Cette quantité permet d'évaluer l'évolution de la côte sur la santé
+mentale lorsqu'une personne a un statut socio-économique par rapport a
+quelqu'un qui a un statut économique faible toutes choses égales par
+ailleurs.
+
+On peut dire : **"Toutes choses égales par ailleurs, lorsqu'un indivdu
+passe d'un statut socio-économique faible à élevé, l'odds d'avoir au
+plus un certain niveau de dégénérescence mentale est multiplié par 3"**.
+Les individus avec un statut économique plus élevés ont donc toutes
+choses égales par ailleurs une meilleur santé mentale.
+
+::: callout-warning
+**Il faut faire attention à ne pas interpréter à tort cette évolution
+sur l'odds (en français cote) comme une évolution sur le risque (c'est à
+dire sur la probabilité de l'évènement qui nous intéresse)**. Ici, il
+s'agirait de la probabilité d'avoir au plus un certain niveau de
+dégénérescence mentale :
+$P(\texttt{impair}\leq k|\textbf{X}=\textbf{x})$.
+
+On ne peut donc pas dire : ~~"Toutes choses égales par ailleurs,
+lorsqu'un indivdu passe d'un statut socio-économique faible à élevé, la
+probabilité d'avoir au plus un certain niveau de dégénérescence mentale
+est multipliée par 3"~~
+
+La probabilité et la cote sont deux quantités différentes. La première
+est bornée entre 0 et 1 contrairement à la seconde qui n'a pas de
+maximum. On peut le voir visuellement avec cette relation liant les deux
+sur le graphique ci-dessous qui se différencie de la première
+bissectrice du plan.
+
+```{r plot_rr_or}
+library(ggplot2)
+
+proba <- seq(from=0,to=0.9,by=0.05)
+cote <- proba/(1-proba)
+ggplot(
+  aes(x=x,y=y),
+  data=data.frame(
+    x=proba,
+    y=cote
+  )
+) +
+  geom_line(color="red") +
+  geom_line(aes(x=x,y=y),data=data.frame(x=proba,y=proba), color="black",) +
+  labs(
+    title = "Lien (en rouge) entre odds et probabilité d'un évènement",
+    x = "Probabilité d'un évènement",
+    y = "Côte/Odds d'un évènement"
+  ) + theme_minimal()
+
+```
+
+Cependant, on peut remarquer sur ce graphique qu'on peut faire cette
+approximation pour des faibles probabilités (par exemple pour des
+probabilités inférieures à 10 %) ou plus formellement avec un
+développement limité à l'ordre 1.
+
+$$
+\frac{p}{1-p} \underset{p \to 0}{=} p + o(p)
+$$ Dans cet exercice avec ce modèle cumulatif, l'emploi de cette
+approximation n'est pas acceptable car les évènements d'avoir au plus un
+certain niveau de dégénérescence mentale ne sont pas rares.
+
+```{r plot_proba_cum}
+library(tidyr)
+
+x_life <- seq(from=0,to=9,by=0.25)
+x_ses = "0"
+logit_proba_predites_cumulees <-  predict(
+  object = modele_q4,
+  newdata = data.frame(ses=x_ses,life=x_life),
+  type = "link"
+)
+proba_predites_cumulees <- as.data.frame(apply(
+  X=logit_proba_predites_cumulees,
+  MARGIN=2,
+  FUN=function(x){exp(x)/(1+exp(x))}
+))
+colnames(proba_predites_cumulees) <- c("P[impair <= 1]","P[impair <= 2]", "P[impair <= 3]")
+proba_predites_cumulees$life <- x_life
+
+proba_predites_cumulees_long <-  proba_predites_cumulees%>% gather(key="type_proba", value="valeur_proba",-life)
+
+ggplot(
+  aes(x=life,y=valeur_proba, color=type_proba),
+  data=proba_predites_cumulees_long
+) + geom_line() +
+  labs(
+    title = "Probabilités cumulées prédites par le modèle selon la variable life (ses=0)",
+    x = "life",
+    y = "Probabilité", 
+    colour = "Type de probabilité"
+  ) + theme_minimal()
+```
+:::
+
+## Question 6
+
+L'intervalle de confiance asymptotique au niveau de confiance
+$1 − \alpha$ pour $\hat{\beta_1}$ est donnée par :
+$$\left[\hat{\beta}_1 - q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \ ; \ \hat{\beta}_1 + q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \right]$$
+
+```{r, output= FALSE}
+alpha <- 0.05
+beta_mle_1 <- modele_q4@coefficients[4]
+sigma_est_1 <- sqrt(vcov(modele_q4)[4,4])
+quantile_alpha <- qnorm(mean = 0, sd = 1, p = 1-alpha/2) 
+
+paste0(
+  "[",
+  beta_mle_1-quantile_alpha*sigma_est_1,
+  " ; ",
+  beta_mle_1+quantile_alpha*sigma_est_1,
+  "]"
+)
+```
+
+```{r, echo= FALSE, results='asis'}
+cat(
+  paste0(
+  "$$[",
+  beta_mle_1-quantile_alpha*sigma_est_1,
+  " \ ; \ ",
+  beta_mle_1+quantile_alpha*sigma_est_1,
+  "]$$"
+)
+)
+```
+
+On pouvait aussi utiliser la fonction `confint`.
+
+```{r}
+confint(modele_q4)
+```
+
+## Question 7
+
+Par monotonie de la fonction $\exp$, on peut construire un intervalle de
+confiance en passant à l'exponentielle dans les bornes de l'IC
+précédent.
+
+```{r}
+exp(confint(modele_q4)["ses1",])
+```
+
+## Question 8
+
+D'après la sortie obtenue à la [question 4](#question-4) et les p-valeur
+des tests de Wald, le coefficient $\beta_1$ est non significatif au
+seuil d'erreur 5 % mais il est significatif au seuil 10 %.
+
+## Question 9 {#question-9}
+
+On peut ajouter un terme d'interaction entre deux variables avec
+l'opérateur `:` afin d'évaluer si l'effet du nombre et de l'intensité
+des bouleversements connus est le même sur la santé mentale quel que
+soit le niveau socio-économique.
+
+Ce nouveau modèle de régression cumulatif proportionnel avec terme
+d'interaction s'écrit :
+
+$$
+\begin{align*}
+\texttt{impair}&|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}) \sim \mathcal{M}( \\
+&n=1, \\
+&\mathbb{P}(\texttt{impair}\leq 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
+&\mathbb{P}(\texttt{impair}\leq 2|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))-\mathbb{P}(\texttt{impair}\leq 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
+&\mathbb{P}(\texttt{impair}\leq 3|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))-\mathbb{P}(\texttt{impair}\leq 2|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
+&1 - \mathbb{P}(\texttt{impair}\leq 3|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))) \\
+\end{align*}
+$$
+
+avec pour tout $k \in \{1,2,3\}$
+
+$$
+ \textrm{logit}\left(\mathbb{P}(\texttt{impair}\leq k | (\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))\right) = \alpha_0^{(k)}+\alpha_1x_{\texttt{ses}}+\alpha_2x_\texttt{life}+\alpha_3x_{\texttt{ses}=1}x_\texttt{life}
+$$
+
+Il y a 6 paramètres à estimer : $\alpha_0^{(1)}$, $\alpha_0^{(2)}$,
+$\alpha_0^{(3)}$, $\alpha_1$ et $\alpha_2$, $\alpha_3$.
+
+```{r}
+modele_q9 <- vglm(
+  formula = impair ~ ses + life + ses:life,
+  family = cumulative(parallel = TRUE),
+  data = data_mental
+)
+summary(modele_q9)
+```
+
+Pour évaluer la pertinence de ce terme d'intéraction, on peut réaliser
+un test du rapport de vraisemblance entre ces deux modèles emboités.
+
+L'hypothèse nulle $H_0$ est $\beta_3=0$
+
+Sous $H_0$, la statistique de test du rapport de vraisemblance :
+$$ -2 \ln\left(\frac{L_n^{(\textrm{modele contraint})}}{L_n^{(\textrm{modele non contraint})}}\right) \sim \chi^2(\underbrace{\textrm{nb de coefficients contraints}}_{1})$$
+
+avec :
+
+-   $L_n^{(\textrm{modele contraint})}$ : la vraisemblance du modèle
+    contraint par l'hypothèse nulle (il s'agit du modèle estimé à la
+    [question 4](#question-4))
+-   $L_n^{(\textrm{modele non contraint})}$ : la vraisemblance du modèle
+    non contraint ou il faut estimer le coefficient d'intéraction
+    $\beta_3$, celui qu'on vient d'estimer dans cette question.
+
+```{r q9test}
+2*(logLik(modele_q9)-logLik(modele_q4))
+qchisq(0.95,1)
+```
+
+Le quantile 0.95 d'une $\chi^2$ à 1 degrés de liberté est supérieur à la
+statistique de test. On ne rejette pas l'hypothèse nulle pour un risque
+de première espèce $\alpha=0.05$.
+
+Ainsi, le modèle avec le terme d'intéraction n'est pas significativement
+meilleur au seuil d'erreur asymptotique de 5 %.
+
+## Question 10
+
+Le modèle de régression logistique cumulatif sans structure
+proportionnelle et sans terme d'intéraction s'écrit :
+
+$$
+\begin{align*}
+\texttt{impair}&|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}) \sim \mathcal{M}( \\
+&n=1, \\
+&\mathbb{P}(\texttt{impair}\leq 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
+&\mathbb{P}(\texttt{impair}\leq 2|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))-\mathbb{P}(\texttt{impair}\leq 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
+&\mathbb{P}(\texttt{impair}\leq 3|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))-\mathbb{P}(\texttt{impair}\leq 2|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
+&1 - \mathbb{P}(\texttt{impair}\leq 3|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))) \\
+\end{align*}
+$$
+
+avec pour tout $k \in \{1,2,3\}$
+
+$$
+ \textrm{logit}\left(\mathbb{P}(\texttt{impair}\leq k | (\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))\right) = \gamma_0^{(k)}+\gamma_1^{(k)}x_{\texttt{ses}}+\gamma_2^{(k)}x_\texttt{life}
+$$
+
+Il y a 9 paramètres à estimer : $\gamma_0^{(1)}$, $\gamma_0^{(2)}$,
+$\gamma_0^{(3)}$, $\gamma_1^{(1)}$, $\gamma_1^{(2)}$, $\gamma_1^{(3)}$,
+$\gamma_2^{(1)}$, $\gamma_2^{(2)}$ et $\gamma_2^{(3)}$.
+
+```{r q10}
+modele_q10 <- vglm(
+  formula = impair~ses+life,
+  family = cumulative(parallel = F),
+  data=data_mental
+)
+summary(modele_q10)
+```
+
+À l'image de la [question 9](#question-9), on peut faire un test du
+rapport de vraisemblance entre ces deux modèles emboités.
+
+L'hypothèse nulle est
+$H_0: \gamma_1^{(1)}=\gamma_1^{(2)}=\gamma_1^{(3)}$ et
+$\gamma_2^{(1)}=\gamma_2^{(2)}=\gamma_2^{(3)}$.
+
+La statistique de test est donnée par :
+
+```{r}
+2*(logLik(modele_q10)-logLik(modele_q4))
+```
+
+Quatre coefficients sont contraints dans le modèle avec structure
+proportionnelle.
+
+```{r q10test}
+qchisq(0.95,4)
+```
+
+On ne rejette pas $H_0$ car la statistique de test est inférieure au
+quantile $q_{0.95}^{\chi^2(4)}$.
+
+Ainsi, le modèle avec la structure non proportionnelle n'est pas
+significativement meilleur.

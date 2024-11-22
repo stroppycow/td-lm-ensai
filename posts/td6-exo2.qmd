@@ -13,11 +13,13 @@ editor:
     wrap: 72
 ---
 
+::: {.content-hidden when-format="html"}
+
 ## Question 1
 
-En notant, $p = P(Y = 1)$, $f_0(.)$ la densité conditionnelle de $X$ sachant que $Y = 0$ et
-$f_1(.)$ la densité conditionnelle de $X$ sachant que $Y = 1$.
-
+En notant, $p = P(Y = 1)$, $f_0(.)$ la densité conditionnelle de $X$
+sachant que $Y = 0$ et $f_1(.)$ la densité conditionnelle de $X$ sachant
+que $Y = 1$.
 
 D'après la formule de Bayes, $$
 \begin{aligned}
@@ -59,4 +61,6 @@ $$
 $$
 
 qui est bien un modèle logistique associé aux variables $\tilde{T}(x)$
-et au paramètre $\beta$. 
+et au paramètre $\beta$.
+
+:::

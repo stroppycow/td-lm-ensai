@@ -26,6 +26,9 @@ editor:
     wrap: 72
 ---
 
+
+
+
 ## Question 1
 
 On charge les données du fichier `chdage.txt` en R sous forme de
@@ -68,12 +71,12 @@ data_chdage
 ```
 :::
 
+
 ## Question 2
 
 Une possibilité est de visualiser les données sous forme de boîtes à
 moustache pour comparer les distributions de l'âge des individus dans
 les populations ayant ou non une maladie coronarienne.
-
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -95,7 +98,6 @@ ggplot2::ggplot(data = data_chdage, mapping = ggplot2::aes(x=chd, y=age)) +
   ggplot2::scale_x_discrete(labels = c("Yes"="Oui", "No"="Non")) +
   ggplot2::theme_light() 
 ```
-
 :::
 
 ::: {.callout-note collapse="true"}
@@ -171,7 +173,6 @@ ggplot2::ggplot(
   ggplot2::theme_light() +
   ggplot2::theme(legend.position = "bottom")
 ```
-
 :::
 
 
@@ -196,7 +197,6 @@ $$H_1: \mu_{\textrm{malade}} \neq \mu_{\textrm{sain}} $$
 t.test(age ~ chd, data = data_chdage, var.equal = TRUE)
 ```
 
-
 ### Tidyverse
 
 ```{webr}
@@ -212,7 +212,7 @@ populations sont différentes.
 Néanmoins, ce test est valable pour des lois normales avec des variances
 égales. Regardons graphiquement si ces conditions sont vérifiées.
 
-::: panel-tabset
+::::: panel-tabset
 ### Histogramme
 
 ::: {.panel-tabset group="language"}
@@ -254,15 +254,12 @@ ggplot2::ggplot(data = data_chdage, mapping = ggplot2::aes(x=age)) +
   ggplot2::labs(x = "Âge", y = "Effectif") +
   ggplot2::theme_light()
 ```
-
 :::
 
 ### Diagramme quantile-quantile
 
 ::: {.panel-tabset group="language"}
-
 #### Base R
-
 
 ```{webr}
 #| envir: baser
@@ -299,15 +296,16 @@ ggplot2::ggplot(data = data_chdage, mapping = ggplot2::aes(sample =age)) +
   ggplot2::labs(x = "Quantiles théoriques", y = "Quantiles observés") +
   ggplot2::theme_light()
 ```
-
 :::
-
-:::
+:::::
 
 La normalité est sujette à débat, cependant, on peut dire qu'elle n'est
 pas complètement éloignée, étant donné que les lois semblent être en
 grande partie unimodales et pas excessivement asymétriques (bien que
-légèrement asymétriques tout de même pour les individus malade). De plus, l'égalité des variances semble plausible au vu des boxplots.
+légèrement asymétriques tout de même pour les individus malade). De
+plus, l'égalité des variances semble plausible au vu des boxplots.
+
+
 
 ## Question 4
 
@@ -317,6 +315,7 @@ donc :
 $$Y|(\texttt{age}=x) \sim \mathcal{B}(p(x))$$
 
 
+
 ## Question 5
 
 Les variables aléatoires
@@ -324,13 +323,14 @@ $\left(Y_i|(\texttt{age}=x)\right)_{i \in \{1, \dots, n\}}$ sont
 indépendantes de fonction de masse
 $$\mathbb{P}(Y_i=y_i |\texttt{age}=x_i)=p(x_i)^{y_i}(1-p(x_i))^{1-y_i}$$
 
-Ainsi, 
-$$
+Ainsi, $$
 \begin{align*}
 L_n\left(p(x_1), \dots, p(x_n)\right)&=\prod\limits_{i=1}^n \mathbb{P}(Y_i=y_i | \texttt{age}=x_i) \\
 &=\prod\limits_{i=1}^n p(x_i)^{y_i}(1-p(x_i))^{1-y_i}
 \end{align*}
 $$
+
+
 
 ## Question 6
 
@@ -357,7 +357,6 @@ data_milieu_classe <- data.frame(
 data_milieu_classe
 ```
 
-
 ### Tidyverse
 
 ```{webr}
@@ -373,9 +372,7 @@ data_milieu_classe <- data_chdage |>
   dplyr::rename(classe = "agegrp")
 data_milieu_classe
 ```
-
 :::
-
 
 On calcule les proportions de malade par classe d'âge.
 
@@ -392,7 +389,6 @@ data_prop <- data.frame(
 )
 data_prop
 ```
-
 
 ### Tidyverse
 
@@ -416,9 +412,7 @@ data_prop <- data_chdage |>
   dplyr::select(classe, proportion)
 data_prop
 ```
-
 :::
-
 
 On peut fusionner les deux tables obtenues dans cette question.
 
@@ -432,7 +426,6 @@ data_milieu_classe_prop <- data_milieu_classe |> merge(y = data_prop, by = "clas
 data_milieu_classe_prop
 ```
 
-
 ### Tidyverse
 
 ```{webr}
@@ -441,14 +434,14 @@ data_milieu_classe_prop
 data_milieu_classe_prop <- data_milieu_classe |> dplyr::left_join(y = data_prop, by = dplyr::join_by(classe))
 data_milieu_classe_prop
 ```
-
 :::
+
 
 ## Question 7
 
-Dans cette question et la précédente, on modélise en fait la loi de d'être
-atteint par une maladie coronarienne conditionnellement à la classe
-d'âge des individus (i.e. la variable aléatoire
+Dans cette question et la précédente, on modélise en fait la loi de
+d'être atteint par une maladie coronarienne conditionnellement à la
+classe d'âge des individus (i.e. la variable aléatoire
 $Y|(\texttt{agegrp}=x))$.
 
 Comme le découpage proposé dans l'exercice contient 8 classes d'âge,
@@ -576,7 +569,6 @@ legend(
 )
 ```
 
-
 ### Tidyverse
 
 ```{webr}
@@ -625,9 +617,7 @@ graphique_q7 <-
 graphique_q7
 
 ```
-
 :::
-
 
 **Points positifs de cette estimation :**
 
@@ -653,7 +643,10 @@ graphique_q7
     ailleurs, il devient difficile d'isoler les effets marginaux d'une
     variable explicative sur la variable à expliquer et donc
     d'interpréter les résultats.
-    
+
+
+
+
 ## Question 8
 
 Le modèle logistique s'écrit :
@@ -781,7 +774,6 @@ couramment utilisées.
 Il peut être utile de définrir en R, les deux fonctions vectorielles
 suivantes :
 
-
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -793,6 +785,7 @@ logit_inv <- function(x){exp(x)/(1+exp(x))}
 ```
 
 
+
 ### Tidyverse
 
 ```{webr}
@@ -801,8 +794,9 @@ logit_inv <- function(x){exp(x)/(1+exp(x))}
 logit <- function(x){log(x/(1-x))}
 logit_inv <- function(x){exp(x)/(1+exp(x))}
 ```
-
 :::
+
+
 
 ## Question 9
 
@@ -858,10 +852,33 @@ car les équations ne sont pas linéaires en $\boldsymbol{\beta}$.
 On va rechercher des solutions approchées numériquement dans la question
 suivante.
 
+
+
 ## Question 10
 
 On peut utiliser la fonction `glm` de R pour l'approximation numérique.
-C'est ce qu'on doit faire en pratique.
+C'est ce qu'on doit faire en pratique. Les arguments sont semblables à la fonction `lm`. Il faut faire attention à bien paramétrer l'argument `family` sans quoi on estimerait un modèle de régression linéaire simple.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+?family
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+?family
+```
+:::
+
+On doit prendre ici `family=binomial()` car $Y$ sachant $X$ suit une loi de Bernoulli. 
+
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -877,7 +894,6 @@ modele_logit <- glm(
 summary(modele_logit)
 ```
 
-
 ### Tidyverse
 
 ```{webr}
@@ -890,33 +906,32 @@ modele_logit <- glm(
 )
 summary(modele_logit)
 ```
-
 :::
 
-
-On peut lire $\widehat{\beta_0} = -5,30945$ et
+On peut lire l'estimation par maximum de vraissemblance : $\widehat{\beta_0} = -5,30945$ et
 $\widehat{\beta_1} = 0,11092$.
 
 
 ## Question 11
 
-La cote (l'odds) pour un individu avec des caractéristiques $x$ est le ratio entre la probabilité que l'événement (ici avoir un maladie coronarienne) se produise et la probabilité qu'il ne se produise pas.
+La cote (l'odds) pour un individu avec des caractéristiques $x$ est le
+ratio entre la probabilité que l'événement (ici avoir un maladie
+coronarienne) se produise et la probabilité qu'il ne se produise pas.
 
 $$\textrm{odds}(x)=\frac{p(x)}{1-p(x)}$$
 
-L'odds-ratio (OR) d'avoir une maladie coronarienne entre un individu d'âge $x_1$ et un autre individu d'âge $x_2$ est le rapport :
+L'odds-ratio (OR) d'avoir une maladie coronarienne entre un individu
+d'âge $x_1$ et un autre individu d'âge $x_2$ est le rapport :
 
 $$OR(x_1, x_2) = \frac{\textrm{odds}(x_1)}{\textrm{odds}(x_2)} = \frac{\frac{p(x_1)}{1-p(x_1)}}{\frac{p(x_2)}{1-p(x_2)}}$$
 
 Dans le cadre du modèle logistique,
 
-$$\textrm{odds(x)}=\exp(\beta_0+\beta_1x)$$
-Donc 
+$$\textrm{odds(x)}=\exp(\beta_0+\beta_1x)$$ Donc
 
 $$OR(x_1, x_2) = \frac{\exp(\beta_0+\beta_1x_1)}{\exp(\beta_0+\beta_1x_2)} = \exp(\beta_1(x_1-x_2))$$
 
 Pour des individus qui ont 10 ans d'écart, on trouve :
-
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -927,7 +942,6 @@ Pour des individus qui ont 10 ans d'écart, on trouve :
 exp(10*modele_logit$coefficients[2])
 ```
 
-
 ### Tidyverse
 
 ```{webr}
@@ -935,27 +949,26 @@ exp(10*modele_logit$coefficients[2])
 #| autorun: true
 exp(10*modele_logit$coefficients[2])
 ```
-
 :::
 
-On peut donc affirmer que la cote de survenue de la maladie coronarienne est environ multipliée par 3 tous les 10 ans toutes choses égales par ailleurs.
-
+On peut donc affirmer que la cote de survenue de la maladie coronarienne
+est environ multipliée par 3 tous les 10 ans toutes choses égales par
+ailleurs.
 
 ## Question 12
 
-D'après la question 6, pour le modèle logistique, on a 
+D'après la question 6, pour le modèle logistique, on a
 
 $$
 p(x) = \frac{\exp(\beta_0+\beta_1x)}{1+\exp(\beta_0+\beta_1x)}=\frac{1}{1+\exp(-(\beta_0+\beta_1x))}
-$$
-Le rapport de probabilité vaut 
-
+$$ Le rapport de probabilité vaut
 
 $$
 \frac{p(x_2+10)}{p(x_2)} = \frac{1+\exp(-(\beta_0+\beta_1x_2))}{1+\exp(-(\beta_0+\beta_1(x_2+10))}
 $$
 
-Contrairement au rapport de cote, le rapport de probabilité dépend de l'âge $x_2$.
+Contrairement au rapport de cote, le rapport de probabilité dépend de
+l'âge $x_2$.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -974,7 +987,6 @@ plot(
 )
 grid()
 ```
-
 
 ### Tidyverse
 
@@ -1004,32 +1016,43 @@ ggplot2::ggplot(
   ) +
   ggplot2::theme_light()
 ```
-
 :::
+
 
 
 ## Question 13
 
 D'après la convergence en loi rappelée dans l'énoncé, on a
 approximatovement :
-$$\boldsymbol{V}(\boldsymbol{\beta})^{1/2}(\boldsymbol{\hat{\beta}}-\boldsymbol{\beta}) \approx \mathcal{N}(0_2, I_2)$$
+$$J_n(\beta)^{1/2}(\boldsymbol{\hat{\beta}}-\boldsymbol{\beta}) \approx \mathcal{N}(0_2, I_2)$$
 
-En multipliant par $\boldsymbol{V}(\boldsymbol{\beta})^{-1/2}$, on a :
-$$\boldsymbol{\hat{\beta}}-\boldsymbol{\beta} \approx \mathcal{N}(0_2, \boldsymbol{V}(\boldsymbol{\beta})^{-1})$$
+En multipliant par $J_n(\beta)^{-1/2}$ à gauche, on a :
+$$\boldsymbol{\hat{\beta}}-\boldsymbol{\beta} \approx \mathcal{N}(0_2, J_n(\beta)^{-1})$$
 
 ## Question 14
 
- - On estime la matrice $J_n(\beta)$ par $J_n(\widehat{\beta})=\boldsymbol{X}'W_{\widehat{\beta}}\boldsymbol{X}$. Pour cela, on remplace les $p_\beta(x_i)$ dans $W_\beta$ par $p_{\widehat{\beta}}(x_i)=\frac{e^{\widehat{\beta}'x_i}}{1+e^{\widehat{\beta}'x_i}}$
- 
- - On calcule l'inverse de $J_n(\widehat{\beta})$ qui correspond à une estimation de la matrice de variance covariance de asymptotique de $\widehat{\beta}$.
- 
- - L'élément diagonal numéro $j$ de cette dernière matrice correspond donc à une
-estimation de la variance asymptotique de la coordonnée $\widehat{\beta}_j$ . Sa racine carrée constitue ainsi une estimation de l'écart-type de $\widehat{\beta}_j$.
+-   On estime la matrice $J_n(\beta)$ par
+    $J_n(\widehat{\beta})=\boldsymbol{X}'W_{\widehat{\beta}}\boldsymbol{X}$.
+    Pour cela, on remplace les $p_\beta(x_i)$ dans $W_\beta$ par
+    $p_{\widehat{\beta}}(x_i)=\frac{e^{\widehat{\beta}'x_i}}{1+e^{\widehat{\beta}'x_i}}$
+
+-   On calcule l'inverse de $J_n(\widehat{\beta})$ qui correspond à une
+    estimation de la matrice de variance covariance de asymptotique de
+    $\widehat{\beta}$.
+
+-   L'élément diagonal numéro $j$ de cette dernière matrice correspond
+    donc à une estimation de la variance asymptotique de la coordonnée
+    $\widehat{\beta}_j$ . Sa racine carrée constitue ainsi une
+    estimation de l'écart-type de $\widehat{\beta}_j$.
+
+
 
 ## Question 15
 
-Il s'agit de la deuxième colonne dans la sortie de `summary`. Cela nous donne
-un écart type estimé de 1,13365 pour $\widehat{\beta}_0$ et de 0,02406 pour $\widehat{\beta}_1$.
+Il s'agit de la deuxième colonne dans la sortie de `summary`. Cela nous
+donne un écart type estimé de 1,13365 pour $\widehat{\beta}_0$ et de
+0,02406 pour $\widehat{\beta}_1$.
+
 
 ## Question 16
 
@@ -1038,7 +1061,6 @@ $1 − \alpha$ pour $\hat{\beta_1}$ est donnée par :
 $$\left[\hat{\beta}_1 - q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \ ; \ \hat{\beta}_1 + q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \right]$$
 
 Cela donne numériquement :
-
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -1060,7 +1082,6 @@ paste0(
 )
 ```
 
-
 ### Tidyverse
 
 ```{webr}
@@ -1079,7 +1100,6 @@ paste0(
   "]"
 )
 ```
-
 :::
 
 Ou plus simplement en R,
@@ -1094,6 +1114,7 @@ confint.default(modele_logit, parm = "age")
 ```
 
 
+
 ### Tidyverse
 
 ```{webr}
@@ -1101,18 +1122,20 @@ confint.default(modele_logit, parm = "age")
 #| autorun: true
 confint.default(modele_logit, parm = "age")
 ```
-
 :::
+
 
 ## Question 17
 
-Comme $0$ n'appartient pas à l'intervalle de confiance précédent, $\beta_1$ est différent de $0$ au seuil d'erreur asymptotique 5 %.
+Comme $0$ n'appartient pas à l'intervalle de confiance précédent,
+$\beta_1$ est différent de $0$ au seuil d'erreur asymptotique 5 %.
 
-Le test qui consiste à regarder si un paramètre est nul en s'appuyant sur la normalité asymptotique de son estimateur est connue sous le nom de "test de Wald".
+Le test qui consiste à regarder si un paramètre est nul en s'appuyant
+sur la normalité asymptotique de son estimateur est connue sous le nom
+de "test de Wald".
 
 La p-valeur vaut
 $$2\left(1-F_{\mathcal{N(0,1)}}(T)\right) \quad \textrm{avec} \ T=\frac{\widehat{\beta_1}}{\widehat{\sigma_1}}$$
-
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -1123,7 +1146,6 @@ $$2\left(1-F_{\mathcal{N(0,1)}}(T)\right) \quad \textrm{avec} \ T=\frac{\widehat
 2*(1-pnorm(beta_mle_1/sigma_est_1, mean = 0, sd = 1))
 ```
 
-
 ### Tidyverse
 
 ```{webr}
@@ -1131,11 +1153,12 @@ $$2\left(1-F_{\mathcal{N(0,1)}}(T)\right) \quad \textrm{avec} \ T=\frac{\widehat
 #| autorun: true
 2*(1-pnorm(beta_mle_1/sigma_est_1, mean = 0, sd = 1))
 ```
-
 :::
 
-Numériquement on obtient $\textit{p-valeur} = 4,022426\times10^{-06}$. C'est la même valeur que dans
-la sortie GLM.
+Numériquement on obtient $\textit{p-valeur} = 4,022426\times10^{-06}$.
+C'est la même valeur que dans la sortie GLM.
+
+
 
 ## Question 18
 
@@ -1148,7 +1171,7 @@ avec la fonction `pchisq`.
 $F_{\mathcal{\chi}^2(d)}(x) =\mathbb{P}\left(\mathcal{\chi}^2(d) < x\right)$
 s'obtient avec l'expression :
 
-```
+```         
 pchisq(q = x, df = d)
 ```
 
@@ -1157,7 +1180,7 @@ $q_{\alpha}^{\mathcal{\chi}^2(d)}$ avec $\alpha \in ]0, 1[$ tel que
 $F_{\mathcal{\chi}^2(d)}\left(q_{\alpha}^{\mathcal{\chi}^2(d)}\right)= \alpha$
 est calculable sous R grâce à la fonction `qchisq` via l'expression
 
-```
+```         
 qchisq(p = alpha, df = d)
 ```
 :::
@@ -1179,12 +1202,13 @@ Pour $n$ suffisamment grand, on rejette $H_0$ au seuil $\alpha$ si
 
 $$2\left( \ln L \left(\hat{\beta}\right) -  \ln L \left(\hat{\beta}_{H_0}\right) \right) > q_{1-\alpha}^{\chi^2(1)}$$
 
-Cette statistique s'exprime en fonction des déviances du modèle nul $D_{H_0}$ et la déviance du modèle estimé $D_{H_1}$. En effet, la défiance $D$ d'un modèle (logistque ou autre) vaut :
+Cette statistique s'exprime en fonction des déviances du modèle nul
+$D_{H_0}$ et la déviance du modèle estimé $D_{H_1}$. En effet, la
+défiance $D$ d'un modèle (logistque ou autre) vaut :
 
 $$D = 2(\ln(L_{sat})-\ln(L_{mod}))$$
 
-
-La statistique de test $D_{H_0}-D_{H_1}$  vaut
+La statistique de test $D_{H_0}-D_{H_1}$ vaut
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -1196,7 +1220,6 @@ stat_test_deviance <- summary(modele_logit)$null.deviance-summary(modele_logit)$
 stat_test_deviance
 ```
 
-
 ### Tidyverse
 
 ```{webr}
@@ -1205,10 +1228,9 @@ stat_test_deviance
 stat_test_deviance <- summary(modele_logit)$null.deviance-summary(modele_logit)$deviance
 stat_test_deviance
 ```
-
 :::
 
-à comparer avec 
+à comparer avec
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -1219,7 +1241,6 @@ stat_test_deviance
 qchisq(p = c(0.9, 0.95, 0.99), df = 1)
 ```
 
-
 ### Tidyverse
 
 ```{webr}
@@ -1229,10 +1250,10 @@ qchisq(p = c(0.9, 0.95, 0.99), df = 1)
 ```
 :::
 
-On rejette donc l'hypothèse nulle aux seuils 10 %, 5 % et 1 %. 
+On rejette donc l'hypothèse nulle aux seuils 10 %, 5 % et 1 %.
 
-
-La p-valeur vaut $1-F_{\mathcal{N}(0,1)}(T)$ où $T$ est la statistique de test.
+La p-valeur vaut $1-F_{\mathcal{N}(0,1)}(T)$ où $T$ est la statistique
+de test.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -1242,7 +1263,6 @@ La p-valeur vaut $1-F_{\mathcal{N}(0,1)}(T)$ où $T$ est la statistique de test.
 #| autorun: true
 1-pnorm(stat_test_deviance, mean = 0, sd = 1)
 ```
-
 
 ### Tidyverse
 
@@ -1264,7 +1284,6 @@ On retrouve la même p-valeur avec la foncion `anova`.
 anova(modele_logit, test = "Chisq")
 ```
 
-
 ### Tidyverse
 
 ```{webr}
@@ -1273,6 +1292,10 @@ anova(modele_logit, test = "Chisq")
 anova(modele_logit, test = "Chisq")
 ```
 :::
+
+
+::: {.content-hidden when-format="html"}
+
 
 ## Question 19
 
@@ -1347,7 +1370,6 @@ legend(
 )
 ```
 
-
 ### Tidyverse
 
 ```{webr}
@@ -1371,7 +1393,6 @@ graphique_q19 <- graphique_q7 +
 graphique_q19
 ```
 :::
-
 
 ## Question 20
 
@@ -1413,11 +1434,12 @@ Pour faire ce calcul dans R deux options sont envisageables :
     l'expression qu'on vient d'obtenir.
 -   On peut utiliser l'option `type='link'` et `se=TRUE` dans la
     fonction `predict` qui permet de calculer les termes
-    $\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}$ via l'attribut `se.fit` et $\widehat{\beta}_0+\widehat{\beta}_1x$ via l'attribut `fit`.
+    $\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}$
+    via l'attribut `se.fit` et $\widehat{\beta}_0+\widehat{\beta}_1x$
+    via l'attribut `fit`.
 
-::: panel-tabset
+::::: panel-tabset
 ### À la main
-
 
 ::: {.panel-tabset group="language"}
 #### Base R
@@ -1531,7 +1553,6 @@ legend(
 )
 ```
 
-
 #### Tidyverse
 
 ```{webr}
@@ -1584,7 +1605,6 @@ graphique_q20 <- graphique_q19 +
 graphique_q20
 ```
 :::
-
 
 ### En utilisant `predict`
 
@@ -1672,7 +1692,6 @@ legend(
 )
 ```
 
-
 #### Tidyverse
 
 ```{webr}
@@ -1696,5 +1715,5 @@ graphique_q20 <- graphique_q19 +
 graphique_q20
 ```
 :::
-
-:::
+:::::
+::::::::::::::::::::::::::::::::
