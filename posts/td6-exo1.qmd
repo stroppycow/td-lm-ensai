@@ -1293,10 +1293,6 @@ anova(modele_logit, test = "Chisq")
 ```
 :::
 
-
-::: {.content-hidden when-format="html"}
-
-
 ## Question 19
 
 On ajoute les valeurs prédites par le modèle logistique.
@@ -1715,5 +1711,4 @@ graphique_q20 <- graphique_q19 +
 graphique_q20
 ```
 :::
-:::::
-::::::::::::::::::::::::::::::::
+:::

@@ -21,6 +21,9 @@ editor:
     wrap: 72
 ---
 
+::: {.content-hidden when-format="html"}
+
+
 ## Question 1
 
 Importons le fichier de données `break.csv` en R sous forme de
@@ -944,4 +947,6 @@ anova(modele_q6, modele_q7, test = 'Chisq')
 #| autorun: true
 anova(modele_q6, modele_q7, test = 'Chisq')
 ```
+:::
+
 :::

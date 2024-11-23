@@ -17,8 +17,7 @@ editor:
 
 ## Question 1
 
-On maximise l'entropie 
-$$H(p) = -p \log(p)- (1-p)\log(1-p)$$
+On maximise l'entropie $$H(p) = -p \log(p)- (1-p)\log(1-p)$$
 
 Pour se faire, on annule la dérivée en $p$.
 
@@ -31,11 +30,11 @@ H'(p)=-\log(p)-1+\log(1-p)+1=\log\left(\frac{1-p}{p}\right)=0
 \end{align*}
 $$
 
-Il s'agit bien d'un maximum car l'entropie est une fonction concave de $p$ (la
-dérivée seconde est négative).
+Il s'agit bien d'un maximum car l'entropie est une fonction concave de
+$p$ (la dérivée seconde est négative).
 
-Le résultat est naturel : la loi la plus "aléatoire" possible est la loi uniforme qui donne la même masse à 0 et
-à 1.
+Le résultat est naturel : la loi la plus "aléatoire" possible est la loi
+uniforme qui donne la même masse à 0 et à 1.
 
 ## Question 2
 
@@ -43,22 +42,21 @@ Il faut trouver les $p_i\left(x_i\right)$ qui maximisent
 
 $$\sum_{i=1}^n-p_i\left(x_i\right) \log \left(p_i\left(x_i\right)\right)-\left(1-p_i\left(x_i\right)\right) \log (1-p_i\left(x_i\right))$$
 
-On est ramené à la question précédente pour
-chaque $i$ et la solution est $p_i\left(x_i\right)=1 / 2$ pour tout $i$.
+On est ramené à la question précédente pour chaque $i$ et la solution
+est $p_i\left(x_i\right)=1 / 2$ pour tout $i$.
 
 ## Question 3 {#question-3}
 
 On introduit $d$ multiplicateurs de Lagrange
-$\lambda_1, \ldots, \lambda_d$. Le problème d'optimisation revient à trouver $(p_1(x_1), \dots,p_d(x_d))$ qui maximisent le
-Lagrangien 
-$$
+$\lambda_1, \ldots, \lambda_d$. Le problème d'optimisation revient à
+trouver $(p_1(x_1), \dots,p_d(x_d))$ qui maximisent le Lagrangien $$
 L=\sum_{i=1}^n\left[-p_i(x_i) \log \left(p_i(x_i)\right)-\left(1-p_i(x_i)\right) \log \left(1-p_i(x_i)\right)\right]+\lambda \cdot\left(\sum_{i=1}^n p_i x_i-\sum_{i=1}^n y_i x_i\right)
 $$
 
 où $\lambda=\left(\lambda_1, \ldots, \lambda_d\right)$. Il convient
-d'annuler les dérivées partielles de $L$ par rapport à chaque $p_i(x_i)$ et à
-chaque $\lambda_i$ pour obtenir la solution. Par rapport à chaque $p_i(x_i)$,
-cela donne $$
+d'annuler les dérivées partielles de $L$ par rapport à chaque $p_i(x_i)$
+et à chaque $\lambda_i$ pour obtenir la solution. Par rapport à chaque
+$p_i(x_i)$, cela donne $$
 \frac{\partial L}{\partial p_i(x_i)}=-\log \left(p_i(x_i)\right)-1+\log \left(1-p_i(x_i)\right)+1+\lambda \cdot x_i
 $$ qui s'annule en $$
 p_i(x_i)=\frac{1}{1+e^{-\lambda \cdot x_i}}=\frac{e^{\lambda \cdot x_i}}{1+e^{\lambda \cdot x_i}}
@@ -76,11 +74,10 @@ $$
 On constate que la forme de $p_i\left(x_i\right)$ est
 $p_i\left(x_i\right)=\operatorname{logit}^{-1}\left(\lambda \cdot x_i\right)$,
 qui est exactement celle d'un modèle de régression logistique, où le
-paramètre $\lambda$ est solution des équations de vraisemblance. Le point de vue précédent (maximiser l'entropie sous
-contrainte d'une attache aux données) motive donc l'utilisation du
-modèle logistique pour tout $x$ (et non seulement pour les $x_i$ de
-l'échantillon) : 
+paramètre $\lambda$ est solution des équations de vraisemblance. Le
+point de vue précédent (maximiser l'entropie sous contrainte d'une
+attache aux données) motive donc l'utilisation du modèle logistique pour
+tout $x$ (et non seulement pour les $x_i$ de l'échantillon) :
 $$p(x)=\mathbb{P}(Y=1 \mid X=x)=\operatorname{logit}^{-1}(\lambda \cdot x)$$
-
 
 :::
