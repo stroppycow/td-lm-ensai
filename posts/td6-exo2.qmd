@@ -13,7 +13,6 @@ editor:
     wrap: 72
 ---
 
-::: {.content-hidden when-format="html"}
 
 ## Question 1
 
@@ -28,7 +27,7 @@ D'après la formule de Bayes, $$
 & =\frac{1}{1+\frac{f_0(x)(1-p)}{f_1(x) p}} \\
 & =\frac{1}{1+\exp \left(\log \left(\frac{f_0(x)(1-p)}{f_1(x) p}\right)\right)} \\
 & =\frac{1}{1+\exp \left(\log \left(\frac{f_0(x)}{f_1(x)}\right)+\log \left(\frac{p}{1-p}\right)\right)} \\
-& =\frac{1}{1+e^{-h(x)}} \textrm{ car } h(x) = \log\left(\frac{f_1(x)}{f_2(x)}\right)+\log\left(\frac{p)}{1-p}\right).
+& =\frac{1}{1+e^{-h(x)}} \textrm{ car } h(x) = \log\left(\frac{f_1(x)}{f_2(x)}\right)+\log\left(\frac{p}{1-p}\right).
 \end{aligned}
 $$
 
@@ -63,4 +62,3 @@ $$
 qui est bien un modèle logistique associé aux variables $\tilde{T}(x)$
 et au paramètre $\beta$.
 
-:::

@@ -21,7 +21,6 @@ editor:
     wrap: 72
 ---
 
-::: {.content-hidden when-format="html"}
 
 
 ## Question 1
@@ -54,14 +53,13 @@ data_break <- readr::read_delim(
   col_types = readr::cols(
     readr::col_factor(),
     readr::col_integer(),
-    readr::col_factor()
+    readr::col_factor(levels = c("0", "1", "2"))
   ),
   delim = ","
 )
 data_break
 ```
 :::
-
 
 La variable `age` est quantitative (l'âge de la voiture) alors que
 `brand` (la marque) est qualitative. On transforme la variable `brand`
@@ -70,6 +68,7 @@ en type `factor`.
 Cette transformation est importante pour l'estimation de modèles par la
 suite avec la fonction `glm`. Cette transformation permet d'automatiser
 la dichotomisation de cette variable qualitative dans les modèles.
+
 
 ## Question 2
 
@@ -107,14 +106,12 @@ ggplot2::ggplot(
 ```
 :::
 
-
 Le lien entre l'âge de la voiture et la présence de panne n'est pas très
 clair sur ce diagramme en boîte. On remarque seulement que les voitures
 plus agées ont connu des pannes. On observe également la forte variance
 d'âge des voitures connaissant des pannes contrairement aux autres. On
 peut poursuivre l'analyse graphique pour mieux comprendre ces
 différences d'âges pour les voiture en panne.
-
 
 ::: {.panel-tabset group="language"}
 #### Base R
@@ -175,7 +172,6 @@ ggplot2::ggplot(
 ```
 :::
 
-
 Bien que le nombre d'observations soit très faible, ce graphique
 correspond plutôt bien à la [courbe en
 baignoire](https://fr.wikipedia.org/wiki/Courbe_en_baignoire) qui rend
@@ -193,7 +189,6 @@ généralement cette courbe en 3 phases.
     proportion de panne croit avec le temps.
 
 ### Lien entre `fault` et `brand`
-
 
 ::: {.panel-tabset group="language"}
 #### Base R
@@ -245,6 +240,8 @@ Ce graphique semble indiquer que la marque "2" est plus fiable que les
 autres marques, cependant, les données recueillies sont limitées en
 effectif.
 
+
+
 ## Question 3
 
 Estimons un modèle de régression logistique avec toutes les variables
@@ -257,7 +254,7 @@ explicatives à notre disposition en utilisant la fonction `glm`.
 #| envir: baser
 #| autorun: true
 modele_q3 <- glm(
-  formula = (as.numeric(fault)-1) ~ age+brand,
+  formula = fault ~ age+brand,
   family = binomial(link='logit'),
   data = data_break
 )
@@ -270,7 +267,7 @@ summary(modele_q3)
 #| envir: tdv
 #| autorun: true
 modele_q3 <- glm(
-  formula = (as.numeric(fault)-1) ~ age+brand,
+  formula = fault ~ age+brand,
   family = binomial(link='logit'),
   data = data_break
 )
@@ -318,7 +315,8 @@ Le coefficient $\beta_{21}$ (respectivement $\beta_{22})$ s'interprètent
 comme l'effet propre de la marque marque 1 (resp. 2) par rapport à la
 marque de référence 0.
 
-::: {.callout-note collapse="true"}
+
+::::: {.callout-note collapse="true"}
 ### Remarque
 
 On peut définir les contraintes si on ne souhaite pas conserver le choix
@@ -328,7 +326,6 @@ par défaut de la méthode `glm`. On peut alors utiliser le paramètre
 On pourait, par exemple, choisir la deuxième modalité modalité (i.e.
 `brand=1`) comme référence :
 
-
 ::: {.panel-tabset group="language"}
 #### Base R
 
@@ -336,9 +333,9 @@ On pourait, par exemple, choisir la deuxième modalité modalité (i.e.
 #| envir: baser
 #| autorun: true
 modele_q3_bis <- glm(
-  formula = (as.numeric(fault)-1) ~ age +brand,
+  formula = fault ~ age +brand,
   family = binomial(link = 'logit'),
-  contrasts =  list(brand = contr.treatment(levels(data_break$brand), base =2)),
+  contrasts =  list(brand = contr.treatment(sort(levels(data_break$brand)), base =2)),
   data = data_break
 )
 summary(modele_q3_bis)
@@ -350,15 +347,14 @@ summary(modele_q3_bis)
 #| envir: tdv
 #| autorun: true
 modele_q3_bis <- glm(
-  formula = (as.numeric(fault)-1) ~ age +brand,
+  formula = fault ~ age +brand,
   family = binomial(link = 'logit'),
-  contrasts =  list(brand = contr.treatment(levels(data_break$brand), base =2)),
+  contrasts =  list(brand = contr.treatment(sort(levels(data_break$brand)), base =2)),
   data = data_break
 )
 summary(modele_q3_bis)
 ```
 :::
-
 
 Dans ce cas, on estime le modèle $$
 \begin{align*}
@@ -371,7 +367,6 @@ $$
 Ou encore, on pourrait imposer la sommation à zéro des coefficients
 associés aux indicatrices pour la variable `brand` :
 
-
 ::: {.panel-tabset group="language"}
 #### Base R
 
@@ -379,9 +374,9 @@ associés aux indicatrices pour la variable `brand` :
 #| envir: baser
 #| autorun: true
 modele_q3_ter <- glm(
-  formula = (as.numeric(fault)-1) ~ age + brand,
+  formula = fault ~ age + brand,
   family = binomial(link='logit'),
-  contrasts =  list(brand = contr.sum(levels(data_break$brand))),
+  contrasts =  list(brand = contr.sum(sort(levels(data_break$brand)))),
   data = data_break
 )
 summary(modele_q3_ter)
@@ -393,9 +388,9 @@ summary(modele_q3_ter)
 #| envir: tdv
 #| autorun: true
 modele_q3_ter <- glm(
-  formula = (as.numeric(fault)-1) ~ age + brand,
+  formula = fault ~ age + brand,
   family = binomial(link='logit'),
-  contrasts =  list(brand = contr.sum(levels(data_break$brand))),
+  contrasts =  list(brand = contr.sum(sort(levels(data_break$brand)))),
   data = data_break
 )
 summary(modele_q3_ter)
@@ -413,9 +408,9 @@ apparaitront tout de même dans la sortie. Le modèle estimé ici est donc
 
 $$
 \begin{align*}
-\textrm{logit}(\mathbb{P}(\texttt{fault}=1 | \texttt{age}&=x_{\texttt{age}},\texttt{brand}=0))=\gamma_0+\beta_1x_\texttt{age} + \gamma_{21} \\
+\textrm{logit}(\mathbb{P}(\texttt{fault}=1 | \texttt{age}&=x_{\texttt{age}},\texttt{brand}=0))=\gamma_0+\beta_1x_\texttt{age} + \gamma_{21}  \\
 \textrm{logit}(\mathbb{P}(\texttt{fault}=1 | \texttt{age}&=x_{\texttt{age}},\texttt{brand}=1))=\gamma_0+\beta_1x_\texttt{age} + \gamma_{22}\\
-\textrm{logit}(\mathbb{P}(\texttt{fault}=1 | \texttt{age}&=x_{\texttt{age}},\texttt{brand}=2))=\gamma_0+\beta_1x_\texttt{age} - \gamma_{21} -\gamma_{22}\\
+\textrm{logit}(\mathbb{P}(\texttt{fault}=1 | \texttt{age}&=x_{\texttt{age}},\texttt{brand}=2))=\gamma_0+\beta_1x_\texttt{age}  - \gamma_{22} - \gamma_{22} \\
 \end{align*}
 $$
 
@@ -433,11 +428,13 @@ mêmes car on a :
 $$
 \begin{align*}
 \hat{\beta}_0 &= \hat{\alpha}_0 + \hat{\alpha}_{20} &&= \hat{\gamma}_0+ \hat{\gamma}_{21} &&&= 0.47808\\
-\hat{\beta}_0+\hat{\beta}_{21} &= \hat{\alpha}_0  &&= \hat{\gamma}_0+ \hat{\gamma}_{22} &&&= 0.05867 \\
+\hat{\beta}_0+\hat{\beta}_{21} &= \hat{\alpha}_0  &&= \hat{\gamma}_0+ \hat{\gamma}_{22} &&&= -0.05867 \\
 \hat{\beta}_0+\hat{\beta}_{22} &=  \hat{\alpha}_0 + \hat{\alpha}_{21} &&= \hat{\gamma}_0- \hat{\gamma}_{21}-\hat{\gamma}_{22} &&&= -0.978 \\
 \end{align*}
 $$
-:::
+:::::
+
+
 
 ## Question 4
 
@@ -468,7 +465,6 @@ $$
 
 On a :
 
-
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -489,21 +485,20 @@ qchisq(0.95,3)
 ```
 :::
 
-
 Le quantile 0.95 d'une $\chi^2$ à 3 degrés de liberté est supérieur à la
 statistique de test. On ne rejette pas l'hypothèse nulle pour un risque
 de première espèce $\alpha=0.05$.
 
 On pouvait faire ce test en R directement avec l'instruction `anova`.
 
-
 ::: {.panel-tabset group="language"}
 ### Base R
+
 ```{webr}
 #| envir: baser
 #| autorun: true
 anova(
-  glm(formula = (as.numeric(fault)-1) ~ 1, family = binomial(),  data = data_break),
+  glm(formula = fault ~ 1, family = binomial(),  data = data_break),
   modele_q3,
   test = 'Chisq'
 )
@@ -515,7 +510,7 @@ anova(
 #| envir: tdv
 #| autorun: true
 anova(
-  glm(formula = (as.numeric(fault)-1) ~ 1, family = binomial(),  data = data_break),
+  glm(formula = fault ~ 1, family = binomial(),  data = data_break),
   modele_q3,
   test = 'Chisq'
 )
@@ -524,6 +519,7 @@ anova(
 
 Ce qui donne également une $\textit{p-value}$ de 0.529. Le modèle n'est
 donc globalement pas significatif.
+
 
 ## Question 5
 
@@ -538,11 +534,12 @@ $$ \textrm{logit}(p(x_{\texttt{age}}))=\beta_0+\beta_1x_\texttt{age}$$
 
 ::: {.panel-tabset group="language"}
 ### Base R
+
 ```{webr}
 #| envir: baser
 #| autorun: true
 modele_q5 <- glm(
-  formula = (as.numeric(fault)-1) ~ age,
+  formula = fault ~ age,
   family = binomial(link = 'logit'),
   data = data_break
 )
@@ -555,14 +552,13 @@ summary(modele_q5)
 #| envir: tdv
 #| autorun: true
 modele_q5 <- glm(
-  formula = (as.numeric(fault)-1) ~ age,
+  formula = fault ~ age,
   family = binomial(link = 'logit'),
   data = data_break
 )
 summary(modele_q5)
 ```
 :::
-
 
 Ce modèle ne semble pas beaucoup mieux. La variable `age` n'est pas
 significative dans ce modèle pour un seuil d'erreur de 5 %. Le fait que
@@ -570,208 +566,10 @@ la variable `age` ne soit pas significative dans le modèle est
 surprenant, en général les voitures plus anciennes ont plus de risque de
 tomber en panne.
 
+
 ## Question 6
 
-On inclut un terme quadratique en `age`. Ce nouveau modèle s'écrit :
-
-$$
-\texttt{fault}|(\texttt{age}=x_{\texttt{age}}) \sim \mathcal{B}(p(x_{\texttt{age}}))
-$$
-
-avec
-
-$$
-\textrm{logit}(p(x_{\texttt{age}}))=\beta_0+\beta_1x_\texttt{age}+\beta_2x_\texttt{age}^2$$
-
-Afin de prendre en compte l'âge au carré dans le modèle, on peut ajouter
-une nouvelle variable dans le `data.frame` contenu dans le paramètre
-`data` de la fonction `glm` et ajouter le nom de cette nouvelle variable
-dans le paramètre `formula`. Ou alors, on peut utiliser la fonction `I`
-dans le paramètre `formula` pour définir une nouvelle variable à partir
-de celles existantes.
-
-
-::: {.panel-tabset group="language"}
-### Base R
-```{webr}
-#| envir: baser
-#| autorun: true
-modele_q6 <- glm(
-  formula = (as.numeric(fault) - 1) ~ age + I(age**2),
-  family = binomial(link = 'logit'),
-  data = data_break
-)
-summary(modele_q5)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-modele_q6 <- glm(
-  formula = (as.numeric(fault) - 1) ~ age + I(age**2),
-  family = binomial(link = 'logit'),
-  data = data_break
-)
-summary(modele_q6)
-```
-:::
-
-Les coefficients pour `age` et `age^2` sont significatifs pour un risque
-de première espèce de 5 %.
-
-On peut, par ailleurs, faire un test du rapport de vraisemblance pour
-analyser la significativité globale du modèle :
-
-::: {.panel-tabset group="language"}
-### Base R
-```{webr}
-#| envir: baser
-#| autorun: true
-anova(
-  modele_q6,
-  test = 'Chisq'
-)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-anova(
-  modele_q6,
-  test = 'Chisq'
-)
-```
-:::
-
-On rejette l'hypothèse nulle : le modèle est significatif.
-
-On peut aussi regarder si ce modèle est meilleur que le modèle de la
-question 5 par exemple avec l'AIC.
-
-::: {.callout-note mode="simple"}
-### Rappel
-
-Le critère d'information d'Akaike s'écrit comme suit :
-$$\textrm{AIC} = 2d- 2\ln{L_n}$$ avec $d$ le nombre de paramètre dans le
-modèle et $\ln{L_n}$ la vraisemblance du modèle.
-
-Si l'on considère un ensemble de modèles candidats, le modèle choisi par
-ce critère est celui qui aura la plus faible valeur d'AIC. Ce critère
-repose donc sur un compromis entre la qualité de l'ajustement ($L_n$) et
-la complexité du modèle ($d$), en pénalisant les modèles ayant un grand
-nombre de paramètres
-:::
-
-Dans le modèle de la question 5, il vaut 49.5978 alors qu'ici
-il vaut 37.2792. On retient donc plutôt ce modèle.
-
-
-::: {.panel-tabset group="language"}
-### Base R
-```{webr}
-#| envir: baser
-#| autorun: true
-#| fig-width: 8
-vecteur_ages <- seq(from = 0, to = 16, by = 0.25)
-probas_predites_q5 <- predict(
-  object = modele_q5,
-  newdata = data.frame(age = vecteur_ages),
-  type = "response"
-)
-probas_predites_q6 <- predict(
-  object = modele_q6,
-  newdata = data.frame(age = vecteur_ages),
-  type = "response"
-)
-
-# Initialisation du graphique
-plot(
-  data_break$age, as.numeric(data_break$fault) - 1,
-  col = "#949FA6", pch = 16, 
-  xlab = "Âge du véhicule",
-  ylab = "Probabilité que la voiture ait connu une panne",
-  main = "Probabilités empiriques et probabilités prédites"
-)
-
-# Ajout des courbes prédites
-lines(
-  vecteur_ages, probas_predites_q5, 
-  col = "#F24B4B", lwd = 2, lty = 1
-)
-lines(
-  vecteur_ages, probas_predites_q6, 
-  col = "#68A8B0", lwd = 2, lty = 1
-)
-
-# Ajout de la légende
-legend(
-  "right", 
-  legend = c("Données observées", "Probabilité prédite Q5", "Probabilité prédite Q6"),
-  col = c("#949FA6", "#F24B4B", "#68A8B0"),
-  pch = c(16, NA, NA),
-  lty = c(NA, 1, 1),
-  lwd = c(NA, 2, 2),
-  bty = "o",
-  horiz = FALSE
-)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-vecteur_ages <- seq(from=0, to=16, by=0.25)
-probas_predites_q5 <- predict(
-  object = modele_q5,
-  newdata = data.frame(age=vecteur_ages),
-  type = "response"
-)
-probas_predites_q6 <- predict(
-  object = modele_q6,
-  newdata = data.frame(age=vecteur_ages),
-  type = "response"
-)
-
-ggplot2::ggplot() +
-  ggplot2::geom_point(
-    mapping = ggplot2::aes(x = age,y = (as.numeric(fault)-1) , color = "obs"),
-    data = data_break
-  ) +
-  ggplot2::geom_line(
-    mapping = ggplot2::aes(x = age,y = p_q5, color = "pred5"),
-    data = data.frame(age=vecteur_ages, p_q5=probas_predites_q5)
-  ) +
-  ggplot2::geom_line(
-    mapping = ggplot2::aes(x = age,y = p_q6, color = "pred6"),
-    data = data.frame(age=vecteur_ages, p_q6 = probas_predites_q6)
-  ) +
-  ggplot2::labs(
-    title = "Probabilités empiriques et probabilités prédites",
-    x = "Âge du véhicule",
-    y = "Probabilité que la voiture ait connu une panne"
-  ) +
-  ggplot2::scale_color_manual(
-    values=c("pred5"="#F24B4B", "pred6"="#68A8B0", "obs"="#949FA6"),
-    name="",
-    labels= c("pred5"="Probabilité prédite Q5","pred6"="Probabilité prédite Q6", "obs"="Données observées")
-) +
-  ggplot2::theme_light() +
-  ggplot2::theme(legend.position = "bottom")
-```
-:::
-
-Le modèle quadratique semble graphiquement plus satisfaisant même si
-l'ajustement n'est pas parfait.
-
-## Question 7
-
-On ajoute la variable `brand` par rapport au modèle précédent. Le modèle
-estimé est désormais :
+Le modèle estimé est désormais :
 
 $$
 \texttt{fault}|(\texttt{age}=x_{\texttt{age}},\texttt{brand}=x_{\texttt{brand}}) \sim \mathcal{B}(p(x_{\texttt{age}},x_{\texttt{brand}}))
@@ -782,16 +580,18 @@ avec
 $$\textrm{logit}(p(x_{\texttt{age}},x_{\texttt{brand}}))=\beta_0+\beta_1x_\texttt{age}+\beta_2x_\texttt{age}^2+\beta_{31}\mathbb{1}_{x_\texttt{brand}=1}+ \beta_{32}\mathbb{1}_{x_\texttt{brand}=2}$$
 
 ::: {.panel-tabset group="language"}
+
 ### Base R
+
 ```{webr}
 #| envir: baser
 #| autorun: true
-modele_q7 <- glm(
-  formula = (as.numeric(fault) - 1) ~ age + I(age**2) + brand,
+modele_q6 <- glm(
+  formula = fault ~ age + I(age**2) + brand,
   family = binomial(link='logit'),
   data = data_break
 )
-summary(modele_q7)
+summary(modele_q6)
 ```
 
 ### Tidyverse
@@ -799,26 +599,57 @@ summary(modele_q7)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-modele_q7 <- glm(
-  formula = (as.numeric(fault) - 1) ~ age + I(age**2) + brand,
+modele_q6 <- glm(
+  formula = fault ~ age + I(age**2) + brand,
   family = binomial(link='logit'),
   data = data_break
 )
-summary(modele_q7)
+summary(modele_q6)
 ```
 :::
 
+On peut réaliser un test de significativé globale de déviance.
+
+::: {.panel-tabset group="language"}
+
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+anova(
+  glm(formula = fault ~ 1, family = binomial(),  data = data_break),
+  modele_q6,
+  test = 'Chisq'
+)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+anova(
+  glm(formula = fault ~ 1, family = binomial(),  data = data_break),
+  modele_q6,
+  test = 'Chisq'
+)
+```
+:::
+
+On rejette l'hypothèse nulle de globalité de tous les coefficients en dehors de la constante au seuil 5 % car la p-valeur < 0.05. Le modèle est significatif cette fois-ci.
+
+## Question  7
 
 L'odds d'avoir une panne
 $\texttt{fault}=1|(\texttt{fault}|(\texttt{age}=x_{\texttt{age}},\texttt{brand}=x_{\texttt{brand}})$
-est : 
+est :
 
 $$\begin{align*}
 \texttt{odds}(x_{\texttt{age}}, x_{\texttt{brand}}) &= \frac{\mathbb{P}(\texttt{fault}=1|(\texttt{age}=x_{\texttt{age}},\texttt{brand}=x_{\texttt{brand}}))}{1-\mathbb{P}(\texttt{fault}=1|(\texttt{age}=x_{\texttt{age}},\texttt{brand}=x_{\texttt{brand}}))} \\
 &= \exp(\textrm{logit}(\mathbb{P}(\texttt{fault}=1|(\texttt{age}=x_{\texttt{age}},\texttt{brand}=x_{\texttt{brand}}))))
 \end{align*}
 $$
-
 
 Ainsi pour un individu avec des caractéristiques
 $\textbf{x}=(x_{\texttt{age}}, x_{\texttt{brand}}=2)$ et un autre
@@ -828,15 +659,15 @@ $\textbf{x}'=(x_{\texttt{age}}, x_{\texttt{brand}}=0)$, on a :
 $$
 \texttt{OR}(\textbf{x},\textbf{x}') = \frac{\texttt{odds}(\textbf{x})}{\texttt{odds}(\textbf{x}')}=\frac{\exp(\beta_0+\beta_1x_\texttt{age}+\beta_2x_\texttt{age}^2+\beta_{32})}{\exp(\beta_0+\beta_1x_\texttt{age}+\beta_2x_\texttt{age}^2)}=\exp(\beta_{32})$$
 
-On peut estimer cet odds-ratio avec $\exp(\hat{\beta}_{32}))$.
-
+On peut estimer cet odds-ratio avec $\exp(\hat{\beta}_{32})$.
 
 ::: {.panel-tabset group="language"}
 ### Base R
+
 ```{webr}
 #| envir: baser
 #| autorun: true
-exp(modele_q7$coefficients[5])
+exp(modele_q6$coefficients[5])
 ```
 
 ### Tidyverse
@@ -844,10 +675,9 @@ exp(modele_q7$coefficients[5])
 ```{webr}
 #| envir: tdv
 #| autorun: true
-exp(modele_q7$coefficients[5])
+exp(modele_q6$coefficients[5])
 ```
 :::
-
 
 On peut interpréter ce coefficient comme suit :
 
@@ -878,13 +708,13 @@ donc l'écart type du coefficient estimé pour $\beta_{32}$ est bien trop
 grand. On le voit avec cet intervalle de confiance à 95 % qu'on peut
 obtenir avec `confint`.
 
-
 ::: {.panel-tabset group="language"}
 ### Base R
+
 ```{webr}
 #| envir: baser
 #| autorun: true
-exp(confint.default(modele_q7, parm = "brand2"))
+exp(confint.default(modele_q6, parm = "brand2"))
 ```
 
 ### Tidyverse
@@ -892,7 +722,7 @@ exp(confint.default(modele_q7, parm = "brand2"))
 ```{webr}
 #| envir: tdv
 #| autorun: true
-exp(confint.default(modele_q7, parm = "brand2"))
+exp(confint.default(modele_q6, parm = "brand2"))
 ```
 :::
 
@@ -906,15 +736,20 @@ $H_0: \ \beta_{31}=\beta_{32}=0$.
 
 Sous $H_0$,
 
-$$ D_{H_0} - D_{H_1} \underset{H_0}{\sim} \chi^2(2)$$
-On ne rejette pas l'hypothèse nulle ici car on a :
+$$ D_{H_0} - D_{H_1} \underset{H_0}{\sim} \chi^2(2)$$ On ne rejette pas
+l'hypothèse nulle ici car on a :
 
 ::: {.panel-tabset group="language"}
 ### Base R
+
 ```{webr}
 #| envir: baser
 #| autorun: true
-modele_q6$deviance-modele_q7$deviance
+glm(
+  formula = (as.numeric(fault) - 1) ~ age + I(age**2),
+  family = binomial(link='logit'),
+  data = data_break
+)$deviance-modele_q6$deviance
 qchisq(p = 0.95, df = 2)
 ```
 
@@ -923,7 +758,11 @@ qchisq(p = 0.95, df = 2)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-modele_q6$deviance-modele_q7$deviance
+glm(
+  formula = (as.numeric(fault) - 1) ~ age + I(age**2),
+  family = binomial(link='logit'),
+  data = data_break
+)$deviance-modele_q6$deviance
 qchisq(p = 0.95, df = 2)
 ```
 :::
@@ -934,10 +773,15 @@ On pouvait également faire ce test plus rapidement avec `anova`.
 
 ::: {.panel-tabset group="language"}
 ### Base R
+
 ```{webr}
 #| envir: baser
 #| autorun: true
-anova(modele_q6, modele_q7, test = 'Chisq')
+anova(glm(
+  formula = fault ~ age + I(age**2),
+  family = binomial(link='logit'),
+  data = data_break
+), modele_q6, test = 'Chisq')
 ```
 
 ### Tidyverse
@@ -945,8 +789,10 @@ anova(modele_q6, modele_q7, test = 'Chisq')
 ```{webr}
 #| envir: tdv
 #| autorun: true
-anova(modele_q6, modele_q7, test = 'Chisq')
+anova(glm(
+  formula = fault ~ age + I(age**2),
+  family = binomial(link='logit'),
+  data = data_break
+), modele_q6, test = 'Chisq')
 ```
-:::
-
 :::

@@ -23,7 +23,6 @@ editor:
     wrap: 72
 ---
 
-::: {.content-hidden when-format="html"}
 
 
 ## Question 1
@@ -74,12 +73,9 @@ serait pas une erreur mais ferait exploser le nombre de regresseurs dans
 la modélisation alors qu'il n'y a que 40 observations.
 
 
-
-
 ## Question 2
 
 ### Lien entre `ses` et `impair`
-
 
 ::: {.panel-tabset group="language"}
 #### Base R
@@ -134,7 +130,6 @@ ggplot2::ggplot(
 
 ### Lien entre `life` et `impair`
 
-
 ::: {.panel-tabset group="language"}
 #### Base R
 
@@ -179,6 +174,8 @@ variables `life` et `impair`. Plus la fréquence et l'intensité des
 bouleversements vécus sont importants et plus les personnes sont dans
 une situation de mauvaise santé mentale.
 
+
+
 ## Question 3
 
 La loi décrivant l'état mental d'un individu conditionnellement à son
@@ -217,7 +214,6 @@ ne permettent pas d'estimer ce modèle directement avec une fontion comme
 `lm` ou `glm`. Le cours nous invite, par exemple, à utiliser le package
 `VGAM` et la fonction `vglm` en son sein.
 
-
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -239,7 +235,6 @@ ne permettent pas d'estimer ce modèle directement avec une fontion comme
 On peut alors estimer le modèle. La syntaxe s'apparente à celle de
 `glm`. Il faut faire attention comme souvent au paramètre `family` pour
 spécifier le type de modèle.
-
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -273,6 +268,8 @@ On peut lire les valeurs des 5 coefficients attendus dans la colonne
 `Estimate` (3 pour les constantes de chaque probabilité cumulée et 2
 associées à chaque régresseur).
 
+
+
 ## Question 5
 
 L'odds de l'évènement
@@ -291,12 +288,13 @@ Ainsi pour un individu avec des caractéristiques
 $\textbf{x}=(\texttt{ses}=1, \texttt{life}=x_{\texttt{life}})$ et un
 autre individu avec les caractéristiques
 $\textbf{x}'=(\texttt{ses}=0, \texttt{life}=x_{\texttt{life}})$, on a :
-  
-  $$\texttt{OR}(\textbf{x},\textbf{x}') = \frac{\texttt{odds}_k(\textbf{x})}{\texttt{odds}_k(\textbf{x}')}=\frac{\exp(\beta_0^{(k)}+\beta_1+\beta_2x_\texttt{life})}{\exp(\beta_0^{(k)}+\beta_2x_\texttt{life})}=\exp(\beta_1)$$
-    
-    Ainsi un estimateur de $\texttt{OR}(\textbf{x},\textbf{x}')$ est
-$\exp\left(\hat{\beta}_1\right)$
 
+$$\texttt{OR}(\textbf{x},\textbf{x}') = \frac{\texttt{odds}_k(\textbf{x})}{\texttt{odds}_k(\textbf{x}')}=\frac{\exp(\beta_0^{(k)}+\beta_1+\beta_2x_\texttt{life})}{\exp(\beta_0^{(k)}+\beta_2x_\texttt{life})}=\exp(\beta_1)$$
+
+
+Ainsi un estimateur de $\texttt{OR}(\textbf{x},\textbf{x}')$ est
+
+$\exp\left(\hat{\beta}_1\right)$
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -325,13 +323,15 @@ attributs, on utilise le symbole `@` au lieu de `$`.
 :::
 
 Cette quantité permet d'évaluer l'évolution de la côte sur la santé
-mentale lorsqu'une personne a un statut socio-économique par rapport a quelqu'un qui a un statut économique faible toutes choses égales par
+mentale lorsqu'une personne a un statut socio-économique par rapport a
+quelqu'un qui a un statut économique faible toutes choses égales par
 ailleurs.
 
-On peut dire : 
+On peut dire :
 
-**"Toutes choses égales par ailleurs, lorsqu'un indivdu passe d'un statut socio-économique faible à élevé, l'odds d'avoir au
-plus un certain niveau de dégénérescence mentale est multiplié par 3"**.
+**"Toutes choses égales par ailleurs, lorsqu'un indivdu passe d'un
+statut socio-économique faible à élevé, l'odds d'avoir au plus un
+certain niveau de dégénérescence mentale est multiplié par 3"**.
 
 Les individus avec un statut économique plus élevés ont donc toutes
 choses égales par ailleurs une meilleur santé mentale.
@@ -339,15 +339,21 @@ choses égales par ailleurs une meilleur santé mentale.
 ::: callout-warning
 **Il faut faire attention à ne pas interpréter à tort cette évolution
 sur l'odds (en français cote) comme une évolution sur le risque (c'est à
-dire sur la probabilité de l'évènement qui nous intéresse)**. Ici, il s'agirait de la probabilité d'avoir au plus un certain niveau de dégénérescence mentale : $P(\texttt{impair}\leq k|\textbf{X}=\textbf{x})$.
-                                        
+dire sur la probabilité de l'évènement qui nous intéresse)**. Ici, il
+s'agirait de la probabilité d'avoir au plus un certain niveau de
+dégénérescence mentale :
+$P(\texttt{impair}\leq k|\textbf{X}=\textbf{x})$.
+
 On ne peut donc pas dire : ~~"Toutes choses égales par ailleurs,
 lorsqu'un indivdu passe d'un statut socio-économique faible à élevé, la
 probabilité d'avoir au plus un certain niveau de dégénérescence mentale
 est multipliée par 3"~~
 
-La probabilité et la cote sont deux quantités différentes. La première est bornée entre 0 et 1 contrairement à la seconde qui n'a pas de maximum. On peut le voir visuellement avec cette relation liant les deux sur le graphique ci-dessous qui se différencie de la première bissectrice du plan.
-
+La probabilité et la cote sont deux quantités différentes. La première
+est bornée entre 0 et 1 contrairement à la seconde qui n'a pas de
+maximum. On peut le voir visuellement avec cette relation liant les deux
+sur le graphique ci-dessous qui se différencie de la première
+bissectrice du plan.
 
 ```{webr}
 #| envir: tdv
@@ -375,7 +381,6 @@ ggplot2::ggplot(
   ggplot2::theme_minimal()
 ```
 
-
 Cependant, on peut remarquer sur ce graphique qu'on peut faire cette
 approximation pour des faibles probabilités (par exemple pour des
 probabilités inférieures à 10 %) ou plus formellement avec un
@@ -383,12 +388,11 @@ développement limité à l'ordre 1.
 
 $$
 \frac{p}{1-p} \underset{p \to 0}{=} p + o(p)
-$$ 
+$$
 
 Dans cet exercice avec ce modèle cumulatif, l'emploi de cette
 approximation n'est pas acceptable car les évènements d'avoir au plus un
 certain niveau de dégénérescence mentale ne sont pas rares.
-
 
 ```{webr}
 #| envir: tdv
@@ -430,13 +434,14 @@ ggplot2::ggplot(
 ```
 :::
 
+::: {.content-hidden when-format="html"}
+
 
 ## Question 6
 
 L'intervalle de confiance asymptotique au niveau de confiance
 $1 − \alpha$ pour $\hat{\beta_1}$ est donnée par :
 $$\left[\hat{\beta}_1 - q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \ ; \ \hat{\beta}_1 + q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \right]$$
-
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -477,7 +482,6 @@ paste0(
 )
 ```
 :::
-
 
 On pouvait aussi utiliser la fonction `confint`.
 
@@ -498,6 +502,7 @@ confint(modele_q4)
 confint(modele_q4)
 ```
 :::
+
 
 ## Question 7
 
@@ -529,8 +534,7 @@ D'après la sortie obtenue à la [question 4](#question-4) et les p-valeur
 des tests de Wald, le coefficient $\beta_1$ est non significatif au
 seuil d'erreur 5 % mais il est significatif au seuil 10 %.
 
-
-## Question 9 
+## Question 9 {#question-9}
 
 On peut ajouter un terme d'interaction entre deux variables avec
 l'opérateur `:` afin d'évaluer si l'effet du nombre et de l'intensité
@@ -588,7 +592,6 @@ summary(modele_q9)
 ```
 :::
 
-
 Pour évaluer la pertinence de ce terme d'intéraction, on peut réaliser
 un test du rapport de vraisemblance entre ces deux modèles emboités.
 
@@ -605,8 +608,6 @@ avec :
 -   $L_n^{(\textrm{modele non contraint})}$ : la vraisemblance du modèle
     non contraint ou il faut estimer le coefficient d'intéraction
     $\beta_3$, celui qu'on vient d'estimer dans cette question.
-
-
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -661,7 +662,6 @@ Il y a 9 paramètres à estimer : $\gamma_0^{(1)}$, $\gamma_0^{(2)}$,
 $\gamma_0^{(3)}$, $\gamma_1^{(1)}$, $\gamma_1^{(2)}$, $\gamma_1^{(3)}$,
 $\gamma_2^{(1)}$, $\gamma_2^{(2)}$ et $\gamma_2^{(3)}$.
 
-
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -690,7 +690,6 @@ summary(modele_q10)
 ```
 :::
 
-
 À l'image de la [question 9](#question-9), on peut faire un test du
 rapport de vraisemblance entre ces deux modèles emboités.
 
@@ -698,7 +697,8 @@ L'hypothèse nulle est
 $H_0: \gamma_1^{(1)}=\gamma_1^{(2)}=\gamma_1^{(3)}$ et
 $\gamma_2^{(1)}=\gamma_2^{(2)}=\gamma_2^{(3)}$.
 
-Les valeurs de la statistique de test et le quantile de comparaison sont  :
+Les valeurs de la statistique de test et le quantile de comparaison sont
+:
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -723,17 +723,16 @@ qchisq(0.95,4)
 Quatre coefficients sont contraints dans le modèle avec structure
 proportionnelle.
 
-
 On ne rejette pas $H_0$ car la statistique de test est inférieure au
 quantile $q_{0.95}^{\chi^2(4)}$.
 
 Ainsi, le modèle avec la structure non proportionnelle n'est pas
 significativement meilleur.
 
-
 ## Question 11
 
-Au vu de la sortie du modèle à odds proportionnels et de l’analyse descriptive préliminaire, on peut essayer d'enlever la variable `ses`.
+Au vu de la sortie du modèle à odds proportionnels et de l’analyse
+descriptive préliminaire, on peut essayer d'enlever la variable `ses`.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -817,12 +816,11 @@ summary(modele_q12)
 ```
 :::
 
-
-Pour comparer avec les modèles précédents, nous ne pouvons pas utiliser le test du
-rapport de vraisemblance (ou test de déviance) car les modèles ne sont pas emboités.
-Nous pouvons par contre comparer leur critère AIC et BIC. Pour les deux “meilleurs”
-modèles de chaque approche, cela donne.
-
+Pour comparer avec les modèles précédents, nous ne pouvons pas utiliser
+le test du rapport de vraisemblance (ou test de déviance) car les
+modèles ne sont pas emboités. Nous pouvons par contre comparer leur
+critère AIC et BIC. Pour les deux “meilleurs” modèles de chaque
+approche, cela donne.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -849,5 +847,4 @@ BIC(modele_q12)
 :::
 
 Les deux critères conduisent au choix du modèle obtenu à la question 11.
-
-:::
+::::::::::::::::::::::
