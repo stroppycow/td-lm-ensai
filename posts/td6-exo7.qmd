@@ -1,0 +1,469 @@
+---
+title: "TD 6 - Exercice 7 - Crabes fer à cheval"
+lang: fr
+author: "Théo Leroy"
+date: "19 novembre 2024"
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+webr:
+  render-df: gt-interactive
+  resources:
+    - ./../data/crabs.txt
+  packages:
+      - dplyr
+      - readr
+      - ggplot2
+      - GGally
+      - tidyr
+      - MASS
+      - pscl
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+## Question 1
+
+On charge les données du fichier `crabs.txt` en R sous forme de
+`data.frame`.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+data_crabs <- read.csv(
+  file = "data/crabs.txt",
+  header = TRUE,
+  sep = " ",
+  quote = '"',
+  colClasses = c("character", "factor", "numeric", "integer", "numeric")
+)
+data_crabs
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+data_crabs <- readr::read_delim(
+  file = "data/crabs.txt",
+  col_names = c("color", "width", "satell", "weight"),
+  col_types = readr::cols(
+    readr::col_skip(),
+    readr::col_factor(level = c("1", "2", "3", "4")),
+    readr::col_number(),
+    readr::col_integer(),
+    readr::col_number()
+  ),
+  skip = 1,
+  delim = " ",
+  quote = '"'
+)
+data_crabs
+```
+:::
+
+Le jeu de données contient bien 173 observations de limules femelles. La variable cible est `satell` le comptage de nombre de limules mâles satellite. Les potentielles variables explicatives sont la couleur `color`, `width` et `weight` le poids de la femelle.
+
+
+La variable `color` peut être vu comme catégorielle dans ce cas on s'intéressera à l'effet de passer d'une modalité à une autre sur la moyenne du nombre de limules mâles accrochées. Elle peut être également vu comme quantitative et dans ce cas on s'intéressera à l'effet de l'assombrissement d'une unité sur la moyenne du nombre de limules mâles accrochées.
+
+On peut mener une courte étude descriptive.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+pairs(
+  x = data_crabs[,c("satell", "color", "width", "weight")],
+  main = "Matrice des nuages de points sur les données des limules"
+)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+GGally::ggpairs(
+    data = {
+      data_crabs |>
+        dplyr::mutate(color = as.integer(color)) |>
+        dplyr::select(satell, color, width, weight)
+    },
+    columns  = c("satell", "color", "width", "weight"),
+    title = "Matrice des nuages de points sur les données des limules",
+    upper = list(continuous = "points"),
+    lower = list(continuous = "cor")
+)
+```
+:::
+
+
+Graphiquement, on remarque que les variables `width` et `weight` sont très corrélées. Pour éviter des problème de multicolinéarité et améliorer la qualité des estimations, on choisit de retirer la variable `width` dans les futures modèles.
+
+On estime les différents modèles.
+
+**Modèle log-linéaire de Poisson avec `color` en `factor`**
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+modele_poisson_factor <- glm(
+  formula = satell ~ as.factor(color)+weight,
+  family = poisson(),
+  data = data_crabs
+)
+summary(modele_poisson_factor)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_poisson_factor <- glm(
+  formula = satell ~ as.factor(color)+weight,
+  family = poisson(),
+  data = data_crabs
+)
+summary(modele_poisson_factor)
+```
+:::
+
+**Modèle log-linéaire de Poisson avec `color` en `numeric`**
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+modele_poisson_num <- glm(
+  formula = satell ~ as.numeric(color)+weight,
+  family = poisson(),
+  data = data_crabs
+)
+summary(modele_poisson_num)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_poisson_num <- glm(
+  formula = satell ~ as.numeric(color)+weight,
+  family = poisson(),
+  data = data_crabs
+)
+summary(modele_poisson_num)
+```
+:::
+
+**Modèle binomial négatif avec `color` en `factor`**
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+modele_nb_factor <- MASS::glm.nb(
+  formula = satell ~ as.factor(color)+weight,
+  data = data_crabs
+)
+summary(modele_nb_factor)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_nb_factor <- MASS::glm.nb(
+  formula = satell ~ as.factor(color)+weight,
+  data = data_crabs
+)
+summary(modele_nb_factor)
+```
+:::
+
+
+**Modèle binomial négatif avec `color` en `numeric`**
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+modele_nb_num <- MASS::glm.nb(
+  formula = satell ~ as.numeric(color)+weight,
+  data = data_crabs
+)
+summary(modele_nb_num)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_nb_num <- MASS::glm.nb(
+  formula = satell ~ as.numeric(color)+weight,
+  data = data_crabs
+)
+summary(modele_nb_num)
+```
+:::
+
+Pour la modélisation avec loglinéaire de Poisson, la déviance est beaucoup plus élevée que le nombre de degré de liberté même pour le cas le plus favorable ou `color` est intégré comme variable quantitative. Il ya sans doute un problème de surdispersion, l'hypothèse que la moyenne est égale à la variance dans la modélisation de Poisson n'est sans doute pas vérifiée.
+
+L'ajustement avec le modèle binomial négatif est meilleur (en regardant les déviances et l'AIC) surtout en considérant `color` comme quantitative qui ne semble pas significative au final.
+
+On peut étudier la distribution empirique de `satell` par rapport à la distribution prédite par le modèle `modele_nb_num` pour analyser la qualité des prédictions du modèle.
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+comptage_empirique <- sapply(
+  X = 0:15,
+  FUN = function(k){
+    sum(data_crabs$satell == k)
+  }
+)
+comptage_predit <- sapply(
+  X = 0:15,
+  FUN = function(k){
+    sum(
+      sapply(
+        X = predict(modele_nb_num, type = "response"),
+        FUN = function(mu){dnbinom(x = k,size = modele_nb_num$theta, mu = mu)}
+      )
+    )
+  }
+)
+plot(
+  x = 0:15,
+  y = comptage_empirique,
+  col = "blue",
+  xlab = "Nombre de limules mâles satellite pour une femelle",
+  ylab = "Nombre de limules femelles"
+)
+points(x = 0:15, y = comptage_predit, col = "red")
+legend(
+  "topright",             
+  legend = c(
+    "Données empiriques",
+    "Prédiction du modèle sur le jeu de données"
+  ), 
+  col = c("blue", "red"),    
+  pch = 1
+) 
+grid()
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+comptage_empirique <- sapply(
+  X = 0:15,
+  FUN = function(k){
+    sum(data_crabs$satell == k)
+  }
+)
+comptage_predit <- sapply(
+  X = 0:15,
+  FUN = function(k){
+    sum(
+      sapply(
+        X = predict(modele_nb_num, type = "response"),
+        FUN = function(mu){dnbinom(x = k,size = modele_nb_num$theta, mu = mu)}
+      )
+    )
+  }
+)
+
+# Création d'un dataframe combinant les données empiriques et prédites
+data_plot <- data.frame(
+  Nombre_satellites = rep(0:15, 2),
+  Nombre_femelles = c(comptage_empirique, comptage_predit),
+  Source = rep(c("Empirique", "Prédite"), each = length(0:15))
+)
+
+# Création du graphique avec ggplot2
+ggplot2::ggplot(
+  data = data_plot,
+  mapping = ggplot2::aes(x = Nombre_satellites, y = Nombre_femelles, color = Source)
+) +
+  ggplot2::geom_point() +                  
+  ggplot2::scale_color_manual(
+    values = c("Empirique" = "blue", "Prédite" = "red"),
+    labels = c("Données empiriques", "Prédiction du modèle")
+  ) +
+  ggplot2::labs(
+    title = "Nombre de limules mâles satellites par femelle",
+    x = "Nombre de limules mâles satellites",
+    y = "Nombre de limules femelles",
+    color = "Source"
+  ) +
+  ggplot2::theme_minimal() +                       
+  ggplot2::theme(
+    legend.position = "top",            
+    plot.title = element_text(hjust = 0.5) 
+  )
+```
+:::
+
+
+On voit que la modélisation ne permet pas de prédire convenablement le nombre de femelles lorsque le nombre de mâles satellite est faible.
+
+
+## Question 2
+
+On peut essayer de mettre en place un modèle à inflation de zéros dans le modèle binomial négatif pour améliorer les prédictions. Pour se faire, on utilise la fonction `zeroinfl` du package `pscl`.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+?pscl::zeroinfl()
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+?pscl::zeroinfl()
+```
+:::
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+modele_zeroinfl <- pscl::zeroinfl(
+  formula = satell ~ weight + as.numeric(color) | weight + as.numeric(color),
+  data = data_crabs,
+  dist = "negbin"
+)
+summary(modele_zeroinfl)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_zeroinfl <- pscl::zeroinfl(
+  formula = satell ~ weight + as.numeric(color) | weight + as.numeric(color),
+  data = data_crabs,
+  dist = "negbin"
+)
+summary(modele_zeroinfl)
+```
+:::
+
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+comptage_empirique <- sapply(
+  X = 0:15,
+  FUN = function(k){
+    sum(data_crabs$satell == k)
+  }
+)
+comptage_predit <- colSums(predict(modele_zeroinfl, type = "prob", at = 0:15))
+plot(
+  x = 0:15,
+  y = comptage_empirique,
+  col = "blue",
+  xlab = "Nombre de limules mâles satellite pour une femelle",
+  ylab = "Nombre de limules femelles"
+)
+points(x = 0:15, y = comptage_predit, col = "red")
+legend(
+  "topright",             
+  legend = c(
+    "Données empiriques",
+    "Prédiction du modèle sur le jeu de données"
+  ), 
+  col = c("blue", "red"),    
+  pch = 1
+) 
+grid()
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+comptage_empirique <- sapply(
+  X = 0:15,
+  FUN = function(k){
+    sum(data_crabs$satell == k)
+  }
+)
+comptage_predit <- colSums(predict(modele_zeroinfl, type = "prob", at = 0:15))
+
+# Création d'un dataframe combinant les données empiriques et prédites
+data_plot <- data.frame(
+  Nombre_satellites = rep(0:15, 2),
+  Nombre_femelles = c(comptage_empirique, comptage_predit),
+  Source = rep(c("Empirique", "Prédite"), each = length(0:15))
+)
+
+# Création du graphique avec ggplot2
+ggplot2::ggplot(
+  data = data_plot,
+  mapping = ggplot2::aes(x = Nombre_satellites, y = Nombre_femelles, color = Source)
+) +
+  ggplot2::geom_point() +                  
+  ggplot2::scale_color_manual(
+    values = c("Empirique" = "blue", "Prédite" = "red"),
+    labels = c("Données empiriques", "Prédiction du modèle")
+  ) +
+  ggplot2::labs(
+    title = "Nombre de limules mâles satellites par femelle",
+    x = "Nombre de limules mâles satellites",
+    y = "Nombre de limules femelles",
+    color = "Source"
+  ) +
+  ggplot2::theme_minimal() +                       
+  ggplot2::theme(
+    legend.position = "top",            
+    plot.title = element_text(hjust = 0.5) 
+  )
+```
+:::
+
+La répartition des petites valeurs est mieux modélisée.

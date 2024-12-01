@@ -223,7 +223,6 @@ Levene ou le test de Bartlett (slide 146).
 #| autorun: true
 car::leveneTest(maxO3 ~ pluie, data = data_ozone)
 bartlett.test(maxO3 ~ pluie, data = data_ozone)
-
 ```
 
 ### Tidyverse
@@ -550,5 +549,6 @@ anova(fit_q1, fit_q5)
 :::
 
 Les conclusions sont similaires à celles obtenues avec la variable pluie
-: il ne paraît pas pertinent d’ajouter la variable `vent` ni les
-interactions associées dans le modèle.
+
+:   il ne paraît pas pertinent d’ajouter la variable `vent` ni les
+    interactions associées dans le modèle.

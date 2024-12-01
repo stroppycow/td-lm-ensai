@@ -19,6 +19,8 @@ project:
     - posts/td6-exo3.qmd
     - posts/td6-exo4.qmd
     - posts/td6-exo5.qmd
+    - posts/td6-exo6.qmd
+    - posts/td6-exo7.qmd
   preview: 
     timeout: 3600
     navigate: false
