@@ -25,6 +25,8 @@ editor:
     wrap: 72
 ---
 
+::: {.content-hidden when-format="html"}
+
 ## Question 1
 
 On charge les données du fichier `crabs.txt` en R sous forme de
@@ -467,3 +469,5 @@ ggplot2::ggplot(
 :::
 
 La répartition des petites valeurs est mieux modélisée.
+
+:::

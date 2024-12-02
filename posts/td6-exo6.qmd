@@ -24,6 +24,8 @@ editor:
     wrap: 72
 ---
 
+::: {.content-hidden when-format="html"}
+
 ## Question 1
 
 On charge les données du fichier `Fourmis.txt` en R sous forme de
@@ -269,12 +271,14 @@ $$
 
 Il y a 16 paramètres à estimer.
 
-On peut représenter la modélisation de $\textrm{log}\left(\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions})\right)$ dans un tableau à double entrée.
+On peut représenter la modélisation de
+$\textrm{log}\left(\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions})\right)$
+dans un tableau à double entrée.
 
 |   | $\texttt{Conditions}=\texttt{"Dry"}$ | $\texttt{Conditions}=\texttt{"Wet"}$ |
-|-----------------|----------------------|----------------------------------|
-| $\texttt{Site}=\texttt{"FLWT"}$ | $\beta_0+\beta_1\texttt{Weight}$  | $\beta_0+\beta_5+(\beta_1+\beta_9)\texttt{Weight}$  |
-| $\texttt{Site}=\texttt{"FTWT"}$ | $\beta_0+\beta_2+(\beta_1+\beta_{6})\texttt{Weight}$ | $\beta_0+\beta_2+\beta_5+\beta_{10}+(\beta_1+\beta_6+\beta_9+\beta_{13})\texttt{Weight}$  |
+|------------------|---------------------|---------------------------------|
+| $\texttt{Site}=\texttt{"FLWT"}$ | $\beta_0+\beta_1\texttt{Weight}$ | $\beta_0+\beta_5+(\beta_1+\beta_9)\texttt{Weight}$ |
+| $\texttt{Site}=\texttt{"FTWT"}$ | $\beta_0+\beta_2+(\beta_1+\beta_{6})\texttt{Weight}$ | $\beta_0+\beta_2+\beta_5+\beta_{10}+(\beta_1+\beta_6+\beta_9+\beta_{13})\texttt{Weight}$ |
 | $\texttt{Site}=\texttt{"GPWT"}$ | $\beta_0+\beta_3+(\beta_1+\beta_{7})\texttt{Weight}$ | $\beta_0+\beta_3+\beta_5+\beta_{11}+(\beta_1+\beta_7+\beta_9+\beta_{14})\texttt{Weight}$ |
 | $\texttt{Site}=\texttt{"INWT"}$ | $\beta_0+\beta_4+(\beta_1+\beta_{8})\texttt{Weight}$ | $\beta_0+\beta_4+\beta_5+\beta_{12}+(\beta_1+\beta_8+\beta_9+\beta_{15})\texttt{Weight}$ |
 
@@ -286,12 +290,12 @@ On ajuste le modèle avec la fonction `glm`.
 ```{webr}
 #| envir: baser
 #| autorun: true
-modele_q3_full <- glm(
+modele_q3 <- glm(
   formula = Effectifs ~ Weight*Site*Conditions,
   family = poisson(),
   data = data_fourmis
 )
-summary(modele_q3_full)
+summary(modele_q3)
 ```
 
 ### Tidyverse
@@ -299,235 +303,29 @@ summary(modele_q3_full)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-modele_q3_full <- glm(
+modele_q3 <- glm(
   formula = Effectifs ~ Weight*Site*Conditions,
   family = poisson(),
   data = data_fourmis
 )
-summary(modele_q3_full)
+summary(modele_q3)
 ```
 :::
 
-Une analyse rapide des résultats de la sortie donnée par la fonction `summary` met en évidence de nombreux coefficients non significatifs. Cependant, l’interaction triple semblerait pertinente car certains coefficients associés sont significatifs au seuil 5 %. Ainsi, le coefficient associé à la variable `Weight` ne varie pas de manière significative lorsqu’on considère uniquement le site ou les conditions séparément (cf. interactions doubles) mais il semble varier quand on prend en compte à la fois `Site` et `Conditions`.
-
-On peut chercher des modèles plus simples à partir des critères `BIC` ou `AIC`. On mettre en oeuvre une procédure de sélection exhaustive ici vu le nombre de variables.
-
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-combinaisons <- expand.grid(list(
-  Weight = c(FALSE, TRUE),
-  Site =  c(FALSE, TRUE),
-  Conditions =  c(FALSE, TRUE),
-  `Weight:Site` =  c(FALSE, TRUE),
-  `Weight:Conditions` = c(FALSE, TRUE),
-  `Site:Conditions` = c(FALSE, TRUE),
-  `Weight:Site:Conditions` = c(FALSE, TRUE)
-))
-# On exclut les combinaisons qui n'ont pas de sens c'est à dire 
-# inlure une interraction alors que tous les effets simples ne pas présents
-combinaisons <- combinaisons[
-  !ifelse(
-    combinaisons$`Weight:Site`,
-    !(combinaisons$Weight & combinaisons$Site),
-    FALSE
-  ),
-]
-combinaisons <- combinaisons[
-  !ifelse(
-    combinaisons$`Weight:Conditions`,
-    !(combinaisons$Weight & combinaisons$Conditions),
-    FALSE
-  ),
-]
-combinaisons <- combinaisons[
-  !ifelse(
-    combinaisons$`Site:Conditions`,
-    !(combinaisons$Site & combinaisons$Conditions),
-    FALSE
-  ),
-]
-#ou inclure l’interaction triple sans les interactions doubles 
-combinaisons <- combinaisons[
-  !ifelse(
-    combinaisons$`Weight:Site:Conditions`,
-    !(combinaisons$`Weight:Site` & combinaisons$`Weight:Conditions` & combinaisons$`Site:Conditions`),
-    FALSE
-  ),
-]
-combinaisons
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-combinaisons <- expand.grid(
-  Weight = c(FALSE, TRUE),
-  Site = c(FALSE, TRUE),
-  Conditions = c(FALSE, TRUE),
-  `Weight:Site` = c(FALSE, TRUE),
-  `Weight:Conditions` = c(FALSE, TRUE),
-  `Site:Conditions` = c(FALSE, TRUE),
-  `Weight:Site:Conditions` = c(FALSE, TRUE)
-) |>
-  tibble::as_tibble() %>%
-  # Exclusion des combinaisons non valides
-  dplyr::filter(
-    # Vérification pour "Weight:Site"
-    !(`Weight:Site` & !(Weight & Site)),
-    # Vérification pour "Weight:Conditions"
-    !(`Weight:Conditions` & !(Weight & Conditions)),
-    # Vérification pour "Site:Conditions"
-    !(`Site:Conditions` & !(Site & Conditions)),
-    # Vérification pour "Weight:Site:Conditions"
-    !(`Weight:Site:Conditions` & 
-        !(`Weight:Site` & `Weight:Conditions` & `Site:Conditions`))
-  )
-
-combinaisons
-```
-:::
-
-Il y a 19 modèles à estimer.
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-# On ajuste les 19 modèles et on calcule les différents BIC et AIC associés
-lapply(
-  X = seq.int(nrow(combinaisons)),
-  FUN = function(i){
-    termes <- colnames(combinaisons[i,])[as.logical(combinaisons[i,])]
-    if(length(termes) == 0L){
-      formule <- as.formula("Effectifs ~ 1")
-    } else {
-      formule <- paste0(
-        "Effectifs ~ ",
-        paste0(termes, collapse = "+")
-      ) |> as.formula()
-    }
-    
-    estimation <-  glm(
-      formula = formule,
-      family = poisson(),
-      data = data_fourmis
-    )
-    data.frame(
-      termes = paste0(termes, collapse = "+"),
-      AIC = AIC(estimation),
-      BIC = BIC(estimation)
-    )
-  }
-) |> do.call(what = rbind.data.frame)
-
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-lapply(
-  X = seq.int(nrow(combinaisons)),
-  FUN = function(i){
-    termes <- colnames(combinaisons[i,])[as.logical(combinaisons[i,])]
-    if(length(termes) == 0L){
-      formule <- as.formula("Effectifs ~ 1")
-    } else {
-      formule <- paste0(
-        "Effectifs ~ ",
-        paste0(termes, collapse = "+")
-      ) |> as.formula()
-    }
-    
-    estimation <-  glm(
-      formula = formule,
-      family = poisson(),
-      data = data_fourmis
-    )
-    
-    tibble::tibble(
-      termes = paste0(termes, collapse = "+"),
-      AIC = AIC(estimation),
-      BIC = BIC(estimation)
-    )
-  }
-) |> dplyr::bind_rows()
-```
-:::
-
-Le modèle avec interaction triple est préféré avec le critère AIC et le modèle avec seulement `Weight`, `Site`, `Conditions` et l'interaction entre `Site` et `Conditions` est préféré avec le critère BIC. Par souci de parcimonie, on pourrait préférer le modèle sans interaction triple.
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-modele_q3_sel <- glm(
-  formula = Effectifs ~ Weight+Site+Conditions+Site:Conditions,
-  family = poisson(),
-  data = data_fourmis
-)
-summary(modele_q3_sel)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-modele_q3_sel <- glm(
-  formula = Effectifs ~ Weight+Site+Conditions+Site:Conditions,
-  family = poisson(),
-  data = data_fourmis
-)
-summary(modele_q3_sel)
-```
-:::
+Une analyse rapide des résultats de la sortie donnée par la fonction
+`summary` met en évidence de nombreux coefficients non significatifs.
+Cependant, l’interaction triple semblerait pertinente car certains
+coefficients associés sont significatifs au seuil 5 %. Ainsi, le
+coefficient associé à la variable `Weight` ne varie pas de manière
+significative lorsqu’on considère uniquement le site ou les conditions
+séparément (cf. interactions doubles) mais il semble varier quand on
+prend en compte à la fois `Site` et `Conditions`.
 
 ## Question 4
 
-On adopte la même démarche. On estime d'abord le modèle avec le plus de termes.
-On utilise la fonction `glm.nb` du package `MASS`.
+On met en place les différentes procédure de sélction demandées
 
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-modele_q4_full <- MASS::glm.nb(
-  formula = Effectifs ~ Weight*Site*Conditions,
-  data = data_fourmis
-)
-summary(modele_q4_full)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-modele_q4_full <- MASS::glm.nb(
-  formula = Effectifs ~ Weight*Site*Conditions,
-  data = data_fourmis
-)
-summary(modele_q4_full)
-```
-:::
-
-Certains tests de Wald indiquent que des coefficients issus de l'interaction triple sont à nouveau significatifs avec une loi binomiale négative. On cherche à nouveau des modèles plus simples.
+**Backward avec l'AIC**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -535,32 +333,12 @@ Certains tests de Wald indiquent que des coefficients issus de l'interaction tri
 ```{webr}
 #| envir: baser
 #| autorun: true
-# On ajuste les 19 modèles et on calcule les différents BIC et AIC associés
-lapply(
-  X = seq.int(nrow(combinaisons)),
-  FUN = function(i){
-    termes <- colnames(combinaisons[i,])[as.logical(combinaisons[i,])]
-    if(length(termes) == 0L){
-      formule <- as.formula("Effectifs ~ 1")
-    } else {
-      formule <- paste0(
-        "Effectifs ~ ",
-        paste0(termes, collapse = "+")
-      ) |> as.formula()
-    }
-    
-    estimation <-  MASS::glm.nb(
-      formula = formule,
-      data = data_fourmis
-    )
-    data.frame(
-      termes = paste0(termes, collapse = "+"),
-      AIC = AIC(estimation),
-      BIC = BIC(estimation)
-    )
-  }
-) |> do.call(what = rbind.data.frame)
-
+modele_q4_sel_backward_aic <- step(
+  object = modele_q3,
+  trace = 0,
+  direction = "backward"
+)
+summary(modele_q4_sel_backward_aic)
 ```
 
 ### Tidyverse
@@ -568,48 +346,30 @@ lapply(
 ```{webr}
 #| envir: tdv
 #| autorun: true
-lapply(
-  X = seq.int(nrow(combinaisons)),
-  FUN = function(i){
-    termes <- colnames(combinaisons[i,])[as.logical(combinaisons[i,])]
-    if(length(termes) == 0L){
-      formule <- as.formula("Effectifs ~ 1")
-    } else {
-      formule <- paste0(
-        "Effectifs ~ ",
-        paste0(termes, collapse = "+")
-      ) |> as.formula()
-    }
-    
-    estimation <-  MASS::glm.nb(
-      formula = formule,
-      data = data_fourmis
-    )
-    
-    tibble::tibble(
-      termes = paste0(termes, collapse = "+"),
-      AIC = AIC(estimation),
-      BIC = BIC(estimation)
-    )
-  }
-) |> dplyr::bind_rows()
+modele_q4_sel_backward_aic <- step(
+  object = modele_q3,
+  trace = 0,
+  direction = "backward"
+)
+summary(modele_q4_sel_backward_aic)
 ```
 :::
 
+**Backward avec le BIC**
 
-Le modèle avec `Weight`, `Site`, `Conditions` et l'interaction entre `Site` et `Conditions` est préféré avec le critère AIC et modèle avec  `Weight` et `Site` pour le BIC.
-
-
+::: {.panel-tabset group="language"}
+### Base R
 
 ```{webr}
 #| envir: baser
 #| autorun: true
-modele_q4_sel <- MASS::glm.nb(
-  formula = Effectifs ~ Weight+Site+Conditions+Site:Conditions,
-  family = poisson(),
-  data = data_fourmis
+modele_q4_sel_backward_bic <-step(
+  object = modele_q3,
+  trace = 0,
+  direction = "backward",
+  k = log(nrow(data_fourmis))
 )
-summary(modele_q3_sel)
+summary(modele_q4_sel_backward_bic)
 ```
 
 ### Tidyverse
@@ -617,184 +377,234 @@ summary(modele_q3_sel)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-modele_q4_sel <- MASS::glm.nb(
-  formula = Effectifs ~ Weight+Site+Conditions+Site:Conditions,
-  family = poisson(),
-  data = data_fourmis
+modele_q4_sel_backward_bic <- step(
+  object = modele_q3,
+  trace = 0,
+  direction = "backward",
+  k = log(nrow(data_fourmis))
 )
-summary(modele_q3_sel)
+summary(modele_q4_sel_backward_bic)
 ```
 :::
+
+**Foreward avec l'AIC**
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+modele_q4_sel_forward_aic <- step(
+  object = glm(
+    formula = Effectifs ~ 1,
+    family = poisson(),
+    data = data_fourmis
+  ),
+  scope = list(upper = Effectifs ~ Weight*Site*Conditions),
+  trace = 0,
+  direction = "forward"
+)
+summary(modele_q4_sel_forward_aic)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_q4_sel_forward_aic <- step(
+  object = glm(
+    formula = Effectifs ~ 1,
+    family = poisson(),
+    data = data_fourmis
+  ),
+  scope = list(upper = Effectifs ~ Weight*Site*Conditions),
+  trace = 0,
+  direction = "forward"
+)
+summary(modele_q4_sel_forward_aic)
+```
+:::
+
+**Foreward avec le BIC**
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+modele_q4_sel_forward_bic <- step(
+  object = glm(
+    formula = Effectifs ~ 1,
+    family = poisson(),
+    data = data_fourmis
+  ),
+  scope = list(upper = Effectifs ~ Weight*Site*Conditions),
+  trace = 0,
+  direction = "forward",
+  k = log(nrow(data_fourmis))
+)
+summary(modele_q4_sel_forward_bic)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_q4_sel_forward_bic <- step(
+  object = glm(
+    formula = Effectifs ~ 1,
+    family = poisson(),
+    data = data_fourmis
+  ),
+  scope = list(upper = Effectifs ~ Weight*Site*Conditions),
+  trace = 0,
+  direction = "forward",
+  k = log(nrow(data_fourmis))
+)
+summary(modele_q4_sel_forward_bic)
+```
+:::
+
+**Synthèse**
+
+On compare les modèles sélectionnés :
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+data.frame(
+  `Méthode` = c("Backward", "Backward", "Forward", "Forward"),
+  `Critère` = c("AIC", "BIC", "AIC", "BIC"),
+  `Formula` = c(
+    strsplit(toString(modele_q4_sel_backward_aic$call), ",")[[1]][2],
+    strsplit(toString(modele_q4_sel_backward_bic$call), ",")[[1]][2],
+    strsplit(toString(modele_q4_sel_forward_aic$call), ",")[[1]][2],
+    strsplit(toString(modele_q4_sel_forward_bic$call), ",")[[1]][2]
+  ),
+  AIC = c(
+    AIC(modele_q4_sel_backward_aic),
+    AIC(modele_q4_sel_backward_bic),
+    AIC(modele_q4_sel_forward_aic),
+    AIC(modele_q4_sel_forward_bic)
+  ),
+  BIC = c(
+    BIC(modele_q4_sel_backward_aic),
+    BIC(modele_q4_sel_backward_bic),
+    BIC(modele_q4_sel_forward_aic),
+    BIC(modele_q4_sel_forward_bic)
+  )
+)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+data.frame(
+  `Méthode` = c("Backward", "Backward", "Forward", "Forward"),
+  `Critère` = c("AIC", "BIC", "AIC", "BIC"),
+  `Formula` = c(
+    strsplit(toString(modele_q4_sel_backward_aic$call), ",")[[1]][2],
+    strsplit(toString(modele_q4_sel_backward_bic$call), ",")[[1]][2],
+    strsplit(toString(modele_q4_sel_forward_aic$call), ",")[[1]][2],
+    strsplit(toString(modele_q4_sel_forward_bic$call), ",")[[1]][2]
+  ),
+  AIC = c(
+    AIC(modele_q4_sel_backward_aic),
+    AIC(modele_q4_sel_backward_bic),
+    AIC(modele_q4_sel_forward_aic),
+    AIC(modele_q4_sel_forward_bic)
+  ),
+  BIC = c(
+    BIC(modele_q4_sel_backward_aic),
+    BIC(modele_q4_sel_backward_bic),
+    BIC(modele_q4_sel_forward_aic),
+    BIC(modele_q4_sel_forward_bic)
+  )
+)
+```
+:::
+
+On garderait donc le modèle général (celui de la question 3) selon AIC
+et le modèle le plus simple `Site+Weight` selon le BIC.
 
 ## Question 5
 
-L'odds de l'évènement
-$\texttt{impair}\leq k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})$
-est :
+On peut découper le combinaison de paramétrage pour l'ordonnée à
+l'origine et pour la pente associée à la variable `Weight`. L'ensemble
+des combinaisons possibles de sous-modèle sera ainsi le produit
+cartésien de ces deux sous ensembles.
 
-$$
-\begin{align*}
-\texttt{odds}_k(\textbf{x}) &= \frac{\mathbb{P}(\texttt{impair}\leq k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))}{1-\mathbb{P}(\texttt{impair}\leq k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))} \\
-&=\exp\left(\textrm{logit}\left(\mathbb{P}(\texttt{impair}\leq k | (\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))\right)\right) \\
-&= \exp\left(\beta_0^{(k)}+\beta_1x_{\texttt{ses}=1}+\beta_2x_\texttt{life} \right)
-\end{align*}
-$$
+**Choix pour l'ordonnée à l'origine**
 
-Ainsi pour un individu avec des caractéristiques
-$\textbf{x}=(\texttt{ses}=1, \texttt{life}=x_{\texttt{life}})$ et un
-autre individu avec les caractéristiques
-$\textbf{x}'=(\texttt{ses}=0, \texttt{life}=x_{\texttt{life}})$, on a :
+Il y a 5 possibilités pour l'ordonnée à l'origine pour un modèle avec
+une constante.
 
-$$\texttt{OR}(\textbf{x},\textbf{x}') = \frac{\texttt{odds}_k(\textbf{x})}{\texttt{odds}_k(\textbf{x}')}=\frac{\exp(\beta_0^{(k)}+\beta_1+\beta_2x_\texttt{life})}{\exp(\beta_0^{(k)}+\beta_2x_\texttt{life})}=\exp(\beta_1)$$
+-   Une constante unique : `1`
+-   Une constante par type de forêt : `Site`
+-   Une constante selon les conditions de recueil : `Conditions`
+-   Une constante qui additionne l'effet du type de forêt et les
+    conditions de recueil : `Site + Conditions`
+-   Une constante par croisement du type de forêt et conditions de
+    recueil : `Site:Conditions`
 
-Ainsi un estimateur de $\texttt{OR}(\textbf{x},\textbf{x}')$ est
+**Choix pour la pente associée à la variable `weight`**
 
-$\exp\left(\hat{\beta}_1\right)$
+-   Pente nulle qui signifie l'absnece d'effet du poids de l'échantillon
+    : `0*Weight`
+-   Une pente unique : `Weight`
+-   Une pente type de forêt : `Weight:Site`
+-   Une pente selon les conditions de recueil : `Weight:Site`
+-   Une pente qui additionne l'effet du type de forêt et les conditions
+    de recueil : `Weight:Site + Weight:Conditions`
+-   Une pente par croisement du type de forêt et conditions de recueil :
+    `Weight:Site:Conditions`
 
-::: {.panel-tabset group="language"}
-### Base R
+Il y a donc $5 \times 6 = 30$ modèles possibles.
+
+::: {.callout-note collapse="true"}
+### Compléments : Implémentation de la recherche exhaustive
+
+On pourrait implémenter soi-même la recherche exhaustive avec quelques
+lignes de codes en R. Ce n'est pas immédiat et donc pas demandé dans
+l'exercice.
 
 ```{webr}
 #| envir: baser
 #| autorun: true
-exp(modele_q4@coefficients[4])
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-exp(modele_q4@coefficients[4])
-```
-:::
-
-::: {.callout-note appearance="simple"}
-### Remarque
-
-Les objets retournés par la méthode `vglm` sont de type S4 contrairement
-à ceux retournés par `glm` (qui sont de type S3). Pour accéder au
-attributs, on utilise le symbole `@` au lieu de `$`.
-:::
-
-Cette quantité permet d'évaluer l'évolution de la côte sur la santé
-mentale lorsqu'une personne a un statut socio-économique par rapport a
-quelqu'un qui a un statut économique faible toutes choses égales par
-ailleurs.
-
-On peut dire :
-
-**"Toutes choses égales par ailleurs, lorsqu'un indivdu passe d'un
-statut socio-économique faible à élevé, l'odds d'avoir au plus un
-certain niveau de dégénérescence mentale est multiplié par 3"**.
-
-Les individus avec un statut économique plus élevés ont donc toutes
-choses égales par ailleurs une meilleur santé mentale.
-
-::: callout-warning
-**Il faut faire attention à ne pas interpréter à tort cette évolution
-sur l'odds (en français cote) comme une évolution sur le risque (c'est à
-dire sur la probabilité de l'évènement qui nous intéresse)**. Ici, il
-s'agirait de la probabilité d'avoir au plus un certain niveau de
-dégénérescence mentale :
-$P(\texttt{impair}\leq k|\textbf{X}=\textbf{x})$.
-
-On ne peut donc pas dire : ~~"Toutes choses égales par ailleurs,
-lorsqu'un indivdu passe d'un statut socio-économique faible à élevé, la
-probabilité d'avoir au plus un certain niveau de dégénérescence mentale
-est multipliée par 3"~~
-
-La probabilité et la cote sont deux quantités différentes. La première
-est bornée entre 0 et 1 contrairement à la seconde qui n'a pas de
-maximum. On peut le voir visuellement avec cette relation liant les deux
-sur le graphique ci-dessous qui se différencie de la première
-bissectrice du plan.
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-proba <- seq(from=0,to=0.9,by=0.05)
-cote <- proba/(1-proba)
-ggplot2::ggplot(
-  mapping = aes(x=x,y=y),
-  data = data.frame(
-    x=proba,
-    y=cote
-  )
-) +
-  ggplot2::geom_line(color="red") +
-  ggplot2::geom_line(
-    mapping = ggplot2::aes(x=x,y=y),
-    data=data.frame(x=proba,y=proba),
-    color="black"
-  ) +
-  ggplot2::labs(
-    title = "Lien (en rouge) entre odds et probabilité d'un évènement",
-    x = "Probabilité d'un évènement",
-    y = "Côte/Odds d'un évènement"
-  ) +
-  ggplot2::theme_minimal()
-```
-
-Cependant, on peut remarquer sur ce graphique qu'on peut faire cette
-approximation pour des faibles probabilités (par exemple pour des
-probabilités inférieures à 10 %) ou plus formellement avec un
-développement limité à l'ordre 1.
-
-$$
-\frac{p}{1-p} \underset{p \to 0}{=} p + o(p)
-$$
-
-Dans cet exercice avec ce modèle cumulatif, l'emploi de cette
-approximation n'est pas acceptable car les évènements d'avoir au plus un
-certain niveau de dégénérescence mentale ne sont pas rares.
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-x_life <- seq(from=0,to=9,by=0.25)
-logit_proba_predites_cumulees <-  predict(
-  object = modele_q4,
-  newdata = data.frame(ses = 0, life = x_life),
-  type = "link"
-)
-proba_predites_cumulees <- as.data.frame(apply(
-  X = logit_proba_predites_cumulees,
-  MARGIN = 2,
-  FUN = function(x){exp(x)/(1+exp(x))}
+data_combinaisons <- expand.grid(list(
+  constante = c("1", "Site", "Conditions", "Site + Conditions", "Site:Conditions"),
+  pente = c("0*Weight", "Weight" ,"Weight:Site", "Weight:Conditions", "Weight:Site + Weight:Conditions", "Weight:Site:Conditions")
 ))
-colnames(proba_predites_cumulees) <- c(
-  "P[impair <= 1]",
-  "P[impair <= 2]",
-  "P[impair <= 3]"
+combinaisons <- paste0(
+  "Effectifs ~ ",
+  data_combinaisons$constante,
+  " + ",
+  data_combinaisons$pente
 )
 
-proba_predites_cumulees$life <- x_life
-
-proba_predites_cumulees_long <-  proba_predites_cumulees |>
-  tidyr::gather(key="type_proba", value="valeur_proba", -life)
-
-ggplot2::ggplot(
-  mapping = aes(x=life,y=valeur_proba, color=type_proba),
-  data = proba_predites_cumulees_long
-) +
-  ggplot2::geom_line() +
-  ggplot2::labs(
-    title = "Probabilités cumulées prédites par le modèle selon la variable life (ses=0)",
-    x = "life",
-    y = "Probabilité", 
-    colour = "Type de probabilité"
-  ) +
-  ggplot2::theme_minimal()
+lapply(
+  X = combinaisons,
+  FUN = function(x){
+    estimation <-  glm(formula = x, family = poisson(), data = data_fourmis)
+    data.frame(formula = x, AIC = AIC(estimation), BIC = BIC(estimation))
+  }
+) |> do.call(what = rbind.data.frame)
 ```
 :::
 
-:::::::::::::: {.content-hidden when-format="html"}
 ## Question 6
 
-L'intervalle de confiance asymptotique au niveau de confiance
-$1 − \alpha$ pour $\hat{\beta_1}$ est donnée par :
-$$\left[\hat{\beta}_1 - q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \ ; \ \hat{\beta}_1 + q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \right]$$
+On estime le meilleur modèle log-linéaire de Poisson au sens du BIC et
+de l'AIC.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -802,18 +612,13 @@ $$\left[\hat{\beta}_1 - q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \ ; \ \h
 ```{webr}
 #| envir: baser
 #| autorun: true
-alpha <- 0.05
-beta_mle_1 <- modele_q4@coefficients[4]
-sigma_est_1 <- sqrt(vcov(modele_q4)[4,4])
-quantile_alpha <- qnorm(mean = 0, sd = 1, p = 1-alpha/2) 
-
-paste0(
-  "[",
-  beta_mle_1-quantile_alpha*sigma_est_1,
-  " ; ",
-  beta_mle_1+quantile_alpha*sigma_est_1,
-  "]"
+modele_q6 <- glm(
+  formula = Effectifs ~ Weight:Site:Conditions,
+  family = poisson(),
+  data = data_fourmis
 )
+summary(modele_q6)
+BIC(modele_q6)
 ```
 
 ### Tidyverse
@@ -821,46 +626,23 @@ paste0(
 ```{webr}
 #| envir: tdv
 #| autorun: true
-alpha <- 0.05
-beta_mle_1 <- modele_q4@coefficients[4]
-sigma_est_1 <- sqrt(vcov(modele_q4)[4,4])
-quantile_alpha <- qnorm(mean = 0, sd = 1, p = 1-alpha/2) 
-
-paste0(
-  "[",
-  beta_mle_1-quantile_alpha*sigma_est_1,
-  " ; ",
-  beta_mle_1+quantile_alpha*sigma_est_1,
-  "]"
+modele_q6 <- glm(
+  formula = Effectifs ~ Weight:Site:Conditions,
+  family = poisson(),
+  data = data_fourmis
 )
+summary(modele_q6)
+BIC(modele_q6)
 ```
 :::
 
-On pouvait aussi utiliser la fonction `confint`.
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-confint(modele_q4)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-confint(modele_q4)
-```
-:::
+On obtient AIC=1008 et BIC=1036.6, qui sont bien plus faibles que ceux
+des modèles retenus par sélection stepwise.
 
 ## Question 7
 
-Par monotonie de la fonction $\exp$, on peut construire un intervalle de
-confiance en passant à l'exponentielle dans les bornes de l'IC
-précédent.
+On adopte la même démarche. On estime d'abord le modèle avec le plus de
+termes. On utilise la fonction `glm.nb` du package `MASS`.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -868,7 +650,11 @@ précédent.
 ```{webr}
 #| envir: baser
 #| autorun: true
-exp(confint(modele_q4)["ses",])
+modele_q7 <- MASS::glm.nb(
+  formula = Effectifs ~ Weight*Site*Conditions,
+  data = data_fourmis
+)
+summary(modele_q7)
 ```
 
 ### Tidyverse
@@ -876,45 +662,44 @@ exp(confint(modele_q4)["ses",])
 ```{webr}
 #| envir: tdv
 #| autorun: true
-exp(confint(modele_q4)["ses",])
+modele_q7 <- MASS::glm.nb(
+  formula = Effectifs ~ Weight*Site*Conditions,
+  data = data_fourmis
+)
+summary(modele_q7)
 ```
 :::
+
+Avec ce modèle, l’interaction triple semble également significative. On
+obtient AIC=992 et BIC=1046, ce qui est inférieur à l’AIC et au BIC du
+modèle de Poisson avec interaction triple (AIC=1010 et BIC=1061).
+
+Ce résultat est encourageant et nous incite à chercher le meilleur
+sous-modèle possible.
 
 ## Question 8
 
-D'après la sortie obtenue à la [question 4](#question-4) et les p-valeur
-des tests de Wald, le coefficient $\beta_1$ est non significatif au
-seuil d'erreur 5 % mais il est significatif au seuil 10 %.
+::: {.callout-note collapse="true"}
+### Complément : Implémentation de la recherche exhaustive
 
-## Question 9 {#question-9}
+On pourrait à nouveau implémenter soi-même la recherche exhaustive avec
+quelques lignes de codes en R pour retrouver le résultat de l'énoncé. Ce
+n'est toujours pas immédiat.
 
-On peut ajouter un terme d'interaction entre deux variables avec
-l'opérateur `:` afin d'évaluer si l'effet du nombre et de l'intensité
-des bouleversements connus est le même sur la santé mentale quel que
-soit le niveau socio-économique.
+```{webr}
+#| envir: baser
+#| autorun: true
+lapply(
+  X = combinaisons,
+  FUN = function(x){
+    estimation <-  glm.nb(formula = x, data = data_fourmis)
+    data.frame(formula = x, AIC = AIC(estimation), BIC = BIC(estimation))
+  }
+) |> do.call(what = rbind.data.frame)
+```
+:::
 
-Ce nouveau modèle de régression cumulatif proportionnel avec terme
-d'interaction s'écrit :
-
-$$
-\begin{align*}
-\texttt{impair}&|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}) \sim \mathcal{M}( \\
-&n=1, \\
-&\mathbb{P}(\texttt{impair}\leq 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
-&\mathbb{P}(\texttt{impair}\leq 2|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))-\mathbb{P}(\texttt{impair}\leq 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
-&\mathbb{P}(\texttt{impair}\leq 3|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))-\mathbb{P}(\texttt{impair}\leq 2|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
-&1 - \mathbb{P}(\texttt{impair}\leq 3|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))) \\
-\end{align*}
-$$
-
-avec pour tout $k \in \{1,2,3\}$
-
-$$
- \textrm{logit}\left(\mathbb{P}(\texttt{impair}\leq k | (\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))\right) = \alpha_0^{(k)}+\alpha_1x_{\texttt{ses}}+\alpha_2x_\texttt{life}+\alpha_3x_{\texttt{ses}=1}x_\texttt{life}
-$$
-
-Il y a 6 paramètres à estimer : $\alpha_0^{(1)}$, $\alpha_0^{(2)}$,
-$\alpha_0^{(3)}$, $\alpha_1$ et $\alpha_2$, $\alpha_3$.
+**Modèle binomial négatif sélectionné par l'AIC**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -922,12 +707,12 @@ $\alpha_0^{(3)}$, $\alpha_1$ et $\alpha_2$, $\alpha_3$.
 ```{webr}
 #| envir: baser
 #| autorun: true
-modele_q9 <- vglm(
-  formula = impair ~ ses + life + ses:life,
-  family = cumulative(parallel = TRUE),
-  data = data_mental
+modele_q8_best_aic <- MASS::glm.nb(
+  formula = Effectifs ~ 1 + Weight:Site:Conditions,
+  data = data_fourmis
 )
-summary(modele_q9)
+summary(modele_q8_best_aic)
+BIC(modele_q8_best_aic)
 ```
 
 ### Tidyverse
@@ -935,31 +720,18 @@ summary(modele_q9)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-modele_q9 <- VGAM::vglm(
-  formula = impair ~ ses + life + ses:life,
-  family = cumulative(parallel = TRUE),
-  data = data_mental
+modele_q8_best_aic <- MASS::glm.nb(
+  formula = Effectifs ~ 1 + Weight:Site:Conditions,
+  data = data_fourmis
 )
-summary(modele_q9)
+summary(modele_q8_best_aic)
+BIC(modele_q8_best_aic)
 ```
 :::
 
-Pour évaluer la pertinence de ce terme d'intéraction, on peut réaliser
-un test du rapport de vraisemblance entre ces deux modèles emboités.
+Son AIC vaut 986 et son BIC 1018.
 
-L'hypothèse nulle $H_0$ est $\beta_3=0$
-
-Sous $H_0$, la statistique de test du rapport de vraisemblance :
-$$ -2 \ln\left(\frac{L_n^{(\textrm{modele contraint})}}{L_n^{(\textrm{modele non contraint})}}\right) \sim \chi^2(\underbrace{\textrm{nb de coefficients contraints}}_{1})$$
-
-avec :
-
--   $L_n^{(\textrm{modele contraint})}$ : la vraisemblance du modèle
-    contraint par l'hypothèse nulle (il s'agit du modèle estimé à la
-    [question 4](#question-4))
--   $L_n^{(\textrm{modele non contraint})}$ : la vraisemblance du modèle
-    non contraint ou il faut estimer le coefficient d'intéraction
-    $\beta_3$, celui qu'on vient d'estimer dans cette question.
+**Modèle binomial négatif sélectionné par le BIC**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -967,8 +739,12 @@ avec :
 ```{webr}
 #| envir: baser
 #| autorun: true
-2*(logLik(modele_q9)-logLik(modele_q4))
-qchisq(0.95,1)
+modele_q8_best_bic <- MASS::glm.nb(
+  formula = Effectifs ~ 1 + Weight:Site,
+  data = data_fourmis
+)
+summary(modele_q8_best_bic)
+BIC(modele_q8_best_bic)
 ```
 
 ### Tidyverse
@@ -976,115 +752,84 @@ qchisq(0.95,1)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-2*(logLik(modele_q9)-logLik(modele_q4))
-qchisq(0.95,1)
+modele_q8_best_bic <- MASS::glm.nb(
+  formula = Effectifs ~ 1 + Weight:Site,
+  data = data_fourmis
+)
+summary(modele_q8_best_bic)
+BIC(modele_q8_best_bic)
 ```
 :::
 
-Le quantile 0.95 d'une $\chi^2$ à 1 degrés de liberté est supérieur à la
-statistique de test. On ne rejette pas l'hypothèse nulle pour un risque
-de première espèce $\alpha=0.05$.
+Son AIC vaut 997 et son BIC 1016.
 
-Ainsi, le modèle avec le terme d'intéraction n'est pas significativement
-meilleur au seuil d'erreur asymptotique de 5 %.
+Evidemment l’AIC du premier est inférieur à celui du second, et
+inversement pour le BIC.
+
+## Question 9
+
+Le meilleur modèle de Poisson au sens de l’AIC et du BIC dépend de
+`Weight:Site:Conditions`. Il fait donc intervenir les conditions
+d’humidité.
+
+Le meilleur modèle binomial négatif au sens de l’AIC fait intervenir les
+mêmes variables. Celui au sens du BIC fait intervenir `Weight:Site` et
+ne dépend pas des conditions.
+
+En comparant, le modèle de Poisson avec `Weight:Site:Conditions` et le
+modèle binomial négatif avec les mêmes variables : les critères AIC et
+BIC nous conduisent tous deux au second choix : le meilleur modèle
+binomal négatif au sens de l'AIC.
 
 ## Question 10
 
-Le modèle de régression logistique cumulatif sans structure
-proportionnelle et sans terme d'intéraction s'écrit :
+Le modèle sélectionné de la variables s'écrit :
 
 $$
 \begin{align*}
-\texttt{impair}&|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}) \sim \mathcal{M}( \\
-&n=1, \\
-&\mathbb{P}(\texttt{impair}\leq 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
-&\mathbb{P}(\texttt{impair}\leq 2|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))-\mathbb{P}(\texttt{impair}\leq 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
-&\mathbb{P}(\texttt{impair}\leq 3|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))-\mathbb{P}(\texttt{impair}\leq 2|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
-&1 - \mathbb{P}(\texttt{impair}\leq 3|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))) \\
+\texttt{Effectifs}&|(\texttt{Weight}, \texttt{Site},\texttt{Conditions}) \sim NB(\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions}), \theta)
 \end{align*}
 $$
 
-avec pour tout $k \in \{1,2,3\}$
+avec
 
 $$
- \textrm{logit}\left(\mathbb{P}(\texttt{impair}\leq k | (\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))\right) = \gamma_0^{(k)}+\gamma_1^{(k)}x_{\texttt{ses}}+\gamma_2^{(k)}x_\texttt{life}
+\begin{align*}
+\textrm{log}\left(\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions})\right) = &\ \ \ \ \ 
+\beta_0 \\ 
+&+\beta_{1}\texttt{Weight}\textbf{1}_{\texttt{Site}=\texttt{FLWT}}\textbf{1}_{\texttt{Conditions}=\texttt{Dry}}  \\
+&+\beta_{2}\texttt{Weight}\textbf{1}_{\texttt{Site}=\texttt{FTWT}}\textbf{1}_{\texttt{Conditions}=\texttt{Dry}}  \\
+&+\beta_{3}\texttt{Weight}\textbf{1}_{\texttt{Site}=\texttt{GPWT}}\textbf{1}_{\texttt{Conditions}=\texttt{Dry}} \\
+&+\beta_{4}\texttt{Weight}\textbf{1}_{\texttt{Site}=\texttt{INWT}}\textbf{1}_{\texttt{Conditions}=\texttt{Dry}} \\
+&+\beta_{5}\texttt{Weight}\textbf{1}_{\texttt{Site}=\texttt{FLWT}}\textbf{1}_{\texttt{Conditions}=\texttt{Wet}}  \\
+&+\beta_{6}\texttt{Weight}\textbf{1}_{\texttt{Site}=\texttt{FTWT}}\textbf{1}_{\texttt{Conditions}=\texttt{Wet}}  \\
+&+\beta_{7}\texttt{Weight}\textbf{1}_{\texttt{Site}=\texttt{GPWT}}\textbf{1}_{\texttt{Conditions}=\texttt{Wet}} \\
+&+\beta_{8}\texttt{Weight}\textbf{1}_{\texttt{Site}=\texttt{INWT}}\textbf{1}_{\texttt{Conditions}=\texttt{Wet}} \\
+\end{align*}
 $$
 
-Il y a 9 paramètres à estimer : $\gamma_0^{(1)}$, $\gamma_0^{(2)}$,
-$\gamma_0^{(3)}$, $\gamma_1^{(1)}$, $\gamma_1^{(2)}$, $\gamma_1^{(3)}$,
-$\gamma_2^{(1)}$, $\gamma_2^{(2)}$ et $\gamma_2^{(3)}$.
+On estime que $\theta$ par $\hat{\theta}\approx 16,25$
 
-::: {.panel-tabset group="language"}
-### Base R
+On peut représenter les estimations de
+$\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions})$ dans un
+tableau à double entrée.
 
-```{webr}
-#| envir: baser
-#| autorun: true
-modele_q10 <- VGAM::vglm(
-  formula = impair~ses+life,
-  family = cumulative(parallel = F),
-  data=data_mental
-)
-summary(modele_q10)
-```
+|   | $\texttt{Conditions}=\texttt{"Dry"}$ | $\texttt{Conditions}=\texttt{"Wet"}$ |
+|------------------|---------------------------|---------------------------------|
+| $\texttt{Site}=\texttt{"FLWT"}$ | $\exp(1.761+0.101\texttt{Weight})$ | $\exp(1.761+0.099\texttt{Weight})$ |
+| $\texttt{Site}=\texttt{"FTWT"}$ | $\exp(1.761+0.048\texttt{Weight})$ | $\exp(1.761+0.010\texttt{Weight})$ |
+| $\texttt{Site}=\texttt{"GPWT"}$ | $\exp(1.761+0.034\texttt{Weight})$ | $\exp(1.761+0.048\texttt{Weight})$ |
+| $\texttt{Site}=\texttt{"INWT"}$ | $\exp(1.761+0.063\texttt{Weight})$ | $\exp(1.761+0.109\texttt{Weight})$ |
 
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-modele_q10 <- VGAM::vglm(
-  formula = impair~ses+life,
-  family = cumulative(parallel = F),
-  data=data_mental
-)
-summary(modele_q10)
-```
-:::
-
-À l'image de la [question 9](#question-9), on peut faire un test du
-rapport de vraisemblance entre ces deux modèles emboités.
-
-L'hypothèse nulle est
-$H_0: \gamma_1^{(1)}=\gamma_1^{(2)}=\gamma_1^{(3)}$ et
-$\gamma_2^{(1)}=\gamma_2^{(2)}=\gamma_2^{(3)}$.
-
-Les valeurs de la statistique de test et le quantile de comparaison sont
-:
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-2*(logLik(modele_q10)-logLik(modele_q4))
-qchisq(0.95,4)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-2*(logLik(modele_q10)-logLik(modele_q4))
-qchisq(0.95,4)
-```
-:::
-
-Quatre coefficients sont contraints dans le modèle avec structure
-proportionnelle.
-
-On ne rejette pas $H_0$ car la statistique de test est inférieure au
-quantile $q_{0.95}^{\chi^2(4)}$.
-
-Ainsi, le modèle avec la structure non proportionnelle n'est pas
-significativement meilleur.
+: Estimations de $\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions})$
 
 ## Question 11
 
-Au vu de la sortie du modèle à odds proportionnels et de l’analyse
-descriptive préliminaire, on peut essayer d'enlever la variable `ses`.
+On réalise une prédiction pour `Weight=10`, `Site="INWT"` et `Conditions="Dry"` afin d'obtenir les valeur de la moyenne `\lambda` de la loi binomiale négative avec la fonction `predict`.
+
+La probabilité d’observer plus de 15 espèces s’obtient ensuite grâce à la fonction de répartition d’une loi binomiale négative sous R (fonction `pnbinom`) dans laquelle $\lambda$ joue le
+rôle de la moyenne `mu` et $\theta$ joue le rôle de la taille d’échantillon `size`. 
+
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -1092,12 +837,12 @@ descriptive préliminaire, on peut essayer d'enlever la variable `ses`.
 ```{webr}
 #| envir: baser
 #| autorun: true
-modele_q11 <- VGAM::vglm(
-  formula = impair~life,
-  family = cumulative(parallel = F),
-  data = data_mental
+lambda <- predict(
+  object = modele_q8_best_aic,
+  newdata = data.frame(Site="INWT",Conditions="Dry",Weight=10),
+  type = "response"
 )
-summary(modele_q10)
+1-pnbinom(q = 14, size = modele_q8_best_aic$theta, mu = lambda)
 ```
 
 ### Tidyverse
@@ -1105,16 +850,18 @@ summary(modele_q10)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-modele_q11 <- VGAM::vglm(
-  formula = impair~life,
-  family = cumulative(parallel = F),
-  data = data_mental
+lambda <- predict(
+  object = modele_q8_best_aic,
+  newdata = data.frame(Site="INWT",Conditions="Dry",Weight=10),
+  type = "response"
 )
-summary(modele_q11)
+1-pnbinom(q = 14, size = modele_q8_best_aic$theta, mu = lambda)
 ```
 :::
 
-On fait un test du rapport de vraisemblance.
+Cette probabilité est de 0.19.
+
+Pour  `Weight=10`, `Site="INWT"` et `Conditions="Wet"`, 
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -1122,36 +869,12 @@ On fait un test du rapport de vraisemblance.
 ```{webr}
 #| envir: baser
 #| autorun: true
-2*(logLik(modele_q11)-logLik(modele_q4))
-qchisq(0.95,1)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-2*(logLik(modele_q11)-logLik(modele_q4))
-qchisq(0.95,1)
-```
-:::
-
-Au seuil de 5 %, on est donc amené à privilégier ce modèle plus simple.
-
-## Question 12
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-modele_q12 <- VGAM::vglm(
-  formula = impair ~ life,
-  family = multinomial,
-  data = data_mental
+lambda <- predict(
+  object = modele_q8_best_aic,
+  newdata = data.frame(Site="INWT",Conditions="Wet",Weight=10),
+  type = "response"
 )
-summary(modele_q12)
+1-pnbinom(q = 14, size = modele_q8_best_aic$theta, mu = lambda)
 ```
 
 ### Tidyverse
@@ -1159,44 +882,15 @@ summary(modele_q12)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-modele_q12 <- VGAM::vglm(
-  formula = impair ~ life,
-  family = multinomial,
-  data = data_mental
+lambda <- predict(
+  object = modele_q8_best_aic,
+  newdata = data.frame(Site="INWT",Conditions="Wet",Weight=10),
+  type = "response"
 )
-summary(modele_q12)
+1-pnbinom(q = 14, size = modele_q8_best_aic$theta, mu = lambda)
 ```
 :::
 
-Pour comparer avec les modèles précédents, nous ne pouvons pas utiliser
-le test du rapport de vraisemblance (ou test de déviance) car les
-modèles ne sont pas emboités. Nous pouvons par contre comparer leur
-critère AIC et BIC. Pour les deux “meilleurs” modèles de chaque
-approche, cela donne.
+la probabilité est de 0.66.
 
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-AIC(modele_q11)
-AIC(modele_q12)
-BIC(modele_q11)
-BIC(modele_q12)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-AIC(modele_q11)
-AIC(modele_q12)
-BIC(modele_q11)
-BIC(modele_q12)
-```
 :::
-
-Les deux critères conduisent au choix du modèle obtenu à la question 11.
-::::::::::::::

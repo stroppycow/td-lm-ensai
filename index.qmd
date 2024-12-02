@@ -41,4 +41,3 @@ format:
 [Exercice 6](/posts/td6-exo6.html)
 
 [Exercice 7](/posts/td6-exo7.html)
-
