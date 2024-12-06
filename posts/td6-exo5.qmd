@@ -425,7 +425,8 @@ ggplot2::ggplot(
 ```
 :::
 
-::: {.content-hidden when-format="html"}
+
+
 ## Question 6
 
 L'intervalle de confiance asymptotique au niveau de confiance
@@ -522,6 +523,8 @@ D'après la sortie obtenue à la [question 4](#question-4) et les p-valeur
 des tests de Wald, le coefficient $\beta_1$ est non significatif au
 seuil d'erreur 5 % mais il est significatif au seuil 10 %.
 
+
+
 ## Question 9 {#question-9}
 
 On peut ajouter un terme d'interaction entre deux variables avec
@@ -604,6 +607,7 @@ avec :
 #| envir: baser
 #| autorun: true
 2*(logLik(modele_q9)-logLik(modele_q4))
+summary(modele_q4)@criterion$deviance - summary(modele_q9)@criterion$deviance
 qchisq(0.95,1)
 ```
 
@@ -613,6 +617,7 @@ qchisq(0.95,1)
 #| envir: tdv
 #| autorun: true
 2*(logLik(modele_q9)-logLik(modele_q4))
+summary(modele_q4)@criterion$deviance - summary(modele_q9)@criterion$deviance
 qchisq(0.95,1)
 ```
 :::
@@ -623,6 +628,7 @@ de première espèce $\alpha=0.05$.
 
 Ainsi, le modèle avec le terme d'intéraction n'est pas significativement
 meilleur au seuil d'erreur asymptotique de 5 %.
+
 
 ## Question 10
 
@@ -694,7 +700,7 @@ Les valeurs de la statistique de test et le quantile de comparaison sont
 ```{webr}
 #| envir: baser
 #| autorun: true
-2*(logLik(modele_q10)-logLik(modele_q4))
+summary(modele_q4)@criterion$deviance - summary(modele_q10)@criterion$deviance
 qchisq(0.95,4)
 ```
 
@@ -703,7 +709,7 @@ qchisq(0.95,4)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-2*(logLik(modele_q10)-logLik(modele_q4))
+summary(modele_q4)@criterion$deviance - summary(modele_q10)@criterion$deviance
 qchisq(0.95,4)
 ```
 :::
@@ -716,6 +722,7 @@ quantile $q_{0.95}^{\chi^2(4)}$.
 
 Ainsi, le modèle avec la structure non proportionnelle n'est pas
 significativement meilleur.
+
 
 ## Question 11
 
@@ -730,10 +737,10 @@ descriptive préliminaire, on peut essayer d'enlever la variable `ses`.
 #| autorun: true
 modele_q11 <- VGAM::vglm(
   formula = impair~life,
-  family = cumulative(parallel = F),
+  family = cumulative(parallel = TRUE),
   data = data_mental
 )
-summary(modele_q10)
+summary(modele_q11)
 ```
 
 ### Tidyverse
@@ -743,7 +750,7 @@ summary(modele_q10)
 #| autorun: true
 modele_q11 <- VGAM::vglm(
   formula = impair~life,
-  family = cumulative(parallel = F),
+  family = cumulative(parallel = TRUE),
   data = data_mental
 )
 summary(modele_q11)
@@ -758,7 +765,7 @@ On fait un test du rapport de vraisemblance.
 ```{webr}
 #| envir: baser
 #| autorun: true
-2*(logLik(modele_q11)-logLik(modele_q4))
+summary(modele_q11)@criterion$deviance - summary(modele_q4)@criterion$deviance
 qchisq(0.95,1)
 ```
 
@@ -767,12 +774,14 @@ qchisq(0.95,1)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-2*(logLik(modele_q11)-logLik(modele_q4))
+summary(modele_q11)@criterion$deviance - summary(modele_q4)@criterion$deviance
 qchisq(0.95,1)
 ```
 :::
 
 Au seuil de 5 %, on est donc amené à privilégier ce modèle plus simple.
+
+
 
 ## Question 12
 
@@ -835,4 +844,3 @@ BIC(modele_q12)
 :::
 
 Les deux critères conduisent au choix du modèle obtenu à la question 11.
-::::::::::::::

@@ -24,7 +24,6 @@ editor:
     wrap: 72
 ---
 
-::: {.content-hidden when-format="html"}
 
 ## Question 1
 
@@ -80,6 +79,8 @@ catégorielle. On l'importe en `factor`.
 La variable `Conditions` nous renseigne sur les conditions de recueil de
 l'échantillon. C'est une variable catégorielle avec deux modalités :
 `Dry` (sec) et `Wet` (humide) qu'on importe donc en `factor`.
+
+
 
 ## Question 2
 
@@ -181,7 +182,7 @@ les forêts `FLWT` et `GPWT`.
 #| envir: baser
 #| autorun: true
 boxplot(
-  Site ~ Effectifs,
+  Effectifs ~ Site,
   data = data_fourmis,
   main = "Distribution du nombre d'espèces de fourmis en fonction du site de prélèvement"
 )
@@ -241,6 +242,8 @@ ggplot2::ggplot(
 
 Aucune relation ne semble exister entre les conditions de recueil et le
 nombre d'espèces de fourmis.
+
+
 
 ## Question 3
 
@@ -320,6 +323,8 @@ coefficient associé à la variable `Weight` ne varie pas de manière
 significative lorsqu’on considère uniquement le site ou les conditions
 séparément (cf. interactions doubles) mais il semble varier quand on
 prend en compte à la fois `Site` et `Conditions`.
+
+
 
 ## Question 4
 
@@ -536,6 +541,8 @@ data.frame(
 On garderait donc le modèle général (celui de la question 3) selon AIC
 et le modèle le plus simple `Site+Weight` selon le BIC.
 
+
+
 ## Question 5
 
 On peut découper le combinaison de paramétrage pour l'ordonnée à
@@ -558,8 +565,8 @@ une constante.
 
 **Choix pour la pente associée à la variable `weight`**
 
--   Pente nulle qui signifie l'absnece d'effet du poids de l'échantillon
-    : `0*Weight`
+
+-   Pente nulle qui signifie l'absence d'effet du poids de l'échantillon     : `0*Weight`
 -   Une pente unique : `Weight`
 -   Une pente type de forêt : `Weight:Site`
 -   Une pente selon les conditions de recueil : `Weight:Site`
@@ -601,6 +608,8 @@ lapply(
 ```
 :::
 
+
+
 ## Question 6
 
 On estime le meilleur modèle log-linéaire de Poisson au sens du BIC et
@@ -639,6 +648,7 @@ BIC(modele_q6)
 On obtient AIC=1008 et BIC=1036.6, qui sont bien plus faibles que ceux
 des modèles retenus par sélection stepwise.
 
+
 ## Question 7
 
 On adopte la même démarche. On estime d'abord le modèle avec le plus de
@@ -676,6 +686,8 @@ modèle de Poisson avec interaction triple (AIC=1010 et BIC=1061).
 
 Ce résultat est encourageant et nous incite à chercher le meilleur
 sous-modèle possible.
+
+
 
 ## Question 8
 
@@ -766,6 +778,8 @@ Son AIC vaut 997 et son BIC 1016.
 Evidemment l’AIC du premier est inférieur à celui du second, et
 inversement pour le BIC.
 
+
+
 ## Question 9
 
 Le meilleur modèle de Poisson au sens de l’AIC et du BIC dépend de
@@ -780,6 +794,9 @@ En comparant, le modèle de Poisson avec `Weight:Site:Conditions` et le
 modèle binomial négatif avec les mêmes variables : les critères AIC et
 BIC nous conduisent tous deux au second choix : le meilleur modèle
 binomal négatif au sens de l'AIC.
+
+
+
 
 ## Question 10
 
@@ -822,6 +839,8 @@ tableau à double entrée.
 | $\texttt{Site}=\texttt{"INWT"}$ | $\exp(1.761+0.063\texttt{Weight})$ | $\exp(1.761+0.109\texttt{Weight})$ |
 
 : Estimations de $\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions})$
+
+
 
 ## Question 11
 
@@ -892,5 +911,3 @@ lambda <- predict(
 :::
 
 la probabilité est de 0.66.
-
-:::
