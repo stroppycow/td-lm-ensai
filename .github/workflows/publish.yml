@@ -26,10 +26,16 @@ jobs:
         uses: r-lib/actions/setup-renv@v2
         with:
           cache-version: 1
-
-      - name: Render and Publish
-        uses: quarto-dev/quarto-actions/publish@v2
-        with:
-          target: gh-pages
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RENV_CONFIG_REPOS_OVERRIDE: 'TRUE'
+          RENV_CONFIG_PPM_DEFAULT: 'TRUE'
+      - name: Render
+        uses: quarto-dev/quarto-actions/render@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload entire repository
+          path: './_site'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
