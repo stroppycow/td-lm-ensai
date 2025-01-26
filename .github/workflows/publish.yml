@@ -28,7 +28,7 @@ jobs:
           cache-version: 1
         env:
           RENV_CONFIG_REPOS_OVERRIDE: 'TRUE'
-          RENV_CONFIG_PPM_DEFAULT: 'TRUE'
+          RENV_CONFIG_PPM_ENABLE: 'TRUE'
       - name: Render
         uses: quarto-dev/quarto-actions/render@v2
       - name: Upload artifact
