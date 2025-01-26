@@ -22,6 +22,8 @@ jobs:
         with:
           r-version: '4.4.1'
 
+      - name: Install Python Dependencies
+        run: 'python3 -m pip install jupyter'
       - name: Install R Dependencies
         uses: r-lib/actions/setup-renv@v2
         with:
