@@ -1,0 +1,98 @@
+---
+title: "TD 1 - Exercice 6"
+lang: fr
+author: "Théo Leroy"
+date: "3 septembre 2025"
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+webr:
+  render-df: gt-interactive
+fig-align: center
+filters: 
+  - diagram
+  - custom-callout
+editor: 
+  markdown: 
+    wrap: 72
+diagram:
+  engine:
+    tikz:
+      execpath: lualatex
+      header-includes:
+        - '\usepackage{tkz-tab}'
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    appearance: "minimal"
+    title: ""
+---
+
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
+Des données, publiées par le Chicago Tribune en 1993, montrent la consommation de
+confiseries en millions de livres et la population en millions d’habitants dans 17 pays, en
+1991. On note $y_i$ la consommation et $x_i$ la population du i-ème pays, $i = 1, \dots , 17$. On
+donne les valeurs suivantes :
+
+$$
+\sum\limits_{i=1}^{17} x_i = 751.8, \ \sum\limits_{i=1}^{17} y_i = 13683.8, \ \sum\limits_{i=1}^{17} x_i^2 = 97913.92, \ \sum\limits_{i=1}^{17} y_i^2 = 36404096.44, \ \sum\limits_{i=1}^{17} x_iy_i = 1798166.66
+$$
+
+On désire lier à l’aide d’un modèle de régression linéaire (avec constante) la consommation
+de confiseries en fonction de la population de chaque pays.
+
+## Question 1
+
+Ecrire l’équation du modèle envisagé, pour chaque pays, en précisant les hypothèses
+effectuées.
+
+::: answer
+Le modèle s'écrit :
+$$
+\forall\ i \in [\![1,n]\!], \ y_i=\beta_0+\beta_1x_i + \epsilon_i
+$$
+
+On suppose que les variables $\epsilon_i$ sont :
+
+-   centrées i.e.
+    $\forall\ i \in [\![1,n]\!], \ \mathbb{E}(\epsilon_i)=0$,
+-   homoscédastiques i.e.
+    $\exists\  \sigma^2 \in \mathbb{R}, \ \forall\ i \in [\![1,n]\!], \ \mathbb{V}(\epsilon_i)=\sigma^2$,
+-   et non-corrélées deux à deux i.e
+    $\forall\ (i,j) \in [\![1,n]\!]^2, i \neq j, \ \mathbb{C}\mathbb{o}\mathbb{v}(\epsilon_i,\epsilon_j)=0$.
+
+:::
+
+## Question 2 
+
+Donner les expressions des estimateurs par MCO de la pente et de l’ordonnée à
+l’origine du modèle, en fonction des sommes données ci-dessus. En déduire leurs
+valeurs.
+
+::: answer
+
+On a :
+
+$$
+\begin{align*}
+\hat{\beta}_1&=\frac{\textrm{cov}(x,y)}{\textrm{var}(x)}=
+\frac{\frac{1}{17}\sum\limits_{i=1}^{17}x_iy_i-\left(\frac{1}{17}\sum\limits_{i=1}^{17}x_i \right)\left(\frac{1}{17}\sum\limits_{i=1}^{17}y_i\right)}{\frac{1}{17}\sum\limits_{i=1}^{17} x_i^2-\left( \frac{1}{17}\sum\limits_{i=1}^{17}x_i\right)^2} \\
+&=\frac{\sum\limits_{i=1}^{17}x_iy_i-\frac{1}{17}\left(\sum\limits_{i=1}^{17}x_i \right)\left(\sum\limits_{i=1}^{17}y_i\right)}{\sum\limits_{i=1}^{17} x_i^2-\frac{1}{17}\left( \sum\limits_{i=1}^{17}x_i\right)^2} \\
+&=\frac{1798166.66-\frac{1}{17}\times 751.8 \times 13683.8}{97913.92 - \frac{1}{17}\times751.8^2} \\
+&\simeq 18.44877 \\
+\hat{\beta}_0 &= \overline{y}-\hat{\beta}_1\overline{x} \\
+&=\frac{1}{17}\left(\sum\limits_{i=1}^{17} y_i - \hat{\beta}_1\sum\limits_{i=1}^{17} x_i\right) \\
+&=\frac{1}{17}\left(13683.8 - \frac{1798166.66-\frac{1}{17}\times 751.8 \times 13683.8}{97913.92 - \frac{1}{17}\times751.8^2} \times 751.8 \right) \\
+&\simeq -10.94044
+\end{align*}
+$$
+:::
+
+
+## Question 3
+
+Donner l’expression d’un estimateur sans biais de la variance de l’erreur de modélisation,
+en fonction des sommes données ci-dessus. En déduire sa valeur.

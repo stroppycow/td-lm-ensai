@@ -24,6 +24,7 @@ editor:
     wrap: 72
 ---
 
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 ## Question 1
 
@@ -79,8 +80,6 @@ catégorielle. On l'importe en `factor`.
 La variable `Conditions` nous renseigne sur les conditions de recueil de
 l'échantillon. C'est une variable catégorielle avec deux modalités :
 `Dry` (sec) et `Wet` (humide) qu'on importe donc en `factor`.
-
-
 
 ## Question 2
 
@@ -243,8 +242,6 @@ ggplot2::ggplot(
 Aucune relation ne semble exister entre les conditions de recueil et le
 nombre d'espèces de fourmis.
 
-
-
 ## Question 3
 
 Le modèle log-linéaire de Poisson de la variables `Effectifs` en
@@ -279,7 +276,7 @@ $\textrm{log}\left(\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions})\r
 dans un tableau à double entrée.
 
 |   | $\texttt{Conditions}=\texttt{"Dry"}$ | $\texttt{Conditions}=\texttt{"Wet"}$ |
-|------------------|---------------------|---------------------------------|
+|------------------------|------------------------|------------------------|
 | $\texttt{Site}=\texttt{"FLWT"}$ | $\beta_0+\beta_1\texttt{Weight}$ | $\beta_0+\beta_5+(\beta_1+\beta_9)\texttt{Weight}$ |
 | $\texttt{Site}=\texttt{"FTWT"}$ | $\beta_0+\beta_2+(\beta_1+\beta_{6})\texttt{Weight}$ | $\beta_0+\beta_2+\beta_5+\beta_{10}+(\beta_1+\beta_6+\beta_9+\beta_{13})\texttt{Weight}$ |
 | $\texttt{Site}=\texttt{"GPWT"}$ | $\beta_0+\beta_3+(\beta_1+\beta_{7})\texttt{Weight}$ | $\beta_0+\beta_3+\beta_5+\beta_{11}+(\beta_1+\beta_7+\beta_9+\beta_{14})\texttt{Weight}$ |
@@ -323,8 +320,6 @@ coefficient associé à la variable `Weight` ne varie pas de manière
 significative lorsqu’on considère uniquement le site ou les conditions
 séparément (cf. interactions doubles) mais il semble varier quand on
 prend en compte à la fois `Site` et `Conditions`.
-
-
 
 ## Question 4
 
@@ -541,8 +536,6 @@ data.frame(
 On garderait donc le modèle général (celui de la question 3) selon AIC
 et le modèle le plus simple `Site+Weight` selon le BIC.
 
-
-
 ## Question 5
 
 On peut découper le combinaison de paramétrage pour l'ordonnée à
@@ -565,13 +558,21 @@ une constante.
 
 **Choix pour la pente associée à la variable `weight`**
 
+-   
 
--   Pente nulle qui signifie l'absence d'effet du poids de l'échantillon     : `0*Weight`
+    Pente nulle qui signifie l'absence d'effet du poids de l'échantillon
+
+    :   `0*Weight`
+
 -   Une pente unique : `Weight`
+
 -   Une pente type de forêt : `Weight:Site`
+
 -   Une pente selon les conditions de recueil : `Weight:Site`
+
 -   Une pente qui additionne l'effet du type de forêt et les conditions
     de recueil : `Weight:Site + Weight:Conditions`
+
 -   Une pente par croisement du type de forêt et conditions de recueil :
     `Weight:Site:Conditions`
 
@@ -607,8 +608,6 @@ lapply(
 ) |> do.call(what = rbind.data.frame)
 ```
 :::
-
-
 
 ## Question 6
 
@@ -648,7 +647,6 @@ BIC(modele_q6)
 On obtient AIC=1008 et BIC=1036.6, qui sont bien plus faibles que ceux
 des modèles retenus par sélection stepwise.
 
-
 ## Question 7
 
 On adopte la même démarche. On estime d'abord le modèle avec le plus de
@@ -686,8 +684,6 @@ modèle de Poisson avec interaction triple (AIC=1010 et BIC=1061).
 
 Ce résultat est encourageant et nous incite à chercher le meilleur
 sous-modèle possible.
-
-
 
 ## Question 8
 
@@ -778,8 +774,6 @@ Son AIC vaut 997 et son BIC 1016.
 Evidemment l’AIC du premier est inférieur à celui du second, et
 inversement pour le BIC.
 
-
-
 ## Question 9
 
 Le meilleur modèle de Poisson au sens de l’AIC et du BIC dépend de
@@ -794,9 +788,6 @@ En comparant, le modèle de Poisson avec `Weight:Site:Conditions` et le
 modèle binomial négatif avec les mêmes variables : les critères AIC et
 BIC nous conduisent tous deux au second choix : le meilleur modèle
 binomal négatif au sens de l'AIC.
-
-
-
 
 ## Question 10
 
@@ -832,23 +823,25 @@ $\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions})$ dans un
 tableau à double entrée.
 
 |   | $\texttt{Conditions}=\texttt{"Dry"}$ | $\texttt{Conditions}=\texttt{"Wet"}$ |
-|------------------|---------------------------|---------------------------------|
+|------------------------|------------------------|------------------------|
 | $\texttt{Site}=\texttt{"FLWT"}$ | $\exp(1.761+0.101\texttt{Weight})$ | $\exp(1.761+0.099\texttt{Weight})$ |
 | $\texttt{Site}=\texttt{"FTWT"}$ | $\exp(1.761+0.048\texttt{Weight})$ | $\exp(1.761+0.010\texttt{Weight})$ |
 | $\texttt{Site}=\texttt{"GPWT"}$ | $\exp(1.761+0.034\texttt{Weight})$ | $\exp(1.761+0.048\texttt{Weight})$ |
 | $\texttt{Site}=\texttt{"INWT"}$ | $\exp(1.761+0.063\texttt{Weight})$ | $\exp(1.761+0.109\texttt{Weight})$ |
 
-: Estimations de $\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions})$
-
-
+: Estimations de
+$\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions})$
 
 ## Question 11
 
-On réalise une prédiction pour `Weight=10`, `Site="INWT"` et `Conditions="Dry"` afin d'obtenir les valeur de la moyenne `\lambda` de la loi binomiale négative avec la fonction `predict`.
+On réalise une prédiction pour `Weight=10`, `Site="INWT"` et
+`Conditions="Dry"` afin d'obtenir les valeur de la moyenne `\lambda` de
+la loi binomiale négative avec la fonction `predict`.
 
-La probabilité d’observer plus de 15 espèces s’obtient ensuite grâce à la fonction de répartition d’une loi binomiale négative sous R (fonction `pnbinom`) dans laquelle $\lambda$ joue le
-rôle de la moyenne `mu` et $\theta$ joue le rôle de la taille d’échantillon `size`. 
-
+La probabilité d’observer plus de 15 espèces s’obtient ensuite grâce à
+la fonction de répartition d’une loi binomiale négative sous R (fonction
+`pnbinom`) dans laquelle $\lambda$ joue le rôle de la moyenne `mu` et
+$\theta$ joue le rôle de la taille d’échantillon `size`.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -880,7 +873,7 @@ lambda <- predict(
 
 Cette probabilité est de 0.19.
 
-Pour  `Weight=10`, `Site="INWT"` et `Conditions="Wet"`, 
+Pour `Weight=10`, `Site="INWT"` et `Conditions="Wet"`,
 
 ::: {.panel-tabset group="language"}
 ### Base R

@@ -26,8 +26,7 @@ editor:
     wrap: 72
 ---
 
-
-
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 ## Question 1
 
@@ -70,7 +69,6 @@ data_chdage <- readr::read_delim(
 data_chdage
 ```
 :::
-
 
 ## Question 2
 
@@ -174,7 +172,6 @@ ggplot2::ggplot(
   ggplot2::theme(legend.position = "bottom")
 ```
 :::
-
 
 ## Question 3
 
@@ -305,16 +302,12 @@ grande partie unimodales et pas excessivement asymétriques (bien que
 légèrement asymétriques tout de même pour les individus malade). De
 plus, l'égalité des variances semble plausible au vu des boxplots.
 
-
-
 ## Question 4
 
 Le support de la variable aléatoire $Y|(\texttt{age}=x)$ est $\{0, 1\}$
 donc :
 
 $$Y|(\texttt{age}=x) \sim \mathcal{B}(p(x))$$
-
-
 
 ## Question 5
 
@@ -329,8 +322,6 @@ L_n\left(p(x_1), \dots, p(x_n)\right)&=\prod\limits_{i=1}^n \mathbb{P}(Y_i=y_i |
 &=\prod\limits_{i=1}^n p(x_i)^{y_i}(1-p(x_i))^{1-y_i}
 \end{align*}
 $$
-
-
 
 ## Question 6
 
@@ -435,7 +426,6 @@ data_milieu_classe_prop <- data_milieu_classe |> dplyr::left_join(y = data_prop,
 data_milieu_classe_prop
 ```
 :::
-
 
 ## Question 7
 
@@ -644,9 +634,6 @@ graphique_q7
     variable explicative sur la variable à expliquer et donc
     d'interpréter les résultats.
 
-
-
-
 ## Question 8
 
 Le modèle logistique s'écrit :
@@ -784,8 +771,6 @@ logit <- function(x){log(x/(1-x))}
 logit_inv <- function(x){exp(x)/(1+exp(x))}
 ```
 
-
-
 ### Tidyverse
 
 ```{webr}
@@ -795,8 +780,6 @@ logit <- function(x){log(x/(1-x))}
 logit_inv <- function(x){exp(x)/(1+exp(x))}
 ```
 :::
-
-
 
 ## Question 9
 
@@ -852,12 +835,13 @@ car les équations ne sont pas linéaires en $\boldsymbol{\beta}$.
 On va rechercher des solutions approchées numériquement dans la question
 suivante.
 
-
-
 ## Question 10
 
 On peut utiliser la fonction `glm` de R pour l'approximation numérique.
-C'est ce qu'on doit faire en pratique. Les arguments sont semblables à la fonction `lm`. Il faut faire attention à bien paramétrer l'argument `family` sans quoi on estimerait un modèle de régression linéaire simple.
+C'est ce qu'on doit faire en pratique. Les arguments sont semblables à
+la fonction `lm`. Il faut faire attention à bien paramétrer l'argument
+`family` sans quoi on estimerait un modèle de régression linéaire
+simple.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -877,8 +861,8 @@ C'est ce qu'on doit faire en pratique. Les arguments sont semblables à la fonct
 ```
 :::
 
-On doit prendre ici `family=binomial()` car $Y$ sachant $X$ suit une loi de Bernoulli. 
-
+On doit prendre ici `family=binomial()` car $Y$ sachant $X$ suit une loi
+de Bernoulli.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -908,9 +892,8 @@ summary(modele_logit)
 ```
 :::
 
-On peut lire l'estimation par maximum de vraissemblance : $\widehat{\beta_0} = -5,30945$ et
-$\widehat{\beta_1} = 0,11092$.
-
+On peut lire l'estimation par maximum de vraissemblance :
+$\widehat{\beta_0} = -5,30945$ et $\widehat{\beta_1} = 0,11092$.
 
 ## Question 11
 
@@ -1018,8 +1001,6 @@ ggplot2::ggplot(
 ```
 :::
 
-
-
 ## Question 13
 
 D'après la convergence en loi rappelée dans l'énoncé, on a
@@ -1045,14 +1026,11 @@ $$\boldsymbol{\hat{\beta}}-\boldsymbol{\beta} \approx \mathcal{N}(0_2, J_n(\beta
     $\widehat{\beta}_j$ . Sa racine carrée constitue ainsi une
     estimation de l'écart-type de $\widehat{\beta}_j$.
 
-
-
 ## Question 15
 
 Il s'agit de la deuxième colonne dans la sortie de `summary`. Cela nous
 donne un écart type estimé de 1,13365 pour $\widehat{\beta}_0$ et de
 0,02406 pour $\widehat{\beta}_1$.
-
 
 ## Question 16
 
@@ -1113,8 +1091,6 @@ Ou plus simplement en R,
 confint.default(modele_logit, parm = "age")
 ```
 
-
-
 ### Tidyverse
 
 ```{webr}
@@ -1123,7 +1099,6 @@ confint.default(modele_logit, parm = "age")
 confint.default(modele_logit, parm = "age")
 ```
 :::
-
 
 ## Question 17
 
@@ -1157,8 +1132,6 @@ $$2\left(1-F_{\mathcal{N(0,1)}}(T)\right) \quad \textrm{avec} \ T=\frac{\widehat
 
 Numériquement on obtient $\textit{p-valeur} = 4,022426\times10^{-06}$.
 C'est la même valeur que dans la sortie GLM.
-
-
 
 ## Question 18
 
@@ -1711,4 +1684,4 @@ graphique_q20 <- graphique_q19 +
 graphique_q20
 ```
 :::
-:::
+:::::

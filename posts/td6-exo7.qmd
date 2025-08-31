@@ -25,6 +25,8 @@ editor:
     wrap: 72
 ---
 
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
 ## Question 1
 
 On charge les données du fichier `crabs.txt` en R sous forme de
@@ -69,10 +71,17 @@ data_crabs
 ```
 :::
 
-Le jeu de données contient bien 173 observations de limules femelles. La variable cible est `satell` le comptage de nombre de limules mâles satellite. Les potentielles variables explicatives sont la couleur `color`, `width` et `weight` le poids de la femelle.
+Le jeu de données contient bien 173 observations de limules femelles. La
+variable cible est `satell` le comptage de nombre de limules mâles
+satellite. Les potentielles variables explicatives sont la couleur
+`color`, `width` et `weight` le poids de la femelle.
 
-
-La variable `color` peut être vu comme catégorielle dans ce cas on s'intéressera à l'effet de passer d'une modalité à une autre sur la moyenne du nombre de limules mâles accrochées. Elle peut être également vu comme quantitative et dans ce cas on s'intéressera à l'effet de l'assombrissement d'une unité sur la moyenne du nombre de limules mâles accrochées.
+La variable `color` peut être vu comme catégorielle dans ce cas on
+s'intéressera à l'effet de passer d'une modalité à une autre sur la
+moyenne du nombre de limules mâles accrochées. Elle peut être également
+vu comme quantitative et dans ce cas on s'intéressera à l'effet de
+l'assombrissement d'une unité sur la moyenne du nombre de limules mâles
+accrochées.
 
 On peut mener une courte étude descriptive.
 
@@ -107,8 +116,10 @@ GGally::ggpairs(
 ```
 :::
 
-
-Graphiquement, on remarque que les variables `width` et `weight` sont très corrélées. Pour éviter des problème de multicolinéarité et améliorer la qualité des estimations, on choisit de retirer la variable `width` dans les futures modèles.
+Graphiquement, on remarque que les variables `width` et `weight` sont
+très corrélées. Pour éviter des problème de multicolinéarité et
+améliorer la qualité des estimations, on choisit de retirer la variable
+`width` dans les futures modèles.
 
 On estime les différents modèles.
 
@@ -200,7 +211,6 @@ summary(modele_nb_factor)
 ```
 :::
 
-
 **Modèle binomial négatif avec `color` en `numeric`**
 
 ::: {.panel-tabset group="language"}
@@ -229,12 +239,20 @@ summary(modele_nb_num)
 ```
 :::
 
-Pour la modélisation avec loglinéaire de Poisson, la déviance est beaucoup plus élevée que le nombre de degré de liberté même pour le cas le plus favorable ou `color` est intégré comme variable quantitative. Il ya sans doute un problème de surdispersion, l'hypothèse que la moyenne est égale à la variance dans la modélisation de Poisson n'est sans doute pas vérifiée.
+Pour la modélisation avec loglinéaire de Poisson, la déviance est
+beaucoup plus élevée que le nombre de degré de liberté même pour le cas
+le plus favorable ou `color` est intégré comme variable quantitative. Il
+ya sans doute un problème de surdispersion, l'hypothèse que la moyenne
+est égale à la variance dans la modélisation de Poisson n'est sans doute
+pas vérifiée.
 
-L'ajustement avec le modèle binomial négatif est meilleur (en regardant les déviances et l'AIC) surtout en considérant `color` comme quantitative qui ne semble pas significative au final.
+L'ajustement avec le modèle binomial négatif est meilleur (en regardant
+les déviances et l'AIC) surtout en considérant `color` comme
+quantitative qui ne semble pas significative au final.
 
-On peut étudier la distribution empirique de `satell` par rapport à la distribution prédite par le modèle `modele_nb_num` pour analyser la qualité des prédictions du modèle.
-
+On peut étudier la distribution empirique de `satell` par rapport à la
+distribution prédite par le modèle `modele_nb_num` pour analyser la
+qualité des prédictions du modèle.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -333,13 +351,14 @@ ggplot2::ggplot(
 ```
 :::
 
-
-On voit que la modélisation ne permet pas de prédire convenablement le nombre de femelles lorsque le nombre de mâles satellite est faible.
-
+On voit que la modélisation ne permet pas de prédire convenablement le
+nombre de femelles lorsque le nombre de mâles satellite est faible.
 
 ## Question 2
 
-On peut essayer de mettre en place un modèle à inflation de zéros dans le modèle binomial négatif pour améliorer les prédictions. Pour se faire, on utilise la fonction `zeroinfl` du package `pscl`.
+On peut essayer de mettre en place un modèle à inflation de zéros dans
+le modèle binomial négatif pour améliorer les prédictions. Pour se
+faire, on utilise la fonction `zeroinfl` du package `pscl`.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -358,7 +377,6 @@ On peut essayer de mettre en place un modèle à inflation de zéros dans le mod
 ?pscl::zeroinfl()
 ```
 :::
-
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -387,7 +405,6 @@ modele_zeroinfl <- pscl::zeroinfl(
 summary(modele_zeroinfl)
 ```
 :::
-
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -467,4 +484,3 @@ ggplot2::ggplot(
 :::
 
 La répartition des petites valeurs est mieux modélisée.
-

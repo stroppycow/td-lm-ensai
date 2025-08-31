@@ -21,7 +21,7 @@ editor:
     wrap: 72
 ---
 
-
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 ## Question 1
 
@@ -68,7 +68,6 @@ en type `factor`.
 Cette transformation est importante pour l'estimation de modèles par la
 suite avec la fonction `glm`. Cette transformation permet d'automatiser
 la dichotomisation de cette variable qualitative dans les modèles.
-
 
 ## Question 2
 
@@ -240,8 +239,6 @@ Ce graphique semble indiquer que la marque "2" est plus fiable que les
 autres marques, cependant, les données recueillies sont limitées en
 effectif.
 
-
-
 ## Question 3
 
 Estimons un modèle de régression logistique avec toutes les variables
@@ -314,7 +311,6 @@ $$
 Le coefficient $\beta_{21}$ (respectivement $\beta_{22})$ s'interprètent
 comme l'effet propre de la marque marque 1 (resp. 2) par rapport à la
 marque de référence 0.
-
 
 ::::: {.callout-note collapse="true"}
 ### Remarque
@@ -434,8 +430,6 @@ $$
 $$
 :::::
 
-
-
 ## Question 4
 
 Pour évaluer la pertinence du modèle, on peut réaliser un test de
@@ -520,7 +514,6 @@ anova(
 Ce qui donne également une $\textit{p-value}$ de 0.529. Le modèle n'est
 donc globalement pas significatif.
 
-
 ## Question 5
 
 On construit un nouveau modèle avec seulement un terme linéaire en `age`
@@ -566,7 +559,6 @@ la variable `age` ne soit pas significative dans le modèle est
 surprenant, en général les voitures plus anciennes ont plus de risque de
 tomber en panne.
 
-
 ## Question 6
 
 Le modèle estimé est désormais :
@@ -580,7 +572,6 @@ avec
 $$\textrm{logit}(p(x_{\texttt{age}},x_{\texttt{brand}}))=\beta_0+\beta_1x_\texttt{age}+\beta_2x_\texttt{age}^2+\beta_{31}\mathbb{1}_{x_\texttt{brand}=1}+ \beta_{32}\mathbb{1}_{x_\texttt{brand}=2}$$
 
 ::: {.panel-tabset group="language"}
-
 ### Base R
 
 ```{webr}
@@ -611,7 +602,6 @@ summary(modele_q6)
 On peut réaliser un test de significativé globale de déviance.
 
 ::: {.panel-tabset group="language"}
-
 ### Base R
 
 ```{webr}
@@ -637,9 +627,11 @@ anova(
 ```
 :::
 
-On rejette l'hypothèse nulle de globalité de tous les coefficients en dehors de la constante au seuil 5 % car la p-valeur < 0.05. Le modèle est significatif cette fois-ci.
+On rejette l'hypothèse nulle de globalité de tous les coefficients en
+dehors de la constante au seuil 5 % car la p-valeur \< 0.05. Le modèle
+est significatif cette fois-ci.
 
-## Question  7
+## Question 7
 
 L'odds d'avoir une panne
 $\texttt{fault}=1|(\texttt{fault}|(\texttt{age}=x_{\texttt{age}},\texttt{brand}=x_{\texttt{brand}})$

@@ -1,5 +1,5 @@
 ---
-title: "TD 2 - Exercice 10 - ANCOVA : Retour à la modélisation de l'ozone"
+title: "TD 2 - Exercice 10"
 lang: fr
 author: "Théo Leroy"
 date: "8 octobre 2024"
@@ -25,6 +25,8 @@ editor:
   markdown: 
     wrap: 72
 ---
+
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 ## Question 1
 
@@ -548,7 +550,4 @@ anova(fit_q1, fit_q5)
 ```
 :::
 
-Les conclusions sont similaires à celles obtenues avec la variable pluie
-
-:   il ne paraît pas pertinent d’ajouter la variable `vent` ni les
-    interactions associées dans le modèle.
+Les conclusions sont similaires à celles obtenues avec la variable pluie : il ne paraît pas pertinent d’ajouter la variable `vent` ni les interactions associées dans le modèle.

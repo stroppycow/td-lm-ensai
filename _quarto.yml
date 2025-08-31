@@ -6,6 +6,12 @@ project:
   render: 
     - index.qmd
     - posts/test-student.qmd
+    - posts/td1-exo1.qmd
+    - posts/td1-exo2.qmd
+    - posts/td1-exo3.qmd
+    - posts/td1-exo4.qmd
+    - posts/td1-exo5.qmd
+    - posts/td1-exo6.qmd
     - posts/td2-exo1.qmd
     - posts/td2-exo3.qmd
     - posts/td2-exo4.qmd

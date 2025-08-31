@@ -23,6 +23,8 @@ editor:
     wrap: 72
 ---
 
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
 ## Question 1
 
 ::: {.panel-tabset group="language"}
@@ -425,8 +427,6 @@ ggplot2::ggplot(
 ```
 :::
 
-
-
 ## Question 6
 
 L'intervalle de confiance asymptotique au niveau de confiance
@@ -522,8 +522,6 @@ exp(confint(modele_q4)["ses",])
 D'après la sortie obtenue à la [question 4](#question-4) et les p-valeur
 des tests de Wald, le coefficient $\beta_1$ est non significatif au
 seuil d'erreur 5 % mais il est significatif au seuil 10 %.
-
-
 
 ## Question 9 {#question-9}
 
@@ -629,7 +627,6 @@ de première espèce $\alpha=0.05$.
 Ainsi, le modèle avec le terme d'intéraction n'est pas significativement
 meilleur au seuil d'erreur asymptotique de 5 %.
 
-
 ## Question 10
 
 Le modèle de régression logistique cumulatif sans structure
@@ -723,7 +720,6 @@ quantile $q_{0.95}^{\chi^2(4)}$.
 Ainsi, le modèle avec la structure non proportionnelle n'est pas
 significativement meilleur.
 
-
 ## Question 11
 
 Au vu de la sortie du modèle à odds proportionnels et de l’analyse
@@ -780,8 +776,6 @@ qchisq(0.95,1)
 :::
 
 Au seuil de 5 %, on est donc amené à privilégier ce modèle plus simple.
-
-
 
 ## Question 12
 
