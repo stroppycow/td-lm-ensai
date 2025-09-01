@@ -1,7 +1,6 @@
 #!/bin/sh
-DIRNAME_TD=td-lm-ensai
-cd ./${DIRNAME_TD}
-RScript -e "options(repos = c(RSPM = 'https://packagemanager.posit.co/cran/latest'))" -e  "renv::restore()"
+cd td-lm-ensai
+R -e "options(renv.config.repos.override = 'https://packagemanager.posit.co/cran/latest')" -e  "renv::restore()"
 cd ..
 echo \
 "
@@ -10,7 +9,7 @@ setHook('rstudio.sessionInit', function(newSession) {
   if (newSession && identical(getwd(), '${WORKSPACE_DIR}'))
   {
     message('Activation du projet RStudio')
-    rstudioapi::openProject('${WORKSPACE_DIR}/${DIRNAME_TD}', newSession = TRUE)
+    rstudioapi::openProject('${WORKSPACE_DIR}/td-lm-ensai', newSession = TRUE)
   }
 }, action = 'append')
 
