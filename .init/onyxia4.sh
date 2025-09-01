@@ -1,7 +1,7 @@
 #!/bin/sh
-cd td-lm-ensai
-R -e "options(renv.config.repos.override = 'https://packagemanager.posit.co/cran/latest')" -e  "renv::restore()"
-cd ..
+# cd td-lm-ensai
+# R -e "options(renv.config.repos.override = 'https://packagemanager.posit.co/cran/latest')" -e  "renv::restore()"
+# cd ..
 echo \
 "
 setHook('rstudio.sessionInit', function(newSession) {
