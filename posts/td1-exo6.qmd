@@ -32,26 +32,27 @@ custom-callout:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-Des données, publiées par le Chicago Tribune en 1993, montrent la consommation de
-confiseries en millions de livres et la population en millions d’habitants dans 17 pays, en
-1991. On note $y_i$ la consommation et $x_i$ la population du i-ème pays, $i = 1, \dots , 17$. On
-donne les valeurs suivantes :
+Des données, publiées par le Chicago Tribune en 1993, montrent la
+consommation de confiseries en millions de livres et la population en
+millions d’habitants dans 17 pays, en 1991. On note $y_i$ la
+consommation et $x_i$ la population du i-ème pays, $i = 1, \dots , 17$.
+On donne les valeurs suivantes :
 
 $$
 \sum\limits_{i=1}^{17} x_i = 751.8, \ \sum\limits_{i=1}^{17} y_i = 13683.8, \ \sum\limits_{i=1}^{17} x_i^2 = 97913.92, \ \sum\limits_{i=1}^{17} y_i^2 = 36404096.44, \ \sum\limits_{i=1}^{17} x_iy_i = 1798166.66
 $$
 
-On désire lier à l’aide d’un modèle de régression linéaire (avec constante) la consommation
-de confiseries en fonction de la population de chaque pays.
+On désire lier à l’aide d’un modèle de régression linéaire (avec
+constante) la consommation de confiseries en fonction de la population
+de chaque pays.
 
 ## Question 1
 
-Ecrire l’équation du modèle envisagé, pour chaque pays, en précisant les hypothèses
-effectuées.
+Ecrire l’équation du modèle envisagé, pour chaque pays, en précisant les
+hypothèses effectuées.
 
 ::: answer
-Le modèle s'écrit :
-$$
+Le modèle s'écrit : $$
 \forall\ i \in [\![1,n]\!], \ y_i=\beta_0+\beta_1x_i + \epsilon_i
 $$
 
@@ -63,17 +64,15 @@ On suppose que les variables $\epsilon_i$ sont :
     $\exists\  \sigma^2 \in \mathbb{R}, \ \forall\ i \in [\![1,n]\!], \ \mathbb{V}(\epsilon_i)=\sigma^2$,
 -   et non-corrélées deux à deux i.e
     $\forall\ (i,j) \in [\![1,n]\!]^2, i \neq j, \ \mathbb{C}\mathbb{o}\mathbb{v}(\epsilon_i,\epsilon_j)=0$.
-
 :::
 
-## Question 2 
+## Question 2
 
-Donner les expressions des estimateurs par MCO de la pente et de l’ordonnée à
-l’origine du modèle, en fonction des sommes données ci-dessus. En déduire leurs
-valeurs.
+Donner les expressions des estimateurs par MCO de la pente et de
+l’ordonnée à l’origine du modèle, en fonction des sommes données
+ci-dessus. En déduire leurs valeurs.
 
 ::: answer
-
 On a :
 
 $$
@@ -91,8 +90,219 @@ $$
 $$
 :::
 
-
 ## Question 3
 
-Donner l’expression d’un estimateur sans biais de la variance de l’erreur de modélisation,
-en fonction des sommes données ci-dessus. En déduire sa valeur.
+Donner l’expression d’un estimateur sans biais de la variance de
+l’erreur de modélisation, en fonction des sommes données ci-dessus. En
+déduire sa valeur.
+
+::: answer
+Un estimateur sans biais $\hat{\sigma}^2$ de $\sigma^2$ est
+$$\hat{\sigma}^2=\frac{\textrm{SCR}}{n-p}$$ (cf. slide 56)
+
+avec $$
+\begin{align*}
+\textrm{SCR}&=\sum\limits_{i=1}^n \hat{\epsilon}_i^2 =\sum\limits_{i=1}^n \left(y_i-\hat{y}_i \right)^2 \\
+&=\sum\limits_{i=1}^n \left( y_i-\hat{\beta}_0-\hat{\beta}_1x_i \right)^2 \ \textrm{car c'est un modèle linéaire simple} \\
+&=\sum\limits_{i=1}^n \left( y_i^2+\hat{\beta}_0^2+\hat{\beta}_1^2x_i^2-2y_i\hat{\beta}_0+2x_iy_i\hat{\beta}_1-2\hat{\beta}_0\hat{\beta}_1x_i \right) \\
+&=\sum\limits_{i=1}^n  y_i^2+n\hat{\beta}_0^2+\hat{\beta}_1^2 \sum\limits_{i=1}^n  x_i^2-2\left(\hat{\beta}_0 \sum\limits_{i=1}^n  y_i - \hat{\beta}_0\hat{\beta}_1 \sum\limits_{i=1}^n  x_i + \hat{\beta}_1 \sum\limits_{i=1}^n  x_iy_i \right)
+\end{align*}
+$$
+
+Numériquement, $$
+\begin{align*}
+\textrm{SCR}&\simeq36404096.44+17\times (-10.94044)^2+18.44877^2\times97913.92 \\
+&\quad -2\times(-10.94044\times 13683.8-(-10.94044)\times18.4487\times 751.8+18.44877\times1798166.66) \\
+&\simeq3379836 \\
+\hat{\sigma}^2&\simeq\frac{3379836}{17-2}\simeq225322.4
+\end{align*} 
+$$
+:::
+
+## Question 4
+
+Que vaut la variance théorique des estimateurs par MCO ? Comment
+l’estimer ? En déduire une estimation de l’écart-type de chaque
+estimateur (on pourra s’appuyer sur l’expression de $(X'X)^{-1}$
+rappelée dans l’exercice 5).
+
+::: answer
+La variance théorique des estimateurs par MCO $\hat{\beta}$ vaut :
+
+$$
+\mathbb{V}(\hat{\beta})=\sigma^2 (X'X)^{-1}
+$$
+
+En utilisant l'expression de $(X'X)^{-1}$ dans le cas du modèle de
+régression linéaire simple rappelée à l'exercice 5, on a :
+
+$$
+\begin{align*}
+\mathbb{V}(\hat{\beta})
+&= \sigma^2 \frac{1}{\sum\limits_{i=1}^n x_i^2-\frac{1}{n}\left(\sum\limits_{i=1}^n x_i \right)^2}
+\begin{pmatrix}
+\frac{1}{n}\sum\limits_{i=1}^n x_i^2 & -\frac{1}{n}{\sum\limits_{i=1}^n x_i } \\
+-\frac{1}{n}{\sum\limits_{i=1}^n x_i } & 1
+\end{pmatrix} \\
+\end{align*}
+$$
+
+On estime cette variance en substituant $\sigma^2$ par $\hat{\sigma}^2$
+que nous avons calculé à la question précédente.
+
+Numériquement, on obtient :
+
+$$
+\begin{align*}
+\widehat{\mathbb{V}(\hat{\beta})}
+&\simeq\frac{225322.4}{97913.92-\frac{1}{17}\times 751.8^2}
+\begin{pmatrix}
+\frac{97913.92}{17} & -\frac{751.8}{17} \\
+-\frac{751.8}{17} & 1
+\end{pmatrix} \\
+&\simeq \begin{pmatrix}
+20068.707  & -154.090998 \\
+-154.090998  & 3.484367
+\end{pmatrix}
+\end{align*}
+$$
+
+L’estimation de l’écart-type de $\hat{\beta}_0$ est donnée par
+$\sqrt{20068.707} \approx 141.6641$, tandis que celle de $\hat{\beta}_1$
+vaut $\sqrt{3.484367} \approx 1.866646$.
+:::
+
+## Question 5
+
+Tester si la pente de la régression est significativement différente de
+0, en rappelant les hypothèses sous jacentes. Pour l’application
+numérique, on fera un test au niveau 5 % en s’appuyant sur les quantiles
+donnés dans la table ci-dessous :
+
+| $\gamma \backslash q$ | $14$     | $15$     | $16$     | $17$     | $18$     |
+|-----------------------|--------|--------|--------|--------|--------|
+| $0.01$                | $2.62$ | $2.60$ | $2.58$ | $2.57$ | $2.55$ |
+| $0.025$               | $2.14$ | $2.13$ | $2.12$ | $2.11$ | $2.10$ |
+| $0.05$                | $1.76$ | $1.75$ | $1.75$ | $1.74$ | $1.73$ |
+| $0.10$                | $1.35$ | $1.34$ | $1.34$ | $1.33$ | $1.33$ |
+
+: Quantiles d’ordre $1-\gamma$ d’une loi de Student à $q$ degrés de liberté, pour
+différentes valeurs de $\gamma$ et de $q$.
+
+
+::: answer
+
+**Hypothèses du modèle**
+
+Sous le modèle $y_i = \beta_0 + \beta_1 x_i + \epsilon_i$, on suppose :
+
+- $\mathbb{E}(\epsilon_i)= 0$,
+- $\mathrm{Var}(\epsilon_i) = \sigma^2$ (homoscédasticité),
+- les $\epsilon_i$ sont indépendantes,
+- normalité des $\epsilon_i$ (pour la validité exacte du test de Student).
+
+**Hypothèses du test**
+
+Il s’agit de tester :
+$$
+H_0 : \beta_1 = 0 \quad \text{vs} \quad H_1 : \beta_1 \neq 0
+$$
+
+**Statistique de test**
+
+On note $T_1$ la statistique de test telle que 
+$$
+T_1 = \frac{\hat\beta_1}{\hat{\sigma}_{\hat{\beta_1}}}, 
+\quad \text{avec } \hat{\sigma}_{\hat{\beta_1}} = \sqrt{\widehat{\mathrm{Var}}(\hat\beta_1)}
+$$
+
+Sous $H_0$, $T_1 \sim \underbrace{St_{n-p}}_{St_{15}}$.
+
+
+**Règle de décision** **(niveau ** $\alpha$ **= 5 %)**
+
+Un région critique au niveau $\alpha$ est
+$$
+RC_\alpha = \left\{ \left| \hat{T}_1 \right|>t_{n-p}(1-\alpha/2) \right\}
+$$
+
+où $t_{n-p}(1-\alpha/2)$ est le quantile d'ordre $1-\alpha/2$ d'une loi de Student de $n-p$ degrés de liberté. 
+
+On observe que $T_1 \approx \frac{18.44877/}{1.866646} \approx 9.883379$. Au niveau $\alpha=0.05$, on peut lire dans le tableau que $t_{15}(0.975) \approx 2.13$.
+
+
+Comme $|T_1| \approx 9.883379 > 2.13$, on **rejette** $H_0$. 
+
+Au niveau 5 %, la pente est significativement différente de 0 (et positive).  On estime ainsi qu’une hausse d’un million d’habitants est associée à une augmentation moyenne d’environ 18,45 millions de livres de confiseries.
+
+:::
+
+
+## Question 6
+
+Donner l’expression de la p-valeur du test précédent. On ne demande pas d’effectuer
+l’application numérique, mais au moins d’en donner une valeur approximative.
+
+
+::: answer
+
+La p-valeur d’un test statistique est la probabilité, sous l’hypothèse nulle $H_0$, d’obtenir une statistique de test $T_1$ au moins aussi extrême que celle effectivement observée dans l’échantillon $T_1^{(\textrm{obs})}$.
+
+Dans le cas d'un test bilatéral comme ici et en notant $F$ la fonction de répartition de $T_1$ :
+$$\textrm{p-valeur}=\mathbb{P}_{H_0}\left( \left|T_1 \right|  \geq \left|T_1^{(\textrm{obs})}\right|\right)=2\textrm{min}\left(F\left(T_1^{(\textrm{obs})}\right),1-F\left(T_1^{(\textrm{obs})}\right)\right)$$
+
+
+
+Etant donné la table des quantiles de la loi de Student de degré de liberté 15, la statistique de test $T_1$ prend la plupart de ses valeurs entre -3 et 3 sous $H_0$. Ainsi, l'image de la fonction de répartition de la loi de Student à 15 degrés de liberté pour la valeur obervée  $T_1 \approx 9.88337$ sera très proche de 1 donc la p-valeur sera quasiment nulle.
+
+:::
+
+
+## Question 7
+
+Tester de même si l’ordonnée à l’origine est significativement différente de 0, d’une
+part en fixant le niveau à 5 % et d’autre part en évaluant grossièrement la p-valeur
+associée.
+
+::: answer
+
+**Hypothèses du test**
+
+Il s’agit de tester :
+$$
+H_0 : \beta_0 = 0 \quad \text{vs} \quad H_1 : \beta_0 \neq 0
+$$
+
+On note $T_0$ la statistique de test telle que 
+$$
+T_0 = \frac{\hat\beta_0}{\hat{\sigma}_{\hat{\beta_0}}}, 
+\quad \text{avec } \hat{\sigma}_{\hat{\beta_0}} = \sqrt{\widehat{\mathrm{Var}}(\hat\beta_0)}
+$$
+
+Sous $H_0$, $T_0 \sim \underbrace{St_{n-p}}_{St_{15}}$.
+
+
+**Règle de décision** **(niveau ** $\alpha$ **= 5 %)**
+
+Un région critique au niveau $\alpha$ est
+$$
+RC_\alpha = \left\{ \left| \hat{T}_0 \right|>t_{n-p}(1-\alpha/2) \right\}
+$$
+
+où $t_{n-p}(1-\alpha/2)$ est le quantile d'ordre $1-\alpha/2$ d'une loi de Student de $n-p$ degrés de liberté. 
+
+On observe que $T_0 \approx \frac{-10.94044}{141.6641} \approx -0.077228039$. Au niveau $\alpha=0.05$, on peut lire dans le tableau que $t_{15}(0.975) \approx 2.13$.
+
+
+Comme $|T_0| \approx 0.077 < 2.13$, on **ne rejette pas** $H_0$. L'ordonnée à l'origine n'est pas significativement différente de 0 au niveau 5 %.
+
+On pouvait conclure également avec la p-valeur qui doit s'approcher de 1 avec un raisonnement grossier
+
+$$
+\begin{align*}
+\textrm{p-valeur}&=\mathbb{P}_{H_0}\left( \left|T_0 \right|  \geq \left|T_0^{(\textrm{obs})}\right|\right)=2\textrm{min}\left(F\left(T_0^{(\textrm{obs})}\right),1-F\left(T_0^{(\textrm{obs})}\right)\right) \\
+&\approx2 F\left(T_0^{(\textrm{obs})}\right) \approx 2F(-0.077) \approx 2\times 0.5\approx 1
+\end{align*}
+$$
+
+:::
