@@ -11,7 +11,7 @@ setHook('rstudio.sessionInit', function(newSession) {
   }
 }, action = 'append')
 " >> /home/onyxia/.Rprofile
-echo \ 
+echo \
 "
 options(renv.config.repos.override = 'https://packagemanager.posit.co/cran/latest')
 renv::restore(prompt = FALSE)
