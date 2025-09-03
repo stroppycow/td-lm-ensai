@@ -7,6 +7,7 @@ format:
 ---
 
 ## Exercices de la séance 1
+
 [Exercice 1](/posts/td1-exo1.html)
 
 [Exercice 2](/posts/td1-exo2.html)
@@ -19,6 +20,8 @@ format:
 
 [Exercice 6](/posts/td1-exo6.html)
 
+
+::: {.content-hidden when-format="html"}
 ## Exercices des séances 2 à 5
 
 [Exercice 1](/posts/td2-exo1.html)
@@ -54,3 +57,5 @@ format:
 [Exercice 6](/posts/td6-exo6.html)
 
 [Exercice 7](/posts/td6-exo7.html)
+
+:::

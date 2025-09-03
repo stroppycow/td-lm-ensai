@@ -12,22 +12,6 @@ project:
     - posts/td1-exo4.qmd
     - posts/td1-exo5.qmd
     - posts/td1-exo6.qmd
-    - posts/td2-exo1.qmd
-    - posts/td2-exo3.qmd
-    - posts/td2-exo4.qmd
-    - posts/td2-exo6.qmd
-    - posts/td2-exo7.qmd
-    - posts/td2-exo8.qmd
-    - posts/td2-exo9.qmd
-    - posts/td2-exo10.qmd
-    - posts/td2-exo11.qmd
-    - posts/td6-exo1.qmd
-    - posts/td6-exo2.qmd
-    - posts/td6-exo3.qmd
-    - posts/td6-exo4.qmd
-    - posts/td6-exo5.qmd
-    - posts/td6-exo6.qmd
-    - posts/td6-exo7.qmd
   preview: 
     timeout: 3600
     navigate: false
@@ -37,7 +21,6 @@ website:
     left:
       - href: index.qmd
         text: Accueil
-      - about.qmd
 format:
   html:
     theme: cosmo
