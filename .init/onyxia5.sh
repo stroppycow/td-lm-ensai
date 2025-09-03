@@ -15,4 +15,4 @@ echo \
 "
 options(renv.config.repos.override = 'https://packagemanager.posit.co/cran/latest')
 renv::restore(prompt = FALSE)
-" >> /home/onyxia/td-lm-ensai/.Rprofile
+" >> /home/onyxia/work/td-lm-ensai/.Rprofile
