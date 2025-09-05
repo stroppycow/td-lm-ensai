@@ -39,8 +39,7 @@ Soit $z_1, \dots, z_n$ des observations d'une variable $Z$.
 Déterminer la valeur $\hat{m}$ qui minimise la distance quadratique aux
 données $$S(m) = \sum\limits_{i=1}^n \left( z_i-m \right)^2$$
 
-
-::: answer
+:::: answer
 La fonction $S$ est une fonction polynomiale. Elle est donc dérivable
 sur $\mathbb{R}$. On note $S'$ la fonction dérivée de $S$. Pour
 $m \in \mathbb{R}$, on a : $$S'(m)=\sum\limits_{i=1}^n 2(m-z_i)$$ On
@@ -55,10 +54,10 @@ S'(m) > 0 &\Longleftrightarrow \sum\limits_{i=1}^n \left(m-z_i\right) = 0 \Longl
 \end{align*}
 $$
 
-Si on note $\overline{z}=\frac{1}{n}\sum\limits_{i=1}^n z_i$ la moyenne des observations $z_1, \dots, z_n$.
+Si on note $\overline{z}=\frac{1}{n}\sum\limits_{i=1}^n z_i$ la moyenne
+des observations $z_1, \dots, z_n$.
 
-<div style="text-align:center;">
-
+::: {style="text-align:center;"}
 ``` tikz
 \begin{tikzpicture}
 \tkzTabInit{$m$ / 1 , $S'(m)$ / 1, $S(m)$ / 1.5}{$-\infty$, $\overline{z}$, $+\infty$}
@@ -66,25 +65,26 @@ Si on note $\overline{z}=\frac{1}{n}\sum\limits_{i=1}^n z_i$ la moyenne des obse
 \tkzTabVar{+/ $+\infty$, -/ $S(\overline{z})$, +/ $+\infty$}
 \end{tikzpicture}
 ```
-</div>
+:::
 
-
-La valeur $\hat{m}$ qui minimise la distance quadratique $S(m)$ aux données est donc la moyenne empirique $\overline{z}$.
-
-::: 
+La valeur $\hat{m}$ qui minimise la distance quadratique $S(m)$ aux
+données est donc la moyenne empirique $\overline{z}$.
+:::
 
 
 ## Question 2
 
-La quantité $\hat{m}$ correspond en fait à l’estimation par moindres carrés ordinaires dans
-un modèle de régression linéaire : $Y = X\beta + \epsilon$. Préciser ce que valent $Y$ , $X$, $\beta$ et $\epsilon$.
-
+La quantité $\hat{m}$ correspond en fait à l’estimation par moindres
+carrés ordinaires dans un modèle de régression linéaire :
+$Y = X\beta + \epsilon$. Préciser ce que valent $Y$ , $X$, $\beta$ et
+$\epsilon$.
 
 ::: answer
-Dans le cas où on ne dispose pas d'informations auxilaiires, on peut modéliser linéairement à quel point les observations s'ajustent à une constante $m$.
+Dans le cas où on ne dispose pas d'informations auxilaiires, on peut
+modéliser linéairement à quel point les observations s'ajustent à une
+constante $m$.
 
-On modélise ainsi 
-$$\forall\ i \in  [\![1, n ]\!], \ z_i=m+\epsilon_i $$
+On modélise ainsi $$\forall\ i \in  [\![1, n ]\!], \ z_i=m+\epsilon_i $$
 
 Vectoriellement, cela se traduit par l'expression
 
@@ -108,19 +108,22 @@ z_n
 \end{pmatrix}}_{\epsilon}
 $$
 
-Les moindres carrés ordinaires (MCO) consistent à trouver la valeur de $\beta$ qui minimise la quantité
+Les moindres carrés ordinaires (MCO) consistent à trouver la valeur de
+$\beta$ qui minimise la quantité
 $$\|Y-X\beta\|^2  = \sum\limits_{i=1}^n \left(z_i-\beta\right)^2=S(\beta)$$
-Ainsi, la quantité $\hat{m}$ calculée à la question précédente correspond bien à l'estimation par les moindres carrés ordinaires de ce modèle de regression linéaire avec uniquement une constante. 
-
+Ainsi, la quantité $\hat{m}$ calculée à la question précédente
+correspond bien à l'estimation par les moindres carrés ordinaires de ce
+modèle de regression linéaire avec uniquement une constante.
 :::
 
 
 ## Question 3
 
-Retrouver le résultat de la première question à partir de la formule générale de l'estimateur des moindres carrés ordinaires : $\hat{\beta}=(X'X)^{-1}X'Y$.
+Retrouver le résultat de la première question à partir de la formule
+générale de l'estimateur des moindres carrés ordinaires :
+$\hat{\beta}=(X'X)^{-1}X'Y$.
 
 ::: answer
-
 On calcule $\hat{\beta}$ étape par étape :
 
 $$
@@ -157,8 +160,7 @@ z_n
 \hat{\beta}&=(X'X)^{-1}X'Y=\frac{1}{n}\sum\limits_{i=1}^n z_i = \overline{z}
 \end{align*}$$
 
-On retrouve ainsi le résultat de la première question $\hat{m}=\overline{z}$. 
-
-
+On retrouve ainsi le résultat de la première question
+$\hat{m}=\overline{z}$.
 :::
 

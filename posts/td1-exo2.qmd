@@ -32,21 +32,28 @@ custom-callout:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-Les modèles suivants sont-ils des modèles de régression linéaire ? Si non, peut-on appliquer
-une transformation pour s’y ramener ? Pour chaque modèle de régression linéaire du type
-$Y = X\beta + \epsilon$, on précisera ce que valent $Y$ , $X$, $\beta$ et $\epsilon$.
+Les modèles suivants sont-ils des modèles de régression linéaire ? Si
+non, peut-on appliquer une transformation pour s’y ramener ? Pour chaque
+modèle de régression linéaire du type $Y = X\beta + \epsilon$, on
+précisera ce que valent $Y$ , $X$, $\beta$ et $\epsilon$.
 
 ## Question 1
 
-On observe $(x_i,y_i)_{i\in [\![1,n ]\!]}$ liés théoriquement par la relation 
-$y_i=a+bx_i+\epsilon_i$ pour $i\in [\![1,n ]\!]$, où les variables $\epsilon_i$ sont centrées,
-de variance $\sigma^2$ et non corrélées. On désire estimer $a$ et $b$.
-
+On observe $(x_i,y_i)_{i\in [\![1,n ]\!]}$ liés théoriquement par la
+relation $y_i=a+bx_i+\epsilon_i$ pour $i\in [\![1,n ]\!]$, où les
+variables $\epsilon_i$ sont centrées, de variance $\sigma^2$ et non
+corrélées. On désire estimer $a$ et $b$.
 
 ::: answer
-Le modèle $y_{i} = a + b x_{i} + \epsilon_{i}$  est effectivement un modèle de régression linéaire car il décrit l'espérance d’une variable réponse continue $Y$  d’un échantillon aléatoire de taille $n$ comme fonction linéaire du couple de variables explicatives $(1, X_i)$ : $\mathbb{E}(Y_i|1,X_i)=a+bX_i$
- 
-Le modèle donné sur les $n$ obervations s'écrit alors matriciellement $Y = X\beta + \epsilon$, et nous pouvons identifier les éléments suivants :
+Le modèle $y_{i} = a + b x_{i} + \epsilon_{i}$ est effectivement un
+modèle de régression linéaire car il décrit l'espérance d’une variable
+réponse continue $Y$ d’un échantillon aléatoire de taille $n$ comme
+fonction linéaire du couple de variables explicatives $(1, X_i)$ :
+$\mathbb{E}(Y_i|1,X_i)=a+bX_i$
+
+Le modèle donné sur les $n$ obervations s'écrit alors matriciellement
+$Y = X\beta + \epsilon$, et nous pouvons identifier les éléments
+suivants :
 
 $$
 Y = \underbrace{\begin{pmatrix}
@@ -70,22 +77,27 @@ b
 \end{pmatrix}}_{\in \mathcal{M}_{n,1}(\mathbb{R})} 
 $$
 
-Il s'agit du modèle de régression linéaire simple car il n'y a qu'un seul régresseur et une constante (slide 46). 
-
+Il s'agit du modèle de régression linéaire simple car il n'y a qu'un
+seul régresseur et une constante (slide 46).
 :::
-
-
 
 ## Question 2
 
-On observe $(x_i,y_i)_{i\in [\![1,n ]\!]}$ liés théoriquement par la relation 
-$y_i=a_1bx_i+a_2x_i^2+\epsilon_i$ pour $i\in [\![1,n ]\!]$, où les variables $\epsilon_i$ sont centrées,
-de variance $\sigma^2$ et non corrélées. On désire estimer $a_1$ et $a_2$.
+On observe $(x_i,y_i)_{i\in [\![1,n ]\!]}$ liés théoriquement par la
+relation $y_i=a_1x_i+a_2x_i^2+\epsilon_i$ pour $i\in [\![1,n ]\!]$, où
+les variables $\epsilon_i$ sont centrées, de variance $\sigma^2$ et non
+corrélées. On désire estimer $a_1$ et $a_2$.
 
 ::: answer
-Il s'agit bien d'un modèle de régression linéaire car il décrit l'espérance d’une variable réponse continue $Y$  d’un échantillon aléatoire de taille $n$ comme fonction linéaire du couple de variables explicatives $(X_i, X_i^2)$ : $\mathbb{E}(Y_i|X_i,X_i^2)=a_1bX_i+a_2X_i^2$
+Il s'agit bien d'un modèle de régression linéaire car il décrit
+l'espérance d’une variable réponse continue $Y$ d’un échantillon
+aléatoire de taille $n$ comme fonction linéaire du couple de variables
+explicatives $(X_i, X_i^2)$ :
+$\mathbb{E}(Y_i|X_i,X_i^2)=a_1X_i+a_2X_i^2$
 
-Le modèle donné sur les $n$ obervations s'écrit alors matriciellement $Y = X\beta + \epsilon$, et nous pouvons identifier les éléments suivants :
+Le modèle donné sur les $n$ obervations s'écrit alors matriciellement
+$Y = X\beta + \epsilon$, et nous pouvons identifier les éléments
+suivants :
 
 $$
 Y = \underbrace{\begin{pmatrix}
@@ -109,37 +121,44 @@ a_2
 \end{pmatrix}}_{\in \mathcal{M}_{n,1}(\mathbb{R})} 
 $$
 :::
- 
 
 ## Question 3
 
-On relève pour différents pays $(i = 1, \dots, n)$ leur production $P_i$, leur capital $K_i$,
-leur facteur travail $T_i$ qui sont théoriquement liées par la relation de Cobb-Douglas
-$P = \alpha_1K^{\alpha_2}T^{\alpha_3}$ . On désire vérifier cette relation et estimer $\alpha_1$, $\alpha_2$ et $\alpha_3$.
+On relève pour différents pays $(i = 1, \dots, n)$ leur production
+$P_i$, leur capital $K_i$, leur facteur travail $T_i$ qui sont
+théoriquement liées par la relation de Cobb-Douglas
+$P = \alpha_1K^{\alpha_2}T^{\alpha_3}$ . On désire vérifier cette
+relation et estimer $\alpha_1$, $\alpha_2$ et $\alpha_3$.
 
 ::: answer
-
 La relation Cobb-Douglas qui lie la production $P_i$ au capital $K_i$,
-et au facteur travail $T_i$ au sein de chaque pays est théorique : cela se traduit plus formellement par une espérance.
+et au facteur travail $T_i$ au sein de chaque pays est théorique : cela
+se traduit plus formellement par une espérance.
 
 $$\mathbb{E}(P_i | K_i, T_i) = \alpha_1K_i^{\alpha_2}T_i^{\alpha_3}$$
 
-Ce modèle n'est pas un modèle de régression linéaire car cette espérance conditionnelle n'est pas une combinaison liénaire des paramètres $\alpha_1$, $\alpha_2$ et $\alpha_3$.
+Ce modèle n'est pas un modèle de régression linéaire car cette espérance
+conditionnelle n'est pas une combinaison liénaire des paramètres
+$\alpha_1$, $\alpha_2$ et $\alpha_3$.
 
-
-On peut transformer la relation initiale en appliquant la fonction logarithme.
+On peut transformer la relation initiale en appliquant la fonction
+logarithme.
 
 $$
 \ln(P) = \ln(\alpha_1)+\alpha_2\ln(K)+\alpha_3\ln(T)
-$$
-Le modèle statistique s'écrit donc 
+$$ Le modèle statistique s'écrit donc
 
 $$\mathbb{E}(\ln(P_i) | K_i, T_i) = \ln(\alpha_1)+\alpha_2\ln(K_i)+\alpha_3\ln(T_i)$$
 
-Il s'agit bien d'un modèle de régression linéaire car il décrit l'espérance d’une variable réponse continue $Y=ln(P)$  d’un échantillon aléatoire de taille $n$ comme fonction linéaire des variables explicatives $(1, \ln(K_i), \ln(T_i))$ : $\mathbb{E}(\ln(P_i)|1, \ln(K_i), \ln(T_i))= \ln(\alpha_1)+\alpha_2\ln(K_i)+\alpha_3\ln(T_i)$
+Il s'agit bien d'un modèle de régression linéaire car il décrit
+l'espérance d’une variable réponse continue $Y=ln(P)$ d’un échantillon
+aléatoire de taille $n$ comme fonction linéaire des variables
+explicatives $(1, \ln(K_i), \ln(T_i))$ :
+$\mathbb{E}(\ln(P_i)|1, \ln(K_i), \ln(T_i))= \ln(\alpha_1)+\alpha_2\ln(K_i)+\alpha_3\ln(T_i)$
 
-
-Le modèle donné sur les $n$ obervations s'écrit alors matriciellement $Y = X\beta + \epsilon$, et nous pouvons identifier les éléments suivants :
+Le modèle donné sur les $n$ obervations s'écrit alors matriciellement
+$Y = X\beta + \epsilon$, et nous pouvons identifier les éléments
+suivants :
 
 $$
 Y = \underbrace{\begin{pmatrix}
@@ -165,26 +184,34 @@ X = \underbrace{\begin{pmatrix}
 $$
 :::
 
+
 ## Question 4
 
-Le taux de produit actif $y$ dans un médicament est supposé évoluer au cours du
-temps $t$ selon la relation $y = \beta_1e^{-\beta_2t}$. On dispose des mesures de $n$ taux $y_i$ effectués à $n$ instants $t_i$. On désire vérifier cette relation et estimer $\beta_1$ et $\beta_2$.
+Le taux de produit actif $y$ dans un médicament est supposé évoluer au
+cours du temps $t$ selon la relation $y = \beta_1e^{-\beta_2t}$. On
+dispose des mesures de $n$ taux $y_i$ effectués à $n$ instants $t_i$. On
+désire vérifier cette relation et estimer $\beta_1$ et $\beta_2$.
 
 ::: answer
-
-Comme dans l'exemple précédent, il s'agit d'une relation théorique mais il y a bien un aléas implicite.
-De même la relation, $\beta_1e^{-\beta_2t}$  n'est pas linéaire en les paramètres.
+Comme dans l'exemple précédent, il s'agit d'une relation théorique mais
+il y a bien un aléas implicite. De même la relation,
+$\beta_1e^{-\beta_2t}$ n'est pas linéaire en les paramètres.
 
 On peut passer au logarithme afin de linéariser la relation :
 
 $$\ln(y_i) = \ln(\beta_1)-\beta_2 t_i$$
 
-Le modèle statistique s'écrit donc 
+Le modèle statistique s'écrit donc
 
-$$\mathbb{E}(\ln(Y_i) | 1, T_i) = \ln(\beta_1)-\beta_2 t_i$$
-Il s'agit bien d'un modèle de régression linéaire car il décrit l'espérance d’une variable réponse continue $Y=ln(P)$  d’un échantillon aléatoire de taille $n$ comme fonction linéaire des variables explicatives $(1, T_i)$ : $\mathbb{E}(\ln(Y_i)|1,  T_i)=  \ln(\beta_1)-\beta_2 T_i$
+$$\mathbb{E}(\ln(Y_i) | 1, T_i) = \ln(\beta_1)-\beta_2 t_i$$ Il s'agit
+bien d'un modèle de régression linéaire car il décrit l'espérance d’une
+variable réponse continue $Y=ln(P)$ d’un échantillon aléatoire de taille
+$n$ comme fonction linéaire des variables explicatives $(1, T_i)$ :
+$\mathbb{E}(\ln(Y_i)|1,  T_i)=  \ln(\beta_1)-\beta_2 T_i$
 
-Le modèle donné sur les $n$ obervations s'écrit alors matriciellement $Y = X\beta + \epsilon$, et nous pouvons identifier les éléments suivants :
+Le modèle donné sur les $n$ obervations s'écrit alors matriciellement
+$Y = X\beta + \epsilon$, et nous pouvons identifier les éléments
+suivants :
 
 $$
 Y = \underbrace{\begin{pmatrix}
@@ -211,12 +238,14 @@ $$
 
 ## Question 5
 
-Même problème que précedemment mais le modèle théorique entre les observations
-s’écrit $y_i = \beta_1e^{-\beta_2t_i}+u_i$, $i = 1, \dots, n$, où les variables $u_i$ sont centrées, de variance $\sigma^2$ et non-corrélées.
-
+Même problème que précedemment mais le modèle théorique entre les
+observations s’écrit $y_i = \beta_1e^{-\beta_2t_i}+u_i$,
+$i = 1, \dots, n$, où les variables $u_i$ sont centrées, de variance
+$\sigma^2$ et non-corrélées.
 
 ::: answer
-
-Le modèle n'est pas linéaire car le lien initial n'est pas linéaire en les paramètres et on ne peut pas appliquer de transformation logarithmique pour se ramener à un modèle linéaire classique car l'erreur dans le modèle initiae est additive. 
-
+Le modèle n'est pas linéaire car le lien initial n'est pas linéaire en
+les paramètres et on ne peut pas appliquer de transformation
+logarithmique pour se ramener à un modèle linéaire classique car
+l'erreur dans le modèle initial est additive.
 :::

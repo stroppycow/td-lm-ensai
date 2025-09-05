@@ -32,16 +32,19 @@ custom-callout:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-On considère le modèle de régression linéaire simple où l’on observe $n$ réalisations $(x_i, y_i)_{i \in [\![1,n]\!]}$; liées par la relation $y_i = \beta_0 + \beta_1x_i + \epsilon_i$; $i = 1, \ \dots, \ n$. On suppose que les $x_i$ sont déterministes et que les variables $\epsilon_i$ sont centrées, de variance $\sigma^2$ et non-corrélées entre elles.
+On considère le modèle de régression linéaire simple où l’on observe $n$
+réalisations $(x_i, y_i)_{i \in [\![1,n]\!]}$; liées par la relation
+$y_i = \beta_0 + \beta_1x_i + \epsilon_i$; $i = 1, \ \dots, \ n$. On
+suppose que les $x_i$ sont déterministes et que les variables
+$\epsilon_i$ sont centrées, de variance $\sigma^2$ et non-corrélées
+entre elles.
 
 ## Question 1
 
 Écrire le modèle sous forme matricielle
 
 ::: answer
-
-Le modèle s'écrit matricellement  $Y=X\beta+\epsilon$ avec 
-$$
+Le modèle s'écrit matricellement $Y=X\beta+\epsilon$ avec $$
 Y = \underbrace{\begin{pmatrix}
 y_1\\
 \vdots \\
@@ -63,46 +66,46 @@ X = \underbrace{\begin{pmatrix}
 \end{pmatrix}}_{\in \mathcal{M}_{n,1}(\mathbb{R})} 
 $$
 
-avec les hypothèses $\mathbb{E}(\epsilon) =0_{n,1} \ \textrm{et} \ \mathbb{V}(\epsilon)=\sigma^2I_n$.
-
+avec les hypothèses
+$\mathbb{E}(\epsilon) =0_{n,1} \ \textrm{et} \ \mathbb{V}(\epsilon)=\sigma^2I_n$.
 :::
 
 ## Question 2
 
-De quel problème de minimisation l’estimateur des moindres carrés $\hat{\beta}= (\hat{\beta}_0, \hat{\beta}_1)$ est-il la solution ?
+De quel problème de minimisation l’estimateur des moindres carrés
+$\hat{\beta}= (\hat{\beta}_0, \hat{\beta}_1)$ est-il la solution ?
 
 ::: answer
 L'estimateur des moindres carrés ordinaires est solution du problème :
 $$
 \underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{{\textrm{argmin}}} \ \sum\limits_{i=1}^n\left(y_i-\beta_0-\beta_1x_i\right)^2
 $$
-
 :::
+
+
 
 ## Question 3
 
-On peut trouver $\hat{\beta}$ en annulant le gradient de la fonction à minimiser précédente.
-Cela a déjà été fait et les solutions sont à connaitre par coeur : que valent-elles ?
+On peut trouver $\hat{\beta}$ en annulant le gradient de la fonction à
+minimiser précédente. Cela a déjà été fait et les solutions sont à
+connaitre par coeur : que valent-elles ?
 
 ::: answer
-On a (*cf slide 19*)
+On a (*cf slide 24*)
 
 $$\hat{\beta}_1=\frac{\textrm{cov}(x,y)}{\textrm{var}(x)}=\frac{\frac{1}{n}\sum\limits_{i=1}^n\left(x_i-\overline{x}\right)\left(y_i-\overline{y}\right)}{\frac{1}{n}\sum\limits_{i=1}^n\left(x_i-\overline{x}\right)^2} \qquad \hat{\beta}_0= \overline{y}-\hat{\beta}_1\overline{x}$$
 
-
-::: {.callout-note collapse=true}
+::: {.callout-note collapse="true"}
 ### Preuve
 
-On considère la fonction
-$$
+On considère la fonction $$
 S(\beta_0,\beta_1) \;=\; \sum_{i=1}^n \left( y_i - \beta_0 - \beta_1 x_i \right)^2,
 \qquad S:\mathbb{R}^2 \to \mathbb{R}.
 $$
 
 **Calcul du gradient**
 
-On calcule les dérivées partielles :
-$$
+On calcule les dérivées partielles : $$
 \begin{align*}
 \frac{\partial S}{\partial \beta_0}
 &= -2 \sum_{i=1}^n (y_i - \beta_0 - \beta_1 x_i)
@@ -114,8 +117,7 @@ $$
 \end{align*}
 $$
 
-Ainsi
-$$
+Ainsi $$
 \nabla S(\beta_0,\beta_1)
 = 2\begin{pmatrix}
 n\beta_0+\beta_1 \sum\limits_{i=1}^n x_i - \sum\limits_{i=1}^n  y_i \\
@@ -125,8 +127,7 @@ $$
 
 **Équations normales**
 
-Les conditions du premier ordre donnent :
-$$
+Les conditions du premier ordre donnent : $$
 \begin{align*}
 \begin{cases}
 n\beta_0 + \beta_1 \sum\limits_{i=1}^n x_i - \sum\limits_{i=1}^n y_i =0\\
@@ -155,12 +156,9 @@ n\overline{x}\left(\overline{y}-\beta_1\overline{x}\right)+ \beta_1 \sum\limits_
 \end{align*}
 $$
 
-
-
 **Hessienne et convexité**
 
-La matrice Hessienne $H_S$ de $S$ est
-$$
+La matrice Hessienne $H_S$ de $S$ est $$
 H_S(\beta_0,\beta_1)
 = \begin{pmatrix}
 \frac{\partial^2 S}{\partial \beta_0^2} & \frac{\partial^2 S}{\partial \beta_0\partial \beta_1} \\
@@ -172,10 +170,10 @@ n & \sum\limits_{i=1}^n x_i \\
 \end{pmatrix}
 $$
 
-Montrons que la matrice $H_S$ est semi définie positive et donc que la fonction $S$ est convexe.
+Montrons que la matrice $H_S$ est semi définie positive et donc que la
+fonction $S$ est convexe.
 
-Soit $v = (v_1, v_2)\in\mathbb{R}^2$,
-$$
+Soit $v = (v_1, v_2)\in\mathbb{R}^2$, $$
 \begin{align*}
 v' H_S v =2\begin{pmatrix}
 v_1 & v_2
@@ -204,10 +202,13 @@ Donc $H_S$ est semi-définie positive et $S$ est convexe.
 
 **Unicité et conclusion**
 
-Montrons que la matrice $H_S$ est définie positive et donc que la fonction $S$ est strictement convexe si et seulement si les $x_i$ ne sont pas tous égaux.
+Montrons que la matrice $H_S$ est définie positive et donc que la
+fonction $S$ est strictement convexe si et seulement si les $x_i$ ne
+sont pas tous égaux.
 
-
-D'après les résultats obtenus dans le paragraphe précédent, $v' H_S v = 0$ si et seulement si $v_0 + v_1 x_i = 0$ pour tout $i \in [\![1,\dots,n]\!]$.
+D'après les résultats obtenus dans le paragraphe précédent,
+$v' H_S v = 0$ si et seulement si $v_0 + v_1 x_i = 0$ pour tout
+$i \in [\![1,\dots,n]\!]$.
 
 On en déduit
 
@@ -215,8 +216,7 @@ $$
 \forall i \in [\![1,\dots,n]\!], v_1x_i=-v_0 \textrm{ et } \forall i \in [\![1,\dots,n]\!], v_1^2x_i^2=v_0^2
 $$
 
-En sommant ces égalités, on a :
-$$
+En sommant ces égalités, on a : $$
 \sum\limits_{i=1}^n v_1x_i=-nv_0 \quad \sum\limits_{i=1}^n v_1^2x_i^2=nv_0^2
 $$
 
@@ -226,27 +226,36 @@ $$v_1^2\underbrace{\left(\frac{1}{n}\sum\limits_{i=1}^n x_i^2-\left(\frac{1}{n}\
 
 Ainsi,
 
-* Si $\textrm{var}(x) \neq 0$, c'est à dire si et seulement si tous les $x_i$ sont ne sont pas tous égaux alors $v' H_S v = 0 \Leftrightarrow v= (0, 0)$ donc $H_S$ est une matrice définie positive et $S$ est strictement convexe. La fonction $S$ admet un unique minimum global atteint en
+-   Si $\textrm{var}(x) \neq 0$, c'est à dire si et seulement si tous
+    les $x_i$ sont ne sont pas tous égaux alors
+    $v' H_S v = 0 \Leftrightarrow v= (0, 0)$ donc $H_S$ est une matrice
+    définie positive et $S$ est strictement convexe. La fonction $S$
+    admet un unique minimum global atteint en
 
 $$
 \hat{\beta}_1=\frac{\textrm{cov}(x,y)}{\textrm{var}(x)} \qquad
 \hat{\beta}_0 = \overline{y}-\hat{\beta}_1\overline{x} 
 $$
 
-
-* Si $\textrm{var}(x)=0$, c'est à dire si et seulement si tous les $x_i=\overline{x}$ alors $v' H_S v = 0 \nLeftrightarrow v= (0, 0)$ donc $H_S$ n'est pas une matrice définie positive et $S$ est convexe mais pas strictement. La fonction $S$ admet un minimum global mais il existe une infinité de couples $(\hat{\beta}_0,\hat{\beta}_1)$ minimisant $S$ (i.e. la valeur minimale est unique, mais les minimisateurs ne le sont pas). Ils vérifient la relation :
-$$\hat{\beta}_0 = \overline{y}-\hat{\beta}_1\overline{x}$$
-
+-   Si $\textrm{var}(x)=0$, c'est à dire si et seulement si tous les
+    $x_i=\overline{x}$ alors $v' H_S v = 0 \nLeftrightarrow v= (0, 0)$
+    donc $H_S$ n'est pas une matrice définie positive et $S$ est convexe
+    mais pas strictement. La fonction $S$ admet un minimum global mais
+    il existe une infinité de couples $(\hat{\beta}_0,\hat{\beta}_1)$
+    minimisant $S$ (i.e. la valeur minimale est unique, mais les
+    minimisateurs ne le sont pas). Ils vérifient la relation :
+    $$\hat{\beta}_0 = \overline{y}-\hat{\beta}_1\overline{x}$$
 :::
-
 :::
 
 ## Question 4
 
-Retrouver $\hat{\beta}$ en utilisant la formule générale $\hat{\beta} = (X'X)^{-1}X'Y$:
+Retrouver $\hat{\beta}$ en utilisant la formule générale
+$\hat{\beta} = (X'X)^{-1}X'Y$:
 
 ::: answer
-On calcule $\hat{\beta}$ à partir de la formule générale étape par étape :
+On calcule $\hat{\beta}$ à partir de la formule générale étape par étape
+:
 
 $$
 \begin{align*}
@@ -273,7 +282,9 @@ n & \sum\limits_{i=1}^n x_i \\
 \end{align*}
 $$
 
-Si $X'X$ est inversible i.e. si $\det(X'X) \neq 0 \Longleftrightarrow \textrm{var}(x) \Longleftrightarrow $ tous les $x_i$ ne sont pas égaux, on a :
+Si $X'X$ est inversible i.e. si $\mathrm{det}(X'X) \neq 0
+\Longleftrightarrow \textrm{var}(x) \neq 0 \Longleftrightarrow$ tous les
+$x_i$ ne sont pas égaux, on a :
 
 $$
 \begin{align*}
@@ -335,9 +346,11 @@ $$
 $$
 :::
 
+
 ## Question 5
 
-Justifier pourquoi la droite de régression passe nécessairement par le point $(\overline{x}; \overline{y})$.
+Justifier pourquoi la droite de régression passe nécessairement par le
+point $(\overline{x}; \overline{y})$.
 
 ::: answer
 D'après la question 3, on a :
@@ -346,9 +359,10 @@ $\hat{\beta}_0 = \overline{y}-\hat{\beta}_1\overline{x}$
 
 ## Question 6
 
-On souhaite prédire la valeur $y_o$ associée à la valeur $x_o$ d’un nouvel individu, en supposant
-que ce dernier suit exactement le même modèle que les $n$ individus précédents.
-Que vaut la prévision $\hat{y}_o$ de $y_o$ ?
+On souhaite prédire la valeur $y_o$ associée à la valeur $x_o$ d’un
+nouvel individu, en supposant que ce dernier suit exactement le même
+modèle que les $n$ individus précédents. Que vaut la prévision
+$\hat{y}_o$ de $y_o$ ?
 
 ::: answer
 On a $\hat{y}_o = \hat{\beta}_0+\hat{\beta}_1x_o$
@@ -357,11 +371,11 @@ On a $\hat{y}_o = \hat{\beta}_0+\hat{\beta}_1x_o$
 
 ## Question 7
 
-Montrer que l’espérance de l’erreur de prévision $\hat{y}_o$ de $y_o$  est nulle.
+Montrer que l’espérance de l’erreur de prévision $\hat{y}_o$ de $y_o$
+est nulle.
 
 ::: answer
-
-On calcule l'espérance de l'erreur de prévision  
+On calcule l'espérance de l'erreur de prévision\
 $$
 \begin{align*}
 \mathbb{E}(\hat{y}_o-y_o)
@@ -373,17 +387,17 @@ $$
 
 Or
 
-* $\mathbb{E}(\hat{\beta}_0)=\beta_0$ et $\mathbb{E}(\hat{\beta}_1)=\beta_1$ car
-l'estimateur des moindres carrés ordinaires est sans biais ;
-* $\mathbb{E}(\beta_0)=\beta_0$ et $\mathbb{E}(\beta_1)=\beta_1$ car $\beta_0$ et $\beta_1$ sont déterministes ;
-* $\mathbb{E}(\epsilon_o)=0$ par hypothèse du modèle.
+-   $\mathbb{E}(\hat{\beta}_0)=\beta_0$ et
+    $\mathbb{E}(\hat{\beta}_1)=\beta_1$ car l'estimateur des moindres
+    carrés ordinaires est sans biais ;
+-   $\mathbb{E}(\beta_0)=\beta_0$ et $\mathbb{E}(\beta_1)=\beta_1$ car
+    $\beta_0$ et $\beta_1$ sont déterministes ;
+-   $\mathbb{E}(\epsilon_o)=0$ par hypothèse du modèle.
 
-Ainsi,
-$$\mathbb{E}(\hat{y}_o-y_o)=0$$
+Ainsi, $$\mathbb{E}(\hat{y}_o-y_o)=0$$
 
-::: {.callout-note collapse=true}
-
-### Rappel de la preuve : l'estimateur MCO d'un modèle de régression linéaire simple est sans biais 
+::: {.callout-note collapse="true"}
+### Rappel de la preuve : l'estimateur MCO d'un modèle de régression linéaire simple est sans biais
 
 On reprend le résultat de la question 3
 
@@ -392,7 +406,8 @@ $$
 \widehat{\beta}_0 = \overline{y}-\widehat{\beta}_1\,\overline{x}.
 $$
 
-Remplacer $y_i=\beta_0+\beta_1 x_i+\epsilon_i$ dans le numérateur de $\widehat{\beta}_1$ donne
+Remplacer $y_i=\beta_0+\beta_1 x_i+\epsilon_i$ dans le numérateur de
+$\widehat{\beta}_1$ donne
 
 $$
 \sum_{i=1}^n (x_i-\overline{x})(y_i-\overline{y})
@@ -400,7 +415,8 @@ $$
 =\beta_1\sum_{i=1}^n (x_i-\overline{x})^2 + \sum_{i=1}^n (x_i-\overline{x})\epsilon_i.
 $$
 
-En prenant l'espérance (comme les $x_i$ sont déterministes et $\mathbb{E}(\epsilon_i)=0$), on obtient
+En prenant l'espérance (comme les $x_i$ sont déterministes et
+$\mathbb{E}(\epsilon_i)=0$), on obtient
 
 $$
 \mathbb{E}\left(\sum_{i=1}^n (x_i-\overline{x})(y_i-\overline{y})\right)
@@ -414,19 +430,22 @@ $$
 \mathbb{E}(\widehat{\beta}_1)=\beta_1
 $$
 
-Pour $\widehat{\beta}_0$, on utilise $\widehat{\beta}_0=\overline{y}-\widehat{\beta}_1\,\overline{x}$ et la linéarité de l'espérance :
+Pour $\widehat{\beta}_0$, on utilise
+$\widehat{\beta}_0=\overline{y}-\widehat{\beta}_1\,\overline{x}$ et la
+linéarité de l'espérance :
 
 $$
 \mathbb{E}(\hat{\beta}_0)=\mathbb{E}(\overline{y})-\mathbb{E}(\widehat{\beta}_1)\overline{x}
 = (\beta_0+\beta_1\overline{x}) - \beta_1\overline{x} = \beta_0
 $$
 
-Ainsi, sous les hypothèses usuelles, $\hat{\beta}=\left(\hat{\beta}_0,\hat{\beta}_1\right)=(0,0)$ est sans biais.
-
+Ainsi, sous les hypothèses usuelles,
+$\hat{\beta}=\left(\hat{\beta}_0,\hat{\beta}_1\right)=(0,0)$ est sans
+biais.
 :::
 
-::: {.callout-note collapse=true}
-### Rappel de la preuve : l'estimateur MCO d'un modèle de régression linéaire multiple est sans biais 
+::: {.callout-note collapse="true"}
+### Rappel de la preuve : l'estimateur MCO d'un modèle de régression linéaire multiple est sans biais
 
 L'estimateur des moindres carrés ordinaires s'écrit
 
@@ -440,31 +459,35 @@ $$
 \widehat{\beta}=(X^\top X)^{-1}X^\top (X\beta+\varepsilon) = \beta + (X^\top X)^{-1}X^\top\varepsilon.
 $$
 
-En prenant l'espérance (conditionnelle sur $X$ fixé, ou sous l'hypothèse $\mathbb{E}(\epsilon\mid X)=0$), on obtient
+En prenant l'espérance (conditionnelle sur $X$ fixé, ou sous l'hypothèse
+$\mathbb{E}(\epsilon\mid X)=0$), on obtient
 
 $$
 \mathbb{E}(\hat{\beta}) = \beta + (X' X)^{-1}X'\mathbb{E}(\epsilon) = \beta.
 $$
 
 Donc $\hat{\beta}$ est sans biais.
+:::
+:::
 
-:::
-:::
 
 ## Question 8
 
-Pour un modèle de régression linéaire générale, la variance de l’erreur de prévision
-associée à un nouveau vecteur de régresseur $x$, de dimension $p$, vaut (cf cours) :
-$\sigma^2(x'(X'X)^{-1}x+1)$. Montrer qu’ici cette variance peut se récrire :
+Pour un modèle de régression linéaire générale, la variance de l’erreur
+de prévision associée à un nouveau vecteur de régresseur $x$, de
+dimension $p$, vaut (cf cours) : $\sigma^2(x'(X'X)^{-1}x+1)$. Montrer
+qu’ici cette variance peut se récrire :
 
 $$
 \sigma^2\left(1+\frac{1}{n}+\frac{(x_o-\overline{x})^2}{\sum\limits_{i=1}^n (x_i-\overline{x})^2} \right)
 $$
 
-
+::: {.content-hidden when-format="html"}
 ::: answer
-
-On applique la formule du cours avec $x= \begin{pmatrix} 1 & x_o\end{pmatrix}'$ et la matrice $(X'X)^{-1}$ dans le cas du modèle de regression linéaire simple qu'on a pu calculer à la question 4.
+On applique la formule du cours avec
+$x= \begin{pmatrix} 1 & x_o\end{pmatrix}'$ et la matrice $(X'X)^{-1}$
+dans le cas du modèle de regression linéaire simple qu'on a pu calculer
+à la question 4.
 
 On a alors :
 
@@ -493,30 +516,31 @@ x_o
 &=\sigma^2\left(1+\frac{1}{n}+\frac{(x_o-\overline{x})^2}{\sum\limits_{i=1}^n (x_i-\overline{x})^2} \right)
 \end{align*}
 $$
-
-
 :::
-
+:::
 
 ## Question 9
 
-Discuter de la qualité de la prévision selon que $x_o$ est proche ou non de la moyenne
-empirique $x_n$.
+Discuter de la qualité de la prévision selon que $x_o$ est proche ou non
+de la moyenne empirique $x_n$.
 
+::: {.content-hidden when-format="html"}
 ::: answer
-
-D'après la question précédente, la variance croît avec $(x_o - \overline{x})^2$ ; la prévision est d’autant plus précise lorsque $x_o$ est proche de la moyenne $\overline{x}$.
-
+D'après la question précédente, la variance croît avec
+$(x_o - \overline{x})^2$ ; la prévision est d’autant plus précise
+lorsque $x_o$ est proche de la moyenne $\overline{x}$.
+:::
 :::
 
 ## Question 10
 
 Qu’en est-il si $n$ est grand ?
 
-
+::: {.content-hidden when-format="html"}
 ::: answer
-
-Il n'est pas possible de répondre en toute généralité car cela dépend du comportement asymptotique de la suite des valeurs échantillonnées $(x_i)_{i \in \mathbb{N}}$
+Il n'est pas possible de répondre en toute généralité car cela dépend du
+comportement asymptotique de la suite des valeurs échantillonnées
+$(x_i)_{i \in \mathbb{N}}$
 
 On supposer une condition de régularité
 
@@ -526,8 +550,11 @@ $$
 \frac{1}{n}\sum\limits_{i=1}^n (x_i-\overline{x})^2 \underset{n \to +\infty}{\longrightarrow} \rho > 0
 \end{align*}$$
 
-Cela signifie que les $x_i$  ne deviennent pas tous égaux (variance non dégénérée), et que leur dispersion ne « s’effondre » ou au contraire « n'explose » pas quand $n$ augmente. Cette hypothèse un peu un équivalent déterministe au fait de supposer que $X$ soit une variable aléatoire de carré intégrable.
-
+Cela signifie que les $x_i$ ne deviennent pas tous égaux (variance non
+dégénérée), et que leur dispersion ne « s’effondre » ou au contraire «
+n'explose » pas quand $n$ augmente. Cette hypothèse un peu un équivalent
+déterministe au fait de supposer que $X$ soit une variable aléatoire de
+carré intégrable.
 
 On aurait alors
 
@@ -542,8 +569,8 @@ D'où
 
 $$\mathbb{V}(\hat{y}_o) \underset{n \to +\infty}{\longrightarrow} \sigma^2$$
 
-Ainsi lorsque $n$ est grand, seul le terme $\sigma^2$ reste dominant dans la variance
-de prévision. La position de $x_o$ par rapport à $\overline{x}$ devient peu importante en
-comparaison.
-
+Ainsi lorsque $n$ est grand, seul le terme $\sigma^2$ reste dominant
+dans la variance de prévision. La position de $x_o$ par rapport à
+$\overline{x}$ devient peu importante en comparaison.
+:::
 :::

@@ -52,6 +52,7 @@ On suppose que les variables $\epsilon_i$ sont :
     $\forall\ (i,j) \in [\![1,n]\!]^2, i \neq j, \ \mathbb{C}\mathbb{o}\mathbb{v}(\epsilon_i,\epsilon_j)=0$.
 :::
 
+
 ## Question 2
 
 Sous quelle hypothèse le modèle est-il identifiable, au sens où
@@ -70,12 +71,13 @@ proportionnel au vecteur constant $(1, \dots, 1)$ : c'est à dire que les
 $x_i$ ne prennent pas tous la même valeur.
 :::
 
+
 ## Question 3
 
 Sous quelle hypothèse l’estimateur par MCO de $\beta_0$ et $\beta_1$
 existe-t-il ?
 
-:::: answer
+::: answer
 C'est la même hypothèse que pour la question précédente, elle garantie
 l'inversibilité de $X'X$.
 
@@ -111,63 +113,75 @@ réduit à $\{0\}$, donc $v=0$.\
 Cela montre que le noyau de $X' X$ est trivial, donc $X' X$ est
 inversible.
 :::
-::::
+:::
+
 
 ## Question 4
 
 Les variables $y_i$ ont-elles même espérance ?
 
 ::: answer
-Calculons l'espérance de la variable aléatoire $y_i$. on suppose les $x_i$ déterministes pour simplifier la notation sinon il faut raisonner avec des espérances conditonnelles et supposer que les variables $\epsilon_i$ et $x_i$ sont indépendantes quel que soit $i \in [\![1,n]\!]$.
+Calculons l'espérance de la variable aléatoire $y_i$. on suppose les
+$x_i$ déterministes pour simplifier la notation sinon il faut raisonner
+avec des espérances conditonnelles et supposer que les variables
+$\epsilon_i$ et $x_i$ sont indépendantes quel que soit
+$i \in [\![1,n]\!]$.
 
 Par linéarité de l'espérance, on a :
 $$\mathbb{E}(y_i)=\mathbb{E}(\beta_0+\beta_1x_i+\epsilon_i)=\mathbb{E}(\beta_0)+\mathbb{E}(\beta_1x_i)+\mathbb{E}(\epsilon_i)$$
 Or
 
-* $\mathbb{E}(\beta_0)=\beta_0$ et $\mathbb{E}(\beta_1x_i)=\beta_1$ car $\beta_0$, $\beta_1$ et $x_i$ sont déterministes ;
-* $\mathbb{E}(\epsilon_i)=0$ par hypothèse du modèle.
+-   $\mathbb{E}(\beta_0)=\beta_0$ et $\mathbb{E}(\beta_1x_i)=\beta_1x_i$
+    car $\beta_0$, $\beta_1$ et $x_i$ sont déterministes ;
+-   $\mathbb{E}(\epsilon_i)=0$ par hypothèse du modèle.
 
-Donc 
-$$\mathbb{E}(y_i)=\beta_0+\beta_1x_i$$
+Donc $$\mathbb{E}(y_i)=\beta_0+\beta_1x_i$$
 
 Les variables $y_i$ n'ont pas la même espérance sauf si $\beta_1=0$.
 :::
 
+
 ## Question 5
 
-La droite de régression estimée à partir des observations $(x_i; y_i)_{i \in [\![1,n]\!]}$ passe-t-elle toujours par le point $(\overline{x}; \overline{y})$ ?
-
+La droite de régression estimée à partir des observations
+$(x_i; y_i)_{i \in [\![1,n]\!]}$ passe-t-elle toujours par le point
+$(\overline{x}; \overline{y})$ ?
 
 ::: answer
 Oui (*cf question 5 de l'exercice 3*)
 :::
 
-
 ## Question 6
 
-Les estimateurs par MCO des coefficients $\hat{\beta}_0$ et$\hat{\beta}_1$ sont-ils indépendants ?
+Les estimateurs par MCO des coefficients $\hat{\beta}_0$
+et$\hat{\beta}_1$ sont-ils indépendants ?
 
 ::: answer
-
-Montrons que les estimateurs par MCO des coefficients $\hat{\beta}_0$ et$\hat{\beta}_1$ ne sont pas indépendants. Étudions la matrice de variance-covariance de $\hat{\beta}$ :
+Montrons que les estimateurs par MCO des coefficients $\hat{\beta}_0$
+et$\hat{\beta}_1$ ne sont pas indépendants. Étudions la matrice de
+variance-covariance de $\hat{\beta}$ :
 
 $$\mathbb{V}(\hat{\beta})=\sigma^2(X'X)^{-1}=\frac{\sigma^2}{n\textrm{var}(x)}\begin{pmatrix}
 \overline{x^2} & -\overline{x} \\
 -\overline{x} & 1
 \end{pmatrix}$$
 
-Cette matrice n'est pas nécessairement symétrique (il faut que $\overline{x}=0$) et même dans ce cas cela ne garantit pas l’indépendance sans hypothèse gaussienne.
-
+Cette matrice n'est pas nécessairement diagonale  (il faut que
+$\overline{x}=0$) et même dans ce cas cela ne garantit pas
+l’indépendance sans hypothèse gaussienne.
 :::
 
 ## Question 7
 
-Est-il possible de trouver des estimateurs des coefficients de régression de plus faible
-variance que celle des estimateurs par MCO ?
+Est-il possible de trouver des estimateurs des coefficients de
+régression de plus faible variance que celle des estimateurs par MCO ?
 
+::: {.content-hidden when-format="html"}
 ::: answer
-Oui, en particulier si on accepte du biais, on peut trouver des estimateurs de variance plus faible.
+Oui, en particulier si on accepte du biais, on peut trouver des
+estimateurs de variance plus faible. 
 
-On peut considérer $\hat{\beta}= \frac{1}{2}\hat{\beta}_{\textrm{MCO}}$ par exemple.
-
+On peut considérer $\hat{\beta}= \frac{1}{2}\hat{\beta}_{\textrm{MCO}}$
+par exemple.
+:::
 :::
