@@ -8,7 +8,7 @@ QUARTO_PREVIEW_URL=$1
 export QUARTO_PREVIEW_URL=${QUARTO_PREVIEW_URL}
 mo ./td-lm-ensai/.kube/ingress_template.yaml > ./ingress_output.yaml
 touch onyxia
-cat << EOF > ~/.config/rstudio/rstudio-prefs.json
+cat << EOF > /home/onyxia/.config/rstudio/rstudio-prefs.json
 {
     "num_spaces_for_tab": 4,
     "insert_native_pipe_operator": true,
