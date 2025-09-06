@@ -15,6 +15,7 @@ setHook('rstudio.sessionInit', function(newSession) {
     message('Activation du projet RStudio')
     Sys.setenv(ONYXIA_MODE='1')
     Sys.setenv(QUARTO_PREVIEW_URL='${QUARTO_PREVIEW_URL}')
+    message(Sys.getenv('ONYXIA_MODE'))
     rstudioapi::openProject('${WORKSPACE_DIR}/td-lm-ensai', newSession = FALSE)
   }
 }, action = 'append')
