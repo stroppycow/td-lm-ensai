@@ -1,3 +1,4 @@
+Sys.getenv()
 source("renv/activate.R")
 
 if(Sys.getenv("ONYXIA_MODE", unset = "") == "1"){
