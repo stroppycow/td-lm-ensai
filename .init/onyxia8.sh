@@ -25,7 +25,9 @@ cat << EOF > ~/.config/rstudio/rstudio-prefs.json
     "posix_terminal_shell": "bash"
 }
 EOF
+
 chown -R onyxia:users ~/.config/
+
 echo \
 "
 setHook('rstudio.sessionInit', function(newSession) {
