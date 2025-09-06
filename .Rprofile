@@ -1,6 +1,7 @@
 source("renv/activate.R")
 
 if(file.exists("./../onyxia")){
+  file.remove("./../onyxia")
   setHook('rstudio.sessionInit', function(newSession) {
     message('Activation du projet RStudio')
     renv::install("rstudioapi", prompt = FALSE)
@@ -28,8 +29,5 @@ if(file.exists("./../onyxia")){
       command = 'quarto preview --host 0.0.0.0 --port 5000',
       show = FALSE
     )
-    
   }, action = 'append')
-  
 }
-
