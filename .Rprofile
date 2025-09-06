@@ -1,7 +1,7 @@
 Sys.getenv()
 source("renv/activate.R")
 
-if(Sys.getenv("ONYXIA_MODE", unset = "") == "1"){
+if(file.exists("./../onyxia")){
   options(renv.config.repos.override = 'https://packagemanager.posit.co/cran/latest')
   renv::restore(prompt = FALSE)
   
