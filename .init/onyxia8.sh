@@ -6,7 +6,6 @@ chmod +x mo
 sudo mv mo /usr/local/bin/
 QUARTO_PREVIEW_URL=$1
 export QUARTO_PREVIEW_URL=${QUARTO_PREVIEW_URL}
-export ONYXIA_MODE=1
 mo ./td-lm-ensai/.kube/ingress_template.yaml > ./ingress_output.yaml
 echo \
 "
@@ -14,6 +13,8 @@ setHook('rstudio.sessionInit', function(newSession) {
   if (newSession && identical(getwd(), '${WORKSPACE_DIR}'))
   {
     message('Activation du projet RStudio')
+    Sys.setenv(ONYXIA_MODE='1')
+    Sys.setenv(QUARTO_PREVIEW_URL='${QUARTO_PREVIEW_URL}')
     rstudioapi::openProject('${WORKSPACE_DIR}/td-lm-ensai', newSession = FALSE)
   }
 }, action = 'append')
