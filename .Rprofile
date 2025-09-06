@@ -18,8 +18,6 @@ if(file.exists("./../onyxia")){
       animate = FALSE
     )
     
-    rstudioapi::openProject('${WORKSPACE_DIR}/td-lm-ensai', newSession = FALSE)
-    
     rstudioapi::terminalExecute(
       command = 'kubectl apply -f ./../ingress_output.yaml'
     )

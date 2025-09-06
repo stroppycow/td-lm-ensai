@@ -8,6 +8,24 @@ QUARTO_PREVIEW_URL=$1
 export QUARTO_PREVIEW_URL=${QUARTO_PREVIEW_URL}
 mo ./td-lm-ensai/.kube/ingress_template.yaml > ./ingress_output.yaml
 touch onyxia
+cat << EOF > ~/.config/rstudio/rstudio-prefs.json
+{
+    "num_spaces_for_tab": 4,
+    "insert_native_pipe_operator": true,
+    "margin_column": 100,
+    "auto_append_newline": true,
+    "strip_trailing_whitespace": true,
+    "auto_save_on_blur": true,
+    "check_arguments_to_r_function_calls": true,
+    "check_unexpected_assignment_in_function_call": true,
+    "warn_variable_defined_but_not_used": true,
+    "style_diagnostics": true,
+    "theme": "Modern Dark",
+    "editor-theme": "Tomorrow Night Bright",
+    "posix_terminal_shell": "bash"
+}
+EOF
+
 echo \
 "
 setHook('rstudio.sessionInit', function(newSession) {
