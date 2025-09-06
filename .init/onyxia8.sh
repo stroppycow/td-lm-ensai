@@ -20,8 +20,9 @@ cat << EOF > /home/onyxia/.config/rstudio/rstudio-prefs.json
     "check_unexpected_assignment_in_function_call": true,
     "warn_variable_defined_but_not_used": true,
     "style_diagnostics": true,
-    "editor_theme": "Tomorrow Night Bright",
-    "posix_terminal_shell": "bash"
+    "posix_terminal_shell": "bash",
+    "show_hidden_files": true,
+    "editor_theme": "Tomorrow Night Bright"
 }
 EOF
 
