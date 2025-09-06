@@ -17,6 +17,9 @@ setHook('rstudio.sessionInit', function(newSession) {
     Sys.setenv(QUARTO_PREVIEW_URL='${QUARTO_PREVIEW_URL}')
     message(Sys.getenv('ONYXIA_MODE'))
     rstudioapi::openProject('${WORKSPACE_DIR}/td-lm-ensai', newSession = FALSE)
+    message('Fin activation du projet RStudio')
+    Sys.setenv(ONYXIA_MODE='1')
+    Sys.setenv(QUARTO_PREVIEW_URL='${QUARTO_PREVIEW_URL}')
   }
 }, action = 'append')
 " >> /home/onyxia/.Rprofile
