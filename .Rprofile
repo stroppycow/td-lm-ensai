@@ -20,14 +20,20 @@ if(file.exists("./../onyxia")){
       animate = FALSE
     )
     
-    rstudioapi::terminalExecute(
-      command = 'kubectl apply -f ./../ingress_output.yaml',
-      show = FALSE
+    rstudioapi::sendToConsole(
+      code = "rstudioapi::terminalExecute(command = 'kubectl apply -f ./../ingress_output.yaml', show = FALSE)",
+      execute = TRUE,
+      echo = TRUE,
+      focus = TRUE,
+      animate = FALSE
     )
     
-    rstudioapi::terminalExecute(
-      command = 'quarto preview --host 0.0.0.0 --port 5000',
-      show = FALSE
+    rstudioapi::sendToConsole(
+      code = "rstudioapi::terminalExecute(command = 'quarto preview --host 0.0.0.0 --port 5000', show = FALSE)",
+      execute = TRUE,
+      echo = TRUE,
+      focus = TRUE,
+      animate = FALSE
     )
   }, action = 'append')
 }
