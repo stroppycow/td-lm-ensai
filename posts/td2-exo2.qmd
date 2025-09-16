@@ -26,122 +26,83 @@ custom-callout:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-On considère un modèle de régression linéaire multiple $y=X\beta+\epsilon$ où $\beta \in \mathbb{R}^p$, $X$ est une matrice de taille $(n, p)$ et $\epsilon$ est un vecteur aléatoire de taille $n$, centré et de matrice de
-covariance $\sigma^2I_n$ ($I_n$ est la matrice identité).
+On considère un modèle de régression linéaire multiple
+$y=X\beta+\epsilon$ où $\beta \in \mathbb{R}^p$, $X$ est une matrice de
+taille $(n, p)$ et $\epsilon$ est un vecteur aléatoire de taille $n$,
+centré et de matrice de covariance $\sigma^2I_n$ ($I_n$ est la matrice
+identité).
 
-On désire tester $q$ contraintes linéaires sur le paramètre $\beta$, c’est à dire tester $H_0$ : $R\beta=0$ contre $H_1$ : $R\beta \neq0$, où $R$ est une matrice de taille $(q, p)$.
+On désire tester $q$ contraintes linéaires sur le paramètre $\beta$,
+c’est à dire tester $H_0$ : $R\beta=0$ contre $H_1$ : $R\beta \neq0$, où
+$R$ est une matrice de taille $(q, p)$.
 
-On note $\textrm{SCR}$ la somme des carrés résiduelle du modèle initial, et $\textrm{SCR}_c$ la somme des carrés résiduelle du modèle contraint (c’est à dire pour lequel l’hypothèse $H_0$ est vérifiée).
-
+On note $\textrm{SCR}$ la somme des carrés résiduelle du modèle initial,
+et $\textrm{SCR}_c$ la somme des carrés résiduelle du modèle contraint
+(c’est à dire pour lequel l’hypothèse $H_0$ est vérifiée).
 
 ## Question 1
 
-Rappeler la statistique utilisée pour effectuer ce test. On la notera $F$ et on donnera son expression en fonction de $\textrm{SCR}$ et $\textrm{SCR}_c$.
+Rappeler la statistique utilisée pour effectuer ce test. On la notera
+$F$ et on donnera son expression en fonction de $\textrm{SCR}$ et
+$\textrm{SCR}_c$.
 
-::: {.callout-tip}
+::: callout-tip
 ## Indications
 
 Relire les slides 92 et 93 du cours
 :::
 
-
-:::: answer
-On utilise le test de Fisher. L'expresion de la statistique de test est 
+::: answer
+On utilise le test de Fisher. La statistique de test s’écrit
 
 $$
 F=\frac{n-p}{q}\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}
 $$
-
 :::
 
-La valeur $\hat{m}$ qui minimise la distance quadratique $S(m)$ aux
-données est donc la moyenne empirique $\overline{z}$.
-::::
+
 
 ## Question 2
 
-Quelle loi suit cette statistique sous $H_0$ lorsque $\epsilon$ suit une loi normale ? Que peut-on dire de sa loi si aucune hypothèse de normalité n’est faite sur $\epsilon$ ?
+Quelle loi suit cette statistique sous $H_0$ lorsque $\epsilon$ suit une
+loi normale ? Que peut-on dire de sa loi si aucune hypothèse de
+normalité n’est faite sur $\epsilon$ ?
 
 ::: answer
-
-Sous $H_0$, on a 
+Sous $H_0$ et si $\epsilon\sim\mathcal{N}(0,\sigma^2 I_n)$,
 
 $$F \sim F(q, n-p)$$
-On modélise ainsi $$\forall\ i \in  [\![1, n ]\!], \ z_i=m+\epsilon_i $$
 
-Vectoriellement, cela se traduit par l'expression
+Si on n’impose pas l’hypothèse de normalité, il n’existe en général pas de loi exacte $F(q,n-p)$ pour la statistique. Toutefois, sous quelques conditions régulières (erreurs i.i.d. de variance finie, conditions d’identifiabilité, $p$ fixé et $n\to\infty$, etc.), on obtient un résultat asymptotique $F$ converge en loi vers $\tfrac{1}{q}\chi^2_q$.
 
-$$
-\underbrace{\begin{pmatrix}
-z_1 \\
-\vdots \\
-z_n
-\end{pmatrix}}_{Y}
-=
-\underbrace{\begin{pmatrix}
-1\\
-\vdots \\
-1
-\end{pmatrix}}_{X}
-\underbrace{m}_{\beta}+
-\underbrace{\begin{pmatrix}
-\epsilon_1\\
-\vdots \\
-\epsilon_n
-\end{pmatrix}}_{\epsilon}
-$$
 
-Les moindres carrés ordinaires (MCO) consistent à trouver la valeur de
-$\beta$ qui minimise la quantité
-$$\|Y-X\beta\|^2  = \sum\limits_{i=1}^n \left(z_i-\beta\right)^2=S(\beta)$$
-Ainsi, la quantité $\hat{m}$ calculée à la question précédente
-correspond bien à l'estimation par les moindres carrés ordinaires de ce
-modèle de regression linéaire avec uniquement une constante.
+En pratique, pour des échantillons de grande taille, le test de Fisher reste donc valide approximativement même sans normalité stricte des $\epsilon$
 :::
 
 ## Question 3
 
-Retrouver le résultat de la première question à partir de la formule
-générale de l'estimateur des moindres carrés ordinaires :
-$\hat{\beta}=(X'X)^{-1}X'Y$.
+Montrer que si une constante est présente dans le modèle contraint,
+
+$$
+F=\frac{R^2-R_c^2}{1-R^2}\frac{n-p}{q}
+$$
+
+où $R^2$ (respectivement $R_c^2$) désigne le coefficient de détermination du modèle initial (respectivement du modèle contraint).
 
 ::: answer
-On calcule $\hat{\beta}$ étape par étape :
+Par définition du coefficient de détermination (avec $\mathrm{SCT}$ la
+somme totale des carrés et $\mathrm{SCE}$ la somme des carrés
+expliqués) :
 
 $$
 \begin{align*}
-X &= \underbrace{\begin{pmatrix}
-1\\
-\vdots \\
-1
-\end{pmatrix}}_{\in \mathcal{M}_{n,1}(\mathbb{R})} \\
-X' &= \underbrace{\begin{pmatrix}
-1 &
-\dots &
-1
-\end{pmatrix}}_{\in \mathcal{M}_{1,n}(\mathbb{R})} \\
-X'X &= \begin{pmatrix}
-1 &
-\dots &
-1
-\end{pmatrix}\begin{pmatrix}
-1\\
-\vdots \\
-1
-\end{pmatrix}=\underbrace{n}_{\in \mathcal{M}_{1,1}(\mathbb{R})} \\
-(X'X)^{-1} &= \underbrace{\frac{1}{n}}_{\in \mathcal{M}_{1,1}(\mathbb{R})} \\
-X'Y &= \begin{pmatrix}
-1 &
-\dots &
-1
-\end{pmatrix}\begin{pmatrix}
-z_1\\
-\vdots \\
-z_n
-\end{pmatrix}=\underbrace{\sum\limits_{i=1}^n z_i}_{\in \mathcal{M}_{1,1}(\mathbb{R})} \\
-\hat{\beta}&=(X'X)^{-1}X'Y=\frac{1}{n}\sum\limits_{i=1}^n z_i = \overline{z}
-\end{align*}$$
+R^2&=\frac{\textrm{SCE}}{\textrm{SCT}}=1-\frac{\textrm{SCR}}{\textrm{SCT}} \\
+R_c^2&=\frac{\textrm{SCE}_c}{\textrm{SCT}}=1-\frac{\textrm{SCR}_c}{\textrm{SCT}}
+\end{align*}
+$$
+En remplaçant dans l’expression du $F$ de la question 1 :
 
-On retrouve ainsi le résultat de la première question
-$\hat{m}=\overline{z}$.
+$$
+F=\frac{n-p}{q}\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}=\frac{n-p}{q}\frac{(1-R_c^2)\textrm{SCT}-(1-R^2)\textrm{SCT}}{(1-R^2)\textrm{SCT}}=\frac{n-p}{q}\frac{R^2-R_c^2}{1-R^2}
+$$
 :::

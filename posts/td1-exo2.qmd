@@ -184,7 +184,6 @@ X = \underbrace{\begin{pmatrix}
 $$
 :::
 
-
 ## Question 4
 
 Le taux de produit actif $y$ dans un médicament est supposé évoluer au

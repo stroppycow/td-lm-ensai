@@ -14,7 +14,6 @@ editor:
   wrap: 72
 ---
 
-
 ## Question 1
 
 ::: callout-tip
@@ -33,8 +32,6 @@ d & -b \\
 \end{pmatrix}
 $$
 :::
-
-
 
 On estime les coefficients par les moindres carrés ordinaires dans ces
 deux cas.
@@ -115,8 +112,6 @@ $$ À première vue, les estimations $\widehat{\beta}_n$ sont assez
 différentes $\widehat{\beta}_{n-1}$ alors que les données sont presque
 les mêmes.
 
-
-
 ## Question 2
 
 Calculons le coefficient de corrélation linéaire entre les deux
@@ -142,8 +137,6 @@ base le calcule sur la seconde situation, c'est à dire sur les $n-1$
 individus restants, on obtient de la même manière
 $\hat{\rho}_{n-1}=149 / \sqrt{199 \times 112} \approx 0,9980$.
 
-
-
 ## Question 3
 
 Cette situation met en évidence le problème de la multicolinéarité :
@@ -158,4 +151,3 @@ incite donc à identifier et à corriger ce problème en pratique. On peut
 le détecter, entre autres, grâce au calcul des VIF, et le résoudre en
 supprimant par exemple la variable la moins pertinente parmi celles en
 cause.
-
