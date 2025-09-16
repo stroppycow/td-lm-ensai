@@ -16,7 +16,6 @@ webr:
       - tidyverse
       - car
       - GGally
-      - scatterplot3d
       - rgl
 fig-align: center
 filters: 
@@ -36,15 +35,21 @@ custom-callout:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-On étudie la consommation de glaces aux Etats-Unis sur une période de 30 semaines
-du 18 Mars 1950 au 11 Juillet 1953. Les variables sont la période (de la semaine 1 à la semaine 30), et en moyenne sur chaque période : la consommation de glaces par personne (`Consumption`, en 1/2 litre), le prix des glaces (`Price`, en dollars), le salaire hebdomadaire moyen par ménage (`Income`, en dollars), et la température (`Temp`, en degré Fahrenheit). Les données sont disponibles dans le fichier `icecream-R.dat`.
+On étudie la consommation de glaces aux Etats-Unis sur une période de 30
+semaines du 18 Mars 1950 au 11 Juillet 1953. Les variables sont la
+période (de la semaine 1 à la semaine 30), et en moyenne sur chaque
+période : la consommation de glaces par personne (`Consumption`, en 1/2
+litre), le prix des glaces (`Price`, en dollars), le salaire
+hebdomadaire moyen par ménage (`Income`, en dollars), et la température
+(`Temp`, en degré Fahrenheit). Les données sont disponibles dans le
+fichier `icecream-R.dat`.
 
 ## Question 1
 
-Extraire les données et représenter la consommation en fonction des différentes variables.
+Extraire les données et représenter la consommation en fonction des
+différentes variables.
 
-::: answer
-
+::::: answer
 On charge les données du fichier `icecream-R.dat` en R sous forme de
 `data.frame`.
 
@@ -125,15 +130,18 @@ la température, ce qui paraît assez naturel, mais il n'y a pas de
 relation évidente avec les autres variables. De plus, il n'y a pas de
 raison convaincante d'explorer une relation non-linéaire (carré, racine,
 logarithme...).
-
-:::
+:::::
 
 ## Question 2
 
-On propose de régresser linéairement la consommation sur les trois variables `Price`, `Income` et `Temp`, en supposant de plus qu’une constante est présente dans le modèle. On note la constante $\beta_1$ et les trois coefficients associés aux variables précédentes respectivement $\beta_2$, $\beta_3$ et $\beta_4$. Réaliser la phase d’estimation de cette régression et commenter le signe des coefficients estimés.
+On propose de régresser linéairement la consommation sur les trois
+variables `Price`, `Income` et `Temp`, en supposant de plus qu’une
+constante est présente dans le modèle. On note la constante $\beta_1$ et
+les trois coefficients associés aux variables précédentes respectivement
+$\beta_2$, $\beta_3$ et $\beta_4$. Réaliser la phase d’estimation de
+cette régression et commenter le signe des coefficients estimés.
 
-::: answer
-
+:::: answer
 On effectue la régression
 $\texttt{Consumption}_i = \beta_1+\beta_2\texttt{Price}_i+\beta_3\texttt{Income}_i+\beta_4\texttt{Temp}_i+\varepsilon_i$
 à l'aide de la fonction `lm` disponible nativement dans
@@ -175,15 +183,14 @@ Néanmoins, le coefficient $\widehat{\beta}_2$ n'est pas
 significativement différent de 0 donc l'effet du prix sur la
 consommation n'est donc pas confirmé. On ne devrait pas le commenter
 (cf. question 4).
-
-:::
+::::
 
 ## Question 3
 
-Tester la significativité globale du modèle proposé, i.e. $H_0 \ : \ \beta_2=\beta_3=\beta_4=0$ à l’aide du test de Fisher global.
+Tester la significativité globale du modèle proposé, i.e.
+$H_0 \ : \ \beta_2=\beta_3=\beta_4=0$ à l’aide du test de Fisher global.
 
 ::: answer
-
 On teste $H_0: \ \beta_2 = \beta_3 = \beta_4 = 0$ contre
 $H_1: \ \beta_2 \neq 0 \ \textrm{ou} \ \beta_3 \neq 0 \ \textrm{ou} \ \beta_4 \neq 0$
 à l'aide d'un test de Fisher global. La dernière ligne de la sortie du
@@ -191,37 +198,38 @@ $H_1: \ \beta_2 \neq 0 \ \textrm{ou} \ \beta_3 \neq 0 \ \textrm{ou} \ \beta_4 \n
 
 La p-value est bien inférieure à $0,05$ donc on rejette $H_0$. Ainsi, au
 moins un coefficient (autre que la constante) est significatif.
-
 :::
 
 ## Question 4
 
-Tester la significativité de la variable `Price` dans ce modèle au seuil de 5 %. Tester de même la significativité de `Income`, puis de `Temp`.
+Tester la significativité de la variable `Price` dans ce modèle au seuil
+de 5 %. Tester de même la significativité de `Income`, puis de `Temp`.
 
 ::: answer
-
 On applique un test de Student de significativité à chaque coefficient
 associé. C’est le test proposé dans la sortie
 {{< iconify logos:r-lang >}} (troisième et quatrième colonne). A la
 lecture des p-values par exemple, au seuil de 5 %, les variables
 <tt>Income</tt> et <tt>Temp</tt> sont significatives (les p-values sont
 inférieures à 0,05).
-
 :::
 
 ## Question 5
 
-Comparer le modèle complet précédent et le modèle sans la variable `Price` à l’aide d’un test de Fisher :
+Comparer le modèle complet précédent et le modèle sans la variable
+`Price` à l’aide d’un test de Fisher :
 
-  1. En basant le calcul sur la somme des carrés résiduelle de chaque modèle ;
-  2. En basant le calcul sur le coefficient de détermination de chaque modèle ;
-  3. En utilisant la fonction `linearHypothesis`  de la librairie `car` ;
-  4. En utilisant la fonction anova.
-  
-Quel est la différence entre ce test et le test de Student de significativité de la variable `Price` ?
+1.  En basant le calcul sur la somme des carrés résiduelle de chaque
+    modèle ;
+2.  En basant le calcul sur le coefficient de détermination de chaque
+    modèle ;
+3.  En utilisant la fonction `linearHypothesis` de la librairie `car` ;
+4.  En utilisant la fonction anova.
 
-::: answer
+Quel est la différence entre ce test et le test de Student de
+significativité de la variable `Price` ?
 
+:::::::: answer
 On estime un modèle sans la variable <tt>Price</tt>.
 
 ::: {.panel-tabset group="language"}
@@ -242,13 +250,14 @@ summary(fit_lm_icecream_without_price)
 fit_lm_icecream_without_price <- lm(Consumption ~ Income + Temp, data = data_icecream) 
 summary(fit_lm_icecream_without_price)
 ```
-
 :::
 
 **Test de Fisher en basant le calcul sur la somme des carrés résiduelle
 de chaque modèle**
 
-La statistique du test de Fisher vaut : $$
+La statistique du test de Fisher vaut :
+
+$$
 F=\frac{n-p}{q} \frac{SCR_c-SCR}{SCR}
 $$
 
@@ -286,7 +295,6 @@ F1 <- (nrow(data_icecream) - 4L)/1*(
 F1
 qf(p = 0.95, df1 = 1, df2 = nrow(data_icecream) - 4)
 ```
-
 :::
 
 On ne rejette pas $H_0$ car $F \leq q_{0,95}^{\mathcal{F}(q, \ n-p)}$
@@ -333,7 +341,6 @@ F2 <- (nrow(data_icecream) - 4L)/1*(
 )
 F2
 ```
-
 :::
 
 **Test de Fisher en utilisant la fonction `linearHypothesis` de la
@@ -390,22 +397,23 @@ anova(fit_lm_icecream, fit_lm_icecream_without_price)
 
 La significativité d’un seul coefficient est équivalent au test de
 Student associé, on a d'ailleurs $T_2^2=F$.
-
-:::
+::::::::
 
 ## Question 6
 
-Comparer le modèle complet et le modèle sans la variable "Price" et sans la constante à l’aide d’un test de Fisher. Procéder selon les 4 manières décrites ci-dessus.
+Comparer le modèle complet et le modèle sans la variable "Price" et sans
+la constante à l’aide d’un test de Fisher. Procéder selon les 4 manières
+décrites ci-dessus.
 
 Commenter.
 
 ::: answer
 
-
 On estime un modèle sans la variable <tt>Price</tt> et la constante. On
 teste
-$$H_0: \ \beta_1 = \beta_2  = 0 \textrm{ contre } H_1: \ \beta_1 \neq 0 \ \textrm{ou} \ \beta_2 \neq 0$$
 
+$$H_0: \ \beta_1 = \beta_2  = 0 \textrm{ contre } H_1: \ \beta_1 \neq 0 \ \textrm{ou} \ \beta_2 \neq 0$$
+  
 On a $q=2$ désormais.
 
 ::: {.panel-tabset group="language"}
@@ -434,9 +442,8 @@ summary(fit_lm_icecream_without_price_and_intercept)
 ```
 :::
 
-**Test de Fisher en basant le calcul sur la somme des carrés résiduelle
-de chaque modèle**
-
+**Test de Fisher en basant le calcul sur la somme des carrés résiduelle de chaque modèle**
+  
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -444,7 +451,10 @@ de chaque modèle**
 #| envir: baser
 #| autorun: true
 F1 <- (nrow(data_icecream) - 4L)/2*(
-  sum(fit_lm_icecream_without_price_and_intercept$residuals**2)/sum(fit_lm_icecream$residuals**2)-1)
+  sum(fit_lm_icecream_without_price_and_intercept$residuals**2)
+  /
+  sum(fit_lm_icecream$residuals**2)-1
+)
 F1
 qf(p = 0.95, df1 = 2, df2 = nrow(data_icecream) - 4)
 ```
@@ -455,7 +465,10 @@ qf(p = 0.95, df1 = 2, df2 = nrow(data_icecream) - 4)
 #| envir: tdv
 #| autorun: true
 F1 <- (nrow(data_icecream) - 4L)/2*(
-  sum(fit_lm_icecream_without_price_and_intercept$residuals**2)/sum(fit_lm_icecream$residuals**2)-1)
+  sum(fit_lm_icecream_without_price_and_intercept$residuals**2)
+  /
+  sum(fit_lm_icecream$residuals**2)-1
+)
 F1
 qf(p = 0.95, df1 = 2, df2 = nrow(data_icecream) - 4)
 ```
@@ -464,9 +477,8 @@ qf(p = 0.95, df1 = 2, df2 = nrow(data_icecream) - 4)
 On ne rejette pas $H_0$ car $F \leq q_{0,95}^{\mathcal{F}(q, \ n-p)}$
 ainsi $\beta_1$ et $\beta_2$ ne sont pas significatifs au seuil $5\ \%$.
 
-**Test de Fisher en basant le calcul sur le coefficient de détermination
-de chaque modèle**
-
+**Test de Fisher en basant le calcul sur le coefficient de détermination de chaque modèle**
+  
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -475,7 +487,7 @@ de chaque modèle**
 #| autorun: true
 F2 <- (nrow(data_icecream) - 4L)/2*(
   summary(fit_lm_icecream)$r.squared -
-  summary(fit_lm_icecream_without_price_and_intercept)$r.squared
+    summary(fit_lm_icecream_without_price_and_intercept)$r.squared
 )/(
   1 - summary(fit_lm_icecream)$r.squared
 )
@@ -489,32 +501,29 @@ F2
 #| autorun: true
 F2 <- (nrow(data_icecream) - 4L)/2*(
   summary(fit_lm_icecream)$r.squared -
-  summary(fit_lm_icecream_without_price_and_intercept)$r.squared
+    summary(fit_lm_icecream_without_price_and_intercept)$r.squared
 )/(
   1 - summary(fit_lm_icecream)$r.squared
 )
 F2
 ```
-
 :::
-
+  
 La valeur de $F$ obtenue n'est pas la même. Celle-ci n'est pas bonne car
 la formule utilisée n’est pas valable : l’expression avec le $R^2$ n’est
-bonne que si la constante est présente dans les deux modèles (le
-contraint et le non contraint), ce qui n’est pas le cas ici.
+bonne que si la constante est présente dans les deux modèles (le contraint et le non contraint), ce qui n’est pas le cas ici.
 
-**Test de Fisher en utilisant la fonction `linearHypothesis` de la
-librairie `car`**
-
+**Test de Fisher en utilisant la fonction `linearHypothesis` de la librairie `car`**
+  
 La matrice $R$ vaut désormais
 
 $$
-R=\begin{pmatrix}
+  R=\begin{pmatrix}
 1 & 0 & 0 & 0 \\
 0 & 1 & 0 & 0 \\
 \end{pmatrix}
 $$
-
+  
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -537,14 +546,13 @@ car::linearHypothesis(
   matrix(c(1, 0, 0, 0, 0, 1, 0, 0), nrow = 2, byrow = TRUE)
 )
 ```
-
 :::
-
+  
 On ne rejette pas $H_0$ car la p-value est supérieure à $0,05$.
 
 **Test de Fisher en utilisant la fonction `anova`**
-
-De la même manière, la fonction `anova` permet de comparer deux modèles
+  
+  De la même manière, la fonction `anova` permet de comparer deux modèles
 emboités.
 
 ::: {.panel-tabset group="language"}
@@ -569,18 +577,19 @@ anova(
   fit_lm_icecream_without_price_and_intercept
 )
 ```
-
 :::
 
 :::
 
 ## Question 7
 
-On désire à présent prédire la consommation de glaces pour les données suivantes :
-`Price = 0.3`, `Income = 85` et `Temp = 65`. Proposer la prévision qui vous semble la meilleure au vu des modèles étudiés précédemment. Donner un intervalle de prévision au niveau 95 % autour de cette prévision.
+On désire à présent prédire la consommation de glaces pour les données
+suivantes : `Price = 0.3`, `Income = 85` et `Temp = 65`. Proposer la
+prévision qui vous semble la meilleure au vu des modèles étudiés
+précédemment. Donner un intervalle de prévision au niveau 95 % autour de
+cette prévision.
 
-::: answer
-
+:::: answer
 D'après la question précédente, le modèle sans la constante et le
 coefficient associé à la variable prix semble meilleur (car significatif
 et plus parcimonieux)
@@ -611,20 +620,19 @@ predict(
   interval = "prediction"
 )
 ```
-
 :::
 
 On prédit une consommation de $0,41$ avec $IC = [0,33; \ 0,49]$ à
 $95\ \%$.
-
-:::
+::::
 
 ## Question 8
 
-Sous quelle hypothèse l’intervalle de prévision précédent est-il valable ? Vérifier-la en observant le QQ-plot des résidus de la régression et en effectuant un test statistique.
+Sous quelle hypothèse l’intervalle de prévision précédent est-il valable
+? Vérifier-la en observant le QQ-plot des résidus de la régression et en
+effectuant un test statistique.
 
-::: answer
-
+:::: answer
 L'intervalle de prévision est valable uniquement sous hypothèse
 gaussienne.
 
@@ -647,21 +655,20 @@ qqnorm(fit_lm_icecream_without_price_and_intercept$residuals)
 #| autorun: true
 qqnorm(fit_lm_icecream_without_price_and_intercept$residuals)
 ```
-
 :::
 
 Même si le diagramme quantile-quantile n'est pas très convaincant, le
 test de Shapiro Wilk ne permet pas de rejeter l’hypothèse nulle de
 Gaussianité des résidus.
-
-:::
+::::
 
 ## Question 9
 
-Vérifier les autres hypothèses en rappelant la définition et en calculant les VIF ("Variance Inflation Factor") de chaque variable explicative et en effectuant une analyse graphique des résidus.
+Vérifier les autres hypothèses en rappelant la définition et en
+calculant les VIF ("Variance Inflation Factor") de chaque variable
+explicative et en effectuant une analyse graphique des résidus.
 
-::: answer
-
+::::: answer
 **Analyse de l'absence de multicolinéarité**
 
 Le VIF pour la variable $X^{(j)}$ vaut $$
@@ -684,7 +691,6 @@ strict, c'est juste un seuil d'alerte).
 car::vif(fit_lm_icecream)
 car::vif(fit_lm_icecream_without_price)
 car::vif(fit_lm_icecream_without_price_and_intercept)
-
 ```
 
 ### Tidyverse
@@ -695,7 +701,6 @@ car::vif(fit_lm_icecream_without_price_and_intercept)
 car::vif(fit_lm_icecream)
 car::vif(fit_lm_icecream_without_price)
 car::vif(fit_lm_icecream_without_price_and_intercept)
-
 ```
 :::
 
@@ -761,16 +766,15 @@ correspondant à la ligne de niveau de la distance de Cook, qui a une
 forme d'hyperbole. Si un point se trouve au-delà de ces pointillés, cela
 indiquerait qu'il est influent et/ou aberrant, mais ce n'est pas le cas
 ici.
-
-:::
+:::::
 
 ## Question 10
 
-Observer le nuage de points en 3D des variables `Consumption`, `Income` et `Temp`,
-et l’ajustement par le modèle linéaire, à l’aide de `scatter3d` de la librairie `car`.
+Observer le nuage de points en 3D des variables `Consumption`, `Income`
+et `Temp`, et l’ajustement par le modèle linéaire, à l’aide de
+`scatter3d` de la librairie `car`.
 
 ::: answer
-
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -780,7 +784,10 @@ et l’ajustement par le modèle linéaire, à l’aide de `scatter3d` de la lib
 car::scatter3d(
   data_icecream$Income,
   data_icecream$Consumption,
-  data_icecream$Temp
+  data_icecream$Temp,
+  xlab = "Income",
+  ylab = "Consumption",
+  zlab = "Temp"
 )
 rgl::rglwidget()
 ```
@@ -793,11 +800,13 @@ rgl::rglwidget()
 car::scatter3d(
   data_icecream$Income,
   data_icecream$Consumption,
-  data_icecream$Temp
+  data_icecream$Temp,
+  xlab = "Income",
+  ylab = "Consumption",
+  zlab = "Temp"
 )
 rgl::rglwidget()
 ```
-
 :::
 
 :::
