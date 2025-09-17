@@ -52,7 +52,6 @@ On suppose que les variables $\epsilon_i$ sont :
     $\forall\ (i,j) \in [\![1,n]\!]^2, i \neq j, \ \mathbb{C}\mathbb{o}\mathbb{v}(\epsilon_i,\epsilon_j)=0$.
 :::
 
-
 ## Question 2
 
 Sous quelle hypothèse le modèle est-il identifiable, au sens où
@@ -71,13 +70,12 @@ proportionnel au vecteur constant $(1, \dots, 1)$ : c'est à dire que les
 $x_i$ ne prennent pas tous la même valeur.
 :::
 
-
 ## Question 3
 
 Sous quelle hypothèse l’estimateur par MCO de $\beta_0$ et $\beta_1$
 existe-t-il ?
 
-::: answer
+:::: answer
 C'est la même hypothèse que pour la question précédente, elle garantie
 l'inversibilité de $X'X$.
 
@@ -113,8 +111,7 @@ réduit à $\{0\}$, donc $v=0$.\
 Cela montre que le noyau de $X' X$ est trivial, donc $X' X$ est
 inversible.
 :::
-:::
-
+::::
 
 ## Question 4
 
@@ -139,7 +136,6 @@ Donc $$\mathbb{E}(y_i)=\beta_0+\beta_1x_i$$
 
 Les variables $y_i$ n'ont pas la même espérance sauf si $\beta_1=0$.
 :::
-
 
 ## Question 5
 
@@ -166,7 +162,7 @@ $$\mathbb{V}(\hat{\beta})=\sigma^2(X'X)^{-1}=\frac{\sigma^2}{n\textrm{var}(x)}\b
 -\overline{x} & 1
 \end{pmatrix}$$
 
-Cette matrice n'est pas nécessairement diagonale  (il faut que
+Cette matrice n'est pas nécessairement diagonale (il faut que
 $\overline{x}=0$) et même dans ce cas cela ne garantit pas
 l’indépendance sans hypothèse gaussienne.
 :::
@@ -176,12 +172,11 @@ l’indépendance sans hypothèse gaussienne.
 Est-il possible de trouver des estimateurs des coefficients de
 régression de plus faible variance que celle des estimateurs par MCO ?
 
-::: {.content-hidden when-format="html"}
 ::: answer
 Oui, en particulier si on accepte du biais, on peut trouver des
-estimateurs de variance plus faible. 
+estimateurs de variance plus faible.
 
 On peut considérer $\hat{\beta}= \frac{1}{2}\hat{\beta}_{\textrm{MCO}}$
 par exemple.
 :::
-:::
+

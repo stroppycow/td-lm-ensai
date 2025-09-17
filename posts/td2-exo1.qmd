@@ -41,6 +41,9 @@ On veut expliquer la hauteur des eucalyptus en fonction de leur circonférence �
 
 Extraire et représenter les données dans le plan.
 
+
+::: {.content-hidden when-format="html"}
+
 ::: answer
 
 On charge les données du fichier `eucalyptus.txt` en R sous forme de
@@ -122,11 +125,14 @@ Une régression semble semble indiquée, les points étant disposés
 grossièrement le long d'une droite.
 
 :::
+:::
+
 
 ## Question 2
 
 Effectuer la régression $y=\beta_1+\beta_2x+\epsilon$ où $y$ représente la hauteur et $x$ la circonférence. Commenter les résultats.
 
+::: {.content-hidden when-format="html"}
 ::: answer
 
 On effectue la régression $y = \beta_1+\beta_2x+\varepsilon$ à l'aide de
@@ -292,9 +298,13 @@ Commentons la sortie détaillée donnée par la fonction générique
 
 :::
 
+:::
+
 ## Question 3
 
 Quelle est la formule théorique de $\hat{\beta}_1$ et $\hat{\beta}_2$ ? Retrouver les estimations fournies par R en l’utilisant.
+
+::: {.content-hidden when-format="html"}
 
 ::: answer
 
@@ -375,9 +385,13 @@ On retrouve les mêmes valeurs.
 
 :::
 
+:::
+
 ## Question 4
 
 Calculer un intervalle de confiance à 95 % pour $\beta_1$ et $\beta_2$, en supposant la normalité des données.
+
+::: {.content-hidden when-format="html"}
 
 ::: answer
 
@@ -539,9 +553,13 @@ $$
 
 :::
 
+:::
+
 ## Question 5
 
 Si le bruit $\epsilon$ ne suit pas une loi normale, les intervalles de confiance précédents restent-ils valables ?
+
+::: {.content-hidden when-format="html"}
 
 ::: answer
 
@@ -554,10 +572,14 @@ n'est pas vérifiée.
 
 :::
 
+:::
+
 ## Question 6
 
 Tracer l’estimateur de la droite de régression et un intervalle de confiance à 95 % de celle-ci. Que déduisez-vous de la qualité de l’estimation?
 
+
+::: {.content-hidden when-format="html"}
 
 ::: answer
 
@@ -632,9 +654,13 @@ On constate une faible incertitude sur la droite estimée.
 
 :::
 
+:::
+
 ## Question 7
 
 On veut à présent prédire la hauteur d’une nouvelle série d’eucalyptus de circonférences 50, 100, 150 et 200. Donner les estimateurs de la taille de chacun d’entre eux et les intervalles de prévision à 95 % associés, en supposant la normalité des données.
+
+::: {.content-hidden when-format="html"}
 
 ::: answer
 
@@ -747,10 +773,14 @@ l’erreur de prévision cumule deux erreurs :
 
 :::
 
+:::
+
 ## Question 8
 
 Ajouter à la représentation graphique de la question 6 les intervalles de prévision (associés aux mêmes valeurs de la circonférence).
 
+
+::: {.content-hidden when-format="html"}
 
 ::: answer
 
@@ -847,10 +877,13 @@ ggplot2::ggplot() +
 
 :::
 
+:::
+
 ## Question 9
 
 Si le bruit $\epsilon$ ne suit pas une loi normale, les intervalles de prévision précédents restentils valables ?
 
+::: {.content-hidden when-format="html"}
 
 ::: answer
 
@@ -868,5 +901,7 @@ erreurs :
 À cause de cette deuxième erreur, $Y_{n+1}-\widehat{Y}_{n+1}$ ne suit
 pas une loi Gaussienne et donc les intervalles de confiance de la
 prédiction ne sont plus valables.
+
+:::
 
 :::
