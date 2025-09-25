@@ -2,7 +2,7 @@
 title: "TD 2 - Exercice 3"
 lang: fr
 author: "Théo Leroy"
-date: "17 septembre 2025"
+date: "26 septembre 2025"
 format:
   live-html:
     code-background: true
@@ -49,9 +49,8 @@ fichier `icecream-R.dat`.
 Extraire les données et représenter la consommation en fonction des
 différentes variables.
 
-::: {.content-hidden when-format="html"}
-
-::: answer
+:::::: {.content-hidden when-format="html"}
+::::: answer
 On charge les données du fichier `icecream-R.dat` en R sous forme de
 `data.frame`.
 
@@ -132,9 +131,8 @@ la température, ce qui paraît assez naturel, mais il n'y a pas de
 relation évidente avec les autres variables. De plus, il n'y a pas de
 raison convaincante d'explorer une relation non-linéaire (carré, racine,
 logarithme...).
-:::
-
-:::
+:::::
+::::::
 
 ## Question 2
 
@@ -145,10 +143,8 @@ les trois coefficients associés aux variables précédentes respectivement
 $\beta_2$, $\beta_3$ et $\beta_4$. Réaliser la phase d’estimation de
 cette régression et commenter le signe des coefficients estimés.
 
-
-::: {.content-hidden when-format="html"}
-
-::: answer
+::::: {.content-hidden when-format="html"}
+:::: answer
 On effectue la régression
 $\texttt{Consumption}_i = \beta_1+\beta_2\texttt{Price}_i+\beta_3\texttt{Income}_i+\beta_4\texttt{Temp}_i+\varepsilon_i$
 à l'aide de la fonction `lm` disponible nativement dans
@@ -190,17 +186,15 @@ Néanmoins, le coefficient $\widehat{\beta}_2$ n'est pas
 significativement différent de 0 donc l'effet du prix sur la
 consommation n'est donc pas confirmé. On ne devrait pas le commenter
 (cf. question 4).
-:::
-
-:::
+::::
+:::::
 
 ## Question 3
 
 Tester la significativité globale du modèle proposé, i.e.
 $H_0 \ : \ \beta_2=\beta_3=\beta_4=0$ à l’aide du test de Fisher global.
 
-::: {.content-hidden when-format="html"}
-
+:::: {.content-hidden when-format="html"}
 ::: answer
 On teste $H_0: \ \beta_2 = \beta_3 = \beta_4 = 0$ contre
 $H_1: \ \beta_2 \neq 0 \ \textrm{ou} \ \beta_3 \neq 0 \ \textrm{ou} \ \beta_4 \neq 0$
@@ -210,16 +204,14 @@ $H_1: \ \beta_2 \neq 0 \ \textrm{ou} \ \beta_3 \neq 0 \ \textrm{ou} \ \beta_4 \n
 La p-value est bien inférieure à $0,05$ donc on rejette $H_0$. Ainsi, au
 moins un coefficient (autre que la constante) est significatif.
 :::
-
-:::
+::::
 
 ## Question 4
 
 Tester la significativité de la variable `Price` dans ce modèle au seuil
 de 5 %. Tester de même la significativité de `Income`, puis de `Temp`.
 
-::: {.content-hidden when-format="html"}
-
+:::: {.content-hidden when-format="html"}
 ::: answer
 On applique un test de Student de significativité à chaque coefficient
 associé. C’est le test proposé dans la sortie
@@ -228,8 +220,7 @@ lecture des p-values par exemple, au seuil de 5 %, les variables
 <tt>Income</tt> et <tt>Temp</tt> sont significatives (les p-values sont
 inférieures à 0,05).
 :::
-
-:::
+::::
 
 ## Question 5
 
@@ -246,10 +237,8 @@ Comparer le modèle complet précédent et le modèle sans la variable
 Quel est la différence entre ce test et le test de Student de
 significativité de la variable `Price` ?
 
-
-::: {.content-hidden when-format="html"}
-
-::: answer
+::::::::: {.content-hidden when-format="html"}
+:::::::: answer
 On estime un modèle sans la variable <tt>Price</tt>.
 
 ::: {.panel-tabset group="language"}
@@ -417,8 +406,8 @@ anova(fit_lm_icecream, fit_lm_icecream_without_price)
 
 La significativité d’un seul coefficient est équivalent au test de
 Student associé, on a d'ailleurs $T_2^2=F$.
-:::
-:::
+::::::::
+:::::::::
 
 ## Question 6
 
@@ -428,8 +417,8 @@ décrites ci-dessus.
 
 Commenter.
 
-::: {.content-hidden when-format="html"}
-::: answer
+::::::::: {.content-hidden when-format="html"}
+:::::::: answer
 On estime un modèle sans la variable <tt>Price</tt> et la constante. On
 teste
 
@@ -603,8 +592,8 @@ anova(
 )
 ```
 :::
-:::
-:::
+::::::::
+:::::::::
 
 ## Question 7
 
@@ -614,9 +603,8 @@ prévision qui vous semble la meilleure au vu des modèles étudiés
 précédemment. Donner un intervalle de prévision au niveau 95 % autour de
 cette prévision.
 
-::: {.content-hidden when-format="html"}
-
-::: answer
+::::: {.content-hidden when-format="html"}
+:::: answer
 D'après la question précédente, le modèle sans la constante et le
 coefficient associé à la variable prix semble meilleur (car significatif
 et plus parcimonieux)
@@ -651,8 +639,8 @@ predict(
 
 On prédit une consommation de $0,41$ avec $IC = [0,33; \ 0,49]$ à
 $95\ \%$.
-:::
-:::
+::::
+:::::
 
 ## Question 8
 
@@ -660,8 +648,8 @@ Sous quelle hypothèse l’intervalle de prévision précédent est-il valable
 ? Vérifier-la en observant le QQ-plot des résidus de la régression et en
 effectuant un test statistique.
 
-::: {.content-hidden when-format="html"}
-::: answer
+::::: {.content-hidden when-format="html"}
+:::: answer
 L'intervalle de prévision est valable uniquement sous hypothèse
 gaussienne.
 
@@ -689,8 +677,8 @@ qqnorm(fit_lm_icecream_without_price_and_intercept$residuals)
 Même si le diagramme quantile-quantile n'est pas très convaincant, le
 test de Shapiro Wilk ne permet pas de rejeter l’hypothèse nulle de
 Gaussianité des résidus.
-:::
-:::
+::::
+:::::
 
 ## Question 9
 
@@ -698,8 +686,8 @@ Vérifier les autres hypothèses en rappelant la définition et en
 calculant les VIF ("Variance Inflation Factor") de chaque variable
 explicative et en effectuant une analyse graphique des résidus.
 
-::: {.content-hidden when-format="html"}
-::: answer
+:::::: {.content-hidden when-format="html"}
+::::: answer
 **Analyse de l'absence de multicolinéarité**
 
 Le VIF pour la variable $X^{(j)}$ vaut $$
@@ -797,8 +785,8 @@ correspondant à la ligne de niveau de la distance de Cook, qui a une
 forme d'hyperbole. Si un point se trouve au-delà de ces pointillés, cela
 indiquerait qu'il est influent et/ou aberrant, mais ce n'est pas le cas
 ici.
-:::
-:::
+:::::
+::::::
 
 ## Question 10
 
@@ -806,8 +794,8 @@ Observer le nuage de points en 3D des variables `Consumption`, `Income`
 et `Temp`, et l’ajustement par le modèle linéaire, à l’aide de
 `scatter3d` de la librairie `car`.
 
-::: {.content-hidden when-format="html"}
-::: answer
+::::: {.content-hidden when-format="html"}
+:::: answer
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -841,5 +829,5 @@ car::scatter3d(
 rgl::rglwidget()
 ```
 :::
-:::
-:::
+::::
+:::::

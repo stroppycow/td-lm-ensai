@@ -179,4 +179,3 @@ estimateurs de variance plus faible.
 On peut considérer $\hat{\beta}= \frac{1}{2}\hat{\beta}_{\textrm{MCO}}$
 par exemple.
 :::
-

@@ -51,7 +51,6 @@ de chaque pays.
 Ecrire l’équation du modèle envisagé, pour chaque pays, en précisant les
 hypothèses effectuées.
 
-:::: {.content-hidden when-format="html"}
 ::: answer
 Le modèle s'écrit : $$
 \forall\ i \in [\![1,n]\!], \ y_i=\beta_0+\beta_1x_i + \epsilon_i
@@ -66,7 +65,6 @@ On suppose que les variables $\epsilon_i$ sont :
 -   et non-corrélées deux à deux i.e
     $\forall\ (i,j) \in [\![1,n]\!]^2, i \neq j, \ \mathbb{C}\mathbb{o}\mathbb{v}(\epsilon_i,\epsilon_j)=0$.
 :::
-::::
 
 ## Question 2
 
@@ -74,7 +72,6 @@ Donner les expressions des estimateurs par MCO de la pente et de
 l’ordonnée à l’origine du modèle, en fonction des sommes données
 ci-dessus. En déduire leurs valeurs.
 
-:::: {.content-hidden when-format="html"}
 ::: answer
 On a :
 
@@ -92,7 +89,6 @@ $$
 \end{align*}
 $$
 :::
-::::
 
 ## Question 3
 
@@ -100,7 +96,6 @@ Donner l’expression d’un estimateur sans biais de la variance de
 l’erreur de modélisation, en fonction des sommes données ci-dessus. En
 déduire sa valeur.
 
-:::: {.content-hidden when-format="html"}
 ::: answer
 Un estimateur sans biais $\hat{\sigma}^2$ de $\sigma^2$ est
 $$\hat{\sigma}^2=\frac{\textrm{SCR}}{n-p}$$ (cf. slide 56)
@@ -109,7 +104,7 @@ avec $$
 \begin{align*}
 \textrm{SCR}&=\sum\limits_{i=1}^n \hat{\epsilon}_i^2 =\sum\limits_{i=1}^n \left(y_i-\hat{y}_i \right)^2 \\
 &=\sum\limits_{i=1}^n \left( y_i-\hat{\beta}_0-\hat{\beta}_1x_i \right)^2 \ \textrm{car c'est un modèle linéaire simple} \\
-&=\sum\limits_{i=1}^n \left( y_i^2+\hat{\beta}_0^2+\hat{\beta}_1^2x_i^2-2y_i\hat{\beta}_0+2x_iy_i\hat{\beta}_1-2\hat{\beta}_0\hat{\beta}_1x_i \right) \\
+&=\sum\limits_{i=1}^n \left( y_i^2+\hat{\beta}_0^2+\hat{\beta}_1^2x_i^2-2y_i\hat{\beta}_0-2x_iy_i\hat{\beta}_1+2\hat{\beta}_0\hat{\beta}_1x_i \right) \\
 &=\sum\limits_{i=1}^n  y_i^2+n\hat{\beta}_0^2+\hat{\beta}_1^2 \sum\limits_{i=1}^n  x_i^2-2\left(\hat{\beta}_0 \sum\limits_{i=1}^n  y_i - \hat{\beta}_0\hat{\beta}_1 \sum\limits_{i=1}^n  x_i + \hat{\beta}_1 \sum\limits_{i=1}^n  x_iy_i \right)
 \end{align*}
 $$
@@ -123,7 +118,6 @@ Numériquement, $$
 \end{align*} 
 $$
 :::
-::::
 
 ## Question 4
 
@@ -132,7 +126,6 @@ l’estimer ? En déduire une estimation de l’écart-type de chaque
 estimateur (on pourra s’appuyer sur l’expression de $(X'X)^{-1}$
 rappelée dans l’exercice 5).
 
-:::: {.content-hidden when-format="html"}
 ::: answer
 La variance théorique des estimateurs par MCO $\hat{\beta}$ vaut :
 
@@ -178,7 +171,6 @@ L’estimation de l’écart-type de $\hat{\beta}_0$ est donnée par
 $\sqrt{20068.707} \approx 141.6641$, tandis que celle de $\hat{\beta}_1$
 vaut $\sqrt{3.484367} \approx 1.866646$.
 :::
-::::
 
 ## Question 5
 
@@ -197,7 +189,6 @@ donnés dans la table ci-dessous :
 : Quantiles d’ordre $1-\gamma$ d’une loi de Student à $q$ degrés de
 liberté, pour différentes valeurs de $\gamma$ et de $q$.
 
-:::: {.content-hidden when-format="html"}
 ::: answer
 **Hypothèses du modèle**
 
@@ -245,7 +236,6 @@ positive). On estime ainsi qu’une hausse d’un million d’habitants est
 associée à une augmentation moyenne d’environ 18,45 millions de livres
 de confiseries.
 :::
-::::
 
 ## Question 6
 
@@ -253,7 +243,6 @@ Donner l’expression de la p-valeur du test précédent. On ne demande pas
 d’effectuer l’application numérique, mais au moins d’en donner une
 valeur approximative.
 
-:::: {.content-hidden when-format="html"}
 ::: answer
 La p-valeur d’un test statistique est la probabilité, sous l’hypothèse
 nulle $H_0$, d’obtenir une statistique de test $T_1$ au moins aussi
@@ -271,7 +260,6 @@ de la loi de Student à 15 degrés de liberté pour la valeur obervée
 $T_1 \approx 9.88337$ sera très proche de 1 donc la p-valeur sera
 quasiment nulle.
 :::
-::::
 
 ## Question 7
 
@@ -279,7 +267,6 @@ Tester de même si l’ordonnée à l’origine est significativement
 différente de 0, d’une part en fixant le niveau à 5 % et d’autre part en
 évaluant grossièrement la p-valeur associée.
 
-:::: {.content-hidden when-format="html"}
 ::: answer
 **Hypothèses du test**
 
@@ -322,4 +309,3 @@ $$
 \end{align*}
 $$
 :::
-::::

@@ -2,7 +2,7 @@
 title: "TD 2 - Exercice 4 - Le coefficient de corrélation multiple avec ou sans constante"
 lang: fr
 author: "Théo Leroy"
-date: "8 octbre 2024"
+date: "26 septembre 2025"
 format:
   live-html:
     code-background: true
@@ -13,6 +13,10 @@ editor:
     wrap: 72
   wrap: 72
 ---
+
+On considère le modèle de régression
+
+$$y_i=\beta_0+\beta_1x_i^{(1)}+\dots +\beta_px_i^{(p)} = \epsilon_i, \quad i = 1, \dots, n  $$
 
 ## Question 1
 

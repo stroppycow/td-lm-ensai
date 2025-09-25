@@ -27,24 +27,15 @@ custom-callout:
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère un modèle de régression linéaire multiple
-$y=X\beta+\epsilon$ où $\beta \in \mathbb{R}^p$, $X$ est une matrice de
-taille $(n, p)$ et $\epsilon$ est un vecteur aléatoire de taille $n$,
-centré et de matrice de covariance $\sigma^2I_n$ ($I_n$ est la matrice
-identité).
+$y=X\beta+\epsilon$ où $\beta \in \mathbb{R}^p$, $X$ est une matrice de taille $(n, p)$ et $\epsilon$ est un vecteur aléatoire de taille $n$, centré et de matrice de covariance $\sigma^2I_n$ ($I_n$ est la matrice identité).
 
-On désire tester $q$ contraintes linéaires sur le paramètre $\beta$,
-c’est à dire tester $H_0$ : $R\beta=0$ contre $H_1$ : $R\beta \neq0$, où
-$R$ est une matrice de taille $(q, p)$.
+On désire tester $q$ contraintes linéaires sur le paramètre $\beta$, c’est à dire tester $H_0$ : $R\beta=0$ contre $H_1$ : $R\beta \neq0$, où $R$ est une matrice de taille $(q, p)$.
 
-On note $\textrm{SCR}$ la somme des carrés résiduelle du modèle initial,
-et $\textrm{SCR}_c$ la somme des carrés résiduelle du modèle contraint
-(c’est à dire pour lequel l’hypothèse $H_0$ est vérifiée).
+On note $\textrm{SCR}$ la somme des carrés résiduelle du modèle initial, et $\textrm{SCR}_c$ la somme des carrés résiduelle du modèle contraint (c’est à dire pour lequel l’hypothèse $H_0$ est vérifiée).
 
 ## Question 1
 
-Rappeler la statistique utilisée pour effectuer ce test. On la notera
-$F$ et on donnera son expression en fonction de $\textrm{SCR}$ et
-$\textrm{SCR}_c$.
+Rappeler la statistique utilisée pour effectuer ce test. On la notera $F$ et on donnera son expression en fonction de $\textrm{SCR}$ et $\textrm{SCR}_c$.
 
 ::: callout-tip
 ## Indications
@@ -52,8 +43,7 @@ $\textrm{SCR}_c$.
 Relire les slides 92 et 93 du cours
 :::
 
-::: {.content-hidden when-format="html"}
-
+:::: {.content-hidden when-format="html"}
 ::: answer
 On utilise le test de Fisher. La statistique de test s’écrit
 
@@ -61,8 +51,7 @@ $$
 F=\frac{n-p}{q}\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}
 $$
 :::
-
-:::
+::::
 
 ## Question 2
 
@@ -70,8 +59,7 @@ Quelle loi suit cette statistique sous $H_0$ lorsque $\epsilon$ suit une
 loi normale ? Que peut-on dire de sa loi si aucune hypothèse de
 normalité n’est faite sur $\epsilon$ ?
 
-::: {.content-hidden when-format="html"}
-
+:::: {.content-hidden when-format="html"}
 ::: answer
 Sous $H_0$ et si $\epsilon\sim\mathcal{N}(0,\sigma^2 I_n)$,
 
@@ -87,8 +75,7 @@ En pratique, pour des échantillons de grande taille, le test de Fisher
 reste donc valide approximativement même sans normalité stricte des
 $\epsilon$
 :::
-
-:::
+::::
 
 ## Question 3
 
@@ -101,8 +88,7 @@ $$
 où $R^2$ (respectivement $R_c^2$) désigne le coefficient de
 détermination du modèle initial (respectivement du modèle contraint).
 
-::: {.content-hidden when-format="html"}
-
+:::: {.content-hidden when-format="html"}
 ::: answer
 Par définition du coefficient de détermination (avec $\mathrm{SCT}$ la
 somme totale des carrés et $\mathrm{SCE}$ la somme des carrés expliqués)
@@ -119,5 +105,4 @@ $$
 F=\frac{n-p}{q}\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}=\frac{n-p}{q}\frac{(1-R_c^2)\textrm{SCT}-(1-R^2)\textrm{SCT}}{(1-R^2)\textrm{SCT}}=\frac{n-p}{q}\frac{R^2-R_c^2}{1-R^2}
 $$
 :::
-
-:::
+::::

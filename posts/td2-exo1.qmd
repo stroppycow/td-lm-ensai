@@ -35,17 +35,16 @@ custom-callout:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-On veut expliquer la hauteur des eucalyptus en fonction de leur circonférence à partir d’une régression linéaire simple. On dispose des mesures des hauteurs (`ht`) et des circonférences (`circ`) de 1 429 eucalyptus, qui se trouvent dans le fichier `eucalyptus.txt`.
+On veut expliquer la hauteur des eucalyptus en fonction de leur
+circonférence à partir d’une régression linéaire simple. On dispose des
+mesures des hauteurs (`ht`) et des circonférences (`circ`) de 1 429
+eucalyptus, qui se trouvent dans le fichier `eucalyptus.txt`.
 
 ## Question 1
 
 Extraire et représenter les données dans le plan.
 
-
-::: {.content-hidden when-format="html"}
-
 ::: answer
-
 On charge les données du fichier `eucalyptus.txt` en R sous forme de
 `data.frame`.
 
@@ -118,23 +117,18 @@ ggplot2::ggplot(
   ggplot2::labs(x = "Circonférence", y = "Hauteur") + 
   ggplot2::geom_point()
 ```
-
 :::
 
 Une régression semble semble indiquée, les points étant disposés
 grossièrement le long d'une droite.
-
 :::
-:::
-
 
 ## Question 2
 
-Effectuer la régression $y=\beta_1+\beta_2x+\epsilon$ où $y$ représente la hauteur et $x$ la circonférence. Commenter les résultats.
+Effectuer la régression $y=\beta_1+\beta_2x+\epsilon$ où $y$ représente
+la hauteur et $x$ la circonférence. Commenter les résultats.
 
-::: {.content-hidden when-format="html"}
 ::: answer
-
 On effectue la régression $y = \beta_1+\beta_2x+\varepsilon$ à l'aide de
 la fonction `lm` disponible nativement dans
 {{< iconify logos:r-lang >}}. On cherche ainsi une estimation de
@@ -294,20 +288,14 @@ Commentons la sortie détaillée donnée par la fonction générique
     significativité globale du modèle. Il n'est pas très utile ici car
     il est équivalent au test de Student $H_0 : \beta_2 = 0$ contre
     $H_1 : \beta_2 \neq 0$.
-
-
-:::
-
 :::
 
 ## Question 3
 
-Quelle est la formule théorique de $\hat{\beta}_1$ et $\hat{\beta}_2$ ? Retrouver les estimations fournies par R en l’utilisant.
-
-::: {.content-hidden when-format="html"}
+Quelle est la formule théorique de $\hat{\beta}_1$ et $\hat{\beta}_2$ ?
+Retrouver les estimations fournies par R en l’utilisant.
 
 ::: answer
-
 Pour le modèle linéaire simple, on a :
 
 $$
@@ -382,19 +370,13 @@ solve(t(X)%*%X)%*%t(X)%*%Y
 :::
 
 On retrouve les mêmes valeurs.
-
-:::
-
 :::
 
 ## Question 4
 
 Calculer un intervalle de confiance à 95 % pour $\beta_1$ et $\beta_2$, en supposant la normalité des données.
 
-::: {.content-hidden when-format="html"}
-
 ::: answer
-
 La formule de l'intervalle de confiance pour le coefficient $\beta_j$
 sous l'hypothèse d'erreurs gaussiennes, centrées et homoscédastiques est
 : $$
@@ -550,39 +532,23 @@ I C_{95\ \%}\left(\beta_1\right)&=\left[8,685\ ;\ 9,390\right] \\
 I C_{95\ \%}\left(\beta_2\right)&=\left[0,250\ ;\ 0,264\right]
 \end{align*}
 $$
-
-:::
-
 :::
 
 ## Question 5
 
 Si le bruit $\epsilon$ ne suit pas une loi normale, les intervalles de confiance précédents restent-ils valables ?
 
-::: {.content-hidden when-format="html"}
-
 ::: answer
-
-Pour que ces intervalles de confiances soient exacts, l'erreur doit être
-gausienne. Cependant, ils le deviennent asymptotiquement sous certaines
-conditions assez faible de régularité grâce au théorème central limite
-(cf. remarque 2.2.8 du cours). Comme, ici $n=1\ 429 \gg 30$ , on peut se
-fier à ces intervalles de confiance même si la normalité des erreurs
-n'est pas vérifiée.
-
-:::
-
+Pour que ces intervalles de confiances soient exacts, l'erreur doit être gausienne. Cependant, ils le deviennent asymptotiquement sous certaines conditions assez faible de régularité grâce au théorème central limite (cf. remarque slide 70 du cours). Comme, ici $n=1\ 429 \gg 30$ , on peut se fier à ces intervalles de confiance même si la normalité des erreurs n'est pas vérifiée.
 :::
 
 ## Question 6
 
-Tracer l’estimateur de la droite de régression et un intervalle de confiance à 95 % de celle-ci. Que déduisez-vous de la qualité de l’estimation?
-
-
-::: {.content-hidden when-format="html"}
+Tracer l’estimateur de la droite de régression et un intervalle de
+confiance à 95 % de celle-ci. Que déduisez-vous de la qualité de
+l’estimation ?
 
 ::: answer
-
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -651,25 +617,18 @@ ggplot2::ggplot() +
 :::
 
 On constate une faible incertitude sur la droite estimée.
-
-:::
-
 :::
 
 ## Question 7
 
 On veut à présent prédire la hauteur d’une nouvelle série d’eucalyptus de circonférences 50, 100, 150 et 200. Donner les estimateurs de la taille de chacun d’entre eux et les intervalles de prévision à 95 % associés, en supposant la normalité des données.
 
-::: {.content-hidden when-format="html"}
-
 ::: answer
-
 La prévision $\widehat{y}_{n+1}^p$ pour une circonférence $x_{n+1}$ est
 donnée par la formule
 $$\widehat{y}_{n+1}^p = \widehat{\beta}_1+\widehat{\beta}_2x_{n+1}$$
 
-Sous l'hypothèse de gaussianité des erreurs, un IC de $y_{n+1}$ est
-donné par
+Sous l'hypothèse de gaussianité des erreurs, un IC de $y_{n+1}$ est donné par
 $$I C_{1-\alpha}\left(y_{n+1}\right)=\left[\widehat{y}_{n+1}^p \pm q_{1-\alpha/2}^{\mathcal{T}_{n-p}} \hat{\sigma}\sqrt{1+\frac{1}{n}+\frac{\left(x_{n+1}-\overline{x_n}\right)^2}{\sum\limits_{i=1}^n \left(x_i - \overline{x_n} \right)^2}}\right]$$
 
 ::: {.panel-tabset group="language"}
@@ -769,21 +728,14 @@ l’erreur de prévision cumule deux erreurs :
 -   l’erreur due à $\varepsilon_{n+1}$: elle est stable quelle que soit
     la valeur de `circ` et incompressible car
     $\mathrm{Var}(\varepsilon_{n+1})=\sigma^2$.
-
-
-:::
-
 :::
 
 ## Question 8
 
-Ajouter à la représentation graphique de la question 6 les intervalles de prévision (associés aux mêmes valeurs de la circonférence).
-
-
-::: {.content-hidden when-format="html"}
+Ajouter à la représentation graphique de la question 6 les intervalles
+de prévision (associés aux mêmes valeurs de la circonférence).
 
 ::: answer
-
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -872,36 +824,20 @@ ggplot2::ggplot() +
   ) + 
  ggplot2::theme_light()
 ```
-
 :::
-
-:::
-
 :::
 
 ## Question 9
 
-Si le bruit $\epsilon$ ne suit pas une loi normale, les intervalles de prévision précédents restentils valables ?
-
-::: {.content-hidden when-format="html"}
+Si le bruit $\epsilon$ ne suit pas une loi normale, les intervalles de prévision précédents restent-ils valables ?
 
 ::: answer
-
-Non, les intervalles de confiance pour les prévisions ne sont plus du
-tout valable si l'hypothèse Gaussienne n'est plus vérifiée. Comme nous
-l'avons mentionné à la question 6, l’erreur de prévision cumule deux
-erreurs :
+Non, les intervalles de confiance pour les prévisions ne sont plus du tout valable si l'hypothèse Gaussienne n'est plus vérifiée. Comme nous l'avons mentionné à la question 6, l’erreur de prévision cumule deux erreurs :
 
 -   l’erreur due à l’estimation de la droite i.e. l'erreur liée à
     $\widehat{\beta}$. Cet estimateur suit asymptotiquement une loi
     gaussienne même si les erreurs ne sont pas gaussienne.
--   l’erreur due à $\varepsilon_{n+1}$: cette erreur suit sa propre loi
-    et il n'y a pas de convergence lorsque $n$ augmente.
+-   l’erreur due à $\varepsilon_{n+1}$ : cette erreur suit sa propre loi et il n'y a pas de convergence lorsque $n$ augmente.
 
-À cause de cette deuxième erreur, $Y_{n+1}-\widehat{Y}_{n+1}$ ne suit
-pas une loi Gaussienne et donc les intervalles de confiance de la
-prédiction ne sont plus valables.
-
-:::
-
+À cause de cette deuxième erreur, $Y_{n+1}-\widehat{Y}_{n+1}$ ne suit pas une loi Gaussienne et donc les intervalles de confiance de la prédiction ne sont plus valables.
 :::

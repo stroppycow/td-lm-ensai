@@ -82,15 +82,13 @@ $$
 $$
 :::
 
-
-
 ## Question 3
 
 On peut trouver $\hat{\beta}$ en annulant le gradient de la fonction à
 minimiser précédente. Cela a déjà été fait et les solutions sont à
 connaitre par coeur : que valent-elles ?
 
-::: answer
+:::: answer
 On a (*cf slide 24*)
 
 $$\hat{\beta}_1=\frac{\textrm{cov}(x,y)}{\textrm{var}(x)}=\frac{\frac{1}{n}\sum\limits_{i=1}^n\left(x_i-\overline{x}\right)\left(y_i-\overline{y}\right)}{\frac{1}{n}\sum\limits_{i=1}^n\left(x_i-\overline{x}\right)^2} \qquad \hat{\beta}_0= \overline{y}-\hat{\beta}_1\overline{x}$$
@@ -246,7 +244,7 @@ $$
     minimisateurs ne le sont pas). Ils vérifient la relation :
     $$\hat{\beta}_0 = \overline{y}-\hat{\beta}_1\overline{x}$$
 :::
-:::
+::::
 
 ## Question 4
 
@@ -346,7 +344,6 @@ $$
 $$
 :::
 
-
 ## Question 5
 
 Justifier pourquoi la droite de régression passe nécessairement par le
@@ -368,7 +365,6 @@ $\hat{y}_o$ de $y_o$ ?
 On a $\hat{y}_o = \hat{\beta}_0+\hat{\beta}_1x_o$
 :::
 
-
 ## Question 7
 
 Montrer que l’espérance de l’erreur de prévision $\hat{y}_o$ de $y_o$
@@ -378,10 +374,10 @@ est nulle.
 On calcule l'espérance de l'erreur de prévision\
 $$
 \begin{align*}
-\mathbb{E}(\hat{y}_o-y_o)
-&=\mathbb{E}(\hat{y}_o)-\mathbb{E}(y_o) \ \textrm{par linéarité de l'espérance} \\
-&=\mathbb{E}(\hat{\beta}_0+\hat{\beta}_1x_o)-\mathbb{E}(\beta_0+\beta_1x_o+\epsilon_o) \\
-&=\mathbb{E}(\hat{\beta}_0)+x_o\mathbb{E}(\hat{\beta}_1)-\mathbb{E}(\beta_0)-x_o\mathbb{E}(\beta_1)-\mathbb{E}(\epsilon_o) \ \textrm{par linéarité de l'espérance}
+\mathbb{E}(y_o-\hat{y}_o)
+&=\mathbb{E}(y_o) - \mathbb{E}(\hat{y}_o)\ \textrm{par linéarité de l'espérance} \\
+&=\mathbb{E}(\beta_0+\beta_1x_o+\epsilon_o)-\mathbb{E}(\hat{\beta}_0+\hat{\beta}_1x_o) \\
+&=\mathbb{E}(\beta_0)+x_o\mathbb{E}(\beta_1)+\mathbb{E}(\epsilon_o)-\mathbb{E}(\hat{\beta}_0)-x_o\mathbb{E}(\hat{\beta}_1) \ \textrm{par linéarité de l'espérance}
 \end{align*}
 $$
 
@@ -394,7 +390,7 @@ Or
     $\beta_0$ et $\beta_1$ sont déterministes ;
 -   $\mathbb{E}(\epsilon_o)=0$ par hypothèse du modèle.
 
-Ainsi, $$\mathbb{E}(\hat{y}_o-y_o)=0$$
+Ainsi, $$\mathbb{E}(y_o-\hat{y}_o)=0$$
 
 ::: {.callout-note collapse="true"}
 ### Rappel de la preuve : l'estimateur MCO d'un modèle de régression linéaire simple est sans biais
@@ -470,7 +466,6 @@ Donc $\hat{\beta}$ est sans biais.
 :::
 :::
 
-
 ## Question 8
 
 Pour un modèle de régression linéaire générale, la variance de l’erreur
@@ -482,7 +477,6 @@ $$
 \sigma^2\left(1+\frac{1}{n}+\frac{(x_o-\overline{x})^2}{\sum\limits_{i=1}^n (x_i-\overline{x})^2} \right)
 $$
 
-::: {.content-hidden when-format="html"}
 ::: answer
 On applique la formule du cours avec
 $x= \begin{pmatrix} 1 & x_o\end{pmatrix}'$ et la matrice $(X'X)^{-1}$
@@ -517,26 +511,22 @@ x_o
 \end{align*}
 $$
 :::
-:::
 
 ## Question 9
 
 Discuter de la qualité de la prévision selon que $x_o$ est proche ou non
 de la moyenne empirique $x_n$.
 
-::: {.content-hidden when-format="html"}
 ::: answer
 D'après la question précédente, la variance croît avec
 $(x_o - \overline{x})^2$ ; la prévision est d’autant plus précise
 lorsque $x_o$ est proche de la moyenne $\overline{x}$.
-:::
 :::
 
 ## Question 10
 
 Qu’en est-il si $n$ est grand ?
 
-::: {.content-hidden when-format="html"}
 ::: answer
 Il n'est pas possible de répondre en toute généralité car cela dépend du
 comportement asymptotique de la suite des valeurs échantillonnées
@@ -572,5 +562,4 @@ $$\mathbb{V}(\hat{y}_o) \underset{n \to +\infty}{\longrightarrow} \sigma^2$$
 Ainsi lorsque $n$ est grand, seul le terme $\sigma^2$ reste dominant
 dans la variance de prévision. La position de $x_o$ par rapport à
 $\overline{x}$ devient peu importante en comparaison.
-:::
 :::
