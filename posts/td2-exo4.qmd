@@ -32,11 +32,13 @@ où les variables $\epsilon_i$ sont centrées, de variance $\sigma^2$ et non-cor
 
 Que représente géométriquement $\hat{Y}$ ? Représenter sur un schéma les vecteurs $Y$, $\widehat{Y}$, $\overline{y}\mathbb{1}$, $Y-\overline{y}\mathbb{1}$, $\widehat{Y}-\overline{y}\mathbb{1}$ et $\hat{\epsilon}$.
 
+::: {.content-hidden when-format="html"}
 ::: answer
 $\widehat{Y}$ est la projection orthogonale de $Y$ sur $[X]$ (i.e.
 l'espace vectoriel engendré par $\mathbb{1}$ et les $X^{(k)}$).
 
 ![](/static/img/representation-variables.svg){fig-align="center"}
+:::
 :::
 
 ## Question 2
@@ -50,8 +52,8 @@ $$
 \end{align}
 $$
 
-- 
 
+::: {.content-hidden when-format="html"}
 ::: answer
 D'après le théorème de Pythagore dans le triangle $0$, $Y$ et
 $\widehat{Y}$,
@@ -78,6 +80,7 @@ c'est à dire
 $$ \sum\limits_{i=1}^n \left(y_i-\overline{y}\right)^2 = \sum\limits_{i=1}^n \widehat{\varepsilon}_i^2+ \sum\limits_{i=1}^n \left(\widehat{y}_i-\overline{y}\right)^2  $$
 
 :::
+:::
 
 ## Question 3
 
@@ -91,6 +94,8 @@ $$
 
 Justifier que $R_1^2 \geq R_2^2$. Dans quel cas, a-t-on égalité ?
 
+
+::: {.content-hidden when-format="html"}
 ::: answer
 
 Grâce aux relations précédentes, on a $$
@@ -106,14 +111,17 @@ $\bar{y}=0.$
 Le cas d'égalité a lieu si et seulement si la variable $Y$ est centrée.
 
 ::: 
+:::
 
 ## Question 4
 
 Quelle est la définition du coefficient de corrélation multiple pour le modèle $(*)$ ?
 
+::: {.content-hidden when-format="html"}
 ::: answer
 Dans le modèle $(*)$ une constante est présente et par définition
 $R^2=R_2^2$.
+:::
 :::
 
 ## Question 5
@@ -121,6 +129,7 @@ $R^2=R_2^2$.
 On considère à présent un modèle de régression sans constante, c’est à dire que l’on
 fixe $\beta_0 = 0$ dans $(*)$. Les égalités montrées dans la question 2 restent-elles valables ? Quelle est dans ce cas la définition du coefficient de corrélation multiple ?
 
+::: {.content-hidden when-format="html"}
 ::: answer
 Si l'on fixe $\beta_0=0$, $\mathbb{1}$ n'appartient plus à $[X]$ et donc
 $\hat{\epsilon}=Y-\hat{Y}$ n'est plus orthogonal à
@@ -130,12 +139,15 @@ théorème de Pythagore, la relation $(b)$ n'est plus vérifiée.
 Dans ce cas, on définit $R^2 = R_1^2$.
 
 :::
+:::
 
 ## Question 6
 
 Après estimation du modèle $(*)$ avec ou sans la constante, on obtient $R^2 = 0.72$ avec
 la constante et $R^2 = 0.96$ sans la constante. L’introduction de la constante est-elle
 pertinente ?
+
+::: {.content-hidden when-format="html"}
 
 ::: answer
 
@@ -147,4 +159,5 @@ le $R^2$ d’un modèle sans constante tend à être bien plus élevé que
 celui d’un modèle avec constante, sans que cela indique pour autant une
 meilleure qualité du modèle sans constante.
 
+:::
 :::

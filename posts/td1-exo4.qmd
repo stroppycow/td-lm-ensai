@@ -41,6 +41,7 @@ $y_i = \beta_0 + \beta_1x_i + \epsilon_i$; $i = 1, \ \dots, \ n$.
 Quelle sont les hypothèses standards sur les erreurs de modélisation
 $\epsilon_i$ ?
 
+
 ::: answer
 On suppose que les variables $\epsilon_i$ sont :
 
