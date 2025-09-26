@@ -15,6 +15,8 @@ project:
     - posts/td2-exo1.qmd
     - posts/td2-exo2.qmd
     - posts/td2-exo3.qmd
+    - posts/td2-exo4.qmd
+    - posts/td2-exo5.qmd
   preview: 
     timeout: 3600
     navigate: false

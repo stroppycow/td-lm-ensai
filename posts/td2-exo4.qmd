@@ -8,25 +8,51 @@ format:
     code-background: true
     toc: true
     page-layout: full
+filters: 
+  - diagram
+  - custom-callout
 editor: 
   markdown: 
     wrap: 72
-  wrap: 72
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    appearance: "minimal"
+    title: ""
+
 ---
 
 On considère le modèle de régression
 
-$$y_i=\beta_0+\beta_1x_i^{(1)}+\dots +\beta_px_i^{(p)} = \epsilon_i, \quad i = 1, \dots, n  $$
+$$y_i=\beta_0+\beta_1x_i^{(1)}+\dots +\beta_px_i^{(p)} = \epsilon_i, \quad i = 1, \dots, n \quad (*) $$
+
+où les variables $\epsilon_i$ sont centrées, de variance $\sigma^2$ et non-corrélées. On pose $Y=(y_1, \dots, y_n)^T$, $X^{(k)}=(x_1, \dots, x_n)^T$ et $\mathbb{1}=(1, \dots, 1)^{T}$. On suppose que les variables $X^{(k)}$ ne sont pas linéairement liées à $\mathbb{1}$. On note $\overline{y}$ la moyenne empirique de $Y$ et $\widehat{Y}=\hat{\beta}_0\mathbb{1}+\hat{\beta}_1X^{(1)}+\dots+\hat{\beta}_pX^{(p)}$ où les estimateurs sont ceux obtenus par les moindres carrés ordinaires.
 
 ## Question 1
 
+Que représente géométriquement $\hat{Y}$ ? Représenter sur un schéma les vecteurs $Y$, $\widehat{Y}$, $\overline{y}\mathbb{1}$, $Y-\overline{y}\mathbb{1}$, $\widehat{Y}-\overline{y}\mathbb{1}$ et $\hat{\epsilon}$.
+
+::: answer
 $\widehat{Y}$ est la projection orthogonale de $Y$ sur $[X]$ (i.e.
 l'espace vectoriel engendré par $\mathbb{1}$ et les $X^{(k)}$).
 
 ![](/static/img/representation-variables.svg){fig-align="center"}
+:::
 
 ## Question 2
 
+En déduire les égalités suivantes :
+
+$$
+\begin{align}
+\sum\limits_{i=1}^n y_i^2 &= \sum\limits_{i=1}^n \widehat{\varepsilon}_i^2+ \sum\limits_{i=1}^n \widehat{y}_i^2 \\
+\sum\limits_{i=1}^n \left(y_i-\overline{y}\right)^2 &= \sum\limits_{i=1}^n \widehat{\varepsilon}_i^2+ \sum\limits_{i=1}^n \left(\widehat{y}_i-\overline{y}\right)^2
+\end{align}
+$$
+
+- 
+
+::: answer
 D'après le théorème de Pythagore dans le triangle $0$, $Y$ et
 $\widehat{Y}$,
 
@@ -51,7 +77,21 @@ c'est à dire
 
 $$ \sum\limits_{i=1}^n \left(y_i-\overline{y}\right)^2 = \sum\limits_{i=1}^n \widehat{\varepsilon}_i^2+ \sum\limits_{i=1}^n \left(\widehat{y}_i-\overline{y}\right)^2  $$
 
+:::
+
 ## Question 3
+
+
+On considère les ratios :
+
+$$
+R_1^2=\frac{\sum\limits_{i=1}^n \hat{y}_i^2}{\sum\limits_{i=1}^n y_i^2} \qquad
+R_2^2=\frac{\sum\limits_{i=1}^n (\hat{y}_i-\overline{y})^2}{\sum\limits_{i=1}^n (y_i-\overline{y})^2}
+$$
+
+Justifier que $R_1^2 \geq R_2^2$. Dans quel cas, a-t-on égalité ?
+
+::: answer
 
 Grâce aux relations précédentes, on a $$
 R_1^2=1-\frac{\sum_{i=1}^n \hat{\epsilon}_i^2}{\sum_{i=1}^n y_i^2} \qquad R_2^2=1-\frac{\sum_{i=1}^n \hat{\epsilon}_i^2}{\sum_{i=1}^n\left(y_i-\bar{y}\right)^2} .
@@ -65,13 +105,23 @@ $\bar{y}=0.$
 
 Le cas d'égalité a lieu si et seulement si la variable $Y$ est centrée.
 
+::: 
+
 ## Question 4
 
+Quelle est la définition du coefficient de corrélation multiple pour le modèle $(*)$ ?
+
+::: answer
 Dans le modèle $(*)$ une constante est présente et par définition
 $R^2=R_2^2$.
+:::
 
 ## Question 5
 
+On considère à présent un modèle de régression sans constante, c’est à dire que l’on
+fixe $\beta_0 = 0$ dans $(*)$. Les égalités montrées dans la question 2 restent-elles valables ? Quelle est dans ce cas la définition du coefficient de corrélation multiple ?
+
+::: answer
 Si l'on fixe $\beta_0=0$, $\mathbb{1}$ n'appartient plus à $[X]$ et donc
 $\hat{\epsilon}=Y-\hat{Y}$ n'est plus orthogonal à
 $\hat{Y}-\bar{y}\mathbb{1}$. Par contraposée de la réciproque du
@@ -79,7 +129,15 @@ théorème de Pythagore, la relation $(b)$ n'est plus vérifiée.
 
 Dans ce cas, on définit $R^2 = R_1^2$.
 
+:::
+
 ## Question 6
+
+Après estimation du modèle $(*)$ avec ou sans la constante, on obtient $R^2 = 0.72$ avec
+la constante et $R^2 = 0.96$ sans la constante. L’introduction de la constante est-elle
+pertinente ?
+
+::: answer
 
 Il est incohérent de comparer le $R^2$ d’un modèle avec constante à
 celui d’un modèle sans constante, car les formules utilisées pour les
@@ -88,3 +146,5 @@ question 3, on a toujours $R_1^2 \geq R_2^2$. Ainsi, par construction,
 le $R^2$ d’un modèle sans constante tend à être bien plus élevé que
 celui d’un modèle avec constante, sans que cela indique pour autant une
 meilleure qualité du modèle sans constante.
+
+:::
