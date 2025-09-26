@@ -1,8 +1,8 @@
 ---
-title: "TD 1 - Exercice 1"
+title: "TD 2 - Exercice 5"
 lang: fr
 author: "Théo Leroy"
-date: "3 septembre 2025"
+date: "26 septembre 2025"
 format:
   live-html:
     code-background: true
@@ -32,135 +32,31 @@ custom-callout:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-Soit $z_1, \dots, z_n$ des observations d'une variable $Z$.
+On se place dans un modèle de régression contenant une constante. On définit
+
+$\rho(Y, X) = \sup\limits_{\beta} \textrm{cor}(Y, X\beta)$
+
+où $\textrm{cor}$ désigne la corrélation empirique. Cette quantité est donc la corrélation maximale que l’on peut obtenir entre $Y$ et une combinaison linéaire des variables explicatives.
 
 ## Question 1
 
-Déterminer la valeur $\hat{m}$ qui minimise la distance quadratique aux
-données $$S(m) = \sum\limits_{i=1}^n \left( z_i-m \right)^2$$
+Montrer que 
 
-:::: answer
-La fonction $S$ est une fonction polynomiale. Elle est donc dérivable
-sur $\mathbb{R}$. On note $S'$ la fonction dérivée de $S$. Pour
-$m \in \mathbb{R}$, on a : $$S'(m)=\sum\limits_{i=1}^n 2(m-z_i)$$ On
-peut ainsi dresser un tableau de variation de la fonction $S$ en
-étudiant le signe de $S'$.
+$$ \textrm{cor}(Y, X\beta) =  \frac{\left(X\hat{\beta}-\overline{Y}\mathbb{1}\right)^{'}\left(X\beta-\overline{X}\beta\mathbb{1}\right)}{\left\| Y-\overline{Y}\mathbb{1}\right\|\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|}$$
 
-$$
-\begin{align*}
-S'(m) < 0 &\Longleftrightarrow \sum\limits_{i=1}^n \left(m-z_i\right) = 0 \Longleftrightarrow nm-\sum\limits_{i=1}^n z_i  < 0 \Longleftrightarrow m < \frac{1}{n} \sum\limits_{i=1}^n z_i \\
-S'(m) = 0 &\Longleftrightarrow \sum\limits_{i=1}^n \left(m-z_i\right) = 0 \Longleftrightarrow nm-\sum\limits_{i=1}^n z_i  = 0 \Longleftrightarrow m = \frac{1}{n} \sum\limits_{i=1}^n z_i \\
-S'(m) > 0 &\Longleftrightarrow \sum\limits_{i=1}^n \left(m-z_i\right) = 0 \Longleftrightarrow nm-\sum\limits_{i=1}^n z_i  > 0 \Longleftrightarrow m > \frac{1}{n} \sum\limits_{i=1}^n z_i 
-\end{align*}
-$$
-
-Si on note $\overline{z}=\frac{1}{n}\sum\limits_{i=1}^n z_i$ la moyenne
-des observations $z_1, \dots, z_n$.
-
-::: {style="text-align:center;"}
-``` tikz
-\begin{tikzpicture}
-\tkzTabInit{$m$ / 1 , $S'(m)$ / 1, $S(m)$ / 1.5}{$-\infty$, $\overline{z}$, $+\infty$}
-\tkzTabLine{, -, 0, +, }
-\tkzTabVar{+/ $+\infty$, -/ $S(\overline{z})$, +/ $+\infty$}
-\end{tikzpicture}
-```
-:::
-
-La valeur $\hat{m}$ qui minimise la distance quadratique $S(m)$ aux
-données est donc la moyenne empirique $\overline{z}$.
-:::
+où $\hat{\beta}$ est l’estimateur par MCO de la régression de $Y$ sur $X$, et $\overline{X}$
+désigne le vecteur des $p$ moyennes empiriques de chaque variable explicative.
 
 
 ## Question 2
 
-La quantité $\hat{m}$ correspond en fait à l’estimation par moindres
-carrés ordinaires dans un modèle de régression linéaire :
-$Y = X\beta + \epsilon$. Préciser ce que valent $Y$ , $X$, $\beta$ et
-$\epsilon$.
-
-::: answer
-Dans le cas où on ne dispose pas d'informations auxilaiires, on peut
-modéliser linéairement à quel point les observations s'ajustent à une
-constante $m$.
-
-On modélise ainsi $$\forall\ i \in  [\![1, n ]\!], \ z_i=m+\epsilon_i $$
-
-Vectoriellement, cela se traduit par l'expression
-
-$$
-\underbrace{\begin{pmatrix}
-z_1 \\
-\vdots \\
-z_n
-\end{pmatrix}}_{Y}
-=
-\underbrace{\begin{pmatrix}
-1\\
-\vdots \\
-1
-\end{pmatrix}}_{X}
-\underbrace{m}_{\beta}+
-\underbrace{\begin{pmatrix}
-\epsilon_1\\
-\vdots \\
-\epsilon_n
-\end{pmatrix}}_{\epsilon}
-$$
-
-Les moindres carrés ordinaires (MCO) consistent à trouver la valeur de
-$\beta$ qui minimise la quantité
-$$\|Y-X\beta\|^2  = \sum\limits_{i=1}^n \left(z_i-\beta\right)^2=S(\beta)$$
-Ainsi, la quantité $\hat{m}$ calculée à la question précédente
-correspond bien à l'estimation par les moindres carrés ordinaires de ce
-modèle de regression linéaire avec uniquement une constante.
-:::
-
+En déduire que pour tout $\beta$, $\textrm{cor}(Y,X\beta)^2 =  R^2$, où $R^2$ est le coefficient de corrélation multiple de la régression de $Y$ sur $X$.
 
 ## Question 3
 
-Retrouver le résultat de la première question à partir de la formule
-générale de l'estimateur des moindres carrés ordinaires :
-$\hat{\beta}=(X'X)^{-1}X'Y$.
+Montrer que la borne précédente est atteinte lorsque $\beta = \hat{\beta}$.
 
-::: answer
-On calcule $\hat{\beta}$ étape par étape :
+## Question 4
 
-$$
-\begin{align*}
-X &= \underbrace{\begin{pmatrix}
-1\\
-\vdots \\
-1
-\end{pmatrix}}_{\in \mathcal{M}_{n,1}(\mathbb{R})} \\
-X' &= \underbrace{\begin{pmatrix}
-1 &
-\dots &
-1
-\end{pmatrix}}_{\in \mathcal{M}_{1,n}(\mathbb{R})} \\
-X'X &= \begin{pmatrix}
-1 &
-\dots &
-1
-\end{pmatrix}\begin{pmatrix}
-1\\
-\vdots \\
-1
-\end{pmatrix}=\underbrace{n}_{\in \mathcal{M}_{1,1}(\mathbb{R})} \\
-(X'X)^{-1} &= \underbrace{\frac{1}{n}}_{\in \mathcal{M}_{1,1}(\mathbb{R})} \\
-X'Y &= \begin{pmatrix}
-1 &
-\dots &
-1
-\end{pmatrix}\begin{pmatrix}
-z_1\\
-\vdots \\
-z_n
-\end{pmatrix}=\underbrace{\sum\limits_{i=1}^n z_i}_{\in \mathcal{M}_{1,1}(\mathbb{R})} \\
-\hat{\beta}&=(X'X)^{-1}X'Y=\frac{1}{n}\sum\limits_{i=1}^n z_i = \overline{z}
-\end{align*}$$
-
-On retrouve ainsi le résultat de la première question
-$\hat{m}=\overline{z}$.
-:::
-
+Conclure que $\rho(Y, X)^2 = R^2$ justifiant la terminologie "coefficient de corrélation
+multiple".
