@@ -2,15 +2,25 @@
 title: "TD 2 - Exercice 11 - Moindres carrés généralisés"
 lang: fr
 author: "Théo Leroy"
-date: "8 octobre 2024"
+date: "10 octobre 2025"
 format:
   live-html:
     code-background: true
     toc: true
     page-layout: full
 editor: 
+  mode: source
   markdown: 
     wrap: 72
+fig-align: center
+filters: 
+  - diagram
+  - custom-callout
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    appearance: "minimal"
+    title: ""
 ---
 
 ## Question 1

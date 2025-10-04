@@ -2,16 +2,25 @@
 title: "TD 2 - Exercice 9 - Probabilité de sur-ajustement des critères de sélection"
 lang: fr
 author: "Théo Leroy"
-date: "8 octobre 2024"
+date: "10 octobre 2025"
 format:
   live-html:
     code-background: true
     toc: true
     page-layout: full
 editor: 
+  mode: source
   markdown: 
     wrap: 72
-  wrap: 72
+fig-align: center
+filters: 
+  - diagram
+  - custom-callout
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    appearance: "minimal"
+    title: ""
 ---
 
 ## Question 1
@@ -24,7 +33,6 @@ Or par définition d'une loi de Fisher,
 $$
 F(1, n-p)=\frac{\chi^{2}(1) / 1}{\chi^{2}(n-p) /(n-p)}
 $$
-
 
 En notant $U_{n}$ une variable aléatoire suivant une loi
 $\chi^{2}(n-p) /(n-p)$, on a la représentation
@@ -40,8 +48,6 @@ $U_{n} \rightarrow \mathbb{E}\left(Z_{1}^{2}\right)=1$ en probabilité.
 D'après le lemme de Slutsky,
 $n \rightarrow \infty, F(1, n-p) \rightarrow \chi^{2}(1)$ en loi.
 
-
-
 ## Question 2
 
 On décide (à tort) d'inclure la variable $X^{(p)}$ si
@@ -49,9 +55,6 @@ $F>f_{1, n-p}(1-\alpha)$ où $f_{1, n-p}(1-\alpha)$ est le quantile
 d'ordre $1-\alpha$ d'une loi $F(1, n-p)$. La probabilité que cela se
 produise vaut $\alpha$. $\alpha$ est l'erreur de première espèce que
 l'on choisit.
-
-
-
 
 ## Question 3
 
@@ -62,7 +65,6 @@ $\chi^{2}(1)$, on a $$
 \mathbb{P}(F>1)=1-F_{1, n-p}(1) \underset{n \rightarrow \infty}{\longrightarrow} 1-F_{\chi^{2}(1)}(1) \approx 0,32
 $$
 
-
 ## Question 4
 
 On inclut la variable $X^{(p)}$ selon le critère du $C_p$ de Mallows si
@@ -72,15 +74,11 @@ $\chi^{2}(1)$, on a $$
 \mathbb{P}(F>2)=1-F_{1, n-p}(2) \underset{n \rightarrow \infty}{\longrightarrow} 1-F_{\chi^{2}(1)}(2) \approx 0,16
 $$
 
-
-
 ## Question 5
 
 Le critère AIC est similaire au critère du $C_{p}$ de Mallows lorsque
 $n \rightarrow \infty$, on obtient donc le même résultat que dans la
 question précédente.
-
-
 
 ## Question 6
 
@@ -98,9 +96,9 @@ Plus rigoureusement, comme $F$ dépend de $n$,
 $(F>\log(n))_{n\in \mathbb{N}}$ n'est pas une suite décroissante
 d'évènements. On a vu que $F_{1, n-p}(x) \rightarrow F_{\chi^{2}(1)}(x)$
 pour tout $x$ (c'est la convergence en loi). Les fonctions
-$F_{\mathcal{F}(1, n-p)}(.)$ étant continues et croissantes, cette convergence
-simple implique la convergence uniforme d'après le second théorème de
-Dini. Ainsi,
+$F_{\mathcal{F}(1, n-p)}(.)$ étant continues et croissantes, cette
+convergence simple implique la convergence uniforme d'après le second
+théorème de Dini. Ainsi,
 $$\left\|F_{1, n-p}-F_{\chi^{2}(1)}\right\|_{\infty} \rightarrow 0$$
 
 Donc,
@@ -118,9 +116,6 @@ Le premier terme tend vers 0 par convergence uniforme, et le second
 aussi car $F_{\chi^{2}(1)}(x) \rightarrow 1$ lorsque
 $x \rightarrow \infty$.
 
-
-
-
 ## Question 7
 
 Pour tous les critères, à l'exception du BIC, la probabilité de
@@ -128,4 +123,3 @@ sélectionner le mauvais modèle (celui incluant $X^{(p)}$) demeure
 positive même lorsque $n \rightarrow \infty$. Seul le BIC assure la
 sélection du bon modèle lorsque $n \rightarrow \infty$, ce qui en fait
 le critère préférable sous cet aspect.
-

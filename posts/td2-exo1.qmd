@@ -22,6 +22,7 @@ filters:
   - diagram
   - custom-callout
 editor: 
+  mode: source
   markdown: 
     wrap: 72
 custom-callout:    
@@ -374,7 +375,8 @@ On retrouve les mêmes valeurs.
 
 ## Question 4
 
-Calculer un intervalle de confiance à 95 % pour $\beta_1$ et $\beta_2$, en supposant la normalité des données.
+Calculer un intervalle de confiance à 95 % pour $\beta_1$ et $\beta_2$,
+en supposant la normalité des données.
 
 ::: answer
 La formule de l'intervalle de confiance pour le coefficient $\beta_j$
@@ -536,10 +538,16 @@ $$
 
 ## Question 5
 
-Si le bruit $\epsilon$ ne suit pas une loi normale, les intervalles de confiance précédents restent-ils valables ?
+Si le bruit $\epsilon$ ne suit pas une loi normale, les intervalles de
+confiance précédents restent-ils valables ?
 
 ::: answer
-Pour que ces intervalles de confiances soient exacts, l'erreur doit être gausienne. Cependant, ils le deviennent asymptotiquement sous certaines conditions assez faible de régularité grâce au théorème central limite (cf. remarque slide 70 du cours). Comme, ici $n=1\ 429 \gg 30$ , on peut se fier à ces intervalles de confiance même si la normalité des erreurs n'est pas vérifiée.
+Pour que ces intervalles de confiances soient exacts, l'erreur doit être
+gausienne. Cependant, ils le deviennent asymptotiquement sous certaines
+conditions assez faible de régularité grâce au théorème central limite
+(cf. remarque slide 70 du cours). Comme, ici $n=1\ 429 \gg 30$ , on peut
+se fier à ces intervalles de confiance même si la normalité des erreurs
+n'est pas vérifiée.
 :::
 
 ## Question 6
@@ -621,14 +629,18 @@ On constate une faible incertitude sur la droite estimée.
 
 ## Question 7
 
-On veut à présent prédire la hauteur d’une nouvelle série d’eucalyptus de circonférences 50, 100, 150 et 200. Donner les estimateurs de la taille de chacun d’entre eux et les intervalles de prévision à 95 % associés, en supposant la normalité des données.
+On veut à présent prédire la hauteur d’une nouvelle série d’eucalyptus
+de circonférences 50, 100, 150 et 200. Donner les estimateurs de la
+taille de chacun d’entre eux et les intervalles de prévision à 95 %
+associés, en supposant la normalité des données.
 
 ::: answer
 La prévision $\widehat{y}_{n+1}^p$ pour une circonférence $x_{n+1}$ est
 donnée par la formule
 $$\widehat{y}_{n+1}^p = \widehat{\beta}_1+\widehat{\beta}_2x_{n+1}$$
 
-Sous l'hypothèse de gaussianité des erreurs, un IC de $y_{n+1}$ est donné par
+Sous l'hypothèse de gaussianité des erreurs, un IC de $y_{n+1}$ est
+donné par
 $$I C_{1-\alpha}\left(y_{n+1}\right)=\left[\widehat{y}_{n+1}^p \pm q_{1-\alpha/2}^{\mathcal{T}_{n-p}} \hat{\sigma}\sqrt{1+\frac{1}{n}+\frac{\left(x_{n+1}-\overline{x_n}\right)^2}{\sum\limits_{i=1}^n \left(x_i - \overline{x_n} \right)^2}}\right]$$
 
 ::: {.panel-tabset group="language"}
@@ -829,15 +841,22 @@ ggplot2::ggplot() +
 
 ## Question 9
 
-Si le bruit $\epsilon$ ne suit pas une loi normale, les intervalles de prévision précédents restent-ils valables ?
+Si le bruit $\epsilon$ ne suit pas une loi normale, les intervalles de
+prévision précédents restent-ils valables ?
 
 ::: answer
-Non, les intervalles de confiance pour les prévisions ne sont plus du tout valable si l'hypothèse Gaussienne n'est plus vérifiée. Comme nous l'avons mentionné à la question 6, l’erreur de prévision cumule deux erreurs :
+Non, les intervalles de confiance pour les prévisions ne sont plus du
+tout valable si l'hypothèse Gaussienne n'est plus vérifiée. Comme nous
+l'avons mentionné à la question 6, l’erreur de prévision cumule deux
+erreurs :
 
 -   l’erreur due à l’estimation de la droite i.e. l'erreur liée à
     $\widehat{\beta}$. Cet estimateur suit asymptotiquement une loi
     gaussienne même si les erreurs ne sont pas gaussienne.
--   l’erreur due à $\varepsilon_{n+1}$ : cette erreur suit sa propre loi et il n'y a pas de convergence lorsque $n$ augmente.
+-   l’erreur due à $\varepsilon_{n+1}$ : cette erreur suit sa propre loi
+    et il n'y a pas de convergence lorsque $n$ augmente.
 
-À cause de cette deuxième erreur, $Y_{n+1}-\widehat{Y}_{n+1}$ ne suit pas une loi Gaussienne et donc les intervalles de confiance de la prédiction ne sont plus valables.
+À cause de cette deuxième erreur, $Y_{n+1}-\widehat{Y}_{n+1}$ ne suit
+pas une loi Gaussienne et donc les intervalles de confiance de la
+prédiction ne sont plus valables.
 :::

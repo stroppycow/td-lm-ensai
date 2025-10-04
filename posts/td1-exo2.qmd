@@ -15,6 +15,7 @@ filters:
   - diagram
   - custom-callout
 editor: 
+  mode: source
   markdown: 
     wrap: 72
 diagram:
@@ -35,7 +36,7 @@ custom-callout:
 Les modèles suivants sont-ils des modèles de régression linéaire ? Si
 non, peut-on appliquer une transformation pour s’y ramener ? Pour chaque
 modèle de régression linéaire du type $Y = X\beta + \epsilon$, on
-précisera ce que valent $Y$ , $X$, $\beta$ et $\epsilon$.
+précisera ce que valent $Y$ , $X$, $\beta$ et $\epsilon\textrm{.}$
 
 ## Question 1
 

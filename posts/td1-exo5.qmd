@@ -15,6 +15,7 @@ filters:
   - diagram
   - custom-callout
 editor: 
+  mode: source
   markdown: 
     wrap: 72
 diagram:
@@ -58,7 +59,7 @@ Rappeler ce que vaut l’erreur quadratique moyenne de $\hat{\beta}$,
 l’estimateur par MCO de
 $\beta = \begin{pmatrix} \beta_0 & \beta_1 \end{pmatrix}'$.
 
-:::: {.content-hidden when-format="html"}
+::: {.content-hidden when-format="html"}
 ::: answer
 L'erreur quadratique moyenne vaut
 
@@ -66,7 +67,7 @@ $$
 \textrm{EQM}\left(\widehat{\beta} \right) = \mathbb{E}\left(\left[\widehat{\beta} -\beta \right]^2\right) =  \mathbb{V}\left(\widehat{\beta} \right) + \underbrace{\left(\mathbb{E}\left(\widehat{\beta} -\beta \right)\right)^2}_{=0 \textrm{ car } \widehat{\beta} \textrm{ est sans biais}}=\mathbb{V}\left(\widehat{\beta} \right) = \sigma^2\left(X^{'}X \right)^{-1}
 $$
 :::
-::::
+:::
 
 ## Question 2
 
@@ -81,9 +82,9 @@ a.  Donner la limite de la matrice $\mathbb{V}(\hat{\beta})$ lorsque
 b.  En déduire le comportement asymptotique en moyenne quadratique de
     $\hat{\beta}_0$ et $\hat{\beta}_1$.
 
-:::: {.content-hidden when-format="html"}
+::: {.content-hidden when-format="html"}
 ::: answer
-a.  Dans le cas où $x_i=i$ pour tout $i=1, \dots, n$, on a :
+a.  Dans le cas où $x_i=i$ pour tout $i=1, \dots, n$, on:
 
     $$\begin{align*}
     \overline{x} &= \frac{1}{n}\sum\limits_{i=1}^n x_i = \frac{1}{n}\sum\limits_{i=1}^n i =\frac{1}{n}\frac{n(n+1)}{2}=\frac{n+1}{2} \\
@@ -121,7 +122,7 @@ b.  D'après la première question
     donc il y a convergence en moyenne quadratique (i.e dans
     $\mathcal{L}^2$) de $\hat{\beta}$ vers $\beta$.
 :::
-::::
+:::
 
 ## Question 3
 
@@ -129,7 +130,7 @@ Même question lorsque les observations deviennent de plus en plus dense
 dans un intervalle (pour simplifier : l’intervalle $[0, 1]$). On suppose
 ainsi que $x_i = \frac{i}{n}$ pour tout $i \in [\![1,n]\!]$.
 
-:::: {.content-hidden when-format="html"}
+::: {.content-hidden when-format="html"}
 ::: answer
 Dans le cas où $x_i=\frac{i}{n}$ pour tout $i=1, \dots, n$, on a :
 
@@ -169,7 +170,7 @@ $\textrm{EQM}\left(\hat{\beta} \right)=\mathbb{V}\left(\hat{\beta} \right) \unde
 donc il y a convergence en moyenne quadratique (i.e dans
 $\mathcal{L}^2$) de $\hat{\beta}$ vers $\beta$.
 :::
-::::
+:::
 
 ## Question 4
 
@@ -179,7 +180,7 @@ observations se concentrent en 0. Qu’en est-il du comportement
 asymptotique en moyenne quadratique de $\hat{\beta}_0$ et
 $\hat{\beta}_1$ ?
 
-:::: {.content-hidden when-format="html"}
+::: {.content-hidden when-format="html"}
 ::: answer
 Dans le cas où $x_i=\frac{1}{i}$ pour tout $i=1, \dots, n$, on a :
 
@@ -217,7 +218,7 @@ $$\mathbb{V}\left(\hat{\beta} \right)=\underset{n\ \to\ + \infty}{\sim} \sigma^2
 Dans ce $\hat{\beta}$ ne converge pas en moyenne quadratique vers
 $\beta$.
 :::
-::::
+:::
 
 ## Question 5
 
@@ -235,7 +236,7 @@ a.  Exprimer $\hat{\beta}-\beta$ en fonction de la matrice $X$ et du
 b.  En déduire que $\hat{\beta}$ converge presque sûrement vers $\beta$
     lorsque $n \to +\infty$.
 
-:::: {.content-hidden when-format="html"}
+::: {.content-hidden when-format="html"}
 ::: answer
 a.  Exprimons $\hat{\beta}-\beta$ en fonction de la matrice $X$ et du
     vecteur $\epsilon$. $$
@@ -311,7 +312,7 @@ b.  On réinjecte alors l'expression des matrices $X$ et $(X'X)^{-1}$
     Ainsi, $\hat{\beta}$ converge presque sûrement vers $\beta$ lorsque
     $n \to +\infty$.
 :::
-::::
+:::
 
 ::: {.content-hidden when-format="html"}
 2+2

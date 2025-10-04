@@ -2,16 +2,27 @@
 title: "TD 2 - Exercice 6 - Effet de la multicolinéarité"
 lang: fr
 author: "Théo Leroy"
-date: "8 octbre 2024"
+date: "10 octobre 2025"
 format:
   live-html:
     code-background: true
     toc: true
     page-layout: full
 editor: 
+  mode: source
   markdown: 
     wrap: 72
-  wrap: 72
+diagram:
+  engine:
+    tikz:
+      execpath: lualatex
+      header-includes:
+        - '\usepackage{tkz-tab}'
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    appearance: "minimal"
+    title: ""
 ---
 
 ## Question 1
@@ -141,10 +152,10 @@ $\hat{\rho}_{n-1}=149 / \sqrt{199 \times 112} \approx 0,9980$.
 
 Cette situation met en évidence le problème de la multicolinéarité :
 lorsque deux variables explicatives sont fortement corrélées, même si la
-matrice X'X reste inversible, l'estimateur β devient très instable, avec
+matrice $X'X$ reste inversible, l'estimateur β devient très instable, avec
 une variance très élevée. Concrètement, cela signifie que l’ajout ou le
 retrait d’un seul individu peut entraîner une variation radicale de la
-valeur de β. C'est ce que l'on observe ici, indépendamment de la taille
+valeur de $\beta$. C'est ce que l'on observe ici, indépendamment de la taille
 de l'échantillon, même si n est de l'ordre du million. Une telle
 situation est évidemment indésirable sur le plan statistique. Cela nous
 incite donc à identifier et à corriger ce problème en pratique. On peut

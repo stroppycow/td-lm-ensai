@@ -15,6 +15,7 @@ filters:
   - diagram
   - custom-callout
 editor: 
+  mode: source
   markdown: 
     wrap: 72
 diagram:

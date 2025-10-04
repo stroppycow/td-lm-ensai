@@ -15,6 +15,7 @@ filters:
   - diagram
   - custom-callout
 editor: 
+  mode: source
   markdown: 
     wrap: 72
 diagram:
@@ -32,31 +33,37 @@ custom-callout:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-On se place dans un modèle de régression contenant une constante. On définit
+On se place dans un modèle de régression contenant une constante. On
+définit
 
 $\rho(Y, X) = \sup\limits_{\beta} \textrm{cor}(Y, X\beta)$
 
-où $\textrm{cor}$ désigne la corrélation empirique. Cette quantité est donc la corrélation maximale que l’on peut obtenir entre $Y$ et une combinaison linéaire des variables explicatives.
+où $\textrm{cor}$ désigne la corrélation empirique. Cette quantité est
+donc la corrélation maximale que l’on peut obtenir entre $Y$ et une
+combinaison linéaire des variables explicatives.
 
 ## Question 1
 
-Montrer que 
+Montrer que
 
 $$ \textrm{cor}(Y, X\beta) =  \frac{\left(X\hat{\beta}-\overline{Y}\mathbb{1}\right)^{'}\left(X\beta-\overline{X}\beta\mathbb{1}\right)}{\left\| Y-\overline{Y}\mathbb{1}\right\|\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|}$$
 
-où $\hat{\beta}$ est l’estimateur par MCO de la régression de $Y$ sur $X$, et $\overline{X}$
-désigne le vecteur des $p$ moyennes empiriques de chaque variable explicative.
-
+où $\hat{\beta}$ est l’estimateur par MCO de la régression de $Y$ sur
+$X$, et $\overline{X}$ désigne le vecteur des $p$ moyennes empiriques de
+chaque variable explicative.
 
 ## Question 2
 
-En déduire que pour tout $\beta$, $\textrm{cor}(Y,X\beta)^2 =  R^2$, où $R^2$ est le coefficient de corrélation multiple de la régression de $Y$ sur $X$.
+En déduire que pour tout $\beta$, $\textrm{cor}(Y,X\beta)^2 =  R^2$, où
+$R^2$ est le coefficient de corrélation multiple de la régression de $Y$
+sur $X$.
 
 ## Question 3
 
-Montrer que la borne précédente est atteinte lorsque $\beta = \hat{\beta}$.
+Montrer que la borne précédente est atteinte lorsque
+$\beta = \hat{\beta}$.
 
 ## Question 4
 
-Conclure que $\rho(Y, X)^2 = R^2$ justifiant la terminologie "coefficient de corrélation
-multiple".
+Conclure que $\rho(Y, X)^2 = R^2$ justifiant la terminologie
+"coefficient de corrélation multiple".

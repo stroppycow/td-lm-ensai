@@ -8,9 +8,6 @@ format:
     code-background: true
     toc: true
     page-layout: full
-    include-in-header:
-      text: |
-        <link href="https://db.onlinewebfonts.com/c/122014a1f5d3e7d4b482854c47f6281a?family=CMMI10" rel="stylesheet">
 webr:
   render-df: gt-interactive
 fig-align: center
@@ -89,7 +86,7 @@ $Y = X\beta + \epsilon$. Préciser ce que valent $Y$ , $X$, $\beta$ et
 $\epsilon$.
 
 ::: answer
-Dans le cas où on ne dispose pas d'informations auxilaiires, on peut
+Dans le cas où on ne dispose pas d'informations auxiliaires, on peut
 modéliser linéairement à quel point les observations s'ajustent à une
 constante $m$.
 

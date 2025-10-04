@@ -15,6 +15,7 @@ filters:
   - diagram
   - custom-callout
 editor: 
+  mode: source
   markdown: 
     wrap: 72
 custom-callout:    
@@ -27,15 +28,24 @@ custom-callout:
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère un modèle de régression linéaire multiple
-$y=X\beta+\epsilon$ où $\beta \in \mathbb{R}^p$, $X$ est une matrice de taille $(n, p)$ et $\epsilon$ est un vecteur aléatoire de taille $n$, centré et de matrice de covariance $\sigma^2I_n$ ($I_n$ est la matrice identité).
+$y=X\beta+\epsilon$ où $\beta \in \mathbb{R}^p$, $X$ est une matrice de
+taille $(n, p)$ et $\epsilon$ est un vecteur aléatoire de taille $n$,
+centré et de matrice de covariance $\sigma^2I_n$ ($I_n$ est la matrice
+identité).
 
-On désire tester $q$ contraintes linéaires sur le paramètre $\beta$, c’est à dire tester $H_0$ : $R\beta=0$ contre $H_1$ : $R\beta \neq0$, où $R$ est une matrice de taille $(q, p)$.
+On désire tester $q$ contraintes linéaires sur le paramètre $\beta$,
+c’est à dire tester $H_0$ : $R\beta=0$ contre $H_1$ : $R\beta \neq0$, où
+$R$ est une matrice de taille $(q, p)$.
 
-On note $\textrm{SCR}$ la somme des carrés résiduelle du modèle initial, et $\textrm{SCR}_c$ la somme des carrés résiduelle du modèle contraint (c’est à dire pour lequel l’hypothèse $H_0$ est vérifiée).
+On note $\textrm{SCR}$ la somme des carrés résiduelle du modèle initial,
+et $\textrm{SCR}_c$ la somme des carrés résiduelle du modèle contraint
+(c’est à dire pour lequel l’hypothèse $H_0$ est vérifiée).
 
 ## Question 1
 
-Rappeler la statistique utilisée pour effectuer ce test. On la notera $F$ et on donnera son expression en fonction de $\textrm{SCR}$ et $\textrm{SCR}_c$.
+Rappeler la statistique utilisée pour effectuer ce test. On la notera
+$F$ et on donnera son expression en fonction de $\textrm{SCR}$ et
+$\textrm{SCR}_c$.
 
 ::: callout-tip
 ## Indications

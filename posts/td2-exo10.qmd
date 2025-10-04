@@ -2,7 +2,7 @@
 title: "TD 2 - Exercice 10"
 lang: fr
 author: "Théo Leroy"
-date: "8 octobre 2024"
+date: "10 octobre 2025"
 format:
   live-html:
     code-background: true
@@ -22,8 +22,18 @@ webr:
       - leaps
       - lmtest
 editor: 
+  mode: source
   markdown: 
     wrap: 72
+fig-align: center
+filters: 
+  - diagram
+  - custom-callout
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    appearance: "minimal"
+    title: ""
 ---
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
@@ -550,4 +560,6 @@ anova(fit_q1, fit_q5)
 ```
 :::
 
-Les conclusions sont similaires à celles obtenues avec la variable pluie : il ne paraît pas pertinent d’ajouter la variable `vent` ni les interactions associées dans le modèle.
+Les conclusions sont similaires à celles obtenues avec la variable pluie
+: il ne paraît pas pertinent d’ajouter la variable `vent` ni les
+interactions associées dans le modèle.

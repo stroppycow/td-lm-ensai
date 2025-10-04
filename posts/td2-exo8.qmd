@@ -2,17 +2,26 @@
 title: "TD 2 - Exercice 8 - Comparaison des critères de sélection d'un modèle"
 lang: fr
 author: "Théo Leroy"
-date: "8 octobre 2024"
+date: "10 octobre 2025"
 format:
   live-html:
     code-background: true
     toc: true
     page-layout: full
 editor: 
+  mode: source
   markdown: 
     wrap: 72
+fig-align: center
+filters: 
+  - diagram
+  - custom-callout
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    appearance: "minimal"
+    title: ""
 ---
-
 
 ## Question 1
 
@@ -28,7 +37,6 @@ où $q_{1-\alpha}^{\mathcal{F}\left(1, \ n-p\right)}$ représente le
 quantile d'ordre $1-\alpha$ de la loi de Fisher $(1, n-p)$. Cette règle
 de décision exige de fixer le niveau de test $\alpha$. On choisi souvent
 par convention $\alpha=0.05$.
-
 
 ## Question 2
 
@@ -57,7 +65,6 @@ $$
 \end{align*}
 $$
 
-
 ## Question 3
 
 On inclut $X^{(p)}$ si le $C_p$ dans le modèle avec $X^{(p)}$ est
@@ -70,7 +77,6 @@ $$
 2 &< \frac{\textrm{SCR}_c-SRC}{\hat{\sigma}^{2}}
 \end{align*} 
 $$ Or $\hat{\sigma}^{2}=\frac{SCR}{n-p}$ donc $F>2$ .
-
 
 ## Question 4
 
@@ -89,7 +95,6 @@ $$
 
 Donc $F > (n-p)\left(e^{\frac{2}{n}} - 1\right)$
 
-
 ## Question 5
 
 On inclut $X^{(p)}$ si le BIC dans le modèle avec $X^{(p)}$ est
@@ -106,8 +111,6 @@ e^{\frac{\log(n)}{n}} &< \frac{\textrm{SCR}_c}{\textrm{SCR}} \\
 $$
 
 Donc $F > (n-p)\left(e^{\frac{\log(n)}{n}} - 1\right)$
-
-
 
 ## Question 6
 
@@ -139,4 +142,3 @@ complets, tandis que le BIC favorise des modèles plus parcimonieux. Ces
 critères peuvent être tous d'accord sur le fait qu'il est préférable
 d'inclure ou non $X^{(p)}$, mais si jamais ils divergent, c'est dans le
 sens des inégalités précédentes.
-

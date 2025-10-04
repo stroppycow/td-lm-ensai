@@ -2,7 +2,7 @@
 title: "TD 2 - Exercice 7 - Modélisation de la concentration maximale journalière en ozone"
 lang: fr
 author: "Théo Leroy"
-date: "8 octobre 2024"
+date: "10 octobre 2025"
 format:
   live-html:
     code-background: true
@@ -22,8 +22,18 @@ webr:
       - leaps
       - lmtest
 editor: 
+  mode: source
   markdown: 
     wrap: 72
+fig-align: center
+filters: 
+  - diagram
+  - custom-callout
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    appearance: "minimal"
+    title: ""
 ---
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
