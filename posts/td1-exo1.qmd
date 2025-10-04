@@ -10,7 +10,7 @@ format:
     page-layout: full
     include-in-header:
       text: |
-        <link href="https://fonts.googleapis.com/css2?family=Libertinus+Math&display=swap" rel="stylesheet">
+        <link href="https://db.onlinewebfonts.com/c/122014a1f5d3e7d4b482854c47f6281a?family=CMMI10" rel="stylesheet">
 webr:
   render-df: gt-interactive
 fig-align: center
@@ -26,9 +26,10 @@ diagram:
     tikz:
       execpath: lualatex
       header-includes:
+        - '\usepackage{amsmath}'
+        - '\usepackage{amssymb}'
         - '\usepackage{tkz-tab}'
         - '\usepackage{fontspec}'
-        - '\setmathfont{Libertinus Math}'
 custom-callout:    
   answer:
     color: "#CCCCCC"
@@ -67,7 +68,7 @@ des observations $z_1, \dots, z_n$.
 
 ::: {style="text-align:center;"}
 ``` tikz
-%%| filename: tableauv
+%%| filename: tablev
 \begin{tikzpicture} 
 \tkzTabInit{$m$ / 1 ,  $S'(m)$ / 1, $S(m)$ / 1.5}{$-\infty$, $\overline{z}$, $+\infty$}
 \tkzTabLine{, -, 0, +, }
