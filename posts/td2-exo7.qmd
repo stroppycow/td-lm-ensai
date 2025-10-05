@@ -38,7 +38,15 @@ custom-callout:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
+
+Le jeu de données `ozone.txt` contient la concentration maximale d’ozone (`maxO3`)
+mesurée chaque jour de l’été 2001 à Rennes. Il contient également les températures, la nébulosité et la vitesse du vent mesurés à 9h, 12h et 15h (respectivement `T9`, `T12`, `T15`, `Ne9`, `Ne12`, `Ne15` et `Vx9`, `Vx12`, `Vx15`), ainsi que la direction principale du vent et la présence ou non de pluie. On désire expliquer au mieux la concentration d’ozone à l’aide des variables disponibles dans le jeu de données.
+
 ## Question 1
+
+Analyser le nuage de points et la corrélation linéaire entre `maxO3` et chacune des variables quantitatives disponibles (c’est à dire `T9`, `T12`, `T15`, `Ne9`, `Ne12`, `Ne15`, `Vx9`, `Vx12` et `Vx15`). Est-il raisonnable de supposer qu’il existe un lien linéaire entre `maxO3` et ces variables ?
+
+::: answer
 
 On charge les données du fichier `ozone.txt` en R sous forme de
 `data.frame`.
@@ -144,7 +152,11 @@ On observe une relation linéaire croissante assez prononcée avec `T9`,
 `Ne15`, ainsi qu'une faible relation linéaire avec `Vx9`, `Vx12` et
 `Vx15`. Aucun lien non-linéaire ne semble ressortir de manière évidente.
 
+:::
+
 ## Question 2
+
+::: answer
 
 On effectue la régression
 $$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T9}_i+\beta_3\texttt{T12}_i+\beta_4\texttt{T15}_i+\beta_5\texttt{Ne9}_i+\beta_6\texttt{Ne12}_i+\beta_7\texttt{Ne15}_i+\beta_8\texttt{Vx9}_i+\beta_9\texttt{Vx12}_i+\beta_{10}\texttt{Vx15}_i+\varepsilon_i$$
@@ -256,6 +268,8 @@ Autrement dit, il y a une grande incertitude concernant l'estimation de
 chaque coefficient. Ainsi lors du test de Student, l'hypothèse
 $H_0: \beta_j=0$ est plausible et n'est pas rejetée. Il faut donc régler
 ce problème de multicolinéarité.
+
+:::
 
 ## Question 3
 

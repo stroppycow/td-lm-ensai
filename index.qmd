@@ -32,8 +32,6 @@ format:
 
 [Exercice 5](/posts/td2-exo5.html)
 
-::: {.content-hidden when-format="html"}
-
 [Exercice 6](/posts/td2-exo6.html)
 
 [Exercice 7](/posts/td2-exo7.html)
@@ -45,7 +43,6 @@ format:
 [Exercice 10](/posts/td2-exo10.html)
 
 [Exercice 11](/posts/td2-exo11.html)
-:::
 
 ::: {.content-hidden when-format="html"}
 ## Exercices des séances 6 à 8
