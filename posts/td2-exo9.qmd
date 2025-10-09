@@ -19,11 +19,24 @@ filters:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    appearance: "minimal"
-    title: ""
+    icon: false
+    icon-symbol: ""
+    appearance: "default"
+    title: "Correction"
 ---
 
+On se place dans le cadre de l’exercice précédent, mais on suppose de plus que la variable
+$X^{(p)}$ n’est pas significative dans le modèle (i.e. son coefficient est nul dans la régression)
+et que les résidus sont i.i.d. gaussiens. On admet les résultats énoncés dans les questions
+de l’exercice précédent.
+
+
 ## Question 1
+
+Quelle loi suit la statistique $F$ ? Montrer que lorsque $n \to 1$, cette loi est équivalente
+à une loi $\chi^2(1)$.
+
+::: answer
 
 Si le modèle est Gaussien, alors sous $H_{0}: \beta_{p}=0, F$ suit une
 loi $F(1, n-p)$.
@@ -41,14 +54,21 @@ $$
 U_{n}=\frac{1}{n-p} \sum_{i=1}^{n-p} Z_{i}^{2}
 $$
 
-où les $Z_{i}$ sont iid $\mathcal{N}(0,1)$.
+où les $Z_{i}$ sont i.i.d. $\mathcal{N}(0,1)$.
 
 Par application de la loi faible des grands nombres, on a donc
 $U_{n} \rightarrow \mathbb{E}\left(Z_{1}^{2}\right)=1$ en probabilité.
 D'après le lemme de Slutsky,
 $n \rightarrow \infty, F(1, n-p) \rightarrow \chi^{2}(1)$ en loi.
 
+:::
+
 ## Question 2
+
+Lors de la mise en oeuvre du test de Fisher des modèles emboités au niveau $\alpha \in [0, 1]$,
+quelle est la probabilité de décider (à tort) d’inclure la variable $X^{(p)}$ dans le modèle ?
+
+::: answer
 
 On décide (à tort) d'inclure la variable $X^{(p)}$ si
 $F>f_{1, n-p}(1-\alpha)$ où $f_{1, n-p}(1-\alpha)$ est le quantile
@@ -56,45 +76,67 @@ d'ordre $1-\alpha$ d'une loi $F(1, n-p)$. La probabilité que cela se
 produise vaut $\alpha$. $\alpha$ est l'erreur de première espèce que
 l'on choisit.
 
+:::
+
 ## Question 3
+
+Vers quoi tend la probabilité précédente si on base la décision sur le $R^2_a$ ?
+
+::: answer
 
 On inclut la variable $X^{(p)}$ selon le critère du $R^{2}$ ajusté si
 $F>1$. En notant $F_{1, n-p}$ la fonction de répartition d'une
 $F(1, n-p)$ et $F_{\chi^{2}(1)}$ la fonction de répartition d'une
-$\chi^{2}(1)$, on a $$
+$\chi^{2}(1)$, on a 
+
+$$
 \mathbb{P}(F>1)=1-F_{1, n-p}(1) \underset{n \rightarrow \infty}{\longrightarrow} 1-F_{\chi^{2}(1)}(1) \approx 0,32
 $$
 
+:::
+
 ## Question 4
+
+Même question si la décision est basée sur le $C_p$ de Mallows.
+
+::: answer
 
 On inclut la variable $X^{(p)}$ selon le critère du $C_p$ de Mallows si
 $F>2$. En notant $F_{1, n-p}$ la fonction de répartition d'une
 $F(1, n-p)$ et $F_{\chi^{2}(1)}$ la fonction de répartition d'une
-$\chi^{2}(1)$, on a $$
+$\chi^{2}(1)$, on a
+
+$$
 \mathbb{P}(F>2)=1-F_{1, n-p}(2) \underset{n \rightarrow \infty}{\longrightarrow} 1-F_{\chi^{2}(1)}(2) \approx 0,16
 $$
+:::
 
 ## Question 5
+
+Même question si la décision est basée sur le critère AIC.
+
+::: answer
 
 Le critère AIC est similaire au critère du $C_{p}$ de Mallows lorsque
 $n \rightarrow \infty$, on obtient donc le même résultat que dans la
 question précédente.
 
+:::
+
 ## Question 6
+
+Même question si la décision est basée sur le critère BIC.
+
+::: answer
 
 D'après la question 6 de l'exercice 8, quand $n$ est grand, on inclut
 $X^{(p)}$ selon le BIC si $F>\log(n)$.
 
-**Intuition**
 
-La suite d'évènements $(F>\log(n))_{n\in \mathbb{N}}$ est une suite
-d'évènements décroissante et donc
-$(F>\log(n)) \underset{n \to\infty}{\rightarrow} \emptyset$ et ainsi la
-probabilité $\mathbb{P}(F>\log n) \rightarrow 0$.
+**Intuition :  ** $\mathbb{P}(F>\log n) \rightarrow 0$
 
 Plus rigoureusement, comme $F$ dépend de $n$,
-$(F>\log(n))_{n\in \mathbb{N}}$ n'est pas une suite décroissante
-d'évènements. On a vu que $F_{1, n-p}(x) \rightarrow F_{\chi^{2}(1)}(x)$
+$\mathbb{P}(F>\log n) \rightarrow 0$ n'est pas si immédiat. On a vu que $F_{1, n-p}(x) \rightarrow F_{\chi^{2}(1)}(x)$
 pour tout $x$ (c'est la convergence en loi). Les fonctions
 $F_{\mathcal{F}(1, n-p)}(.)$ étant continues et croissantes, cette
 convergence simple implique la convergence uniforme d'après le second
@@ -116,10 +158,19 @@ Le premier terme tend vers 0 par convergence uniforme, et le second
 aussi car $F_{\chi^{2}(1)}(x) \rightarrow 1$ lorsque
 $x \rightarrow \infty$.
 
+:::
+
 ## Question 7
+
+Quel critère est-il préférable de choisir si l’on souhaite minimiser le risque d’inclure
+une variable en trop dans le modèle ?
+
+::: answer
 
 Pour tous les critères, à l'exception du BIC, la probabilité de
 sélectionner le mauvais modèle (celui incluant $X^{(p)}$) demeure
 positive même lorsque $n \rightarrow \infty$. Seul le BIC assure la
 sélection du bon modèle lorsque $n \rightarrow \infty$, ce qui en fait
 le critère préférable sous cet aspect.
+
+:::

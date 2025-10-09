@@ -30,8 +30,10 @@ diagram:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    appearance: "minimal"
-    title: ""
+    icon: false
+    icon-symbol: ""
+    appearance: "default"
+    title: "Correction"
 ---
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}

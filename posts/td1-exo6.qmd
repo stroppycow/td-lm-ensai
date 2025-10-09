@@ -27,8 +27,10 @@ diagram:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    appearance: "minimal"
-    title: ""
+    icon: false
+    icon-symbol: ""
+    appearance: "default"
+    title: "Correction"
 ---
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
@@ -53,6 +55,7 @@ Ecrire l’équation du modèle envisagé, pour chaque pays, en précisant les
 hypothèses effectuées.
 
 ::: answer
+
 Le modèle s'écrit : $$
 \forall\ i \in [\![1,n]\!], \ y_i=\beta_0+\beta_1x_i + \epsilon_i
 $$

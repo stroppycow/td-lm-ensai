@@ -19,12 +19,29 @@ filters:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    appearance: "minimal"
-    title: ""
+    icon: false
+    icon-symbol: ""
+    appearance: "default"
+    title: "Correction"
 ---
 
-## Question 1
+Soit un modèle de régression linéaire multiple
 
+$$
+Y=X\beta+\epsilon
+$$
+
+où  $\beta \in \mathbb{R}^p$, $X$ est une matrice de taille $n \times p$ et $\epsilon$ est un vecteur aléatoire de taille $n$,
+centré. On considère ici la situation où les variables $\epsilon_i$ ne sont plus homoscédastiques et
+non-corrélés, mais de façon générale $V(\epsilon) = \Sigma$ où $\Sigma$ est une matrice inversible. On suppose
+dans cet exercice que $\Sigma$ est connue (il conviendra dans la pratique de l’estimer).
+
+## Question 1
+Préciser la matrice $\Sigma$ lorsque les variables $\epsilon_i$ sont non-corrélés mais hétéroscédastiques
+de variance $\sigma_i^2$ $(i = 1, \dots, n)$.
+
+
+::: answer
 On a :
 $\Sigma = \textrm{diag}\left(\sigma_{1}^{2}, \ldots, \sigma_{n}^{2}\right)$
 
@@ -32,7 +49,14 @@ Il s’agit d’une matrice diagonale dont les éléments sur la diagonale
 sont les valeurs du vecteur
 $\left(\sigma_{1}^{2}, \ldots, \sigma_{n}^{2}\right)$.
 
+:::
+
 ## Question 2
+
+Déterminer l’espérance et la variance de l’estimateur $\hat{\beta}$ des moindres carrés ordinaires
+(dans le cas général d’une matrice $\Sigma$ quelconque).
+
+::: answer
 
 L'estimateur des MCO vaut
 $\hat{\beta}=\left(X^{\prime} X\right)^{-1} X^{\prime} Y$, d'où
@@ -59,7 +83,26 @@ $$
 \end{align*}
 $$
 
+:::
+
 ## Question 3
+
+
+Pour $S \in R^n$ et $T \in R^n$, on définit le produit scalaire entre $S$ et $T$ associé à la
+matrice $\Sigma^{-1}$ par $S'\Sigma^{-1}T$, et donc la norme de $T$ associée à $\Sigma^{-1}$ est $\left\| T\right\|^2_{\Sigma}=T'\Sigma^{-1}T$.
+
+
+Montrer que la forme explicite de l’estimateur $\hat{\beta}_G$ des moindres carrés généralisés
+défini comme le minimiseur de $\left\| Y-X\beta\right\|^2_{\Sigma}=T'\Sigma^{-1}T$ est
+
+
+$$
+\hat{\beta}_G = (X'\Sigma^{-1}X)^{-1}X'\Sigma^{-1}Y
+$$
+
+En déduire son espérance et sa variance.
+
+::: answer
 
 On cherche à minimiser la fonction
 $g: \beta \mapsto \left\|Y-X\beta \right\|_{\Sigma}$ comme
@@ -96,8 +139,15 @@ et $$
 \end{align*}
 $$
 
-::: {.content-hidden when-format="html"}
+:::
+
+
 ## Question 4
+
+Montrer que la matrice de covariance entre $\hat{\beta}$ et $\hat{\beta}_G$ est égale à la matrice de variancecovariance
+de $\hat{\beta}_G$. En déduire que $\hat{\beta}_G$ est meilleur que $\hat{\beta}$ au sens du coût quadratique.
+
+::: answer
 
 Par définition
 $$\operatorname{Cov}\left(\hat{\beta}, \hat{\beta}_G\right)=\mathbb{E}\left((\hat{\beta}-\mathbb{E}(\hat{\beta}))\left(\hat{\beta}_G-\mathbb{E}\left(\hat{\beta}_G\right)\right)^{\prime}\right)$$

@@ -21,8 +21,10 @@ editor:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    appearance: "minimal"
-    title: ""
+    icon: false
+    icon-symbol: ""
+    appearance: "default"
+    title: "Correction"
 ---
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
@@ -53,7 +55,6 @@ $\textrm{SCR}_c$.
 Relire les slides 92 et 93 du cours
 :::
 
-:::: {.content-hidden when-format="html"}
 ::: answer
 On utilise le test de Fisher. La statistique de test s’écrit
 
@@ -61,7 +62,6 @@ $$
 F=\frac{n-p}{q}\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}
 $$
 :::
-::::
 
 ## Question 2
 
@@ -69,7 +69,6 @@ Quelle loi suit cette statistique sous $H_0$ lorsque $\epsilon$ suit une
 loi normale ? Que peut-on dire de sa loi si aucune hypothèse de
 normalité n’est faite sur $\epsilon$ ?
 
-:::: {.content-hidden when-format="html"}
 ::: answer
 Sous $H_0$ et si $\epsilon\sim\mathcal{N}(0,\sigma^2 I_n)$,
 
@@ -85,7 +84,6 @@ En pratique, pour des échantillons de grande taille, le test de Fisher
 reste donc valide approximativement même sans normalité stricte des
 $\epsilon$
 :::
-::::
 
 ## Question 3
 
@@ -98,7 +96,6 @@ $$
 où $R^2$ (respectivement $R_c^2$) désigne le coefficient de
 détermination du modèle initial (respectivement du modèle contraint).
 
-:::: {.content-hidden when-format="html"}
 ::: answer
 Par définition du coefficient de détermination (avec $\mathrm{SCT}$ la
 somme totale des carrés et $\mathrm{SCE}$ la somme des carrés expliqués)
@@ -115,4 +112,4 @@ $$
 F=\frac{n-p}{q}\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}=\frac{n-p}{q}\frac{(1-R_c^2)\textrm{SCT}-(1-R^2)\textrm{SCT}}{(1-R^2)\textrm{SCT}}=\frac{n-p}{q}\frac{R^2-R_c^2}{1-R^2}
 $$
 :::
-::::
+

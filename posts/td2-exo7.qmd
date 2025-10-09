@@ -32,26 +32,29 @@ filters:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    appearance: "minimal"
-    title: ""
+    icon: false
+    icon-symbol: ""
+    appearance: "default"
+    title: "Correction"
+    
 ---
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-
-Le jeu de données `ozone.txt` contient la concentration maximale d’ozone (`maxO3`)
-mesurée chaque jour de l’été 2001 à Rennes. Il contient également les températures, la nébulosité et la vitesse du vent mesurés à 9h, 12h et 15h (respectivement `T9`, `T12`, `T15`, `Ne9`, `Ne12`, `Ne15` et `Vx9`, `Vx12`, `Vx15`), ainsi que la direction principale du vent et la présence ou non de pluie. On désire expliquer au mieux la concentration d’ozone à l’aide des variables disponibles dans le jeu de données.
+Le jeu de données `ozone.txt` contient la concentration maximale d’ozone ($\texttt{maxO3}$)
+mesurée chaque jour de l’été 2001 à Rennes. Il contient également les températures, la nébulosité et la vitesse du vent mesurés à 9h, 12h et 15h (respectivement $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$, $\texttt{Ne9}$, $\texttt{Ne12}$, $\texttt{Ne15}$ et $\texttt{Vx9}$, $\texttt{Vx12}$, $\texttt{Vx15}$), ainsi que la direction principale du vent et la présence ou non de pluie. On désire expliquer au mieux la concentration d’ozone à l’aide des variables disponibles dans le jeu de données.
 
 ## Question 1
 
-Analyser le nuage de points et la corrélation linéaire entre `maxO3` et chacune des variables quantitatives disponibles (c’est à dire `T9`, `T12`, `T15`, `Ne9`, `Ne12`, `Ne15`, `Vx9`, `Vx12` et `Vx15`). Est-il raisonnable de supposer qu’il existe un lien linéaire entre `maxO3` et ces variables ?
+Analyser le nuage de points et la corrélation linéaire entre $\texttt{maxO3}$ et chacune des variables quantitatives disponibles (c’est à dire $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$, $\texttt{Ne9}$, $\texttt{Ne12}$, $\texttt{Ne15}$, $\texttt{Vx9}$, $\texttt{Vx12}$ et $\texttt{Vx15}$). Est-il raisonnable de supposer qu’il existe un lien linéaire entre $\texttt{maxO3}$ et ces variables ?
+
 
 ::: answer
 
-On charge les données du fichier `ozone.txt` en R sous forme de
-`data.frame`.
+On charge les données du fichier `ozone.txt` en {{< iconify logos:r-lang >}} sous forme de `data.frame`.
 
 ::: {.panel-tabset group="language"}
+
 ### Base R
 
 ```{webr}
@@ -84,18 +87,19 @@ data_ozone <- readr::read_delim(
 )
 data_ozone
 ```
+
 :::
 
 Le fichier chargé contient bien 122 observations avec les variables
-`maxO3` pour la concentration maximale d’ozone mesurée chaque jour
-(exprimée en mètre), `T9`, `T12`, `T15` pour les températures, `Ne9`,
-`Ne12`, `Ne15` pour les nébulosités et `Vx9`, `Vx12`, `Vx15` pour la
+$\texttt{maxO3}$ pour la concentration maximale d’ozone mesurée chaque jour
+(exprimée en mètre), $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$ pour les températures, $\texttt{Ne9}$, $\texttt{Ne12}$, $\texttt{Ne15}$ pour les nébulosités et $\texttt{Vx9}$, $\texttt{Vx12}$ et $\texttt{Vx15}$ pour la
 vitesse du vent.
 
 On représente ces données dans des plans ou l'axe des ordonnées est
-toujours `maxO3` : la variable à expliquer.
+toujours $\texttt{maxO3}$ : la variable à expliquer.
 
 ::: {.panel-tabset group="language"}
+
 ### Base R
 
 ```{webr}
@@ -145,16 +149,21 @@ plots <- lapply(
 ) 
 cowplot::plot_grid(plotlist = plots)
 ```
-:::
-
-On observe une relation linéaire croissante assez prononcée avec `T9`,
-`T12` et `T15`, une légère relation décroissante avec `Ne9`, `Ne12` et
-`Ne15`, ainsi qu'une faible relation linéaire avec `Vx9`, `Vx12` et
-`Vx15`. Aucun lien non-linéaire ne semble ressortir de manière évidente.
 
 :::
 
-## Question 2
+
+On observe une relation linéaire croissante assez prononcée avec $\texttt{T9}$, $\texttt{T12}$ et $\texttt{T15}$, une légère relation décroissante avec $\texttt{Ne9}$, $\texttt{Ne12}$ et $\texttt{Ne15}$, ainsi qu'une faible relation linéaire avec $\texttt{Vx9}$, $\texttt{Vx12}$ et $\texttt{Vx15}$. Aucun lien non-linéaire ne semble ressortir de manière évidente.
+
+:::
+
+## Question 2 {#question-2}
+
+Ajuster le modèle de régression linéaire expliquant $\texttt{maxO3}$ en fonction de toutes les
+variables quantitatives précédentes. Tester la significativité de chacune des variables
+explicatives dans ce modèle. Le résultat est-il en accord avec les observations de la
+question précédente ? Tester également la significativité globale du modèle. Commenter.
+
 
 ::: answer
 
@@ -193,10 +202,10 @@ summary(modele_q2)
 Les résultats de cette estimations sont assez peut cohérents avec les
 intuitions de la question 1. Selon le test de significativité de
 Student, aucune variable ne semble significative dans ce modèle, à
-l'exception peut-être de `Vx9` au seuil $\alpha =0,05$. Ces résultats
+l'exception peut-être de $\texttt{Vx9}$ au seuil $\alpha =0,05$. Ces résultats
 sont assez surprenants, surtout compte tenu des nuages de points
-observés précédemment. En particulier,`Vx9` ne semblait pas être la
-variable la plus pertinente pour expliquer `maxO3`.
+observés précédemment. En particulier, $\texttt{Vx9}$` ne semblait pas être la
+variable la plus pertinente pour expliquer $\texttt{maxO3}$.
 
 Par ailleurs le test de significativité globale de Fisher (dernière
 ligne de la sortie) donne une p-value bien inférieure à $0,05$ donc on
@@ -273,6 +282,12 @@ ce problème de multicolinéarité.
 
 ## Question 3
 
+Calculer les VIF (Variance Inflation Factor) pour chacune des variables explicatives
+du modèle précédent. En quoi ces valeurs expliquent les résultats des tests de Student
+effectués ci-dessus ?
+
+::: answer
+
 On peut détecter cette multicolinéarité à l'aide du VIF (Variance
 Inflation Factor) pour chacune des variables explicatives du modèle
 précédent.
@@ -306,11 +321,18 @@ généralement 5), ce qui confirme qu’il y a un problème de
 multicolinéarité entre certaines variables et donc que les tests de
 Student ne sont pas rejetés.
 
+:::
+
 ## Question 4
+
+On décide d’enlever des variables au modèle précédent. Quelles variables semblet-il naturel d’enlever au vu de la question précédente ? Ajuster le nouveau modèle proposé et répéter les analyses effectuées dans les deux questions précédentes.
+
+
+::: answer
 
 On peut retenir, une variable parmi chaque groupe (température,
 nébulosité et vitesse du vente). On peut sélectionner par exemple celle
-qui est le plus correlée avec la variable `maxO3` à chaque fois.
+qui est le plus correlée avec la variable $\texttt{maxO3}$ à chaque fois.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -335,7 +357,7 @@ data_ozone |>
 ```
 :::
 
-On retient alors `T12`, `Ne12` et `Vx9`.
+On retient alors $\texttt{T12}$, $\texttt{Ne12}$ et $\texttt{Vx9}$.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -368,7 +390,7 @@ car::vif(modele_q4)
 
 Pour commencer, l'analyse des VIF montre que ce modèle n'est plus
 affecté par la multicolinéarité. En outre, les variables sélectionnées
-sont significatives, à l'exception de `Ne12`, qui est à la limite. Il
+sont significatives, à l'exception de $\texttt{Ne12}$, qui est à la limite. Il
 serait possible d'affiner davantage le modèle, mais il est pertinent de
 comparer les valeurs de $R^2$ et $R_a^2$ avec celles du modèle global
 présenté précédemment. Comme attendu, le $R^2$ est plus faible, car il
@@ -379,7 +401,16 @@ sous-modèle (0.6612) et le modèle global (0.6633), ce qui valide notre
 approche. Nous n'avons pas perdu vraiment d'information $67\  \%$ de la
 variance reste expliquée par le modèle.
 
-## Question 5
+:::
+
+## Question 5 {#question-5}
+
+Mettre en oeuvre une sélection automatique du meilleur sous-modèle possible du
+"gros" modèle ajusté dans la [question 2](#question-2), selon le critère BIC. On pourra utiliser la
+fonction  `regsubsets` de la libraire `leaps` (puis `plot.regsubsets`) ou `step`. Comparer
+le modèle retenu avec le modèle choisi à la question précédente.
+
+::: answer
 
 Pour rappel, le BIC est un critère de sélection de modèle. En régression
 linéaire multiple, on a :
@@ -425,7 +456,7 @@ Cette sortie présente le meilleur modèle à 1 variable, le meilleur
 modèle à 2 variables,... en les classant du pire (en bas) au meilleur
 (en haut), selon le critère BIC. Les variables sélectionnées dans chaque
 modèle sont grisées. Si on se réfère à cette sélection, on choisirait
-donc le modèle avec les variables `T12`, `Ne9` et `Vx9` (ce choix est
+donc le modèle avec les variables $\texttt{T12}$, $\texttt{Ne9}$ et $\texttt{Vx9}$ (ce choix est
 donc différent du modèle que l’on avait retenu de façon naive ci-dessus)
 
 **Recherche pas à pas (à privilégier quand il y a beaucoup de
@@ -526,7 +557,14 @@ On retient le modèle :
 
 $$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T12}_i+\beta_3\texttt{Ne9}_i+\beta_4\texttt{Vx9}_i+\varepsilon_i$$
 
+:::
+
 ## Question 6
+
+Appliquer la sélection automatique précédente en vous basant sur d’autres critères
+que BIC. Les modèles retenus sont-ils les mêmes ? Si non, lequel semble préférable ?
+
+::: answer
 
 Pour la méthode exhaustive, il est possible d'afficher le classement
 selon d'autres critères en ajustant l'option `scale`de la fonction
@@ -558,7 +596,13 @@ critère BIC. On retiendrait aussi la variable $\texttt{T9}$. Comme elle
 est très corrélée à la variable $\texttt{T12}$, il semble raisonnable de
 prendre plutôt le modèle obtenu à la question 5, plus parcimonieux.
 
+:::
+
 ## Question 7
+
+Analyser les résidus du modèle sélectionné à la question précédente par des représentations graphiques et en effectuant des tests d’homoscédasticité et de non-corrélation des résidus. Toutes les hypothèses d’un modèle linéaire semblent-elles vérifiées ?
+
+::: answer
 
 **Analyse graphique des résidus**
 
@@ -603,7 +647,7 @@ satisfaisante car
 ### Test de Breusch-Pagan
 
 Le test de Breusch-Pagan permet de tester l’homoscédasticité. Il
-s'implémente sous R avec la fonction `bptest` de la librairie `lmtest`.
+s'implémente sous {{< iconify logos:r-lang >}} avec la fonction `bptest` de la librairie `lmtest`.
 
 On suppose que $\varepsilon_i$ a une variance
 $\sigma_i^2=\sigma^2+z_i'\gamma$
@@ -612,7 +656,7 @@ $\sigma_i^2=\sigma^2+z_i'\gamma$
     expliquer l'hétéroscédasticité (si elle est présente)
 -   $\gamma$ est un paramètre inconnu, de dimension $k$, à estimer.
 
-Par défaut sous R : $z_i$ est simplement le vecteur des variables
+Par défaut sous {{< iconify logos:r-lang >}} : $z_i$ est simplement le vecteur des variables
 explicatives $\left(X_i^{(1)}, \ldots, X_i^{(p)}\right)$, et donc $k=p$.
 Mais on peut proposer autre chose.
 
@@ -647,7 +691,7 @@ On ne rejette pas $H_0$ au seuil 5 %. L'homoscédasticité est vérifiée.
 ### Tests de Durbin-Watson et Breusch-Godfrey
 
 Le tests de Durbin-Watson et Breusch-Godfrey permettent de tester la non
-corrélation des résidus. Ils s'implémentent sous R avec la fonction
+corrélation des résidus. Ils s'implémentent sous {{< iconify logos:r-lang >}} avec la fonction
 `dwtest` et `bgtest` de la librairie `lmtest`.
 
 On suppose que $\varepsilon_i$ sont auto-corrélées à l'ordre $r$, i.e.
@@ -696,7 +740,16 @@ en réalité une occasion d'améliorer le modèle initial : la corrélation
 temporelle n'a pas été prise en compte, offrant ainsi un levier pour
 enrichir notre modélisation en intégrant cette dépendance.
 
+:::
+
 ## Question 8
+
+Afin de résoudre le problème d’auto-corrélation des résidus, on propose d’ajouter la
+maximum d’ozone de la veille dans le modèle. Créer cette variable, que l’on nommera
+$\texttt{maxO3v}$ et ajouter-la au jeu de données. Observe-t-on un lien linéaire entre $\texttt{maxO3}$
+et $\texttt{maxO3v}$ ?
+
+::: answer
 
 On peut créer une variable retard $\texttt{maxO3v}$ correspondant au
 maximum d'ozone de la veille.
@@ -734,9 +787,18 @@ Le nuage de points et la corrélation linéaire confirment l'existence
 d'un lien linéaire fort entre $\texttt{maxO3}$ et sa valeur de la
 veille.
 
+:::
+
 ## Question 9
 
-On ajoute la covariable `maxO3v` au modèle de la question 5.
+
+Ajuster le modèle de régression contenant $\texttt{maxO3v}$ comme variable explicative supplémentaire.
+Analyser les résultats de l’ajustement : les hypothèses d’un modèle
+linéaire sont-elles vérifiées ?
+
+::: answer
+
+On ajoute la covariable $\texttt{maxO3v}$ au modèle de la question 5.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -840,7 +902,13 @@ lmtest::bgtest(modele_q9)
 On ne rejette pas $H_0$ au seuil 5 % dans les deux cas. L'absence
 d'autocorrélation est confirmée.
 
+:::
+
 ## Question 10
+
+Comparer ce dernier modèle au modèle sans $\texttt{maxO3v}$ à l’aide d’un test de Fisher et en comparant les différents critères de sélection (AIC, BIC, Cp de Mallows, R² ajusté).
+
+::: answer
 
 **Test de Fisher sur des modèles emboités**
 
@@ -869,7 +937,7 @@ car::linearHypothesis(
 :::
 
 Le test de Fisher sur les modèle emboité confirme la significativité de
-la variable `maxO3v`.
+la variable $\texttt{maxO3v}$.
 
 **Critères de sélection**
 
@@ -965,3 +1033,5 @@ tibble::tibble(
 
 Quel que soit le critère le modèle avec l’introduction de la variable
 $\texttt{maxO3v}$ est meilleur.
+
+:::

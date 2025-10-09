@@ -25,8 +25,10 @@ diagram:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    appearance: "minimal"
-    title: ""
+    icon: false
+    icon-symbol: ""
+    appearance: "default"
+    title: "Correction"
 ---
 
 On considère un modèle à deux variables explicatives, supposées centrées. De l’estimation sur $n$ individus, on a obtenu les matrices $X'X$ et $X'Y$ suivantes :
@@ -160,7 +162,8 @@ les mêmes.
 
 ## Question 2
 
-Calculer le coefficient de corrélation linéaire entre les deux variables explicatives.
+Sur la base des $n$ individus, calculer le coefficient de corrélation linéaire entre les
+deux variables explicatives.
 
 ::: answer
 
@@ -182,10 +185,7 @@ X^{\prime} X=\left(\begin{array}{cc}
 \end{array}\right)
 $$
 
-Donc $\hat{\rho}_n=150 / \sqrt{200 \times 113} \approx 0,9979$. Si on
-base le calcule sur la seconde situation, c'est à dire sur les $n-1$
-individus restants, on obtient de la même manière
-$\hat{\rho}_{n-1}=149 / \sqrt{199 \times 112} \approx 0,9980$.
+Donc $\hat{\rho}_n=150 / \sqrt{200 \times 113} \approx 0,9979$.
 
 :::
 
@@ -199,8 +199,7 @@ Cette situation met en évidence le problème de la multicolinéarité :
 lorsque deux variables explicatives sont fortement corrélées, même si la
 matrice $X'X$ reste inversible, l'estimateur $\hat{\beta}$ devient très instable, avec une variance très élevée. Concrètement, cela signifie que l’ajout ou le
 retrait d’un seul individu peut entraîner une variation radicale de la
-valeur de $\hat{\beta}$. C'est ce que l'on observe ici, indépendamment de la taille de l'échantillon, même si $n$ est de l'ordre du million. Une telle
-situation est évidemment indésirable sur le plan statistique. Cela nous
+valeur de $\hat{\beta}$. C'est ce que l'on observe ici, indépendamment de la taille de l'échantillon, même si $n$ est de l'ordre du million. Une telle situation est évidemment indésirable sur le plan statistique. Cela nous
 incite donc à identifier et à corriger ce problème en pratique. On peut
 le détecter, entre autres, grâce au calcul des VIF, et le résoudre en
 supprimant par exemple la variable la moins pertinente parmi celles en

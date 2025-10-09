@@ -28,8 +28,10 @@ editor:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    appearance: "minimal"
-    title: ""
+    icon: false
+    icon-symbol: ""
+    appearance: "default"
+    title: "Correction"
 ---
 
 ![](/static/img/eucalyptus.jpg){fig-align="center"}
@@ -38,7 +40,7 @@ custom-callout:
 
 On veut expliquer la hauteur des eucalyptus en fonction de leur
 circonférence à partir d’une régression linéaire simple. On dispose des
-mesures des hauteurs (`ht`) et des circonférences (`circ`) de 1 429
+mesures des hauteurs ($\texttt{ht}$) et des circonférences ($\texttt{circ}$) de 1 429
 eucalyptus, qui se trouvent dans le fichier `eucalyptus.txt`.
 
 ## Question 1
@@ -46,7 +48,7 @@ eucalyptus, qui se trouvent dans le fichier `eucalyptus.txt`.
 Extraire et représenter les données dans le plan.
 
 ::: answer
-On charge les données du fichier `eucalyptus.txt` en R sous forme de
+On charge les données du fichier `eucalyptus.txt` en {{< iconify logos:r-lang >}} sous forme de
 `data.frame`.
 
 ::: {.panel-tabset group="language"}
@@ -82,7 +84,7 @@ data_eucalyptus
 :::
 
 Le fichier chargé contient bien 1 429 observations avec les variables
-`ht` pour la hauteur (exprimée en mètre) et `circ` pour la circonférence
+$\texttt{ht}$ pour la hauteur (exprimée en mètre) et $\texttt{circ}$ pour la circonférence
 des eucalyptus.
 
 On représente ces données dans le plan.
@@ -294,7 +296,7 @@ Commentons la sortie détaillée donnée par la fonction générique
 ## Question 3
 
 Quelle est la formule théorique de $\hat{\beta}_1$ et $\hat{\beta}_2$ ?
-Retrouver les estimations fournies par R en l’utilisant.
+Retrouver les estimations fournies par {{< iconify logos:r-lang >}} en l’utilisant.
 
 ::: answer
 Pour le modèle linéaire simple, on a :
@@ -738,7 +740,7 @@ l’erreur de prévision cumule deux erreurs :
 -   l’erreur due à l’estimation de la droite (celle-ci est moins précise
     loin de la moyenne des données) ;
 -   l’erreur due à $\varepsilon_{n+1}$: elle est stable quelle que soit
-    la valeur de `circ` et incompressible car
+    la valeur de $\texttt{circ}$ et incompressible car
     $\mathrm{Var}(\varepsilon_{n+1})=\sigma^2$.
 :::
 

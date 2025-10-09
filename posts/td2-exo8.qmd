@@ -19,11 +19,30 @@ filters:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    appearance: "minimal"
-    title: ""
+    icon: false
+    icon-symbol: ""
+    appearance: "default"
+    title: "Correction"
 ---
 
+On considère un modèle de régression linéaire visant à expliquer $Y$ en fonction des variables
+$X^{(1)}, \dots, X^{(p)}$. On désire choisir entre le modèle avec $X^{(p)}$ et le modèle sans $X^{(p)}$ (les autres
+variables étant incluses dans les deux cas), sur la base d’un échantillon de $n$ individus.
+
+On not $F$ la statistique :
+
+$$F=(n-p)\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}$$
+
+où $\textrm{SCR}$ désigne la somme des carrés résiduelle dans le modèle avec $\textrm{X}^{(p)}$, et $\textrm{SCR}_c$ désigne
+la somme des carrés résiduelle dans le modèle sans $\textrm{X}^{(p)}$.
+
 ## Question 1
+
+En appliquant un test de Fisher de modèles emboités, selon quelle règle de décision,
+basée sur $F$, choisira-t-on d’inclure la variable $\textrm{X}^{(p)}$ dans le modèle ?
+
+
+::: answer
 
 Dans le modèle
 
@@ -38,7 +57,22 @@ quantile d'ordre $1-\alpha$ de la loi de Fisher $(1, n-p)$. Cette règle
 de décision exige de fixer le niveau de test $\alpha$. On choisi souvent
 par convention $\alpha=0.05$.
 
+:::
+
 ## Question 2
+
+On rappelle que le $R^2$ ajusté dans un modèle à $k$ variables et $n$ individus est défini
+par
+
+$$
+R^2_a=1-\frac{n-1}{n-k}\frac{\textrm{SCR}_k}{\textrm{SCT}}
+$$
+où $\textrm{SCR}_k$ désigne la somme des carrés résiduelles dans le modèle, et $\textrm{SCT}$ la somme
+des carrés totaux.
+
+Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère du $R^2$ ajusté si $F > 1$.
+
+::: answer
 
 On inclut $X^{(p)}$ si $R_{a}^{2}$ dans le modèle avec $X^{(p)}$ est
 supérieur au $R_{a}^{2}$ dans le modèle sans $X^{(p)}$, c'est à dire si
@@ -65,7 +99,24 @@ $$
 \end{align*}
 $$
 
+:::
+
 ## Question 3
+
+On rappelle que le $C_p$ de Mallows dans un modèle à $k$ variables et $n$ individus est
+défini par 
+
+$$
+C_p=\frac{\textrm{SCR}_k}{\hat{\sigma}^2}-n+2k
+$$
+
+où $\textrm{SCR}_k$ désigne la somme des carrés résiduelles dans le modèle, et $\hat{\sigma}^2$ est un estimateur
+de $\sigma^2$ basé sur le plus gros modèle possible. On prendra ici $\hat{\sigma}^2=\textrm{SCR}/(n-p)$,
+où $\textrm{SCR}$ désigne la somme des carrés résiduelle dans le modèle avec $X^{(p)}$.
+
+Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère du $C_p$ de Mallows si $F > 2$.
+
+::: answer
 
 On inclut $X^{(p)}$ si le $C_p$ dans le modèle avec $X^{(p)}$ est
 inférieur au $C_p$ dans le modèle sans $X^{(p)}$, c'est à dire si
@@ -78,7 +129,23 @@ $$
 \end{align*} 
 $$ Or $\hat{\sigma}^{2}=\frac{SCR}{n-p}$ donc $F>2$ .
 
+:::
+
 ## Question 4
+
+On rappelle que le critère AIC dans un modèle à $k$ variables, à $n$ individus, avec des
+résidus gaussiens, est défini par
+
+$$
+AIC=n(1+\log(2\pi))+n\ \textrm{log}\left(\frac{\textrm{SCR}_k}{n} \right)+2(k+1)
+$$
+
+où $\textrm{SCR}_k$ désigne la somme des carrés résiduelles dans le modèle.
+
+Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère AIC si $F > (n - p)(e^{2/n}- 1)$.
+
+
+::: answer 
 
 On inclut $X^{(p)}$ si l'AIC dans le modèle avec $X^{(p)}$ est inférieur
 à l'AIC dans le modèle sans $X^{(p)}$, c'est à dire si
@@ -95,7 +162,22 @@ $$
 
 Donc $F > (n-p)\left(e^{\frac{2}{n}} - 1\right)$
 
+:::
+
 ## Question 5
+
+On rappelle que le critère BIC (aussi parfois appelé SBC) dans un modèle à $k$
+variables, à $n$ individus, avec des résidus gaussiens, est défini par 
+
+$$
+BIC=n(1+\log(2\pi))+n\ \textrm{log}\left(\frac{\textrm{SCR}_k}{n} \right)+\log{(n)}(k+1)
+$$
+où $\textrm{SCR}_k$ désigne la somme des carrés résiduelles dans le modèle.
+
+Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère BIC si $F > (n - p)(e^{\log{(n)}/n}- 1)$.
+
+
+::: answer
 
 On inclut $X^{(p)}$ si le BIC dans le modèle avec $X^{(p)}$ est
 inférieur au BIC dans le modèle sans $X^{(p)}$, c'est à dire si
@@ -112,7 +194,20 @@ $$
 
 Donc $F > (n-p)\left(e^{\frac{\log(n)}{n}} - 1\right)$
 
+:::
+
 ## Question 6
+
+
+En admettant que les quantiles à 95 % d’une loi de Fisher de degré de liberté $(1, \nu)$
+prennent leurs valeurs dans l’intervalle $[3.8, 5]$ dès que $\nu > 10$, classer les critères
+précédents du plus conservatif (i.e. ayant tendance à refuser plus facilement l’introduction
+de $X^{(p)}$) au moins conservatif (i.e. ayant tendance à accepter plus facilement l’introduction
+de $X^{(p)}$). On pourra utiliser un développement limité pour l’étude des critères AIC
+et BIC, en supposant que $n$ est suffisamment grand.
+
+
+::: answer
 
 Pour le critère AIC, on a vu que l'on inclut $X^{(p)}$ si
 $F>(n-p)\left(e^{2 / n}-1\right)$. Or, lorsque
@@ -142,3 +237,5 @@ complets, tandis que le BIC favorise des modèles plus parcimonieux. Ces
 critères peuvent être tous d'accord sur le fait qu'il est préférable
 d'inclure ou non $X^{(p)}$, mais si jamais ils divergent, c'est dans le
 sens des inégalités précédentes.
+
+:::

@@ -27,8 +27,10 @@ diagram:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    appearance: "minimal"
-    title: ""
+    icon: false
+    icon-symbol: ""
+    appearance: "default"
+    title: "Correction"
 ---
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
@@ -36,7 +38,7 @@ custom-callout:
 On se place dans un modèle de régression contenant une constante. On
 définit
 
-$\rho(Y, X) = \sup\limits_{\beta} \textrm{cor}(Y, X\beta)$
+$$\rho(Y, X) = \sup\limits_{\beta} \textrm{cor}(Y, X\beta)$$
 
 où $\textrm{cor}$ désigne la corrélation empirique. Cette quantité est
 donc la corrélation maximale que l’on peut obtenir entre $Y$ et une

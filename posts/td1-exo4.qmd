@@ -17,6 +17,7 @@ filters:
 editor: 
   markdown: 
     wrap: 72
+  mode: source
 diagram:
   engine:
     tikz:
@@ -26,8 +27,10 @@ diagram:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    appearance: "minimal"
-    title: ""
+    icon: false
+    icon-symbol: ""
+    appearance: "default"
+    title: "Correction"
 ---
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
@@ -40,7 +43,6 @@ $y_i = \beta_0 + \beta_1x_i + \epsilon_i$; $i = 1, \ \dots, \ n$.
 
 Quelle sont les hypothèses standards sur les erreurs de modélisation
 $\epsilon_i$ ?
-
 
 ::: answer
 On suppose que les variables $\epsilon_i$ sont :

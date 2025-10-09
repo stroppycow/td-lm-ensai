@@ -32,16 +32,28 @@ filters:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    appearance: "minimal"
-    title: ""
+    icon: false
+    icon-symbol: ""
+    appearance: "default"
+    title: "Correction"
 ---
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
+On considère de nouveau les données `ozone.txt` étudiées dans l’exercice 7. On désire
+tirer profit des variables qualitatives présentes dans le jeu de données (c’est à dire la
+présence ou non de pluie, et la direction principale du vent) pour éventuellement améliorer
+le modèle construit dans l’exercice 7.
+
+
 ## Question 1
 
-On charge les données du fichier `ozone.txt` en R sous forme de
-`data.frame`.
+On reprend le modèle sélectionné dans l’exercice 7, soit $\texttt{maxO3}$ en fonction de
+$\texttt{T12}$, $\texttt{Ne9}$, $\texttt{Vx9}$ et $\texttt{maxO3v}$ où $\texttt{maxO3v}$ représente la concentration maximale en ozone de la veille (créer cette variable si besoin). Ajuster ce modèle sur les données.
+
+::: answer
+
+On charge les données du fichier `ozone.txt` en {{< iconify logos:r-lang >}} sous forme de `data.frame`.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -103,10 +115,10 @@ data_ozone
 :::
 
 Le fichier chargé contient bien 122 observations avec les variables
-`maxO3` pour la concentration maximale d’ozone mesurée chaque jour
-(exprimée en mètre), `T9`, `T12`, `T15` pour les températures, `Ne9`,
-`Ne12`, `Ne15` pour les nébulosités, `Vx9`, `Vx12`, `Vx15` pour la
-vitesse du vent, `vent` pour la direction du vent et `pluie` pour le
+$\texttt{maxO3}$ pour la concentration maximale d’ozone mesurée chaque jour
+(exprimée en mètre), $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$ pour les températures, $\texttt{Ne9}$,
+$\texttt{Ne12}$, $\texttt{Ne15}$ pour les nébulosités, $\texttt{Vx9}$, $\texttt{Vx12}$, $\texttt{Vx15}$ pour la
+vitesse du vent, $\texttt{vent}$ pour la direction du vent et $\texttt{pluie}$ pour le
 niveau de pluie.
 
 On ajoute également la concentration maximale d’ozone mesurée la veille
@@ -139,11 +151,19 @@ summary(fit_q1)
 ```
 :::
 
+:::
+
 ## Question 2
 
-On peut faire une boite à moustaches de la variable `maxO3` selon les
+Représenter graphiquement $\texttt{maxO3}$ en fonction de la présence de pluie. Un lien
+semble-t-il présent ? Le confirmer par un test statistique.
+
+
+::: answer
+
+On peut faire une boite à moustaches de la variable $\texttt{maxO3}$ selon les
 modalités de pluie. On peut également représenter les distributions de
-`maxO3` par groupe (Sec/Pluie) avec des histogrammes.
+$\texttt{maxO3}$ par groupe (Sec/Pluie) avec des histogrammes.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -217,11 +237,11 @@ ggplot2::ggplot(
 :::
 
 Graphiquement, on constate un lien. La quantité maximale d'ozone sur une
-journée (`maxO3`) est moindre lorsque le temps est pluvieux.
+journée ($\texttt{maxO3}$) est moindre lorsque le temps est pluvieux.
 
 Afin de confirmer cette analyse graphique on pourrait effectuer un test
 de Student d'égalité des moyennes dans deux groupes (slide 27 du cours)
-sous l'hypothèse que la distribution de `maxO3` est gaussienne et de
+sous l'hypothèse que la distribution de $\texttt{maxO3}$ est gaussienne et de
 même variance $\sigma^2$ dans chaque groupe. Toutefois l’égalité des
 variances ici ne semble pas vraiment vérifiée ici au vu des boxplots. On
 peut d'ailleurs tester cette égalité des variances avec le test de
@@ -275,13 +295,22 @@ t.test(maxO3 ~ pluie, data = data_ozone, var.equal = FALSE)
 :::
 
 On rejette l'hypothèse nulle du test de Welch : les moyennes de la
-variable `maxO3` diffèrent entre les journées avec et sans pluie.
+variable $\texttt{maxO3}$ diffèrent entre les journées avec et sans pluie.
+
+:::
 
 ## Question 3
 
-On ajoute la variable `pluie` en incluant l'effet sur la constante et
-les interactions avec les variables continues initiales (`T12`, `Ne9`,
-`Vx9` et `maxO3v`).
+Ajouter au modèle de la première question la variable $\texttt{pluie}$ de manière la plus
+générale possible (i.e. en incluant une interaction avec chaque variable en plus d’un
+effet sur la constante). Tester la significativité de ces ajouts en effectuant un test de
+Fisher de modèles emboités entre ce modèle et le modèle initial.
+
+::: answer
+
+On ajoute la variable $\texttt{pluie}$ en incluant l'effet sur la constante et
+les interactions avec les variables continues initiales ($\texttt{T12}$, $\texttt{Ne9}$,
+$\texttt{Vx9}$ et $\texttt{maxO3v}$).
 
 En prenant la modalité $\texttt{Pluie}$ comme référence, le modèle peut
 s'écrire alors
@@ -323,7 +352,7 @@ $$
 $$
 
 On ajuste ce modèle avec la fonction `lm` par défaut R va considérer la
-première modalité (dans l'ordre alphabétique) de la variable `pluie`
+première modalité (dans l'ordre alphabétique) de la variable $\texttt{pluie}$
 comme référence pour rendre le modèle identifiable (c'est à dire
 `pluie=Pluie` comme nous venons de l'écrire).
 
@@ -394,7 +423,15 @@ La p-value élevée (0.7367) confirme que l’on peut accepter les
 contraintes, et donc privilégier le modèle initial sans pluie, ni les
 interactions associées.
 
+:::
+
 ## Question 4
+
+Tester de même le modèle plus simple dans lequel seul un effet additif de la variable
+$\texttt{pluie}$ est intégré, et non ses interactions avec les autres variables. Le résultat est-il
+en désaccord avec l’analyse graphique de la question 2 ? Comment expliquer le résultat ?
+
+::: answer
 
 En prenant la modalité $\texttt{Pluie}$ comme référence, le modèle peut
 s'écrire alors
@@ -447,7 +484,14 @@ aucune information supplémentaire. En revanche, si ces variables ne sont
 pas prises en compte, l’effet de la pluie devient très perceptible (voir
 question 2), ce qui en fait un facteur de confusion.
 
+:::
+
 ## Question 5
+
+De même : représenter graphiquement $\texttt{maxO3}$ en fonction de la direction du vent
+et étudier la pertinence d’inclure un effet vent dans le modèle initial.
+
+::: answer
 
 On trace les boxplots selon les modalités de la variables vent.
 
@@ -487,7 +531,7 @@ ggplot2::ggplot(
 
 Un test de Student n'est pas approprié ici, car il y a quatre modalités.
 Nous effectuons donc un test ANOVA pour déterminer si les moyennes de
-maxO3 diffèrent significativement selon les directions du vent. Avant
+$\texttt{maxO3}$ diffèrent significativement selon les directions du vent. Avant
 cela, il est nécessaire de vérifier l'égalité des variances, une
 hypothèse essentielle pour l'ANOVA.
 
@@ -561,5 +605,7 @@ anova(fit_q1, fit_q5)
 :::
 
 Les conclusions sont similaires à celles obtenues avec la variable pluie
-: il ne paraît pas pertinent d’ajouter la variable `vent` ni les
+: il ne paraît pas pertinent d’ajouter la variable $\texttt{vent}$ ni les
 interactions associées dans le modèle.
+
+:::
