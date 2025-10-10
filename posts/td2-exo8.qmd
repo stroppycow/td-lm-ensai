@@ -42,6 +42,7 @@ En appliquant un test de Fisher de modèles emboités, selon quelle règle de d�
 basée sur $F$, choisira-t-on d’inclure la variable $\textrm{X}^{(p)}$ dans le modèle ?
 
 
+::: {.content-hidden when-format="html"}
 ::: answer
 
 Dans le modèle
@@ -58,6 +59,7 @@ de décision exige de fixer le niveau de test $\alpha$. On choisi souvent
 par convention $\alpha=0.05$.
 
 :::
+:::
 
 ## Question 2
 
@@ -72,6 +74,7 @@ des carrés totaux.
 
 Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère du $R^2$ ajusté si $F > 1$.
 
+::: {.content-hidden when-format="html"}
 ::: answer
 
 On inclut $X^{(p)}$ si $R_{a}^{2}$ dans le modèle avec $X^{(p)}$ est
@@ -100,6 +103,7 @@ $$
 $$
 
 :::
+:::
 
 ## Question 3
 
@@ -116,6 +120,7 @@ où $\textrm{SCR}$ désigne la somme des carrés résiduelle dans le modèle ave
 
 Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère du $C_p$ de Mallows si $F > 2$.
 
+::: {.content-hidden when-format="html"}
 ::: answer
 
 On inclut $X^{(p)}$ si le $C_p$ dans le modèle avec $X^{(p)}$ est
@@ -129,6 +134,7 @@ $$
 \end{align*} 
 $$ Or $\hat{\sigma}^{2}=\frac{SCR}{n-p}$ donc $F>2$ .
 
+:::
 :::
 
 ## Question 4
@@ -144,7 +150,7 @@ où $\textrm{SCR}_k$ désigne la somme des carrés résiduelles dans le modèle.
 
 Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère AIC si $F > (n - p)(e^{2/n}- 1)$.
 
-
+::: {.content-hidden when-format="html"}
 ::: answer 
 
 On inclut $X^{(p)}$ si l'AIC dans le modèle avec $X^{(p)}$ est inférieur
@@ -163,6 +169,7 @@ $$
 Donc $F > (n-p)\left(e^{\frac{2}{n}} - 1\right)$
 
 :::
+:::
 
 ## Question 5
 
@@ -176,7 +183,7 @@ où $\textrm{SCR}_k$ désigne la somme des carrés résiduelles dans le modèle.
 
 Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère BIC si $F > (n - p)(e^{\log{(n)}/n}- 1)$.
 
-
+::: {.content-hidden when-format="html"}
 ::: answer
 
 On inclut $X^{(p)}$ si le BIC dans le modèle avec $X^{(p)}$ est
@@ -195,6 +202,7 @@ $$
 Donc $F > (n-p)\left(e^{\frac{\log(n)}{n}} - 1\right)$
 
 :::
+:::
 
 ## Question 6
 
@@ -206,7 +214,7 @@ de $X^{(p)}$) au moins conservatif (i.e. ayant tendance à accepter plus facilem
 de $X^{(p)}$). On pourra utiliser un développement limité pour l’étude des critères AIC
 et BIC, en supposant que $n$ est suffisamment grand.
 
-
+::: {.content-hidden when-format="html"}
 ::: answer
 
 Pour le critère AIC, on a vu que l'on inclut $X^{(p)}$ si
@@ -238,4 +246,5 @@ critères peuvent être tous d'accord sur le fait qu'il est préférable
 d'inclure ou non $X^{(p)}$, mais si jamais ils divergent, c'est dans le
 sens des inégalités précédentes.
 
+:::
 :::

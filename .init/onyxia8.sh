@@ -5,6 +5,8 @@ curl -sSL https://git.io/get-mo -o mo
 chmod +x mo
 sudo mv mo /usr/local/bin/
 QUARTO_PREVIEW_URL=$1
+arrIN=(${QUARTO_PREVIEW_URL//./ })
+export QUARTO_INGRESS_NAME=${arrIN[0]}
 export QUARTO_PREVIEW_URL=${QUARTO_PREVIEW_URL}
 mo ./td-lm-ensai/.kube/ingress_template.yaml > ./ingress_output.yaml
 touch onyxia

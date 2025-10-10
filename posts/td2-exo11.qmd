@@ -41,6 +41,7 @@ Préciser la matrice $\Sigma$ lorsque les variables $\epsilon_i$ sont non-corré
 de variance $\sigma_i^2$ $(i = 1, \dots, n)$.
 
 
+::: {.content-hidden when-format="html"}
 ::: answer
 On a :
 $\Sigma = \textrm{diag}\left(\sigma_{1}^{2}, \ldots, \sigma_{n}^{2}\right)$
@@ -50,12 +51,15 @@ sont les valeurs du vecteur
 $\left(\sigma_{1}^{2}, \ldots, \sigma_{n}^{2}\right)$.
 
 :::
+:::
 
 ## Question 2
 
 Déterminer l’espérance et la variance de l’estimateur $\hat{\beta}$ des moindres carrés ordinaires
 (dans le cas général d’une matrice $\Sigma$ quelconque).
 
+
+::: {.content-hidden when-format="html"}
 ::: answer
 
 L'estimateur des MCO vaut
@@ -84,6 +88,7 @@ $$
 $$
 
 :::
+:::
 
 ## Question 3
 
@@ -102,6 +107,8 @@ $$
 
 En déduire son espérance et sa variance.
 
+
+::: {.content-hidden when-format="html"}
 ::: answer
 
 On cherche à minimiser la fonction
@@ -140,13 +147,14 @@ et $$
 $$
 
 :::
-
+:::
 
 ## Question 4
 
 Montrer que la matrice de covariance entre $\hat{\beta}$ et $\hat{\beta}_G$ est égale à la matrice de variancecovariance
 de $\hat{\beta}_G$. En déduire que $\hat{\beta}_G$ est meilleur que $\hat{\beta}$ au sens du coût quadratique.
 
+::: {.content-hidden when-format="html"}
 ::: answer
 
 Par définition
@@ -182,4 +190,5 @@ $u \in \mathbb{R}^p$
 $$
 \mathbb{V}\left(u^{\prime} \hat{\beta}_G \right) \leq \sqrt{\mathbb{V}\left(u^{\prime} \hat{\beta}\right) \mathbb{V}\left(u^{\prime} \hat{\beta}_G\right)}
 $$
+:::
 :::

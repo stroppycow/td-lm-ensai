@@ -646,7 +646,7 @@ L'intervalle de prévision est valable uniquement sous hypothèse
 gaussienne.
 
 On peut examiner cette hypothèse avec un QQ-plot ou avec le test de
-Shapiro-Wilk.
+Shapiro-Wilk. L'hypothèse nulle de ce test est l'échantillon suit une loi normale.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -655,6 +655,7 @@ Shapiro-Wilk.
 #| envir: baser
 #| autorun: true
 qqnorm(fit_lm_icecream_without_price_and_intercept$residuals)
+shapiro.test(fit_lm_icecream_without_price_and_intercept$residuals)
 ```
 
 ### Tidyverse
@@ -663,11 +664,12 @@ qqnorm(fit_lm_icecream_without_price_and_intercept$residuals)
 #| envir: tdv
 #| autorun: true
 qqnorm(fit_lm_icecream_without_price_and_intercept$residuals)
+shapiro.test(fit_lm_icecream_without_price_and_intercept$residuals)
 ```
 :::
 
 Même si le diagramme quantile-quantile n'est pas très convaincant, le
-test de Shapiro Wilk ne permet pas de rejeter l’hypothèse nulle de
+test de Shapiro-Wilk ne permet pas de rejeter l’hypothèse nulle de
 Gaussianité des résidus.
 :::
 

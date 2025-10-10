@@ -77,6 +77,7 @@ d & -b \\
 $$
 :::
 
+::: {.content-hidden when-format="html"}
 ::: answer
 
 On estime les coefficients par les moindres carrés ordinaires dans ces
@@ -159,12 +160,14 @@ différentes $\widehat{\beta}_{n-1}$ alors que les données sont presque
 les mêmes.
 
 :::
+:::
 
 ## Question 2
 
 Sur la base des $n$ individus, calculer le coefficient de corrélation linéaire entre les
 deux variables explicatives.
 
+::: {.content-hidden when-format="html"}
 ::: answer
 
 Calculons le coefficient de corrélation linéaire entre les deux
@@ -188,11 +191,13 @@ $$
 Donc $\hat{\rho}_n=150 / \sqrt{200 \times 113} \approx 0,9979$.
 
 :::
+:::
 
 ## Question 3
 
 Commenter.
 
+::: {.content-hidden when-format="html"}
 ::: answer
 
 Cette situation met en évidence le problème de la multicolinéarité :
@@ -205,4 +210,5 @@ le détecter, entre autres, grâce au calcul des VIF, et le résoudre en
 supprimant par exemple la variable la moins pertinente parmi celles en
 cause.
 
+:::
 :::
