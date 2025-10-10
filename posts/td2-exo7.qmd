@@ -209,7 +209,7 @@ variable la plus pertinente pour expliquer $\texttt{maxO3}$.
 
 Par ailleurs le test de significativité globale de Fisher (dernière
 ligne de la sortie) donne une p-value bien inférieure à $0,05$ donc on
-rejette l'hypothèse nulle $H_0: \ \beta_2 = \dots =  \beta_{10}=0$. Ce
+rejette l'hypothèse nulle $H_0: \ \beta_2 = \dots =  \beta_{10}=0$. Cette
 issue du test de Fisher semble également entrer en contradiction avec
 les tests de Student précédents.
 
