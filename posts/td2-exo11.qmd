@@ -1,13 +1,26 @@
 ---
-title: "TD 2 - Exercice 11 - Moindres carrés généralisés"
+title: "TD 2 - Exercice 11"
 lang: fr
 author: "Théo Leroy"
-date: "10 octobre 2025"
+date: "17 octobre 2025"
 format:
   live-html:
     code-background: true
     toc: true
     page-layout: full
+webr:
+  render-df: gt-interactive
+  resources:
+    - ./../data/ozone.txt
+  packages:
+      - dplyr
+      - readr
+      - ggplot2
+      - cowplot
+      - GGally
+      - car
+      - leaps
+      - lmtest
 editor: 
   mode: source
   markdown: 
@@ -25,170 +38,588 @@ custom-callout:
     title: "Correction"
 ---
 
-Soit un modèle de régression linéaire multiple
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-$$
-Y=X\beta+\epsilon
-$$
+On considère de nouveau les données `ozone.txt` étudiées dans l’exercice 7. On désire
+tirer profit des variables qualitatives présentes dans le jeu de données (c’est à dire la
+présence ou non de pluie, et la direction principale du vent) pour éventuellement améliorer
+le modèle construit dans l’exercice 7.
 
-où  $\beta \in \mathbb{R}^p$, $X$ est une matrice de taille $n \times p$ et $\epsilon$ est un vecteur aléatoire de taille $n$,
-centré. On considère ici la situation où les variables $\epsilon_i$ ne sont plus homoscédastiques et
-non-corrélés, mais de façon générale $V(\epsilon) = \Sigma$ où $\Sigma$ est une matrice inversible. On suppose
-dans cet exercice que $\Sigma$ est connue (il conviendra dans la pratique de l’estimer).
 
 ## Question 1
-Préciser la matrice $\Sigma$ lorsque les variables $\epsilon_i$ sont non-corrélés mais hétéroscédastiques
-de variance $\sigma_i^2$ $(i = 1, \dots, n)$.
 
+On reprend le modèle sélectionné dans l’exercice 7, soit $\texttt{maxO3}$ en fonction de
+$\texttt{T12}$, $\texttt{Ne9}$, $\texttt{Vx9}$ et $\texttt{maxO3v}$ où $\texttt{maxO3v}$ représente la concentration maximale en ozone de la veille (créer cette variable si besoin). Ajuster ce modèle sur les données.
 
 ::: {.content-hidden when-format="html"}
 ::: answer
-On a :
-$\Sigma = \textrm{diag}\left(\sigma_{1}^{2}, \ldots, \sigma_{n}^{2}\right)$
 
-Il s’agit d’une matrice diagonale dont les éléments sur la diagonale
-sont les valeurs du vecteur
-$\left(\sigma_{1}^{2}, \ldots, \sigma_{n}^{2}\right)$.
+On charge les données du fichier `ozone.txt` en {{< iconify logos:r-lang >}} sous forme de `data.frame`.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+data_ozone <- read.csv(
+  file = "data/ozone.txt",
+  header = TRUE,
+  sep = " ",
+  quote = '"',
+  colClasses = c(
+    "character", "character", "numeric", "numeric", "numeric", "numeric", "numeric", 
+    "numeric", "numeric", "numeric", "numeric", "numeric", "factor", "factor"
+  )
+)
+data_ozone$date <- as.Date(data_ozone$date, "%Y%m%d")
+data_ozone$maxO3v <- c(NA, data_ozone$maxO3[1:(nrow(data_ozone)-1)])
+data_ozone
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+data_ozone <- readr::read_delim(
+  file = "data/ozone.txt",
+  col_names = c(
+    "date","maxO3","T9","T12","T15","Ne9","Ne12","Ne15",
+    "Vx9","Vx12","Vx15","vent","pluie"
+  ),
+  col_types = readr::cols(
+    readr::col_skip(),
+    readr::col_date(format = "%Y%m%d"),
+    readr::col_number(),
+    readr::col_number(),
+    readr::col_number(),
+    readr::col_number(),
+    readr::col_number(),
+    readr::col_number(),
+    readr::col_number(),
+    readr::col_number(),
+    readr::col_number(),
+    readr::col_number(),
+    readr::col_factor(),
+    readr::col_factor()
+  ),
+  skip = 1,
+  delim = " ",
+  quote = '"'
+)  |>
+  dplyr::mutate(
+    maxO3v = dplyr::lag(maxO3)
+  )
+data_ozone
+```
+:::
+
+Le fichier chargé contient bien 122 observations avec les variables
+$\texttt{maxO3}$ pour la concentration maximale d’ozone mesurée chaque jour
+(exprimée en mètre), $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$ pour les températures, $\texttt{Ne9}$,
+$\texttt{Ne12}$, $\texttt{Ne15}$ pour les nébulosités, $\texttt{Vx9}$, $\texttt{Vx12}$, $\texttt{Vx15}$ pour la
+vitesse du vent, $\texttt{vent}$ pour la direction du vent et $\texttt{pluie}$ pour le
+niveau de pluie.
+
+On ajoute également la concentration maximale d’ozone mesurée la veille
+identifié comme variable pertinente. Elle est à la fois explicative et
+corrige les problèmes d'autocorrélation des résidus.
+
+On effectue la régression
+$$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T12}_i+\beta_3\texttt{Ne9}_i+\beta_4\texttt{Vx9}_i+\beta_5\texttt{maxO3v}_i+\varepsilon_i$$
+à l'aide de la fonction `lm` disponible nativement dans
+{{< iconify logos:r-lang >}}. On cherche ainsi une estimation du vecteur
+$\beta$ à l'aide de la méthode des moindres carrés ordinaires (MCO).
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+fit_q1 <- lm(formula = maxO3 ~T12 + Ne9 + Vx9 + maxO3v, data = data_ozone)
+summary(fit_q1)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+fit_q1 <- lm(formula = maxO3 ~T12 + Ne9 + Vx9 + maxO3v, data = data_ozone)
+summary(fit_q1)
+```
+:::
 
 :::
+
 :::
 
 ## Question 2
 
-Déterminer l’espérance et la variance de l’estimateur $\hat{\beta}$ des moindres carrés ordinaires
-(dans le cas général d’une matrice $\Sigma$ quelconque).
+Représenter graphiquement $\texttt{maxO3}$ en fonction de la présence de pluie. Un lien
+semble-t-il présent ? Le confirmer par un test statistique.
 
 
 ::: {.content-hidden when-format="html"}
 ::: answer
 
-L'estimateur des MCO vaut
-$\hat{\beta}=\left(X^{\prime} X\right)^{-1} X^{\prime} Y$, d'où
+On peut faire une boite à moustaches de la variable $\texttt{maxO3}$ selon les
+modalités de pluie. On peut également représenter les distributions de
+$\texttt{maxO3}$ par groupe (Sec/Pluie) avec des histogrammes.
 
-$$
-\begin{align*}
-\mathbb{E}(\hat{\beta})&=\mathbb{E}\left(\left(X^{\prime} X\right)^{-1} X^{\prime} Y(X\beta + \varepsilon)\right) \\
-&= \beta + \left(X^{\prime} X\right)^{-1} X^{\prime}\mathbb{E}(\varepsilon) \\
-&=\beta
-\end{align*}
-$$
+::: {.panel-tabset group="language"}
+### Base R
 
-par linéarité de l'espérance et car $\mathbb{E}(\varepsilon)=0$
+```{webr}
+#| envir: baser
+#| autorun: true
+# Boxplot
+boxplot(
+  maxO3 ~ pluie,
+  data = data_ozone,
+  main = "Distribution de la quantité d'ozone selon le niveau de pluie",
+  col = c(
+    adjustcolor("powderblue", alpha.f = 0.7),
+    adjustcolor("pink", alpha.f = 0.7)
+    
+  )
+)
 
-Par ailleurs,
+# Histogramme
+hist(
+  data_ozone[data_ozone$pluie == "Sec", "maxO3"],
+  main = "Distribution de la quantité d'ozone selon le niveau de pluie",
+  xlab = "maxO3",
+  ylab = "Fréquence",
+  col = adjustcolor("pink", alpha.f = 0.7),
+  xlim = c(40, 170),
+  ylim = c(0, 15)
+)
+hist(
+  data_ozone[data_ozone$pluie == "Pluie", "maxO3"],
+  col = adjustcolor("powderblue", alpha.f = 0.7),
+  add = TRUE
+)
+```
 
-$$
-\begin{align*}
-\mathbb{V}(\hat{\beta})&=
-\left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}(Y) X\left(X^{\prime} X\right)^{-1} \\
-&= \left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}(X\beta + \varepsilon) X\left(X^{\prime} X\right)^{-1} \\
-&= \left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}(\varepsilon) X\left(X^{\prime} X\right)^{-1} \\
-&=\left(X^{\prime} X\right)^{-1} X^{\prime} \Sigma X\left(X^{\prime} X\right)^{-1}
-\end{align*}
-$$
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+# Boxplot
+ggplot2::ggplot(
+  data = subset(data_ozone, !is.na(pluie) & !is.na(maxO3)),
+  mapping = ggplot2::aes(x = pluie, y = maxO3, fill = pluie)
+) +
+  ggplot2::geom_boxplot(alpha = 0.7) +
+  ggplot2::scale_fill_manual(values = c("Pluie"="powderblue", "Sec"="pink")) +
+  ggplot2::labs(
+    title = "Distribution de la quantité d'ozone selon le niveau de pluie",
+    x = "Niveau de pluie",
+    y = "Quantité d'ozone"
+  ) +
+  ggplot2::theme_minimal()
+
+# Histogramme
+ggplot2::ggplot(
+  data = subset(data_ozone, !is.na(pluie) & !is.na(maxO3)),
+  mapping = ggplot2::aes(x = maxO3, fill = pluie, colour = pluie)
+) +
+  ggplot2::geom_histogram(binwidth = 10, alpha = 0.7) +
+  ggplot2::scale_fill_manual(values = c("Pluie"="powderblue", "Sec"="pink")) +
+  ggplot2::scale_colour_manual(values = c("Pluie"="powderblue", "Sec"="pink")) +
+  ggplot2::labs(
+    title = "Distribution de la quantité d'ozone selon le niveau de pluie",
+    x = "maxO3",
+    y = "Fréquence"
+  ) +
+  ggplot2::theme_minimal()
+```
+:::
+
+Graphiquement, on constate un lien. La quantité maximale d'ozone sur une
+journée ($\texttt{maxO3}$) est moindre lorsque le temps est pluvieux.
+
+Afin de confirmer cette analyse graphique on pourrait effectuer un test
+de Student d'égalité des moyennes dans deux groupes (slide 27 du cours)
+sous l'hypothèse que la distribution de $\texttt{maxO3}$ est gaussienne et de
+même variance $\sigma^2$ dans chaque groupe. Toutefois l’égalité des
+variances ici ne semble pas vraiment vérifiée ici au vu des boxplots. On
+peut d'ailleurs tester cette égalité des variances avec le test de
+Levene ou le test de Bartlett (slide 146).
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+car::leveneTest(maxO3 ~ pluie, data = data_ozone)
+bartlett.test(maxO3 ~ pluie, data = data_ozone)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+cat("Test de Levene\n")
+car::leveneTest(maxO3 ~ pluie, data = data_ozone)
+cat("Test de Bartlett\n")
+bartlett.test(maxO3 ~ pluie, data = data_ozone)
+```
+:::
+
+L'hypothèse nulle d'égalité des variance est rejetée pour ces deux tests
+au niveau $\alpha=0.05$ car les p-valeurs sont bien inférieures à
+$\alpha$.
+
+On peut alors effectuer un test de Welch qui est une adapatation du test
+de Student lorsque les deux populations ont des variances différentes.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+t.test(maxO3 ~ pluie, data = data_ozone, var.equal = FALSE)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+t.test(maxO3 ~ pluie, data = data_ozone, var.equal = FALSE)
+```
+:::
+
+On rejette l'hypothèse nulle du test de Welch : les moyennes de la
+variable $\texttt{maxO3}$ diffèrent entre les journées avec et sans pluie.
 
 :::
 :::
 
 ## Question 3
 
-
-Pour $S \in R^n$ et $T \in R^n$, on définit le produit scalaire entre $S$ et $T$ associé à la
-matrice $\Sigma^{-1}$ par $S'\Sigma^{-1}T$, et donc la norme de $T$ associée à $\Sigma^{-1}$ est $\left\| T\right\|^2_{\Sigma}=T'\Sigma^{-1}T$.
-
-
-Montrer que la forme explicite de l’estimateur $\hat{\beta}_G$ des moindres carrés généralisés
-défini comme le minimiseur de $\left\| Y-X\beta\right\|^2_{\Sigma}=T'\Sigma^{-1}T$ est
-
-
-$$
-\hat{\beta}_G = (X'\Sigma^{-1}X)^{-1}X'\Sigma^{-1}Y
-$$
-
-En déduire son espérance et sa variance.
-
+Ajouter au modèle de la première question la variable $\texttt{pluie}$ de manière la plus
+générale possible (i.e. en incluant une interaction avec chaque variable en plus d’un
+effet sur la constante). Tester la significativité de ces ajouts en effectuant un test de
+Fisher de modèles emboités entre ce modèle et le modèle initial.
 
 ::: {.content-hidden when-format="html"}
 ::: answer
 
-On cherche à minimiser la fonction
-$g: \beta \mapsto \left\|Y-X\beta \right\|_{\Sigma}$ comme
-$x \mapsto x^2$ est strictement croissante sur $\mathbb{R_+}$ cela
-revient à minimiser
-$f: \beta \mapsto \left\|Y-X\beta \right\|_{\Sigma}^2$
+On ajoute la variable $\texttt{pluie}$ en incluant l'effet sur la constante et
+les interactions avec les variables continues initiales ($\texttt{T12}$, $\texttt{Ne9}$,
+$\texttt{Vx9}$ et $\texttt{maxO3v}$).
 
-D'après les définitions posées dans l'énnoncé, $$
-\begin{aligned}
-f(\beta) & =(Y-X \beta)^{\prime} \Sigma^{-1}(Y-X \beta) \\
-& =Y^{\prime} \Sigma^{-1} Y-Y^{\prime} \Sigma^{-1} X \beta-\beta^{\prime} X^{\prime} \Sigma^{-1} Y+\beta^{\prime} X^{\prime} \Sigma^{-1} X \beta .
-\end{aligned}
+En prenant la modalité $\texttt{Pluie}$ comme référence, le modèle peut
+s'écrire alors
+
 $$
-
-Lorsqu'on calcule le gradient, on a :
-$$ \nabla f(\beta)=-2 X^{\prime} \Sigma^{-1} Y+2 X^{\prime} \Sigma^{-1} X \beta$$
-
-Cette quantité s'annule en $\hat{\beta}_G$ qui est donc la solution
-recherchée.
-
-On en déduit : $$
 \begin{align*}
-\mathbb{E}\left(\hat{\beta}_G\right)&=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \mathbb{E}(Y) \\
-&=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} X \beta \\
-&=\beta
+\texttt{maxO3}_i &= 
+\beta_1+
+\beta_2{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i \\ &+ 
+\beta_3\texttt{T12}_i+
+\beta_4{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i\texttt{T12}_i \\ &+
+\beta_5\texttt{Ne9}_i+
+\beta_6{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i\texttt{Ne9}_i \\ &+
+\beta_7\texttt{Vx9}_i+
+\beta_8{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i\texttt{Vx9}_i \\ &+
+\beta_9\texttt{maxO3v}_i+
+\beta_{10}{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i\texttt{maxO3v}_i \\ &+
+\varepsilon_i
 \end{align*}
 $$
 
-et $$
-\begin{align*}
-\mathbb{V}\left(\hat{\beta}_G\right) & =\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \mathbb{V}(Y) \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
-& =\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \Sigma \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
-& =\left(X^{\prime} \Sigma^{-1} X\right)^{-1} 
-\end{align*}
+ou de manière équivalente
+
 $$
+\texttt{maxO3}_i =\begin{cases}
+\beta_1+
+\beta_3\texttt{T12}_i+
+\beta_5\texttt{Ne9}_i+
+\beta_7\texttt{Vx9}_i+
+\beta_9\texttt{maxO3v}_i+
+\varepsilon_i \ \textrm{si} \ {\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i = 0 \\
+(\beta_1+\beta_2)+
+(\beta_3+\beta_4)\texttt{T12}_i+
+(\beta_5+\beta_6)\texttt{Ne9}_i+
+(\beta_7+\beta_8)\texttt{Vx9}_i+
+(\beta_9+\beta_{10})\texttt{maxO3v}_i+
+\varepsilon_i \ \textrm{si} \ {\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i = 1 \\
+\end{cases}
+$$
+
+On ajuste ce modèle avec la fonction `lm` par défaut R va considérer la
+première modalité (dans l'ordre alphabétique) de la variable $\texttt{pluie}$
+comme référence pour rendre le modèle identifiable (c'est à dire
+`pluie=Pluie` comme nous venons de l'écrire).
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+fit_q3 <- lm(formula = maxO3 ~ pluie + T12 + T12:pluie + Ne9 + Ne9:pluie + Vx9 + Vx9:pluie + maxO3v + maxO3v:pluie, data = data_ozone)
+# Alternative plus concise
+# fit_q3 <- lm(formula = (maxO3 ~T12 + Ne9 + Vx9 + maxO3v)*pluie, data = data_ozone)
+summary(fit_q3)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+fit_q3 <- lm(formula = maxO3 ~ pluie + T12 + T12*pluie + Ne9 + Ne9*pluie + Vx9 + Vx9*pluie + maxO3v + maxO3v*pluie, data = data_ozone)
+# Alternative plus concise
+# fit_q3 <- lm(formula = (maxO3 ~T12 + Ne9 + Vx9 + maxO3v)*pluie, data = data_ozone)
+summary(fit_q3)
+```
+:::
+
+On constate qu'il n'y a pas beaucoup de coefficients significatifs. On
+peut suspecter des problèmes de multicolinéarité.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+car::vif(fit_q3)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+car::vif(fit_q3)
+```
+:::
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+anova(fit_q1, fit_q3)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+anova(fit_q1, fit_q3)
+```
+:::
+
+La p-value élevée (0.7367) confirme que l’on peut accepter les
+contraintes, et donc privilégier le modèle initial sans pluie, ni les
+interactions associées.
 
 :::
+
 :::
 
 ## Question 4
 
-Montrer que la matrice de covariance entre $\hat{\beta}$ et $\hat{\beta}_G$ est égale à la matrice de variancecovariance
-de $\hat{\beta}_G$. En déduire que $\hat{\beta}_G$ est meilleur que $\hat{\beta}$ au sens du coût quadratique.
+Tester de même le modèle plus simple dans lequel seul un effet additif de la variable
+$\texttt{pluie}$ est intégré, et non ses interactions avec les autres variables. Le résultat est-il
+en désaccord avec l’analyse graphique de la question 2 ? Comment expliquer le résultat ?
 
 ::: {.content-hidden when-format="html"}
 ::: answer
 
-Par définition
-$$\operatorname{Cov}\left(\hat{\beta}, \hat{\beta}_G\right)=\mathbb{E}\left((\hat{\beta}-\mathbb{E}(\hat{\beta}))\left(\hat{\beta}_G-\mathbb{E}\left(\hat{\beta}_G\right)\right)^{\prime}\right)$$
+En prenant la modalité $\texttt{Pluie}$ comme référence, le modèle peut
+s'écrire alors
 
-Or
-$$\hat{\beta}-\mathbb{E}(\hat{\beta})=\hat{\beta}-\beta=\left(X^{\prime} X\right)^{-1} X^{\prime}(X\beta+\varepsilon)-\beta=\left(X^{\prime} X\right)^{-1} X^{\prime} \varepsilon$$
-
-De même
-$$\hat{\beta}_G-\mathbb{E}\left(\hat{\beta}_G\right)=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \varepsilon$$
-Ainsi, puisque
-$$\mathbb{E}\left(\varepsilon \varepsilon^{\prime}\right)=\mathbb{V}(\varepsilon)=\Sigma
-$$ car $\varepsilon$ est centrée $$
+$$
 \begin{align*}
-\operatorname{Cov}\left(\hat{\beta}, \hat{\beta}_G\right) & =\mathbb{E}\left(\left(X^{\prime} X\right)^{-1} X^{\prime} \epsilon \epsilon^{\prime} \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1}\right) \\
-& =\left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{E}\left(\epsilon \epsilon^{\prime}\right) \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
-& =\left(X^{\prime} X\right)^{-1} X^{\prime} \Sigma \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
-& =\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
-&=\mathbb{V}\left(\hat{\beta}_G\right) 
+\texttt{maxO3}_i &= 
+\beta_1+
+\beta_2{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i + 
+\beta_3\texttt{T12}_i+
+\beta_4\texttt{Ne9}_i+
+\beta_5\texttt{Vx9}_i+
+\beta_6\texttt{maxO3v}_i+
+\varepsilon_i
 \end{align*}
 $$
 
-On peut conclure comme dans la preuve du théorème de Gauss-Markov : pour
-tout $u \in \mathbb{R}^p$, l'égalité précédente implique que
-$\operatorname{Cov}\left(u^{\prime} \hat{\beta}, u^{\prime} \hat{\beta}_G\right)=\mathbb{V}\left(u^{\prime} \hat{\beta}_G\right)$.
-Or par Cauchy-Schwartz : $$
-\operatorname{Cov}\left(u^{\prime} \hat{\beta}, u^{\prime} \hat{\beta}_G\right) \leq \sqrt{\mathbb{V}\left(u^{\prime} \hat{\beta}\right) \mathbb{V}\left(u^{\prime} \hat{\beta}_G\right)}
-$$
+::: {.panel-tabset group="language"}
+### Base R
 
-Ce qui signifie par l’égalité précédente que pour tout
-$u \in \mathbb{R}^p$
+```{webr}
+#| envir: baser
+#| autorun: true
+fit_q4 <- lm(formula = maxO3 ~ pluie + T12 + Ne9  + Vx9 +  + maxO3v , data = data_ozone)
+summary(fit_q4)
+anova(fit_q1, fit_q4)
+```
 
-$$
-\mathbb{V}\left(u^{\prime} \hat{\beta}_G \right) \leq \sqrt{\mathbb{V}\left(u^{\prime} \hat{\beta}\right) \mathbb{V}\left(u^{\prime} \hat{\beta}_G\right)}
-$$
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+fit_q4 <- lm(formula = maxO3 ~ pluie + T12 + Ne9  + Vx9 + maxO3v, data = data_ozone)
+summary(fit_q4)
+anova(fit_q1, fit_q4)
+```
 :::
+
+Le résultat du modèle montre que le coefficient de la variable pluie
+pour la condition "Sec" n'est pas significativement différent de celui
+pour "Pluie" (le coefficient estimé représente leur différence et n'est
+pas significatif). De plus, le test de comparaison avec le modèle
+initial confirme que la variable pluie n’apporte pas d’information
+utile. Ce constat peut sembler surprenant par rapport à la question 2,
+mais il n’y a pas de contradiction : l’effet de la pluie est absorbé par
+les autres variables (température, nébulosité, vitesse du vent). Une
+fois ces variables intégrées, la présence ou non de pluie ne fournit
+aucune information supplémentaire. En revanche, si ces variables ne sont
+pas prises en compte, l’effet de la pluie devient très perceptible (voir
+question 2), ce qui en fait un facteur de confusion.
+
+:::
+
+:::
+
+## Question 5
+
+De même : représenter graphiquement $\texttt{maxO3}$ en fonction de la direction du vent
+et étudier la pertinence d’inclure un effet vent dans le modèle initial.
+
+::: {.content-hidden when-format="html"}
+::: answer
+
+On trace les boxplots selon les modalités de la variables vent.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+# Boxplot
+boxplot(
+  maxO3 ~ vent,
+  data = data_ozone,
+  main = "Distribution de la quantité d'ozone selon la direction du vent"
+)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+# Boxplot
+ggplot2::ggplot(
+  data = subset(data_ozone, !is.na(vent) & !is.na(maxO3)),
+  mapping = ggplot2::aes(x = pluie, y = maxO3, fill = pluie)
+) +
+  ggplot2::geom_boxplot(alpha = 0.7) +
+  ggplot2::labs(
+    title = "Distribution de la quantité d'ozone selon la direction du vent",
+    x = "Direction du vent",
+    y = "Quantité d'ozone"
+  ) +
+  ggplot2::theme_minimal()
+```
+:::
+
+Un test de Student n'est pas approprié ici, car il y a quatre modalités.
+Nous effectuons donc un test ANOVA pour déterminer si les moyennes de
+$\texttt{maxO3}$ diffèrent significativement selon les directions du vent. Avant
+cela, il est nécessaire de vérifier l'égalité des variances, une
+hypothèse essentielle pour l'ANOVA.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+car::leveneTest(maxO3 ~ vent, data = data_ozone)
+bartlett.test(maxO3 ~ vent, data = data_ozone)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+car::leveneTest(maxO3 ~ vent, data = data_ozone)
+bartlett.test(maxO3 ~ vent, data = data_ozone)
+```
+:::
+
+L'égalité des variances est confirmée dans ces deux tests. On peut
+réaliser le test ANOVA.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+anova(lm(maxO3 ~ vent, data = data_ozone))
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+anova(lm(maxO3 ~ vent, data = data_ozone))
+```
+:::
+
+La non-égalité des moyennes selon les directions de vent est
+significative.
+
+On lance à présent le modèle de régression avec vent et toutes les
+interactions possibles.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+fit_q5 <- lm(formula = maxO3 ~ (T12 + Ne9 + Vx9 + maxO3v)*vent, data = data_ozone)
+summary(fit_q5)
+anova(fit_q1, fit_q5)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+fit_q5 <- lm(formula = maxO3 ~ (T12 + Ne9 + Vx9 + maxO3v)*vent, data = data_ozone)
+summary(fit_q5)
+anova(fit_q1, fit_q5)
+```
+:::
+
+Les conclusions sont similaires à celles obtenues avec la variable pluie
+: il ne paraît pas pertinent d’ajouter la variable $\texttt{vent}$ ni les
+interactions associées dans le modèle.
+
+:::
+
 :::

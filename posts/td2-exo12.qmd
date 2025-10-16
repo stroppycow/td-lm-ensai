@@ -1,0 +1,194 @@
+---
+title: "TD 2 - Exercice 12 - Moindres carrés généralisés"
+lang: fr
+author: "Théo Leroy"
+date: "17 octobre 2025"
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+editor: 
+  mode: source
+  markdown: 
+    wrap: 72
+fig-align: center
+filters: 
+  - diagram
+  - custom-callout
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    icon: false
+    icon-symbol: ""
+    appearance: "default"
+    title: "Correction"
+---
+
+Soit un modèle de régression linéaire multiple
+
+$$
+Y=X\beta+\epsilon
+$$
+
+où  $\beta \in \mathbb{R}^p$, $X$ est une matrice de taille $n \times p$ et $\epsilon$ est un vecteur aléatoire de taille $n$,
+centré. On considère ici la situation où les variables $\epsilon_i$ ne sont plus homoscédastiques et
+non-corrélés, mais de façon générale $V(\epsilon) = \Sigma$ où $\Sigma$ est une matrice inversible. On suppose
+dans cet exercice que $\Sigma$ est connue (il conviendra dans la pratique de l’estimer).
+
+## Question 1
+Préciser la matrice $\Sigma$ lorsque les variables $\epsilon_i$ sont non-corrélés mais hétéroscédastiques
+de variance $\sigma_i^2$ $(i = 1, \dots, n)$.
+
+
+::: {.content-hidden when-format="html"}
+::: answer
+On a :
+$\Sigma = \textrm{diag}\left(\sigma_{1}^{2}, \ldots, \sigma_{n}^{2}\right)$
+
+Il s’agit d’une matrice diagonale dont les éléments sur la diagonale
+sont les valeurs du vecteur
+$\left(\sigma_{1}^{2}, \ldots, \sigma_{n}^{2}\right)$.
+
+:::
+:::
+
+## Question 2
+
+Déterminer l’espérance et la variance de l’estimateur $\hat{\beta}$ des moindres carrés ordinaires
+(dans le cas général d’une matrice $\Sigma$ quelconque).
+
+
+::: {.content-hidden when-format="html"}
+::: answer
+
+L'estimateur des MCO vaut
+$\hat{\beta}=\left(X^{\prime} X\right)^{-1} X^{\prime} Y$, d'où
+
+$$
+\begin{align*}
+\mathbb{E}(\hat{\beta})&=\mathbb{E}\left(\left(X^{\prime} X\right)^{-1} X^{\prime} Y(X\beta + \varepsilon)\right) \\
+&= \beta + \left(X^{\prime} X\right)^{-1} X^{\prime}\mathbb{E}(\varepsilon) \\
+&=\beta
+\end{align*}
+$$
+
+par linéarité de l'espérance et car $\mathbb{E}(\varepsilon)=0$
+
+Par ailleurs,
+
+$$
+\begin{align*}
+\mathbb{V}(\hat{\beta})&=
+\left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}(Y) X\left(X^{\prime} X\right)^{-1} \\
+&= \left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}(X\beta + \varepsilon) X\left(X^{\prime} X\right)^{-1} \\
+&= \left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}(\varepsilon) X\left(X^{\prime} X\right)^{-1} \\
+&=\left(X^{\prime} X\right)^{-1} X^{\prime} \Sigma X\left(X^{\prime} X\right)^{-1}
+\end{align*}
+$$
+
+:::
+:::
+
+## Question 3
+
+
+Pour $S \in R^n$ et $T \in R^n$, on définit le produit scalaire entre $S$ et $T$ associé à la
+matrice $\Sigma^{-1}$ par $S'\Sigma^{-1}T$, et donc la norme de $T$ associée à $\Sigma^{-1}$ est $\left\| T\right\|^2_{\Sigma}=T'\Sigma^{-1}T$.
+
+
+Montrer que la forme explicite de l’estimateur $\hat{\beta}_G$ des moindres carrés généralisés
+défini comme le minimiseur de $\left\| Y-X\beta\right\|^2_{\Sigma}=T'\Sigma^{-1}T$ est
+
+
+$$
+\hat{\beta}_G = (X'\Sigma^{-1}X)^{-1}X'\Sigma^{-1}Y
+$$
+
+En déduire son espérance et sa variance.
+
+
+::: {.content-hidden when-format="html"}
+::: answer
+
+On cherche à minimiser la fonction
+$g: \beta \mapsto \left\|Y-X\beta \right\|_{\Sigma}$ comme
+$x \mapsto x^2$ est strictement croissante sur $\mathbb{R_+}$ cela
+revient à minimiser
+$f: \beta \mapsto \left\|Y-X\beta \right\|_{\Sigma}^2$
+
+D'après les définitions posées dans l'énnoncé, $$
+\begin{aligned}
+f(\beta) & =(Y-X \beta)^{\prime} \Sigma^{-1}(Y-X \beta) \\
+& =Y^{\prime} \Sigma^{-1} Y-Y^{\prime} \Sigma^{-1} X \beta-\beta^{\prime} X^{\prime} \Sigma^{-1} Y+\beta^{\prime} X^{\prime} \Sigma^{-1} X \beta .
+\end{aligned}
+$$
+
+Lorsqu'on calcule le gradient, on a :
+$$ \nabla f(\beta)=-2 X^{\prime} \Sigma^{-1} Y+2 X^{\prime} \Sigma^{-1} X \beta$$
+
+Cette quantité s'annule en $\hat{\beta}_G$ qui est donc la solution
+recherchée.
+
+On en déduit : $$
+\begin{align*}
+\mathbb{E}\left(\hat{\beta}_G\right)&=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \mathbb{E}(Y) \\
+&=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} X \beta \\
+&=\beta
+\end{align*}
+$$
+
+et $$
+\begin{align*}
+\mathbb{V}\left(\hat{\beta}_G\right) & =\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \mathbb{V}(Y) \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
+& =\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \Sigma \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
+& =\left(X^{\prime} \Sigma^{-1} X\right)^{-1} 
+\end{align*}
+$$
+
+:::
+:::
+
+## Question 4
+
+Montrer que la matrice de covariance entre $\hat{\beta}$ et $\hat{\beta}_G$ est égale à la matrice de variancecovariance
+de $\hat{\beta}_G$. En déduire que $\hat{\beta}_G$ est meilleur que $\hat{\beta}$ au sens du coût quadratique.
+
+::: {.content-hidden when-format="html"}
+::: answer
+
+Par définition
+$$\operatorname{Cov}\left(\hat{\beta}, \hat{\beta}_G\right)=\mathbb{E}\left((\hat{\beta}-\mathbb{E}(\hat{\beta}))\left(\hat{\beta}_G-\mathbb{E}\left(\hat{\beta}_G\right)\right)^{\prime}\right)$$
+
+Or
+$$\hat{\beta}-\mathbb{E}(\hat{\beta})=\hat{\beta}-\beta=\left(X^{\prime} X\right)^{-1} X^{\prime}(X\beta+\varepsilon)-\beta=\left(X^{\prime} X\right)^{-1} X^{\prime} \varepsilon$$
+
+De même
+$$\hat{\beta}_G-\mathbb{E}\left(\hat{\beta}_G\right)=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \varepsilon$$
+Ainsi, puisque
+$$\mathbb{E}\left(\varepsilon \varepsilon^{\prime}\right)=\mathbb{V}(\varepsilon)=\Sigma
+$$ car $\varepsilon$ est centrée $$
+\begin{align*}
+\operatorname{Cov}\left(\hat{\beta}, \hat{\beta}_G\right) & =\mathbb{E}\left(\left(X^{\prime} X\right)^{-1} X^{\prime} \epsilon \epsilon^{\prime} \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1}\right) \\
+& =\left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{E}\left(\epsilon \epsilon^{\prime}\right) \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
+& =\left(X^{\prime} X\right)^{-1} X^{\prime} \Sigma \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
+& =\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
+&=\mathbb{V}\left(\hat{\beta}_G\right) 
+\end{align*}
+$$
+
+On peut conclure comme dans la preuve du théorème de Gauss-Markov : pour
+tout $u \in \mathbb{R}^p$, l'égalité précédente implique que
+$\operatorname{Cov}\left(u^{\prime} \hat{\beta}, u^{\prime} \hat{\beta}_G\right)=\mathbb{V}\left(u^{\prime} \hat{\beta}_G\right)$.
+Or par Cauchy-Schwartz : $$
+\operatorname{Cov}\left(u^{\prime} \hat{\beta}, u^{\prime} \hat{\beta}_G\right) \leq \sqrt{\mathbb{V}\left(u^{\prime} \hat{\beta}\right) \mathbb{V}\left(u^{\prime} \hat{\beta}_G\right)}
+$$
+
+Ce qui signifie par l’égalité précédente que pour tout
+$u \in \mathbb{R}^p$
+
+$$
+\mathbb{V}\left(u^{\prime} \hat{\beta}_G \right) \leq \sqrt{\mathbb{V}\left(u^{\prime} \hat{\beta}\right) \mathbb{V}\left(u^{\prime} \hat{\beta}_G\right)}
+$$
+:::
+:::

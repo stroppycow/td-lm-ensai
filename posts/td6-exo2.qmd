@@ -13,7 +13,6 @@ editor:
     wrap: 72
 ---
 
-
 ## Question 1
 
 En notant, $p = P(Y = 1)$, $f_0(.)$ la densité conditionnelle de $X$
@@ -61,4 +60,3 @@ $$
 
 qui est bien un modèle logistique associé aux variables $\tilde{T}(x)$
 et au paramètre $\beta$.
-

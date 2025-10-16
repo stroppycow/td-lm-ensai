@@ -1,5 +1,5 @@
 ---
-title: "TD 2 - Exercice 10"
+title: "TD 2 - Exercice 10 - ANOVA à 1 facteur : effet du dosage d’un médicament"
 lang: fr
 author: "Théo Leroy"
 date: "10 octobre 2025"
@@ -11,16 +11,12 @@ format:
 webr:
   render-df: gt-interactive
   resources:
-    - ./../data/ozone.txt
+    - ./../data/chemical.txt
   packages:
       - dplyr
       - readr
       - ggplot2
-      - cowplot
-      - GGally
       - car
-      - leaps
-      - lmtest
 editor: 
   mode: source
   markdown: 
@@ -40,21 +36,23 @@ custom-callout:
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-On considère de nouveau les données `ozone.txt` étudiées dans l’exercice 7. On désire
-tirer profit des variables qualitatives présentes dans le jeu de données (c’est à dire la
-présence ou non de pluie, et la direction principale du vent) pour éventuellement améliorer
-le modèle construit dans l’exercice 7.
+Le fichier `chemical.txt` contient la concentration dans le sang (en *ng=ml*) d’un certain 
+produit chimique chez 40 patients selon qu’ils ont absorbé un médicament dosé à 
+25, 50, 100 ou 200 mg de substance active (l’almitrine bismesylate). Les patients sont ainsi 
+séparés en 4 groupes de 10 selon le dosage reçu.
 
 
 ## Question 1
 
-On reprend le modèle sélectionné dans l’exercice 7, soit $\texttt{maxO3}$ en fonction de
-$\texttt{T12}$, $\texttt{Ne9}$, $\texttt{Vx9}$ et $\texttt{maxO3v}$ où $\texttt{maxO3v}$ représente la concentration maximale en ozone de la veille (créer cette variable si besoin). Ajuster ce modèle sur les données.
+Représenter les données à l’aide de boîtes à moustaches. Réordonner si nécessaire les 
+niveaux du facteur dose pour avoir une représentation par ordre croissant du dosage. 
+Les hypothèses nécessaires à une analyse de variance de l’effet dosage semblent-elles
+vérifiées ?
 
-::: {.content-hidden when-format="html"}
+
 ::: answer
 
-On charge les données du fichier `ozone.txt` en {{< iconify logos:r-lang >}} sous forme de `data.frame`.
+On charge les données du fichier `chemical.txt` en {{< iconify logos:r-lang >}} sous forme de `data.frame`.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -62,19 +60,18 @@ On charge les données du fichier `ozone.txt` en {{< iconify logos:r-lang >}} so
 ```{webr}
 #| envir: baser
 #| autorun: true
-data_ozone <- read.csv(
-  file = "data/ozone.txt",
+data_chemical <- read.csv(
+  file = "data/chemical.txt",
   header = TRUE,
   sep = " ",
   quote = '"',
-  colClasses = c(
-    "character", "character", "numeric", "numeric", "numeric", "numeric", "numeric", 
-    "numeric", "numeric", "numeric", "numeric", "numeric", "factor", "factor"
-  )
+  colClasses = c("", "factor", "numeric")
 )
-data_ozone$date <- as.Date(data_ozone$date, "%Y%m%d")
-data_ozone$maxO3v <- c(NA, data_ozone$maxO3[1:(nrow(data_ozone)-1)])
-data_ozone
+data_chemical$dose <- factor(
+  data_chemical$dose,
+  levels= c("dose25", "dose50", "dose100", "dose200")
+)
+data_chemical
 ```
 
 ### Tidyverse
@@ -82,55 +79,27 @@ data_ozone
 ```{webr}
 #| envir: tdv
 #| autorun: true
-data_ozone <- readr::read_delim(
-  file = "data/ozone.txt",
-  col_names = c(
-    "date","maxO3","T9","T12","T15","Ne9","Ne12","Ne15",
-    "Vx9","Vx12","Vx15","vent","pluie"
-  ),
+data_chemical <- readr::read_delim(
+  file = "data/chemical.txt",
+  col_names = c("dose", "concent"),
   col_types = readr::cols(
     readr::col_skip(),
-    readr::col_date(format = "%Y%m%d"),
-    readr::col_number(),
-    readr::col_number(),
-    readr::col_number(),
-    readr::col_number(),
-    readr::col_number(),
-    readr::col_number(),
-    readr::col_number(),
-    readr::col_number(),
-    readr::col_number(),
-    readr::col_number(),
-    readr::col_factor(),
-    readr::col_factor()
+    readr::col_factor(levels = c("dose25", "dose50", "dose100", "dose200"))
   ),
   skip = 1,
   delim = " ",
   quote = '"'
-)  |>
-  dplyr::mutate(
-    maxO3v = dplyr::lag(maxO3)
-  )
-data_ozone
+)
+data_chemical
 ```
 :::
 
-Le fichier chargé contient bien 122 observations avec les variables
-$\texttt{maxO3}$ pour la concentration maximale d’ozone mesurée chaque jour
-(exprimée en mètre), $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$ pour les températures, $\texttt{Ne9}$,
-$\texttt{Ne12}$, $\texttt{Ne15}$ pour les nébulosités, $\texttt{Vx9}$, $\texttt{Vx12}$, $\texttt{Vx15}$ pour la
-vitesse du vent, $\texttt{vent}$ pour la direction du vent et $\texttt{pluie}$ pour le
-niveau de pluie.
+Le fichier chargé contient bien les 40 observations attendues (4 groupes $\times$ 10 individus) avec les 
+variables $\texttt{dose}$ pour la dose de principae actif administrée et $\texttt{concent}$ pour la 
+concentration dans le sang d'un certain produit chimique.
 
-On ajoute également la concentration maximale d’ozone mesurée la veille
-identifié comme variable pertinente. Elle est à la fois explicative et
-corrige les problèmes d'autocorrélation des résidus.
 
-On effectue la régression
-$$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T12}_i+\beta_3\texttt{Ne9}_i+\beta_4\texttt{Vx9}_i+\beta_5\texttt{maxO3v}_i+\varepsilon_i$$
-à l'aide de la fonction `lm` disponible nativement dans
-{{< iconify logos:r-lang >}}. On cherche ainsi une estimation du vecteur
-$\beta$ à l'aide de la méthode des moindres carrés ordinaires (MCO).
+On représente les concentrations dans des boîtes à moustaches pour les différents groupes du test clinique.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -138,8 +107,7 @@ $\beta$ à l'aide de la méthode des moindres carrés ordinaires (MCO).
 ```{webr}
 #| envir: baser
 #| autorun: true
-fit_q1 <- lm(formula = maxO3 ~T12 + Ne9 + Vx9 + maxO3v, data = data_ozone)
-summary(fit_q1)
+boxplot(concent ~ dose, data = data_chemical)
 ```
 
 ### Tidyverse
@@ -147,27 +115,41 @@ summary(fit_q1)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-fit_q1 <- lm(formula = maxO3 ~T12 + Ne9 + Vx9 + maxO3v, data = data_ozone)
-summary(fit_q1)
+ggplot2::ggplot(data=data_chemical, mapping=ggplot2::aes(x=dose, y=concent)) +
+  ggplot2::geom_boxplot(fill='#F2F2F2') +
+  ggplot2::labs(x="Dosage", y="Concentration") +
+  ggplot2::scale_x_discrete(
+    labels = c("dose25"= "25 mg", "dose50"="50 mg", "dose100"="100 mg", "dose200"="200 mg")
+  ) +
+  ggplot2::theme_light() 
 ```
 :::
 
-:::
+Graphiquement, les variances ne  présentent pas d’homogénéité entre les groupes définis par les différentes modalités de dose, ce qui contredit l’hypothèse d’homoscédasticité requise pour l’ANOVA.
 
+::: {.callout-note collapse="true"}
+### Rappel sur les diagrammes en boîte
+
+La boîte à moustaches résume seulement quelques indicateurs de position
+sur une variable quantitative. Le *package* `ggplot2` représente les
+statistiques ci-dessous :
+
+![](/static/img/boxplot.svg){fig-align="center"}
+:::
 :::
 
 ## Question 2
 
-Représenter graphiquement $\texttt{maxO3}$ en fonction de la présence de pluie. Un lien
-semble-t-il présent ? Le confirmer par un test statistique.
+Effectuer un test d’égalité de variance de Bartlett (`bartlett.test`) et de Levene
+(`leveneTest` dans la librairie `car`) pour confirmer le problème vu précédemment.
 
-
-::: {.content-hidden when-format="html"}
 ::: answer
 
-On peut faire une boite à moustaches de la variable $\texttt{maxO3}$ selon les
-modalités de pluie. On peut également représenter les distributions de
-$\texttt{maxO3}$ par groupe (Sec/Pluie) avec des histogrammes.
+On effectue les deux tests d’égalité de variance proposés.  L’hypothèse nulle ($H_0$) postule que 
+les variances intra-groupes sont égales pour l’ensemble des modalités.
+
+
+**Test de Bartlett**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -175,33 +157,7 @@ $\texttt{maxO3}$ par groupe (Sec/Pluie) avec des histogrammes.
 ```{webr}
 #| envir: baser
 #| autorun: true
-# Boxplot
-boxplot(
-  maxO3 ~ pluie,
-  data = data_ozone,
-  main = "Distribution de la quantité d'ozone selon le niveau de pluie",
-  col = c(
-    adjustcolor("powderblue", alpha.f = 0.7),
-    adjustcolor("pink", alpha.f = 0.7)
-    
-  )
-)
-
-# Histogramme
-hist(
-  data_ozone[data_ozone$pluie == "Sec", "maxO3"],
-  main = "Distribution de la quantité d'ozone selon le niveau de pluie",
-  xlab = "maxO3",
-  ylab = "Fréquence",
-  col = adjustcolor("pink", alpha.f = 0.7),
-  xlim = c(40, 170),
-  ylim = c(0, 15)
-)
-hist(
-  data_ozone[data_ozone$pluie == "Pluie", "maxO3"],
-  col = adjustcolor("powderblue", alpha.f = 0.7),
-  add = TRUE
-)
+bartlett.test(concent ~ dose, data = data_chemical)
 ```
 
 ### Tidyverse
@@ -209,47 +165,11 @@ hist(
 ```{webr}
 #| envir: tdv
 #| autorun: true
-# Boxplot
-ggplot2::ggplot(
-  data = subset(data_ozone, !is.na(pluie) & !is.na(maxO3)),
-  mapping = ggplot2::aes(x = pluie, y = maxO3, fill = pluie)
-) +
-  ggplot2::geom_boxplot(alpha = 0.7) +
-  ggplot2::scale_fill_manual(values = c("Pluie"="powderblue", "Sec"="pink")) +
-  ggplot2::labs(
-    title = "Distribution de la quantité d'ozone selon le niveau de pluie",
-    x = "Niveau de pluie",
-    y = "Quantité d'ozone"
-  ) +
-  ggplot2::theme_minimal()
-
-# Histogramme
-ggplot2::ggplot(
-  data = subset(data_ozone, !is.na(pluie) & !is.na(maxO3)),
-  mapping = ggplot2::aes(x = maxO3, fill = pluie, colour = pluie)
-) +
-  ggplot2::geom_histogram(binwidth = 10, alpha = 0.7) +
-  ggplot2::scale_fill_manual(values = c("Pluie"="powderblue", "Sec"="pink")) +
-  ggplot2::scale_colour_manual(values = c("Pluie"="powderblue", "Sec"="pink")) +
-  ggplot2::labs(
-    title = "Distribution de la quantité d'ozone selon le niveau de pluie",
-    x = "maxO3",
-    y = "Fréquence"
-  ) +
-  ggplot2::theme_minimal()
+bartlett.test(concent ~ dose, data = data_chemical)
 ```
 :::
 
-Graphiquement, on constate un lien. La quantité maximale d'ozone sur une
-journée ($\texttt{maxO3}$) est moindre lorsque le temps est pluvieux.
-
-Afin de confirmer cette analyse graphique on pourrait effectuer un test
-de Student d'égalité des moyennes dans deux groupes (slide 27 du cours)
-sous l'hypothèse que la distribution de $\texttt{maxO3}$ est gaussienne et de
-même variance $\sigma^2$ dans chaque groupe. Toutefois l’égalité des
-variances ici ne semble pas vraiment vérifiée ici au vu des boxplots. On
-peut d'ailleurs tester cette égalité des variances avec le test de
-Levene ou le test de Bartlett (slide 146).
+**Test de Levene**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -257,8 +177,7 @@ Levene ou le test de Bartlett (slide 146).
 ```{webr}
 #| envir: baser
 #| autorun: true
-car::leveneTest(maxO3 ~ pluie, data = data_ozone)
-bartlett.test(maxO3 ~ pluie, data = data_ozone)
+car::leveneTest(concent ~ dose, data = data_chemical)
 ```
 
 ### Tidyverse
@@ -266,101 +185,26 @@ bartlett.test(maxO3 ~ pluie, data = data_ozone)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-cat("Test de Levene\n")
-car::leveneTest(maxO3 ~ pluie, data = data_ozone)
-cat("Test de Bartlett\n")
-bartlett.test(maxO3 ~ pluie, data = data_ozone)
+car::leveneTest(concent ~ dose, data = data_chemical)
 ```
 :::
 
-L'hypothèse nulle d'égalité des variance est rejetée pour ces deux tests
-au niveau $\alpha=0.05$ car les p-valeurs sont bien inférieures à
-$\alpha$.
+Les p-valeurs sont bien inférieures à $0,05$ dans les deux tests effectués. 
+On rejette donc l'hypothèse nulle. Ils confirment l'analyse graphique que les variances ne sont pas identiques.
 
-On peut alors effectuer un test de Welch qui est une adapatation du test
-de Student lorsque les deux populations ont des variances différentes.
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-t.test(maxO3 ~ pluie, data = data_ozone, var.equal = FALSE)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-t.test(maxO3 ~ pluie, data = data_ozone, var.equal = FALSE)
-```
-:::
-
-On rejette l'hypothèse nulle du test de Welch : les moyennes de la
-variable $\texttt{maxO3}$ diffèrent entre les journées avec et sans pluie.
-
-:::
 :::
 
 ## Question 3
 
-Ajouter au modèle de la première question la variable $\texttt{pluie}$ de manière la plus
-générale possible (i.e. en incluant une interaction avec chaque variable en plus d’un
-effet sur la constante). Tester la significativité de ces ajouts en effectuant un test de
-Fisher de modèles emboités entre ce modèle et le modèle initial.
+On propose de s’intéresser à une transformation logarithmique de la variable $\texttt{concent}$. 
+Représenter les boîtes à moustaches des données transformées. Effectuer des tests 
+d’égalité des variances pour vérifier la stabilité des variances après transformation.
 
-::: {.content-hidden when-format="html"}
 ::: answer
 
-On ajoute la variable $\texttt{pluie}$ en incluant l'effet sur la constante et
-les interactions avec les variables continues initiales ($\texttt{T12}$, $\texttt{Ne9}$,
-$\texttt{Vx9}$ et $\texttt{maxO3v}$).
+On reproduit les deux premières questions en s'interessant à $\ln(\texttt{concent})$.
 
-En prenant la modalité $\texttt{Pluie}$ comme référence, le modèle peut
-s'écrire alors
-
-$$
-\begin{align*}
-\texttt{maxO3}_i &= 
-\beta_1+
-\beta_2{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i \\ &+ 
-\beta_3\texttt{T12}_i+
-\beta_4{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i\texttt{T12}_i \\ &+
-\beta_5\texttt{Ne9}_i+
-\beta_6{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i\texttt{Ne9}_i \\ &+
-\beta_7\texttt{Vx9}_i+
-\beta_8{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i\texttt{Vx9}_i \\ &+
-\beta_9\texttt{maxO3v}_i+
-\beta_{10}{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i\texttt{maxO3v}_i \\ &+
-\varepsilon_i
-\end{align*}
-$$
-
-ou de manière équivalente
-
-$$
-\texttt{maxO3}_i =\begin{cases}
-\beta_1+
-\beta_3\texttt{T12}_i+
-\beta_5\texttt{Ne9}_i+
-\beta_7\texttt{Vx9}_i+
-\beta_9\texttt{maxO3v}_i+
-\varepsilon_i \ \textrm{si} \ {\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i = 0 \\
-(\beta_1+\beta_2)+
-(\beta_3+\beta_4)\texttt{T12}_i+
-(\beta_5+\beta_6)\texttt{Ne9}_i+
-(\beta_7+\beta_8)\texttt{Vx9}_i+
-(\beta_9+\beta_{10})\texttt{maxO3v}_i+
-\varepsilon_i \ \textrm{si} \ {\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i = 1 \\
-\end{cases}
-$$
-
-On ajuste ce modèle avec la fonction `lm` par défaut R va considérer la
-première modalité (dans l'ordre alphabétique) de la variable $\texttt{pluie}$
-comme référence pour rendre le modèle identifiable (c'est à dire
-`pluie=Pluie` comme nous venons de l'écrire).
+**Analyse graphique**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -368,10 +212,7 @@ comme référence pour rendre le modèle identifiable (c'est à dire
 ```{webr}
 #| envir: baser
 #| autorun: true
-fit_q3 <- lm(formula = maxO3 ~ pluie + T12 + T12:pluie + Ne9 + Ne9:pluie + Vx9 + Vx9:pluie + maxO3v + maxO3v:pluie, data = data_ozone)
-# Alternative plus concise
-# fit_q3 <- lm(formula = (maxO3 ~T12 + Ne9 + Vx9 + maxO3v)*pluie, data = data_ozone)
-summary(fit_q3)
+boxplot(log(concent) ~ dose, data = data_chemical)
 ```
 
 ### Tidyverse
@@ -379,15 +220,17 @@ summary(fit_q3)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-fit_q3 <- lm(formula = maxO3 ~ pluie + T12 + T12*pluie + Ne9 + Ne9*pluie + Vx9 + Vx9*pluie + maxO3v + maxO3v*pluie, data = data_ozone)
-# Alternative plus concise
-# fit_q3 <- lm(formula = (maxO3 ~T12 + Ne9 + Vx9 + maxO3v)*pluie, data = data_ozone)
-summary(fit_q3)
+ggplot2::ggplot(data=data_chemical, mapping=ggplot2::aes(x=dose, y=log(concent))) +
+  ggplot2::geom_boxplot(fill='#F2F2F2') +
+  ggplot2::labs(x="Dosage", y="Concentration (log)") +
+  ggplot2::scale_x_discrete(
+    labels = c("dose25"= "25 mg", "dose50"="50 mg", "dose100"="100 mg", "dose200"="200 mg")
+  ) +
+  ggplot2::theme_light() 
 ```
 :::
 
-On constate qu'il n'y a pas beaucoup de coefficients significatifs. On
-peut suspecter des problèmes de multicolinéarité.
+**Test de Bartlett**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -395,7 +238,7 @@ peut suspecter des problèmes de multicolinéarité.
 ```{webr}
 #| envir: baser
 #| autorun: true
-car::vif(fit_q3)
+bartlett.test(log(concent) ~ dose, data = data_chemical)
 ```
 
 ### Tidyverse
@@ -403,9 +246,11 @@ car::vif(fit_q3)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-car::vif(fit_q3)
+bartlett.test(log(concent) ~ dose, data = data_chemical)
 ```
 :::
+
+**Test de Levene**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -413,7 +258,7 @@ car::vif(fit_q3)
 ```{webr}
 #| envir: baser
 #| autorun: true
-anova(fit_q1, fit_q3)
+car::leveneTest(log(concent) ~ dose, data = data_chemical)
 ```
 
 ### Tidyverse
@@ -421,42 +266,34 @@ anova(fit_q1, fit_q3)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-anova(fit_q1, fit_q3)
+car::leveneTest(log(concent) ~ dose, data = data_chemical)
 ```
 :::
 
-La p-value élevée (0.7367) confirme que l’on peut accepter les
-contraintes, et donc privilégier le modèle initial sans pluie, ni les
-interactions associées.
+La transformation appliquée a permis de stabiliser les variances.
 
 :::
 
-:::
 
 ## Question 4
 
-Tester de même le modèle plus simple dans lequel seul un effet additif de la variable
-$\texttt{pluie}$ est intégré, et non ses interactions avec les autres variables. Le résultat est-il
-en désaccord avec l’analyse graphique de la question 2 ? Comment expliquer le résultat ?
+Réaliser l’analyse de la variance et tester l’effet du dosage sur la concentration en
+produit chimique.
 
-::: {.content-hidden when-format="html"}
+
 ::: answer
 
-En prenant la modalité $\texttt{Pluie}$ comme référence, le modèle peut
-s'écrire alors
+On pourrait modéliser l'effet du dosage sur la concentration en produit chimique comme ceci :
 
 $$
-\begin{align*}
-\texttt{maxO3}_i &= 
-\beta_1+
-\beta_2{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i + 
-\beta_3\texttt{T12}_i+
-\beta_4\texttt{Ne9}_i+
-\beta_5\texttt{Vx9}_i+
-\beta_6\texttt{maxO3v}_i+
-\varepsilon_i
-\end{align*}
+\forall\ i \in [\![1,n]\!], \quad \ln(\texttt{concent}_i)=m+\alpha_1\mathbb{1}_{\texttt{dose}=25mg}+\alpha_2\mathbb{1}_{\texttt{dose}=50mg}+\alpha_3\mathbb{1}_{\texttt{dose}=100mg}+\alpha_4\mathbb{1}_{\texttt{dose}=200mg}+\epsilon_i
 $$
+
+Ce modèle n’est pas de plein rang et donc non identifiable car $\mathbb{1}=\mathbb{1}_{\texttt{dose}=25mg}+\mathbb{1}_{\texttt{dose}=50mg}+\mathbb{1}_{\texttt{dose}=100mg}+\mathbb{1}_{\texttt{dose}=200mg}$
+
+Il faut donc imposer une contrainte par exemple $\alpha_1=0$ comme le propose {{< iconify logos:r-lang >}} par défaut.
+
+On estime ce modèle puis on teste la significativité du facteur $\texttt{dose}$ avec la fonction `anova`. L'hypothèse nulle $H_0$ est $\alpha_2=\alpha_3=\alpha_4=0$
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -464,9 +301,8 @@ $$
 ```{webr}
 #| envir: baser
 #| autorun: true
-fit_q4 <- lm(formula = maxO3 ~ pluie + T12 + Ne9  + Vx9 +  + maxO3v , data = data_ozone)
-summary(fit_q4)
-anova(fit_q1, fit_q4)
+reg <- lm(log(concent) ~ dose, data = data_chemical)
+anova(reg)
 ```
 
 ### Tidyverse
@@ -474,38 +310,41 @@ anova(fit_q1, fit_q4)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-fit_q4 <- lm(formula = maxO3 ~ pluie + T12 + Ne9  + Vx9 + maxO3v, data = data_ozone)
-summary(fit_q4)
-anova(fit_q1, fit_q4)
+reg <- lm(log(concent) ~ dose, data = data_chemical)
+anova(reg)
 ```
 :::
 
-Le résultat du modèle montre que le coefficient de la variable pluie
-pour la condition "Sec" n'est pas significativement différent de celui
-pour "Pluie" (le coefficient estimé représente leur différence et n'est
-pas significatif). De plus, le test de comparaison avec le modèle
-initial confirme que la variable pluie n’apporte pas d’information
-utile. Ce constat peut sembler surprenant par rapport à la question 2,
-mais il n’y a pas de contradiction : l’effet de la pluie est absorbé par
-les autres variables (température, nébulosité, vitesse du vent). Une
-fois ces variables intégrées, la présence ou non de pluie ne fournit
-aucune information supplémentaire. En revanche, si ces variables ne sont
-pas prises en compte, l’effet de la pluie devient très perceptible (voir
-question 2), ce qui en fait un facteur de confusion.
+La p-valeur du test de Fisher est très faible. On rejette donc $H_0$ c'est à dire qu’il y a au moins une moyenne de $ln(\texttt{concent})$ qui
+diffère des autres selon le dosage effectué.
 
-:::
+::: {.callout-note collapse="true"}
+### Complément sur la sortie `anova`
 
-:::
+La statistique de test est $F$ telle que 
 
-## Question 5
+$$
+F = \frac{\frac{S^2_{\textrm{inter}}}{I-1}}{\frac{S^2_{\textrm{intra}}}{n-I}}
+$$
 
-De même : représenter graphiquement $\texttt{maxO3}$ en fonction de la direction du vent
-et étudier la pertinence d’inclure un effet vent dans le modèle initial.
+avec 
 
-::: {.content-hidden when-format="html"}
-::: answer
+* $n$ le nombre d'observations
+* $I$ le nombre de groupes, c'est à dire de modalités de la variable explicative qualitative
+* $\forall\ i \in [\![1,I]\!]$, $n_i$ désigne le nombre d'observations dans le groupe $i$ et $\overline{Y_i}$ la moyenne de la variable $Y$ dans le groupe $i$ 
+* $S^2_\textrm{inter}$ : la somme des carrés inter-modalités 
+    $$S^2_\textrm{inter}=\sum\limits_{i=1}^I n_i\left(\overline{Y}_i-\overline{Y}\right)^2$$
+* $S^2_\textrm{intra}$ : la somme des carrés intra-modalités 
+    $$S^2_\textrm{inter}=\sum\limits_{i=1}^I \sum\limits_{j=1}^{n_i} \left(Y_{ij}-\overline{Y_i}\right)^2$$
 
-On trace les boxplots selon les modalités de la variables vent.
+On retrouve ces quantités dans la sorties de la fonction `anova`.
+
+|`Df` | `Sum Sq`   | `Mean Sq`  | `F value`  | `Pr(>F)`  |
+|---|---|---|---|---|
+| $I-1$  | $S^2_\textrm{inter}$   | $\frac{S^2_{\textrm{inter}}}{I-1}$  | $F$  |  $1-F_{\mathcal{F}(I-1, \ n-I)}(F)$ |
+| $n-I$   | $S^2_\textrm{intra}$  | $\frac{S^2_{\textrm{intra}}}{n-I}$  |   |   |
+
+On pouvait calculer toutes ces valeurs sans utiliser directement la fonction `anova`.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -513,12 +352,30 @@ On trace les boxplots selon les modalités de la variables vent.
 ```{webr}
 #| envir: baser
 #| autorun: true
-# Boxplot
-boxplot(
-  maxO3 ~ vent,
-  data = data_ozone,
-  main = "Distribution de la quantité d'ozone selon la direction du vent"
+n <- nrow(data_chemical)
+I <- length(levels(data_chemical$dose))
+Y_bar <- mean(log(data_chemical$concent))
+n_i <- sapply(
+  X = levels(data_chemical$dose),
+     FUN=function(x){sum(data_chemical$dose==x)}
 )
+Y_i_bar <- sapply(
+  X = levels(data_chemical$dose),
+  FUN=function(x){sum(as.numeric(data_chemical$dose==x)*log(data_chemical$concent))}
+)/n_i
+S2_inter <- sum(n_i*(Y_i_bar-rep(Y_bar, I))**2)
+S2_intra <- sum((log(data_chemical$concent)-Y_i_bar[data_chemical$dose])**2)
+Fstat <- (S2_inter/(I-1))/(S2_intra/(n-I))
+pval <- 1-pf(q = Fstat, df1 = I-1, n-I)
+cat(paste0("I-1 = ", I-1,"\n"))
+cat(paste0("S²inter = ",S2_inter,"\n"))
+cat(paste0("S²inter / (I-1) = ",S2_inter/(I-1),"\n"))
+cat(paste0("n-I = ", n-I,"\n"))
+cat(paste0("S²intra = ",S2_intra,"\n"))
+cat(paste0("S²intra / (I-1) = ",S2_intra/(n-I),"\n"))
+cat(paste0("F = ",Fstat,"\n"))
+cat(paste0("p-value = ",pval,"\n"))
+
 ```
 
 ### Tidyverse
@@ -526,26 +383,44 @@ boxplot(
 ```{webr}
 #| envir: tdv
 #| autorun: true
-# Boxplot
-ggplot2::ggplot(
-  data = subset(data_ozone, !is.na(vent) & !is.na(maxO3)),
-  mapping = ggplot2::aes(x = pluie, y = maxO3, fill = pluie)
-) +
-  ggplot2::geom_boxplot(alpha = 0.7) +
-  ggplot2::labs(
-    title = "Distribution de la quantité d'ozone selon la direction du vent",
-    x = "Direction du vent",
-    y = "Quantité d'ozone"
-  ) +
-  ggplot2::theme_minimal()
+n <- nrow(data_chemical)
+I <- length(levels(data_chemical$dose))
+Y_bar <- mean(log(data_chemical$concent))
+n_i <- sapply(
+  X = levels(data_chemical$dose),
+     FUN=function(x){sum(data_chemical$dose==x)}
+)
+Y_i_bar <- sapply(
+  X = levels(data_chemical$dose),
+  FUN=function(x){sum(as.numeric(data_chemical$dose==x)*log(data_chemical$concent))}
+)/n_i
+S2_inter <- sum(n_i*(Y_i_bar-rep(Y_bar, I))**2)
+S2_intra <- sum((log(data_chemical$concent)-Y_i_bar[data_chemical$dose])**2)
+Fstat <- (S2_inter/(I-1))/(S2_intra/(n-I))
+pval <- 1-pf(q = Fstat, df1 = I-1, n-I)
+cat(paste0("I-1 = ", I-1,"\n"))
+cat(paste0("S²inter = ",S2_inter,"\n"))
+cat(paste0("S²inter / (I-1) = ",S2_inter/(I-1),"\n"))
+cat(paste0("n-I = ", n-I,"\n"))
+cat(paste0("S²intra = ",S2_intra,"\n"))
+cat(paste0("S²intra / (I-1) = ",S2_intra/(n-I),"\n"))
+cat(paste0("F = ",Fstat,"\n"))
+cat(paste0("p-value = ",pval,"\n"))
 ```
 :::
 
-Un test de Student n'est pas approprié ici, car il y a quatre modalités.
-Nous effectuons donc un test ANOVA pour déterminer si les moyennes de
-$\texttt{maxO3}$ diffèrent significativement selon les directions du vent. Avant
-cela, il est nécessaire de vérifier l'égalité des variances, une
-hypothèse essentielle pour l'ANOVA.
+:::
+
+:::
+
+## Question 5 
+
+Analyser à présent le résumé de la sortie de la fonction `lm` : à quoi correspond chaque
+quantité ?
+
+::: answer
+
+On appelle la fonction `summary` sur l'objet `reg` qui correspond à l'ajustement de notre modèle ANOVA.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -553,8 +428,7 @@ hypothèse essentielle pour l'ANOVA.
 ```{webr}
 #| envir: baser
 #| autorun: true
-car::leveneTest(maxO3 ~ vent, data = data_ozone)
-bartlett.test(maxO3 ~ vent, data = data_ozone)
+summary(reg)
 ```
 
 ### Tidyverse
@@ -562,13 +436,41 @@ bartlett.test(maxO3 ~ vent, data = data_ozone)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-car::leveneTest(maxO3 ~ vent, data = data_ozone)
-bartlett.test(maxO3 ~ vent, data = data_ozone)
+summary(reg)
 ```
 :::
 
-L'égalité des variances est confirmée dans ces deux tests. On peut
-réaliser le test ANOVA.
+Le modèle inclut une constante `(Intercept)` ainsi que des variables indicatrices pour les modalités $\texttt{dose50}$, $\texttt{dose100}$ et $\texttt{dose200}$. La modalité $\texttt{dose25}$, absente du modèle, sert de modalité de référence.
+
+
+L’interprétation des coefficients, et donc des tests de Student associés, dépend de la contrainte 
+qui a été choisie initialement.
+
+* La constante (3.6151) correspond à la moyenne dans la modalité de référence, c’est à dire la moyenne de $\ln(\texttt{concent})$ pour les observations ayant la modalité $\texttt{dose25}$. Les résultats du test de Student donnés sur cette première ligne permettent de déterminer ici si la moyenne de $\ln(\texttt{concent})$ dans la modalité $\texttt{dose25}$ est significativement différente de 0.
+* L’estimation associée à $\texttt{dose50}$ (1.0072) correspondent à la différence entre la moyenne dans la modalité
+$\texttt{dose50}$ et la moyenne dans la modalité $\texttt{dose25}$. Les résultats du test de Student donnés sur cette deuxième ligne permettent de déterminer ici si la moyenne de $\ln(\texttt{concent})$ dans la modalité $\texttt{dose50}$ est significativement différente de celle dans la modalité $\texttt{dose25}$.
+* L’estimation associée à $\texttt{dose100}$ (1.6380) correspondent à la différence entre la moyenne dans la modalité
+$\texttt{dose100}$ et la moyenne dans la modalité $\texttt{dose25}$. Les résultats du test de Student donnés sur cette troisième ligne permettent de déterminer ici si la moyenne de $\ln(\texttt{concent})$ dans la modalité $\texttt{dose100}$ est significativement différente de celle dans la modalité $\texttt{dose25}$.
+* L’estimation associée à $\texttt{dose200}$ (1.9945) correspondent à la différence entre la moyenne dans la modalité
+$\texttt{dose200}$ et la moyenne dans la modalité $\texttt{dose25}$. Les résultats du test de Student donnés sur cette quatrième ligne permettent de déterminer ici si la moyenne de $\ln(\texttt{concent})$ dans la modalité $\texttt{dose200}$ est significativement différente de celle dans la modalité $\texttt{dose25}$.
+
+Tous ces tests de Student sont significatifs.
+
+:::
+
+## Question 6
+
+D’après la sortie précédente, quelles moyennes semblent différer des autres ? Effectuer
+un test de Tukey pour identifier les différences significatives (si le modèle se nomme 
+`reg : TukeyHSD(aov(reg))`) et représenter les intervalles de confiance associés (`plot`
+du résultat).
+
+
+::: answer
+
+La sortie commentée à la question précédente indique que la modalité $\texttt{dose25}$ présente une moyenne de $\ln(\texttt{concent})$ significativement inférieure à celle des autres dosages, avec une différence de l'ordre de 1 à 2 unités. Cependant, la comparaison entre les autres dosages est moins évidente. Bien qu'une tendance à l'augmentation de $\ln(\texttt{concent})$ avec le dosage soit observée, il n'est pas clair si cette augmentation est significative, notamment entre les modalités $\texttt{dose100}$ et $\texttt{dose200}$.
+
+Pour résoudre cette incertitude, le test de Tukey est appliqué. Ce test permet de comparer les moyennes deux à deux tout en garantissant un niveau de confiance simultané de 5 % (ou tout autre seuil choisi). En outre, le test de Tukey fournit des intervalles de confiance (IC) simultanés à 95 %, ce qui signifie que la probabilité que toutes les différences de moyennes appartiennent à ces intervalles est de 95 %.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -576,7 +478,8 @@ réaliser le test ANOVA.
 ```{webr}
 #| envir: baser
 #| autorun: true
-anova(lm(maxO3 ~ vent, data = data_ozone))
+TukeyHSD(aov(reg))
+plot(TukeyHSD(aov(reg)))
 ```
 
 ### Tidyverse
@@ -584,42 +487,12 @@ anova(lm(maxO3 ~ vent, data = data_ozone))
 ```{webr}
 #| envir: tdv
 #| autorun: true
-anova(lm(maxO3 ~ vent, data = data_ozone))
+TukeyHSD(aov(reg))
+plot(TukeyHSD(aov(reg)))
 ```
 :::
 
-La non-égalité des moyennes selon les directions de vent est
-significative.
+En analysant les p-values des tests ainsi que les intervalles de confiance (IC), on observe que la dernière différence n'est pas significativement différente de 0. Cela indique un gain significatif lors de l'augmentation du dosage jusqu'à 100, mais un effet seuil semble apparaître, car le gain n'est plus significatif lorsque l'on passe de 100 à 200.
 
-On lance à présent le modèle de régression avec vent et toutes les
-interactions possibles.
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-fit_q5 <- lm(formula = maxO3 ~ (T12 + Ne9 + Vx9 + maxO3v)*vent, data = data_ozone)
-summary(fit_q5)
-anova(fit_q1, fit_q5)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-fit_q5 <- lm(formula = maxO3 ~ (T12 + Ne9 + Vx9 + maxO3v)*vent, data = data_ozone)
-summary(fit_q5)
-anova(fit_q1, fit_q5)
-```
-:::
-
-Les conclusions sont similaires à celles obtenues avec la variable pluie
-: il ne paraît pas pertinent d’ajouter la variable $\texttt{vent}$ ni les
-interactions associées dans le modèle.
-
-:::
 
 :::

@@ -14,7 +14,6 @@ editor:
 ---
 
 ::: {.content-hidden when-format="html"}
-
 ## Question 1
 
 On maximise l'entropie $$H(p) = -p \log(p)- (1-p)\log(1-p)$$
@@ -79,5 +78,4 @@ point de vue précédent (maximiser l'entropie sous contrainte d'une
 attache aux données) motive donc l'utilisation du modèle logistique pour
 tout $x$ (et non seulement pour les $x_i$ de l'échantillon) :
 $$p(x)=\mathbb{P}(Y=1 \mid X=x)=\operatorname{logit}^{-1}(\lambda \cdot x)$$
-
 :::

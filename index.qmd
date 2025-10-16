@@ -44,6 +44,8 @@ format:
 
 [Exercice 11](/posts/td2-exo11.html)
 
+[Exercice 12](/posts/td2-exo12.html)
+
 ::: {.content-hidden when-format="html"}
 ## Exercices des séances 6 à 8
 
