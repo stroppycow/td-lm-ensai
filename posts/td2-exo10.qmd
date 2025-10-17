@@ -2,7 +2,7 @@
 title: "TD 2 - Exercice 10 - ANOVA à 1 facteur : effet du dosage d’un médicament"
 lang: fr
 author: "Théo Leroy"
-date: "10 octobre 2025"
+date: "17 octobre 2025"
 format:
   live-html:
     code-background: true
@@ -46,10 +46,10 @@ séparés en 4 groupes de 10 selon le dosage reçu.
 
 Représenter les données à l’aide de boîtes à moustaches. Réordonner si nécessaire les 
 niveaux du facteur dose pour avoir une représentation par ordre croissant du dosage. 
-Les hypothèses nécessaires à une analyse de variance de l’effet dosage semblent-elles
+Les hypothèses nécessaires à une analyse de variance de l’effet dosage semblent-elles 
 vérifiées ?
 
-
+::: {.content-hidden when-format="html"}
 ::: answer
 
 On charge les données du fichier `chemical.txt` en {{< iconify logos:r-lang >}} sous forme de `data.frame`.
@@ -137,12 +137,14 @@ statistiques ci-dessous :
 ![](/static/img/boxplot.svg){fig-align="center"}
 :::
 :::
+:::
 
 ## Question 2
 
 Effectuer un test d’égalité de variance de Bartlett (`bartlett.test`) et de Levene
 (`leveneTest` dans la librairie `car`) pour confirmer le problème vu précédemment.
 
+::: {.content-hidden when-format="html"}
 ::: answer
 
 On effectue les deux tests d’égalité de variance proposés.  L’hypothèse nulle ($H_0$) postule que 
@@ -193,6 +195,7 @@ Les p-valeurs sont bien inférieures à $0,05$ dans les deux tests effectués.
 On rejette donc l'hypothèse nulle. Ils confirment l'analyse graphique que les variances ne sont pas identiques.
 
 :::
+:::
 
 ## Question 3
 
@@ -200,6 +203,7 @@ On propose de s’intéresser à une transformation logarithmique de la variable
 Représenter les boîtes à moustaches des données transformées. Effectuer des tests 
 d’égalité des variances pour vérifier la stabilité des variances après transformation.
 
+::: {.content-hidden when-format="html"}
 ::: answer
 
 On reproduit les deux premières questions en s'interessant à $\ln(\texttt{concent})$.
@@ -273,7 +277,7 @@ car::leveneTest(log(concent) ~ dose, data = data_chemical)
 La transformation appliquée a permis de stabiliser les variances.
 
 :::
-
+:::
 
 ## Question 4
 
@@ -281,6 +285,7 @@ Réaliser l’analyse de la variance et tester l’effet du dosage sur la concen
 produit chimique.
 
 
+::: {.content-hidden when-format="html"}
 ::: answer
 
 On pourrait modéliser l'effet du dosage sur la concentration en produit chimique comme ceci :
@@ -385,19 +390,37 @@ cat(paste0("p-value = ",pval,"\n"))
 #| autorun: true
 n <- nrow(data_chemical)
 I <- length(levels(data_chemical$dose))
-Y_bar <- mean(log(data_chemical$concent))
-n_i <- sapply(
-  X = levels(data_chemical$dose),
-     FUN=function(x){sum(data_chemical$dose==x)}
-)
-Y_i_bar <- sapply(
-  X = levels(data_chemical$dose),
-  FUN=function(x){sum(as.numeric(data_chemical$dose==x)*log(data_chemical$concent))}
-)/n_i
-S2_inter <- sum(n_i*(Y_i_bar-rep(Y_bar, I))**2)
-S2_intra <- sum((log(data_chemical$concent)-Y_i_bar[data_chemical$dose])**2)
+Y_bar <- data_chemical |>
+  dplyr::pull(concent) |>
+  log() |>
+  mean()
+
+data_group <- data_chemical |> 
+  dplyr::group_by(dose) |>
+  dplyr::summarise(
+    n_i = dplyr::n(),
+    Y_i_bar = mean(log(concent)),
+    .group = "drop"
+  )
+  
+S2_inter <- data_group |>
+  dplyr::mutate(
+    x = n_i*(Y_i_bar-Y_bar)**2
+  ) |>
+  dplyr::pull(x) |>
+  sum()
+  
+S2_intra <- data_chemical |>
+  dplyr::left_join(y=data_group, by = "dose") |>
+  dplyr::mutate(
+    x = (log(concent)-Y_i_bar)**2
+  ) |>
+  dplyr::pull(x) |>
+  sum()
+  
 Fstat <- (S2_inter/(I-1))/(S2_intra/(n-I))
 pval <- 1-pf(q = Fstat, df1 = I-1, n-I)
+
 cat(paste0("I-1 = ", I-1,"\n"))
 cat(paste0("S²inter = ",S2_inter,"\n"))
 cat(paste0("S²inter / (I-1) = ",S2_inter/(I-1),"\n"))
@@ -408,9 +431,8 @@ cat(paste0("F = ",Fstat,"\n"))
 cat(paste0("p-value = ",pval,"\n"))
 ```
 :::
-
 :::
-
+:::
 :::
 
 ## Question 5 
@@ -418,6 +440,7 @@ cat(paste0("p-value = ",pval,"\n"))
 Analyser à présent le résumé de la sortie de la fonction `lm` : à quoi correspond chaque
 quantité ?
 
+::: {.content-hidden when-format="html"}
 ::: answer
 
 On appelle la fonction `summary` sur l'objet `reg` qui correspond à l'ajustement de notre modèle ANOVA.
@@ -454,18 +477,20 @@ $\texttt{dose100}$ et la moyenne dans la modalité $\texttt{dose25}$. Les résul
 * L’estimation associée à $\texttt{dose200}$ (1.9945) correspondent à la différence entre la moyenne dans la modalité
 $\texttt{dose200}$ et la moyenne dans la modalité $\texttt{dose25}$. Les résultats du test de Student donnés sur cette quatrième ligne permettent de déterminer ici si la moyenne de $\ln(\texttt{concent})$ dans la modalité $\texttt{dose200}$ est significativement différente de celle dans la modalité $\texttt{dose25}$.
 
-Tous ces tests de Student sont significatifs.
+Tous ces tests de Student concluent que les coeffcients sont significatifs sont significatifs.
 
+:::
 :::
 
 ## Question 6
 
 D’après la sortie précédente, quelles moyennes semblent différer des autres ? Effectuer
 un test de Tukey pour identifier les différences significatives (si le modèle se nomme 
-`reg : TukeyHSD(aov(reg))`) et représenter les intervalles de confiance associés (`plot`
+`reg` on peut lancer l'instruction `TukeyHSD(aov(reg))`) et représenter les intervalles de confiance associés (`plot`
 du résultat).
 
 
+::: {.content-hidden when-format="html"}
 ::: answer
 
 La sortie commentée à la question précédente indique que la modalité $\texttt{dose25}$ présente une moyenne de $\ln(\texttt{concent})$ significativement inférieure à celle des autres dosages, avec une différence de l'ordre de 1 à 2 unités. Cependant, la comparaison entre les autres dosages est moins évidente. Bien qu'une tendance à l'augmentation de $\ln(\texttt{concent})$ avec le dosage soit observée, il n'est pas clair si cette augmentation est significative, notamment entre les modalités $\texttt{dose100}$ et $\texttt{dose200}$.
@@ -479,7 +504,8 @@ Pour résoudre cette incertitude, le test de Tukey est appliqué. Ce test permet
 #| envir: baser
 #| autorun: true
 TukeyHSD(aov(reg))
-plot(TukeyHSD(aov(reg)))
+par(mar = c(5, 8, 4, 2) + 0.1)
+plot(TukeyHSD(aov(reg)), las = 1)
 ```
 
 ### Tidyverse
@@ -487,12 +513,29 @@ plot(TukeyHSD(aov(reg)))
 ```{webr}
 #| envir: tdv
 #| autorun: true
-TukeyHSD(aov(reg))
-plot(TukeyHSD(aov(reg)))
+# Mise en oeuvre du test de Tukey
+tukey <- TukeyHSD(aov(reg))
+
+# Génération de la sortie graphique
+tukey_df <- as.data.frame(tukey$dose)
+tukey_df <- tukey_df |>
+  dplyr::mutate(comparison = rownames(tukey_df))
+
+ggplot2::ggplot(tukey_df, ggplot2::aes(x = comparison, y = diff)) +
+  ggplot2::geom_point(size = 3) +
+  ggplot2::geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.2) +
+  ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  ggplot2::coord_flip() +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(
+    title = "Test de Tukey",
+    x = "Comparaison de groupes",
+    y = "Différence des moyennes (IC à 95 %)"
+  )
 ```
 :::
 
 En analysant les p-values des tests ainsi que les intervalles de confiance (IC), on observe que la dernière différence n'est pas significativement différente de 0. Cela indique un gain significatif lors de l'augmentation du dosage jusqu'à 100, mais un effet seuil semble apparaître, car le gain n'est plus significatif lorsque l'on passe de 100 à 200.
 
-
+:::
 :::

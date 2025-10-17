@@ -2,7 +2,7 @@
 title: "TD 2 - Exercice 9 - Probabilité de sur-ajustement des critères de sélection"
 lang: fr
 author: "Théo Leroy"
-date: "10 octobre 2025"
+date: "17 octobre 2025"
 format:
   live-html:
     code-background: true
