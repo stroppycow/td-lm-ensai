@@ -3,6 +3,8 @@ title: "TD 2 - Exercice 7 - Modélisation de la concentration maximale journali�
 lang: fr
 author: "Théo Leroy"
 date: "10 octobre 2025"
+params:
+  question_courante: 10
 format:
   live-html:
     code-background: true
@@ -32,13 +34,14 @@ filters:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
     
 ---
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 Le jeu de données `ozone.txt` contient la concentration maximale d’ozone ($\texttt{maxO3}$)
@@ -48,6 +51,7 @@ mesurée chaque jour de l’été 2001 à Rennes. Il contient également les tem
 
 Analyser le nuage de points et la corrélation linéaire entre $\texttt{maxO3}$ et chacune des variables quantitatives disponibles (c’est à dire $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$, $\texttt{Ne9}$, $\texttt{Ne12}$, $\texttt{Ne15}$, $\texttt{Vx9}$, $\texttt{Vx12}$ et $\texttt{Vx15}$). Est-il raisonnable de supposer qu’il existe un lien linéaire entre $\texttt{maxO3}$ et ces variables ?
 
+::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
 
@@ -157,7 +161,7 @@ On observe une relation linéaire croissante assez prononcée avec $\texttt{T9}$
 
 :::
 
-
+:::
 
 ## Question 2 {#question-2}
 
@@ -165,6 +169,8 @@ Ajuster le modèle de régression linéaire expliquant $\texttt{maxO3}$ en fonct
 variables quantitatives précédentes. Tester la significativité de chacune des variables
 explicatives dans ce modèle. Le résultat est-il en accord avec les observations de la
 question précédente ? Tester également la significativité globale du modèle. Commenter.
+
+::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
 
@@ -282,6 +288,7 @@ ce problème de multicolinéarité.
 
 :::
 
+:::
 
 ## Question 3
 
@@ -289,15 +296,21 @@ Calculer les VIF (Variance Inflation Factor) pour chacune des variables explicat
 du modèle précédent. En quoi ces valeurs expliquent les résultats des tests de Student
 effectués ci-dessus ?
 
+::: {.content-visible when-meta="is_answer_print_3"}
+
 ::: answer
 
 On peut détecter cette multicolinéarité à l'aide du VIF (Variance
 Inflation Factor) pour chacune des variables explicatives du modèle
 précédent.
 
-Le VIF pour la variable $X^{(j)}$ vaut $$
+Le VIF pour la variable $X^{(j)}$ vaut 
+
+$$
 VIF_j=\frac{1}{1-R_j^2}
-$$ où $R_j^2$ est le $R^2$ dans la régression de $X^{(j)}$ par rapport
+$$
+
+où $R_j^2$ est le $R^2$ dans la régression de $X^{(j)}$ par rapport
 aux autres variables explicatives
 
 ::: {.panel-tabset group="language"}
@@ -326,11 +339,14 @@ Student ne sont pas rejetés.
 
 :::
 
+:::
+
 
 ## Question 4
 
 On décide d’enlever des variables au modèle précédent. Quelles variables semblet-il naturel d’enlever au vu de la question précédente ? Ajuster le nouveau modèle proposé et répéter les analyses effectuées dans les deux questions précédentes.
 
+::: {.content-visible when-meta="is_answer_print_4"}
 
 ::: answer
 
@@ -406,6 +422,7 @@ approche. Nous n'avons pas perdu vraiment d'information $67\  \%$ de la variance
 
 :::
 
+:::
 
 ## Question 5 {#question-5}
 
@@ -413,6 +430,8 @@ Mettre en oeuvre une sélection automatique du meilleur sous-modèle possible du
 "gros" modèle ajusté dans la [question 2](#question-2), selon le critère BIC. On pourra utiliser la
 fonction  `regsubsets` de la libraire `leaps` (puis `plot.regsubsets`) ou `step`. Comparer
 le modèle retenu avec le modèle choisi à la question précédente.
+
+::: {.content-visible when-meta="is_answer_print_5"}
 
 ::: answer
 
@@ -563,11 +582,14 @@ $$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T12}_i+\beta_3\texttt{Ne9}_i+\beta_4
 
 :::
 
+:::
 
 ## Question 6
 
 Appliquer la sélection automatique précédente en vous basant sur d’autres critères
 que BIC. Les modèles retenus sont-ils les mêmes ? Si non, lequel semble préférable ?
+
+::: {.content-visible when-meta="is_answer_print_6"}
 
 ::: answer
 
@@ -603,10 +625,13 @@ prendre plutôt le modèle obtenu à la question 5, plus parcimonieux.
 
 :::
 
+:::
 
 ## Question 7
 
 Analyser les résidus du modèle sélectionné à la question précédente par des représentations graphiques et en effectuant des tests d’homoscédasticité et de non-corrélation des résidus. Toutes les hypothèses d’un modèle linéaire semblent-elles vérifiées ?
+
+::: {.content-visible when-meta="is_answer_print_7"}
 
 ::: answer
 
@@ -666,7 +691,9 @@ Par défaut sous {{< iconify logos:r-lang >}} : $z_i$ est simplement le vecteur 
 explicatives $\left(X_i^{(1)}, \ldots, X_i^{(p)}\right)$, et donc $k=p$.
 Mais on peut proposer autre chose.
 
-Le test de Breusch-Pagan consiste à tester $$
+Le test de Breusch-Pagan consiste à tester
+
+$$
 H_0: \gamma=0 \quad \text { contre } \quad H_1: \gamma \neq 0 .
 $$
 :::
@@ -706,7 +733,9 @@ $$\varepsilon_i = \rho_1\varepsilon_{i-1}+\dots+\rho_r\varepsilon_{i-r}+\eta_i$$
 où les $\eta_i$ sont $\texttt{iid}$ suivant une
 $\mathcal{N}\left(0, \sigma^2\right)$.
 
-**Test de Durbin-Watson** : il ne concerne que le cas $r=1$ et teste $$
+**Test de Durbin-Watson** : il ne concerne que le cas $r=1$ et teste
+
+$$
 H_0: \rho_1=0 \quad \text { contre } \quad H_1: \rho_1 \neq 0 .
 $$ **Test de Breusch-Godfrey** : il teste (différemment),
 
@@ -748,12 +777,16 @@ enrichir notre modélisation en intégrant cette dépendance.
 
 :::
 
+:::
+
 ## Question 8
 
 Afin de résoudre le problème d’auto-corrélation des résidus, on propose d’ajouter la
 maximum d’ozone de la veille dans le modèle. Créer cette variable, que l’on nommera
 $\texttt{maxO3v}$ et ajouter-la au jeu de données. Observe-t-on un lien linéaire entre $\texttt{maxO3}$
 et $\texttt{maxO3v}$ ?
+
+::: {.content-visible when-meta="is_answer_print_8"}
 
 ::: answer
 
@@ -795,13 +828,15 @@ veille.
 
 :::
 
+:::
 
 ## Question 9
-
 
 Ajuster le modèle de régression contenant $\texttt{maxO3v}$ comme variable explicative supplémentaire.
 Analyser les résultats de l’ajustement : les hypothèses d’un modèle
 linéaire sont-elles vérifiées ?
+
+::: {.content-visible when-meta="is_answer_print_9"}
 
 ::: answer
 
@@ -911,9 +946,13 @@ d'autocorrélation est confirmée.
 
 :::
 
+:::
+
 ## Question 10
 
 Comparer ce dernier modèle au modèle sans $\texttt{maxO3v}$ à l’aide d’un test de Fisher et en comparant les différents critères de sélection (AIC, BIC, Cp de Mallows, R² ajusté).
+
+::: {.content-visible when-meta="is_answer_print_10"}
 
 ::: answer
 
@@ -1040,5 +1079,7 @@ tibble::tibble(
 
 Quel que soit le critère le modèle avec l’introduction de la variable
 $\texttt{maxO3v}$ est meilleur.
+
+:::
 
 :::

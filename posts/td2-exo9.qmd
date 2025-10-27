@@ -3,6 +3,8 @@ title: "TD 2 - Exercice 9 - Probabilité de sur-ajustement des critères de sél
 lang: fr
 author: "Théo Leroy"
 date: "17 octobre 2025"
+params:
+  question_courante: 0
 format:
   live-html:
     code-background: true
@@ -19,11 +21,14 @@ filters:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
+
+{{< include ./../_extensions/conditionnal.qmd >}}
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On se place dans le cadre de l’exercice précédent, mais on suppose de plus que la variable
 $X^{(p)}$ n’est pas significative dans le modèle (i.e. son coefficient est nul dans la régression)
@@ -36,7 +41,8 @@ de l’exercice précédent.
 Quelle loi suit la statistique $F$ ? Montrer que lorsque $n \to 1$, cette loi est équivalente
 à une loi $\chi^2(1)$.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_1"}
+
 ::: answer
 
 Si le modèle est Gaussien, alors sous $H_{0}: \beta_{p}=0, F$ suit une
@@ -63,6 +69,7 @@ D'après le lemme de Slutsky,
 $n \rightarrow \infty, F(1, n-p) \rightarrow \chi^{2}(1)$ en loi.
 
 :::
+
 :::
 
 ## Question 2
@@ -70,7 +77,8 @@ $n \rightarrow \infty, F(1, n-p) \rightarrow \chi^{2}(1)$ en loi.
 Lors de la mise en oeuvre du test de Fisher des modèles emboités au niveau $\alpha \in [0, 1]$,
 quelle est la probabilité de décider (à tort) d’inclure la variable $X^{(p)}$ dans le modèle ?
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_2"}
+
 ::: answer
 
 On décide (à tort) d'inclure la variable $X^{(p)}$ si
@@ -80,13 +88,15 @@ produise vaut $\alpha$. $\alpha$ est l'erreur de première espèce que
 l'on choisit.
 
 :::
+
 :::
 
 ## Question 3
 
 Vers quoi tend la probabilité précédente si on base la décision sur le $R^2_a$ ?
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_3"}
+
 ::: answer
 
 On inclut la variable $X^{(p)}$ selon le critère du $R^{2}$ ajusté si
@@ -99,13 +109,15 @@ $$
 $$
 
 :::
+
 :::
 
 ## Question 4
 
 Même question si la décision est basée sur le $C_p$ de Mallows.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_4"}
+
 ::: answer
 
 On inclut la variable $X^{(p)}$ selon le critère du $C_p$ de Mallows si
@@ -116,14 +128,17 @@ $\chi^{2}(1)$, on a
 $$
 \mathbb{P}(F>2)=1-F_{1, n-p}(2) \underset{n \rightarrow \infty}{\longrightarrow} 1-F_{\chi^{2}(1)}(2) \approx 0,16
 $$
+
 :::
+
 :::
 
 ## Question 5
 
 Même question si la décision est basée sur le critère AIC.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_5"}
+
 ::: answer
 
 Le critère AIC est similaire au critère du $C_{p}$ de Mallows lorsque
@@ -131,14 +146,15 @@ $n \rightarrow \infty$, on obtient donc le même résultat que dans la
 question précédente.
 
 :::
+
 :::
 
 ## Question 6
 
 Même question si la décision est basée sur le critère BIC.
 
+::: {.content-visible when-meta="is_answer_print_6"}
 
-::: {.content-hidden when-format="html"}
 ::: answer
 
 D'après la question 6 de l'exercice 8, quand $n$ est grand, on inclut
@@ -179,7 +195,8 @@ $x \rightarrow \infty$.
 Quel critère est-il préférable de choisir si l’on souhaite minimiser le risque d’inclure
 une variable en trop dans le modèle ?
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_7"}
+
 ::: answer
 
 Pour tous les critères, à l'exception du BIC, la probabilité de
@@ -189,4 +206,5 @@ sélection du bon modèle lorsque $n \rightarrow \infty$, ce qui en fait
 le critère préférable sous cet aspect.
 
 :::
+
 :::

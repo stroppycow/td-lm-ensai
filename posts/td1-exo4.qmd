@@ -3,6 +3,8 @@ title: "TD 1 - Exercice 4"
 lang: fr
 author: "Théo Leroy"
 date: "3 septembre 2025"
+params:
+  question_courante: 7
 format:
   live-html:
     code-background: true
@@ -12,37 +14,35 @@ webr:
   render-df: gt-interactive
 fig-align: center
 filters: 
-  - diagram
   - custom-callout
 editor: 
   markdown: 
     wrap: 72
   mode: source
-diagram:
-  engine:
-    tikz:
-      execpath: lualatex
-      header-includes:
-        - '\usepackage{tkz-tab}'
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère le modèle de régression linéaire simple où l’on observe $n$
 réalisations $(x_i, y_i)_{i \in [\![1,n]\!]}$; liées par la relation
-$y_i = \beta_0 + \beta_1x_i + \epsilon_i$; $i = 1, \ \dots, \ n$.
+$$
+y_i = \beta_0 + \beta_1x_i + \epsilon_i \ ; \quad i = 1, \ \dots, \ n \textrm{.}
+$$
 
 ## Question 1
 
 Quelle sont les hypothèses standards sur les erreurs de modélisation
 $\epsilon_i$ ?
+
+::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
 On suppose que les variables $\epsilon_i$ sont :
@@ -55,10 +55,14 @@ On suppose que les variables $\epsilon_i$ sont :
     $\forall\ (i,j) \in [\![1,n]\!]^2, i \neq j, \ \mathbb{C}\mathbb{o}\mathbb{v}(\epsilon_i,\epsilon_j)=0$.
 :::
 
+:::
+
 ## Question 2
 
 Sous quelle hypothèse le modèle est-il identifiable, au sens où
 $\beta_0$ et $\beta_1$ sont définis de manière unique ?
+
+::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
 Il faut que les variables explicatives ne soient pas linéairement liées.
@@ -73,12 +77,16 @@ proportionnel au vecteur constant $(1, \dots, 1)$ : c'est à dire que les
 $x_i$ ne prennent pas tous la même valeur.
 :::
 
+:::
+
 ## Question 3
 
 Sous quelle hypothèse l’estimateur par MCO de $\beta_0$ et $\beta_1$
 existe-t-il ?
 
-:::: answer
+::: {.content-visible when-meta="is_answer_print_3"}
+
+::: answer
 C'est la même hypothèse que pour la question précédente, elle garantie
 l'inversibilité de $X'X$.
 
@@ -96,9 +104,12 @@ $\operatorname{rang}(X) = p$.
 Supposons que $X' X$ soit inversible.\
 Si $\operatorname{rang}(X) < p$, alors il existe
 $v \in \mathbb{R}^p \setminus \{0\}$ tel que $Xv = 0$.\
-On aurait alors : $$
+On aurait alors 
+$$
 X^\top X v = X^\top (Xv) = X^\top 0 = 0,
-$$ ce qui montre que $v$ est un vecteur non nul du noyau de $X'X$.\
+$$
+
+ce qui montre que $v$ est un vecteur non nul du noyau de $X'X$.\
 C'est absurde car cela contredit l’inversibilité de $X'X$. Donc
 nécessairement $\operatorname{rang}(X) = p$.
 
@@ -107,18 +118,25 @@ nécessairement $\operatorname{rang}(X) = p$.
 Supposons maintenant que $\operatorname{rang}(X) = p$, i.e. les colonnes
 de $X$ sont linéairement indépendantes.\
 Prenons $v \in \mathbb{R}^p$ tel que $X^\top X v = 0$.\
-Alors : $$
+Alors :
+$$
 0 = v' (X' X v) = (Xv)'(Xv) = \|Xv\|_2^2
-$$ Ainsi, $Xv = 0$. Or, comme $X$ est de rang plein, son noyau est
+$$
+Ainsi, $Xv = 0$. Or, comme $X$ est de rang plein, son noyau est
 réduit à $\{0\}$, donc $v=0$.\
 Cela montre que le noyau de $X' X$ est trivial, donc $X' X$ est
 inversible.
 :::
-::::
+
+:::
+
+:::
 
 ## Question 4
 
 Les variables $y_i$ ont-elles même espérance ?
+
+::: {.content-visible when-meta="is_answer_print_4"}
 
 ::: answer
 Calculons l'espérance de la variable aléatoire $y_i$. on suppose les
@@ -140,20 +158,28 @@ Donc $$\mathbb{E}(y_i)=\beta_0+\beta_1x_i$$
 Les variables $y_i$ n'ont pas la même espérance sauf si $\beta_1=0$.
 :::
 
+:::
+
 ## Question 5
 
 La droite de régression estimée à partir des observations
 $(x_i; y_i)_{i \in [\![1,n]\!]}$ passe-t-elle toujours par le point
 $(\overline{x}; \overline{y})$ ?
 
+::: {.content-visible when-meta="is_answer_print_5"}
+
 ::: answer
 Oui (*cf question 5 de l'exercice 3*)
+:::
+
 :::
 
 ## Question 6
 
 Les estimateurs par MCO des coefficients $\hat{\beta}_0$
-et$\hat{\beta}_1$ sont-ils indépendants ?
+et $\hat{\beta}_1$ sont-ils indépendants ?
+
+::: {.content-visible when-meta="is_answer_print_6"}
 
 ::: answer
 Montrons que les estimateurs par MCO des coefficients $\hat{\beta}_0$
@@ -170,10 +196,14 @@ $\overline{x}=0$) et même dans ce cas cela ne garantit pas
 l’indépendance sans hypothèse gaussienne.
 :::
 
+:::
+
 ## Question 7
 
 Est-il possible de trouver des estimateurs des coefficients de
 régression de plus faible variance que celle des estimateurs par MCO ?
+
+::: {.content-visible when-meta="is_answer_print_7"}
 
 ::: answer
 Oui, en particulier si on accepte du biais, on peut trouver des
@@ -181,4 +211,6 @@ estimateurs de variance plus faible.
 
 On peut considérer $\hat{\beta}= \frac{1}{2}\hat{\beta}_{\textrm{MCO}}$
 par exemple.
+:::
+
 :::

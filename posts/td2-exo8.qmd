@@ -3,6 +3,8 @@ title: "TD 2 - Exercice 8 - Comparaison des critères de sélection d'un modèle
 lang: fr
 author: "Théo Leroy"
 date: "17 octobre 2025"
+params:
+  question_courante: 6
 format:
   live-html:
     code-background: true
@@ -19,11 +21,14 @@ filters:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
+
+{{< include ./../_extensions/conditionnal.qmd >}}
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère un modèle de régression linéaire visant à expliquer $Y$ en fonction des variables
 $X^{(1)}, \dots, X^{(p)}$. On désire choisir entre le modèle avec $X^{(p)}$ et le modèle sans $X^{(p)}$ (les autres
@@ -31,7 +36,9 @@ variables étant incluses dans les deux cas), sur la base d’un échantillon de
 
 On not $F$ la statistique :
 
-$$F=(n-p)\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}$$
+$$
+F=(n-p)\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}
+$$
 
 où $\textrm{SCR}$ désigne la somme des carrés résiduelle dans le modèle avec $\textrm{X}^{(p)}$, et $\textrm{SCR}_c$ désigne
 la somme des carrés résiduelle dans le modèle sans $\textrm{X}^{(p)}$.
@@ -42,7 +49,8 @@ En appliquant un test de Fisher de modèles emboités, selon quelle règle de d�
 basée sur $F$, choisira-t-on d’inclure la variable $\textrm{X}^{(p)}$ dans le modèle ?
 
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_1"}
+
 ::: answer
 
 Dans le modèle
@@ -59,6 +67,7 @@ de décision exige de fixer le niveau de test $\alpha$. On choisi souvent
 par convention $\alpha=0.05$.
 
 :::
+
 :::
 
 ## Question 2
@@ -74,7 +83,8 @@ des carrés totaux.
 
 Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère du $R^2$ ajusté si $F > 1$.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_2"}
+
 ::: answer
 
 On inclut $X^{(p)}$ si $R_{a}^{2}$ dans le modèle avec $X^{(p)}$ est
@@ -103,6 +113,7 @@ $$
 $$
 
 :::
+
 :::
 
 ## Question 3
@@ -120,7 +131,8 @@ où $\textrm{SCR}$ désigne la somme des carrés résiduelle dans le modèle ave
 
 Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère du $C_p$ de Mallows si $F > 2$.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_3"}
+
 ::: answer
 
 On inclut $X^{(p)}$ si le $C_p$ dans le modèle avec $X^{(p)}$ est
@@ -135,6 +147,7 @@ $$
 $$ Or $\hat{\sigma}^{2}=\frac{SCR}{n-p}$ donc $F>2$ .
 
 :::
+
 :::
 
 ## Question 4
@@ -150,7 +163,8 @@ où $\textrm{SCR}_k$ désigne la somme des carrés résiduelles dans le modèle.
 
 Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère AIC si $F > (n - p)(e^{2/n}- 1)$.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_4"}
+
 ::: answer 
 
 On inclut $X^{(p)}$ si l'AIC dans le modèle avec $X^{(p)}$ est inférieur
@@ -169,6 +183,7 @@ $$
 Donc $F > (n-p)\left(e^{\frac{2}{n}} - 1\right)$
 
 :::
+
 :::
 
 ## Question 5
@@ -183,7 +198,8 @@ où $\textrm{SCR}_k$ désigne la somme des carrés résiduelles dans le modèle.
 
 Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère BIC si $F > (n - p)(e^{\log{(n)}/n}- 1)$.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_5"}
+
 ::: answer
 
 On inclut $X^{(p)}$ si le BIC dans le modèle avec $X^{(p)}$ est
@@ -202,6 +218,7 @@ $$
 Donc $F > (n-p)\left(e^{\frac{\log(n)}{n}} - 1\right)$
 
 :::
+
 :::
 
 ## Question 6
@@ -214,7 +231,8 @@ de $X^{(p)}$) au moins conservatif (i.e. ayant tendance à accepter plus facilem
 de $X^{(p)}$). On pourra utiliser un développement limité pour l’étude des critères AIC
 et BIC, en supposant que $n$ est suffisamment grand.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_6"}
+
 ::: answer
 
 Pour le critère AIC, on a vu que l'on inclut $X^{(p)}$ si
@@ -247,4 +265,5 @@ d'inclure ou non $X^{(p)}$, mais si jamais ils divergent, c'est dans le
 sens des inégalités précédentes.
 
 :::
+
 :::

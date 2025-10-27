@@ -3,6 +3,8 @@ title: "TD 1 - Exercice 1"
 lang: fr
 author: "Théo Leroy"
 date: "3 septembre 2025"
+params:
+  question_courante: 3
 format:
   live-html:
     code-background: true
@@ -30,24 +32,28 @@ diagram:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
-
-
 
 Soit $z_1, \dots, z_n$ des observations d'une variable $Z$.
 
 ## Question 1
 
 Déterminer la valeur $\hat{m}$ qui minimise la distance quadratique aux
-données $$S(m) = \sum\limits_{i=1}^n \left( z_i-m \right)^2$$
+données
+$$
+S(m) = \sum\limits_{i=1}^n \left( z_i-m \right)^2
+$$
 
-:::: answer
+::: {.content-visible when-meta="is_answer_print_1"}
+
+::: answer
 La fonction $S$ est une fonction polynomiale. Elle est donc dérivable
 sur $\mathbb{R}$. On note $S'$ la fonction dérivée de $S$. Pour
 $m \in \mathbb{R}$, on a : $$S'(m)=\sum\limits_{i=1}^n 2(m-z_i)$$ On
@@ -78,7 +84,9 @@ des observations $z_1, \dots, z_n$.
 
 La valeur $\hat{m}$ qui minimise la distance quadratique $S(m)$ aux
 données est donc la moyenne empirique $\overline{z}$.
-::::
+:::
+
+:::
 
 ## Question 2
 
@@ -86,6 +94,8 @@ La quantité $\hat{m}$ correspond en fait à l’estimation par moindres
 carrés ordinaires dans un modèle de régression linéaire :
 $Y = X\beta + \epsilon$. Préciser ce que valent $Y$ , $X$, $\beta$ et
 $\epsilon$.
+
+::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
 Dans le cas où on ne dispose pas d'informations auxiliaires, on peut
@@ -118,10 +128,15 @@ $$
 
 Les moindres carrés ordinaires (MCO) consistent à trouver la valeur de
 $\beta$ qui minimise la quantité
-$$\|Y-X\beta\|^2  = \sum\limits_{i=1}^n \left(z_i-\beta\right)^2=S(\beta)$$
+$$
+\|Y-X\beta\|^2  = \sum\limits_{i=1}^n \left(z_i-\beta\right)^2=S(\beta)
+$$
+
 Ainsi, la quantité $\hat{m}$ calculée à la question précédente
 correspond bien à l'estimation par les moindres carrés ordinaires de ce
 modèle de regression linéaire avec uniquement une constante.
+:::
+
 :::
 
 ## Question 3
@@ -129,6 +144,8 @@ modèle de regression linéaire avec uniquement une constante.
 Retrouver le résultat de la première question à partir de la formule
 générale de l'estimateur des moindres carrés ordinaires :
 $\hat{\beta}=(X'X)^{-1}X'Y$.
+
+::: {.content-visible when-meta="is_answer_print_3"}
 
 ::: answer
 On calcule $\hat{\beta}$ étape par étape :
@@ -165,8 +182,12 @@ z_1\\
 z_n
 \end{pmatrix}=\underbrace{\sum\limits_{i=1}^n z_i}_{\in \mathcal{M}_{1,1}(\mathbb{R})} \\
 \hat{\beta}&=(X'X)^{-1}X'Y=\frac{1}{n}\sum\limits_{i=1}^n z_i = \overline{z}
-\end{align*}$$
+\end{align*}
+$$
 
 On retrouve ainsi le résultat de la première question
 $\hat{m}=\overline{z}$.
+
+:::
+
 :::

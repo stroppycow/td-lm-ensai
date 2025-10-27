@@ -3,6 +3,8 @@ title: "TD 1 - Exercice 6"
 lang: fr
 author: "Théo Leroy"
 date: "3 septembre 2025"
+params:
+  question_courante: 7
 format:
   live-html:
     code-background: true
@@ -12,27 +14,21 @@ webr:
   render-df: gt-interactive
 fig-align: center
 filters: 
-  - diagram
   - custom-callout
 editor: 
   mode: source
   markdown: 
     wrap: 72
-diagram:
-  engine:
-    tikz:
-      execpath: lualatex
-      header-includes:
-        - '\usepackage{tkz-tab}'
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 Des données, publiées par le Chicago Tribune en 1993, montrent la
@@ -54,9 +50,13 @@ de chaque pays.
 Ecrire l’équation du modèle envisagé, pour chaque pays, en précisant les
 hypothèses effectuées.
 
+::: {.content-visible when-meta="is_answer_print_1"}
+
 ::: answer
 
-Le modèle s'écrit : $$
+Le modèle s'écrit :
+
+$$
 \forall\ i \in [\![1,n]\!], \ y_i=\beta_0+\beta_1x_i + \epsilon_i
 $$
 
@@ -70,11 +70,15 @@ On suppose que les variables $\epsilon_i$ sont :
     $\forall\ (i,j) \in [\![1,n]\!]^2, i \neq j, \ \mathbb{C}\mathbb{o}\mathbb{v}(\epsilon_i,\epsilon_j)=0$.
 :::
 
+:::
+
 ## Question 2
 
 Donner les expressions des estimateurs par MCO de la pente et de
 l’ordonnée à l’origine du modèle, en fonction des sommes données
 ci-dessus. En déduire leurs valeurs.
+
+::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
 On a :
@@ -92,6 +96,9 @@ $$
 &\simeq -10.94044
 \end{align*}
 $$
+
+:::
+
 :::
 
 ## Question 3
@@ -100,11 +107,17 @@ Donner l’expression d’un estimateur sans biais de la variance de
 l’erreur de modélisation, en fonction des sommes données ci-dessus. En
 déduire sa valeur.
 
+::: {.content-visible when-meta="is_answer_print_3"}
+
 ::: answer
 Un estimateur sans biais $\hat{\sigma}^2$ de $\sigma^2$ est
-$$\hat{\sigma}^2=\frac{\textrm{SCR}}{n-p}$$ (cf. slide 56)
+$$
+\hat{\sigma}^2=\frac{\textrm{SCR}}{n-p}
+$$ (cf. slide 56)
 
-avec $$
+avec
+
+$$
 \begin{align*}
 \textrm{SCR}&=\sum\limits_{i=1}^n \hat{\epsilon}_i^2 =\sum\limits_{i=1}^n \left(y_i-\hat{y}_i \right)^2 \\
 &=\sum\limits_{i=1}^n \left( y_i-\hat{\beta}_0-\hat{\beta}_1x_i \right)^2 \ \textrm{car c'est un modèle linéaire simple} \\
@@ -113,7 +126,8 @@ avec $$
 \end{align*}
 $$
 
-Numériquement, $$
+Numériquement,
+$$
 \begin{align*}
 \textrm{SCR}&\simeq36404096.44+17\times (-10.94044)^2+18.44877^2\times97913.92 \\
 &\quad -2\times(-10.94044\times 13683.8-(-10.94044)\times18.4487\times 751.8+18.44877\times1798166.66) \\
@@ -123,12 +137,16 @@ Numériquement, $$
 $$
 :::
 
+:::
+
 ## Question 4
 
 Que vaut la variance théorique des estimateurs par MCO ? Comment
 l’estimer ? En déduire une estimation de l’écart-type de chaque
 estimateur (on pourra s’appuyer sur l’expression de $(X'X)^{-1}$
 rappelée dans l’exercice 5).
+
+::: {.content-visible when-meta="is_answer_print_4"}
 
 ::: answer
 La variance théorique des estimateurs par MCO $\hat{\beta}$ vaut :
@@ -176,6 +194,8 @@ $\sqrt{20068.707} \approx 141.6641$, tandis que celle de $\hat{\beta}_1$
 vaut $\sqrt{3.484367} \approx 1.866646$.
 :::
 
+:::
+
 ## Question 5
 
 Tester si la pente de la régression est significativement différente de
@@ -193,6 +213,8 @@ donnés dans la table ci-dessous :
 : Quantiles d’ordre $1-\gamma$ d’une loi de Student à $q$ degrés de
 liberté, pour différentes valeurs de $\gamma$ et de $q$.
 
+::: {.content-visible when-meta="is_answer_print_5"}
+
 ::: answer
 **Hypothèses du modèle**
 
@@ -206,13 +228,17 @@ Sous le modèle $y_i = \beta_0 + \beta_1 x_i + \epsilon_i$, on suppose :
 
 **Hypothèses du test**
 
-Il s’agit de tester : $$
+Il s’agit de tester :
+
+$$
 H_0 : \beta_1 = 0 \quad \text{vs} \quad H_1 : \beta_1 \neq 0
 $$
 
 **Statistique de test**
 
-On note $T_1$ la statistique de test telle que $$
+On note $T_1$ la statistique de test telle que
+
+$$
 T_1 = \frac{\hat\beta_1}{\hat{\sigma}_{\hat{\beta_1}}}, 
 \quad \text{avec } \hat{\sigma}_{\hat{\beta_1}} = \sqrt{\widehat{\mathrm{Var}}(\hat\beta_1)}
 $$
@@ -221,7 +247,9 @@ Sous $H_0$, $T_1 \sim \underbrace{St_{n-p}}_{St_{15}}$.
 
 **Règle de décision** **(niveau** $\alpha$ **= 5 %)**
 
-Un région critique au niveau $\alpha$ est $$
+Un région critique au niveau $\alpha$ est
+
+$$
 RC_\alpha = \left\{ \left| \hat{T}_1 \right|>t_{n-p}(1-\alpha/2) \right\}
 $$
 
@@ -241,11 +269,15 @@ associée à une augmentation moyenne d’environ 18,45 millions de livres
 de confiseries.
 :::
 
+:::
+
 ## Question 6
 
 Donner l’expression de la p-valeur du test précédent. On ne demande pas
 d’effectuer l’application numérique, mais au moins d’en donner une
 valeur approximative.
+
+::: {.content-visible when-meta="is_answer_print_6"}
 
 ::: answer
 La p-valeur d’un test statistique est la probabilité, sous l’hypothèse
@@ -265,20 +297,27 @@ $T_1 \approx 9.88337$ sera très proche de 1 donc la p-valeur sera
 quasiment nulle.
 :::
 
+:::
+
 ## Question 7
 
 Tester de même si l’ordonnée à l’origine est significativement
 différente de 0, d’une part en fixant le niveau à 5 % et d’autre part en
 évaluant grossièrement la p-valeur associée.
 
+::: {.content-visible when-meta="is_answer_print_7"}
+
 ::: answer
 **Hypothèses du test**
 
-Il s’agit de tester : $$
+Il s’agit de tester :
+$$
 H_0 : \beta_0 = 0 \quad \text{vs} \quad H_1 : \beta_0 \neq 0
 $$
 
-On note $T_0$ la statistique de test telle que $$
+On note $T_0$ la statistique de test telle que
+
+$$
 T_0 = \frac{\hat\beta_0}{\hat{\sigma}_{\hat{\beta_0}}}, 
 \quad \text{avec } \hat{\sigma}_{\hat{\beta_0}} = \sqrt{\widehat{\mathrm{Var}}(\hat\beta_0)}
 $$
@@ -287,7 +326,9 @@ Sous $H_0$, $T_0 \sim \underbrace{St_{n-p}}_{St_{15}}$.
 
 **Règle de décision** **(niveau** $\alpha$ **= 5 %)**
 
-Un région critique au niveau $\alpha$ est $$
+Un région critique au niveau $\alpha$ est
+
+$$
 RC_\alpha = \left\{ \left| \hat{T}_0 \right|>t_{n-p}(1-\alpha/2) \right\}
 $$
 
@@ -312,4 +353,6 @@ $$
 &\approx2 F\left(T_0^{(\textrm{obs})}\right) \approx 2F(-0.077) \approx 2\times 0.5\approx 1
 \end{align*}
 $$
+:::
+
 :::

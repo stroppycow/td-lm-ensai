@@ -2,20 +2,66 @@
 title: "TD 6 - Exercice 3 - Le modèle logistique est naturel (bis)"
 lang: fr
 author: "Théo Leroy"
-date: "19 novembre 2024"
+date: "14 novembre 2025"
+params:
+  question_courante: 0
 format:
   live-html:
     code-background: true
     toc: true
     page-layout: full
 editor: 
+  mode: source
   markdown: 
     wrap: 72
+fig-align: center
+filters: 
+  - custom-callout
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    icon: true
+    icon-symbol: "📝"
+    appearance: "default"
+    title: "Correction"
 ---
 
-::: {.content-hidden when-format="html"}
+{{< include ./../_extensions/conditionnal.qmd >}}
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
+
+**Préambule :** 
+
+L’entropie est une quantité qu’on trouve en thermodynamique pour mesurer l’état de 
+désordre ou d’aléa d’un système. Dans le même esprit, on la trouve également
+en théorie de l’information et en probabilité pour quantifier le désordre ou la 
+quantité d’aléa qu’intègre une loi de probabilité. Un système physique a tendance
+à évoluer naturellement vers un état d’entropie maximale. Suivant ce principe,
+il est naturel, pour décrire une expérience aléatoire donnée, de choisir des
+lois de probabilité qui maximisent l’entropie. C’est ce principe que nous
+allons appliquer pour chercher à choisir au mieux $\mathbb{P}(Y = 1)$ lorsque 
+$Y$ est binaire.
+
+Mathématiquement, étant donné $Y$ une variable binaire et 
+$p = \mathbb{P}(Y = 1)$, l’entropie de la loi de $Y$ vaut
+
+$$
+-p\log\left(p\right)-(1-p)\log\left(1-p \right)
+$$
+
+L’entropie d’un vecteur de variables binaires indépendantes 
+$\left(Y_1,, \dots, Y_n \right)$ est simplement la
+somme des entropies individuelles.
+
 ## Question 1
 
+Sans aucune source de contrainte, quelle est la loi d’entropie maximale d’une variable
+binaire ?
+
+
+::: {.content-visible when-meta="is_answer_print_1"}
+
+::: answer
 On maximise l'entropie $$H(p) = -p \log(p)- (1-p)\log(1-p)$$
 
 Pour se faire, on annule la dérivée en $p$.
@@ -35,40 +81,101 @@ $p$ (la dérivée seconde est négative).
 Le résultat est naturel : la loi la plus "aléatoire" possible est la loi
 uniforme qui donne la même masse à 0 et à 1.
 
+:::
+
+:::
+
 ## Question 2
+
+Supposons à présent qu’on dispose d’un échantillon de $n$ couples $(Y_i,X_i)$ où $X_i$
+est une variable aléatoire dans $\mathbb{R}^d$.
+On note $p_i(x_i) = \mathbb{P}\left(Y_i = 1 | X_i = x_i\right)$, $i = 1, \dots n$.
+A priori, sans utiliser aucune information contenue dans l’échantillon, que valent les
+$p_i(x_i)$ qui maximisent l’entropie ?
+
+::: {.content-visible when-meta="is_answer_print_2"}
+
+::: answer
 
 Il faut trouver les $p_i\left(x_i\right)$ qui maximisent
 
-$$\sum_{i=1}^n-p_i\left(x_i\right) \log \left(p_i\left(x_i\right)\right)-\left(1-p_i\left(x_i\right)\right) \log (1-p_i\left(x_i\right))$$
+$$
+\sum\limits_{i=1}^n-p_i\left(x_i\right) \log \left(p_i\left(x_i\right)\right)-\left(1-p_i\left(x_i\right)\right) \log (1-p_i\left(x_i\right))
+$$
 
 On est ramené à la question précédente pour chaque $i$ et la solution
 est $p_i\left(x_i\right)=1 / 2$ pour tout $i$.
 
-## Question 3 {#question-3}
+:::
+
+:::
+
+## Question 3
+
+On souhaite trouver les $p_i(x_i)$ qui maximisent l’entropie tout en étant cohérentes
+avec les observations. Cela revient à inclure des contraintes sur les $p_i(x_i)$ possibles.
+On choisit les contraintes :
+
+$$
+\sum\limits_{i=1}^n y_ix_i = \sum\limits_{i=1}^n p_i(x_i)x_i
+$$
+
+(Puisque $x_i$ est un vecteur de taille $d$, il s’agit bien d’un système de $d$ contraintes).
+
+Ces contraintes sont assez naturelles : on souhaite que la moyenne des $x_i$ des individus
+du groupe positif $(y_i = 1)$ coincide avec la moyenne des $x_i$ pondérée par la
+probabilité que $y_i$ vale 1. En particulier (pour la variable constante 1), on souhaite
+que la proportion des $y_i = 1$ coincide avec la somme des probabilités.
+
+Trouver les $p_i(x_i)$ qui maximisent l’entropie tout en satisfaisant
+les contraintes précédentes. On pourra donner la solution à une
+constante (vectorielle) inconnue près.
+
+::: {.content-visible when-meta="is_answer_print_3"}
+
+::: answer
 
 On introduit $d$ multiplicateurs de Lagrange
 $\lambda_1, \ldots, \lambda_d$. Le problème d'optimisation revient à
-trouver $(p_1(x_1), \dots,p_d(x_d))$ qui maximisent le Lagrangien $$
+trouver $\left(p_1(x_1), \dots,p_d(x_d)\right)$ qui maximisent le Lagrangien
+
+$$
 L=\sum_{i=1}^n\left[-p_i(x_i) \log \left(p_i(x_i)\right)-\left(1-p_i(x_i)\right) \log \left(1-p_i(x_i)\right)\right]+\lambda \cdot\left(\sum_{i=1}^n p_i x_i-\sum_{i=1}^n y_i x_i\right)
 $$
 
 où $\lambda=\left(\lambda_1, \ldots, \lambda_d\right)$. Il convient
 d'annuler les dérivées partielles de $L$ par rapport à chaque $p_i(x_i)$
 et à chaque $\lambda_i$ pour obtenir la solution. Par rapport à chaque
-$p_i(x_i)$, cela donne $$
+$p_i(x_i)$, cela donne
+
+$$
 \frac{\partial L}{\partial p_i(x_i)}=-\log \left(p_i(x_i)\right)-1+\log \left(1-p_i(x_i)\right)+1+\lambda \cdot x_i
-$$ qui s'annule en $$
+$$
+
+qui s'annule en
+$$
 p_i(x_i)=\frac{1}{1+e^{-\lambda \cdot x_i}}=\frac{e^{\lambda \cdot x_i}}{1+e^{\lambda \cdot x_i}}
 $$
 
 Il reste à trouver $\lambda$. Il doit être tel que les contraintes
 souhaitées soient satisfaites (ce que l'on obtient en dérivant le
 Lagrangien par rapport à chaque composante de $\lambda)$, c'est à dire :
+
 $$
 \sum_{i=1}^n\left(\frac{e^{\lambda \cdot x_i}}{1+e^{\lambda \cdot x_i}}-y_i\right) \cdot x_i=0 .
 $$
 
+:::
+
+:::
+
 ## Question 4
+
+Quel rapport peut-on faire avec la régression logistique ?
+
+::: {.content-visible when-meta="is_answer_print_4"}
+
+::: answer
 
 On constate que la forme de $p_i\left(x_i\right)$ est
 $p_i\left(x_i\right)=\operatorname{logit}^{-1}\left(\lambda \cdot x_i\right)$,
@@ -77,5 +184,11 @@ paramètre $\lambda$ est solution des équations de vraisemblance. Le
 point de vue précédent (maximiser l'entropie sous contrainte d'une
 attache aux données) motive donc l'utilisation du modèle logistique pour
 tout $x$ (et non seulement pour les $x_i$ de l'échantillon) :
-$$p(x)=\mathbb{P}(Y=1 \mid X=x)=\operatorname{logit}^{-1}(\lambda \cdot x)$$
+
+$$
+p(x)=\mathbb{P}(Y=1 \mid X=x)=\operatorname{logit}^{-1}(\lambda \cdot x)
+$$
+
+:::
+
 :::

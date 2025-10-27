@@ -2,24 +2,59 @@
 title: "TD 6 - Exercice 2 - Le modèle logistique est naturel"
 lang: fr
 author: "Théo Leroy"
-date: "19 novembre 2024"
+date: "14 novembre 2025"
+params:
+  question_courante: 0
 format:
   live-html:
     code-background: true
     toc: true
     page-layout: full
 editor: 
+  mode: source
   markdown: 
     wrap: 72
+fig-align: center
+filters: 
+  - custom-callout
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    icon: true
+    icon-symbol: "📝"
+    appearance: "default"
+    title: "Correction"
 ---
+
+{{< include ./../_extensions/conditionnal.qmd >}}
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
+
+On dispose d’un couple de variables aléatoires $(X,Y)$ 
+où $Y$ est binaire et $X$ est à valeurs dans $\mathbb{R}^d$. 
+On note $p = \mathbb{P}(Y = 1)$, $f_0(\cdot)$ la densité conditionnelle de $X$ sachant que $Y = 0$ et $f_1(\cdot)$ la densité conditionnelle de $X$
+sachant que $Y = 1$. On note de plus
+
+$$
+h(x)=\log\left(\frac{f_1(x)}{f_0(x)}\right)+\log\left(\frac{p}{1-p}\right) \ , \quad x\in \mathbb{R}^d
+$$
+
 
 ## Question 1
 
-En notant, $p = P(Y = 1)$, $f_0(.)$ la densité conditionnelle de $X$
+Montrer que pour tout $x \in \mathbb{R}^d$
+
+::: {.content-visible when-meta="is_answer_print_1"}
+
+::: answer
+
+En notant, $p =  \mathbb{P}(Y = 1)$, $f_0(\cdot)$ la densité conditionnelle de $X$
 sachant que $Y = 0$ et $f_1(.)$ la densité conditionnelle de $X$ sachant
 que $Y = 1$.
 
-D'après la formule de Bayes, $$
+D'après la formule de Bayes,
+
+$$
 \begin{aligned}
 \mathbb{P}(Y=1 \mid X = x) &= 
 \frac{f_1(x) p}{f_1(x) p+f_0(x)(1-p)} \\
@@ -30,7 +65,26 @@ D'après la formule de Bayes, $$
 \end{aligned}
 $$
 
+:::
+
+:::
+
 ## Question 2
+
+On rappelle qu’une loi sur Rd fait partie de la famille exponentielle si sa densité
+s’écrit $a(x)b(x)e^{\theta^{'}T(x)}$, pour un certain paramètre 
+$\theta \in \mathbb{R}^q$, où $a$ et $b$ sont des fonctions positives 
+et $T : \mathbb{R}^d \longrightarrow \mathbb{R}^q$ est une fonction 
+appelée statistique suffisante.
+
+Montrer que si les densités conditionnelles $f_0$ et $f_1$ font partie de la même famille
+exponentielle et ne diffèrent que par la valeur de leur paramètre associé, alors
+$\mathbb{P}(Y = 1|X = x)$ suit exactement un modèle de régression logistique,
+dont on précisera le paramètre et les variables.
+
+::: {.content-visible when-meta="is_answer_print_2"}
+
+::: answer
 
 D'après l'énoncé
 $$f_0(x)=a(x) b\left(\theta_0\right) e^{\theta_0 \cdot T(x)} \textrm{ et }
@@ -60,3 +114,7 @@ $$
 
 qui est bien un modèle logistique associé aux variables $\tilde{T}(x)$
 et au paramètre $\beta$.
+
+:::
+
+:::

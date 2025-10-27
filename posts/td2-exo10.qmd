@@ -3,6 +3,8 @@ title: "TD 2 - Exercice 10 - ANOVA à 1 facteur : effet du dosage d’un médica
 lang: fr
 author: "Théo Leroy"
 date: "17 octobre 2025"
+params:
+  question_courante: 6
 format:
   live-html:
     code-background: true
@@ -28,15 +30,16 @@ filters:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
-Le fichier `chemical.txt` contient la concentration dans le sang (en *ng=ml*) d’un certain 
+Le fichier `chemical.txt` contient la concentration dans le sang (en *ng/ml*) d’un certain 
 produit chimique chez 40 patients selon qu’ils ont absorbé un médicament dosé à 
 25, 50, 100 ou 200 mg de substance active (l’almitrine bismesylate). Les patients sont ainsi 
 séparés en 4 groupes de 10 selon le dosage reçu.
@@ -49,7 +52,8 @@ niveaux du facteur dose pour avoir une représentation par ordre croissant du do
 Les hypothèses nécessaires à une analyse de variance de l’effet dosage semblent-elles 
 vérifiées ?
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_1"}
+
 ::: answer
 
 On charge les données du fichier `chemical.txt` en {{< iconify logos:r-lang >}} sous forme de `data.frame`.
@@ -136,7 +140,9 @@ statistiques ci-dessous :
 
 ![](/static/img/boxplot.svg){fig-align="center"}
 :::
+
 :::
+
 :::
 
 ## Question 2
@@ -144,7 +150,8 @@ statistiques ci-dessous :
 Effectuer un test d’égalité de variance de Bartlett (`bartlett.test`) et de Levene
 (`leveneTest` dans la librairie `car`) pour confirmer le problème vu précédemment.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_2"}
+
 ::: answer
 
 On effectue les deux tests d’égalité de variance proposés.  L’hypothèse nulle ($H_0$) postule que 
@@ -195,6 +202,7 @@ Les p-valeurs sont bien inférieures à $0,05$ dans les deux tests effectués.
 On rejette donc l'hypothèse nulle. Ils confirment l'analyse graphique que les variances ne sont pas identiques.
 
 :::
+
 :::
 
 ## Question 3
@@ -203,7 +211,8 @@ On propose de s’intéresser à une transformation logarithmique de la variable
 Représenter les boîtes à moustaches des données transformées. Effectuer des tests 
 d’égalité des variances pour vérifier la stabilité des variances après transformation.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_3"}
+
 ::: answer
 
 On reproduit les deux premières questions en s'interessant à $\ln(\texttt{concent})$.
@@ -277,6 +286,7 @@ car::leveneTest(log(concent) ~ dose, data = data_chemical)
 La transformation appliquée a permis de stabiliser les variances.
 
 :::
+
 :::
 
 ## Question 4
@@ -285,7 +295,8 @@ Réaliser l’analyse de la variance et tester l’effet du dosage sur la concen
 produit chimique.
 
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_4"}
+
 ::: answer
 
 On pourrait modéliser l'effet du dosage sur la concentration en produit chimique comme ceci :
@@ -340,7 +351,7 @@ avec
 * $S^2_\textrm{inter}$ : la somme des carrés inter-modalités 
     $$S^2_\textrm{inter}=\sum\limits_{i=1}^I n_i\left(\overline{Y}_i-\overline{Y}\right)^2$$
 * $S^2_\textrm{intra}$ : la somme des carrés intra-modalités 
-    $$S^2_\textrm{inter}=\sum\limits_{i=1}^I \sum\limits_{j=1}^{n_i} \left(Y_{ij}-\overline{Y_i}\right)^2$$
+    $$S^2_\textrm{intra}=\sum\limits_{i=1}^I \sum\limits_{j=1}^{n_i} \left(Y_{ij}-\overline{Y_i}\right)^2$$
 
 On retrouve ces quantités dans la sorties de la fonction `anova`.
 
@@ -431,8 +442,11 @@ cat(paste0("F = ",Fstat,"\n"))
 cat(paste0("p-value = ",pval,"\n"))
 ```
 :::
+
 :::
+
 :::
+
 :::
 
 ## Question 5 
@@ -440,7 +454,8 @@ cat(paste0("p-value = ",pval,"\n"))
 Analyser à présent le résumé de la sortie de la fonction `lm` : à quoi correspond chaque
 quantité ?
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_5"}
+
 ::: answer
 
 On appelle la fonction `summary` sur l'objet `reg` qui correspond à l'ajustement de notre modèle ANOVA.
@@ -480,6 +495,7 @@ $\texttt{dose200}$ et la moyenne dans la modalité $\texttt{dose25}$. Les résul
 Tous ces tests de Student concluent que les coeffcients sont significatifs sont significatifs.
 
 :::
+
 :::
 
 ## Question 6
@@ -490,7 +506,8 @@ un test de Tukey pour identifier les différences significatives (si le modèle 
 du résultat).
 
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_6"}
+
 ::: answer
 
 La sortie commentée à la question précédente indique que la modalité $\texttt{dose25}$ présente une moyenne de $\ln(\texttt{concent})$ significativement inférieure à celle des autres dosages, avec une différence de l'ordre de 1 à 2 unités. Cependant, la comparaison entre les autres dosages est moins évidente. Bien qu'une tendance à l'augmentation de $\ln(\texttt{concent})$ avec le dosage soit observée, il n'est pas clair si cette augmentation est significative, notamment entre les modalités $\texttt{dose100}$ et $\texttt{dose200}$.
@@ -538,4 +555,5 @@ ggplot2::ggplot(tukey_df, ggplot2::aes(x = comparison, y = diff)) +
 En analysant les p-values des tests ainsi que les intervalles de confiance (IC), on observe que la dernière différence n'est pas significativement différente de 0. Cela indique un gain significatif lors de l'augmentation du dosage jusqu'à 100, mais un effet seuil semble apparaître, car le gain n'est plus significatif lorsque l'on passe de 100 à 200.
 
 :::
+
 :::

@@ -3,6 +3,8 @@ title: "TD 2 - Exercice 5"
 lang: fr
 author: "Théo Leroy"
 date: "26 septembre 2025"
+params:
+  question_courante: 0
 format:
   live-html:
     code-background: true
@@ -27,13 +29,15 @@ diagram:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
 
 On se place dans un modèle de régression contenant une constante. On
 définit

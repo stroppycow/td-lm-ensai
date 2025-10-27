@@ -2,7 +2,9 @@
 title: "TD 6 - Exercice 6 - Fourmis"
 lang: fr
 author: "Théo Leroy"
-date: "19 novembre 2024"
+date: "5 decembre 2025"
+params:
+  question_courante: 0
 format:
   live-html:
     code-background: true
@@ -20,15 +22,45 @@ webr:
       - tidyr
       - MASS
 editor: 
+  mode: source
   markdown: 
     wrap: 72
+fig-align: center
+filters: 
+  - custom-callout
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    icon: true
+    icon-symbol: "📝"
+    appearance: "default"
+    title: "Correction"
 ---
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
+Le but de l’étude est d’étudier la diversité des fourmis
+sur le site expérimental des Nourragues en Guyane Française.
+On a prélevé 1 m² de litière en plusieurs endroits de 4 forêts différentes
+(la forêt de plateau $\texttt{GPWT}$, la foret de liane $\texttt{FLWT}$,
+la foret de transition $\texttt{FTWT}$,
+et la forêt d’Inselberg $\texttt{INWT}$).
+Chaque échantillon a été pesé (variable $\texttt{Weight}$) et le nombre
+d’espèces différentes présentes dans l’échantillon a été
+relevé (variable $\texttt{Effectifs}$). Enfin les conditions de recueil
+(humides ou sèches, variable  $\texttt{Conditions}$) ont été notées pour
+tester leur influence sur la présence des fourmis.
 
 ## Question 1
 
-On charge les données du fichier `Fourmis.txt` en R sous forme de
+Importer les données sous {{< iconify logos:r-lang >}} et transformer
+les variables catégorielles en facteur.
+
+::: {.content-visible when-meta="is_answer_print_1"}
+::: answer 
+
+On charge les données du fichier `Fourmis.txt` en {{< iconify logos:r-lang >}} sous forme de
 `data.frame`.
 
 ::: {.panel-tabset group="language"}
@@ -65,25 +97,35 @@ data_fourmis
 ```
 :::
 
-La variable `Effectifs` correspondant au nombre d'espèces différentes de
+La variable $\texttt{Effectifs}$ correspondant au nombre d'espèces différentes de
 fourmis dans l'échantillon prélevé est une variable de comptage. On
 l'importe comme `integer`.
 
-La variable `Weight` contient le poids des échantillons.C'est une
+La variable $\texttt{Weight}$ contient le poids des échantillons.C'est une
 variable quantitative, on l'importe en `numeric`.
 
-La variable `Site` indique la provenance des différents échantillons
-(`GPWT` : forêt de plateau, `FLWT` forêt de lianes, `FTWT` forêt de
-transition, et `INWT` forêt d'Iselberg). C'est une variable
+La variable $\texttt{Site}$ indique la provenance des différents échantillons
+($\texttt{GPWT}$ : forêt de plateau, $\texttt{FLWT}$ forêt de lianes, $\texttt{FTWT}$ forêt de
+transition, et $\texttt{INWT}$ forêt d'Iselberg). C'est une variable
 catégorielle. On l'importe en `factor`.
 
-La variable `Conditions` nous renseigne sur les conditions de recueil de
+La variable $\texttt{Conditions}$ nous renseigne sur les conditions de recueil de
 l'échantillon. C'est une variable catégorielle avec deux modalités :
-`Dry` (sec) et `Wet` (humide) qu'on importe donc en `factor`.
+$\texttt{Dry}$ (sec) et $\texttt{Wet}$ (humide) qu'on importe donc en `factor`.
+
+:::
+
+:::
 
 ## Question 2
 
-### Lien entre `Weight` et `Effectifs`
+Effectuer une petite étude descriptive pour identifier un lien éventuel entre le nombre
+d’espèces observé et les autres variables à disposition.
+
+::: {.content-visible when-meta="is_answer_print_2"}
+::: answer
+
+**Lien entre $\texttt{Weight}$ et $\texttt{Effectifs}$**
 
 ::: {.panel-tabset group="language"}
 #### Base R
@@ -170,9 +212,9 @@ gridExtra::grid.arrange(grobs = g, layout_matrix = matrix(1:4, ncol = 2))
 :::
 
 En distinguant par type de forêt un lien croissant semble exister pour
-les forêts `FLWT` et `GPWT`.
+les forêts $\texttt{FLWT}$ et $\texttt{GPWT}$.
 
-### Lien entre `Site` et `Effectifs`
+**Lien entre $\texttt{Site}$ et $\texttt{Effectifs}$**
 
 ::: {.panel-tabset group="language"}
 #### Base R
@@ -207,7 +249,7 @@ ggplot2::ggplot(
 Un lien semble exister entre le type de forêt et le nombre d'espèces de
 fourmis.
 
-### Lien entre `Conditions` et `Effectifs`
+**Lien entre $\texttt{Conditions}$ et $\texttt{Effectifs}$**
 
 ::: {.panel-tabset group="language"}
 #### Base R
@@ -242,9 +284,20 @@ ggplot2::ggplot(
 Aucune relation ne semble exister entre les conditions de recueil et le
 nombre d'espèces de fourmis.
 
+:::
+
+:::
+
 ## Question 3
 
-Le modèle log-linéaire de Poisson de la variables `Effectifs` en
+Modéliser par un modèle log-linéaire de Poisson la variable $\texttt{Effectifs}$ en fonction
+de toutes les variables à disposition, en incluant toutes leurs interactions possibles.
+Analyser la sortie du modèle.
+
+::: {.content-visible when-meta="is_answer_print_3"}
+::: answer
+
+Le modèle log-linéaire de Poisson de la variables $\texttt{Effectifs}$ en
 fonction de toutes les variables à disposition s'écrit :
 
 $$
@@ -255,10 +308,11 @@ $$
 
 avec
 
+$\textrm{log}\left(\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions})\right)$
+
 $$
 \begin{align*}
-\textrm{log}\left(\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions})\right) = &\ \ \ \ \ 
-\beta_0 \\ 
+= &\ \ \ \ \ \beta_0 \\ 
 &+ \beta_1\texttt{Weight} \\
 &+ \beta_2\textbf{1}_{\texttt{Site}=\texttt{FTWT}}+\beta_3\textbf{1}_{\texttt{Site}=\texttt{GPWT}}+\beta_4\textbf{1}_{\texttt{Site}=\texttt{INWT}} \\
 &+ \beta_5\textbf{1}_{\texttt{Conditions}=\texttt{Wet}} \\
@@ -316,12 +370,23 @@ Une analyse rapide des résultats de la sortie donnée par la fonction
 `summary` met en évidence de nombreux coefficients non significatifs.
 Cependant, l’interaction triple semblerait pertinente car certains
 coefficients associés sont significatifs au seuil 5 %. Ainsi, le
-coefficient associé à la variable `Weight` ne varie pas de manière
+coefficient associé à la variable $\texttt{Weight}$ ne varie pas de manière
 significative lorsqu’on considère uniquement le site ou les conditions
 séparément (cf. interactions doubles) mais il semble varier quand on
-prend en compte à la fois `Site` et `Conditions`.
+prend en compte à la fois $\texttt{Site}$ et $\texttt{Conditions}$.
+
+:::
+
+:::
 
 ## Question 4
+
+En utilisant la fonction `step`, effectuer une sélection stepwise backward du meilleur
+sous-modèle du modèle précédent selon le critère AIC, puis selon le critère BIC.
+Effectuer de même une sélection stepwise forward. Comparer les choix obtenus.
+
+::: {.content-visible when-meta="is_answer_print_4"}
+::: answer
 
 On met en place les différentes procédure de sélction demandées
 
@@ -536,10 +601,26 @@ data.frame(
 On garderait donc le modèle général (celui de la question 3) selon AIC
 et le modèle le plus simple `Site+Weight` selon le BIC.
 
+:::
+
+:::
+
 ## Question 5
 
+L’incohérence dans les sélections backward et forward précédentes suggère qu’il y a
+peut-être un sous-modèle alternatif (non testé par ces algorithmes) encore meilleur.
+Cela nous incite à effectuer une sélection exhaustive du meilleur sous-modèle, comme
+le propose la fonction `regsubsets` en régression linéaire. Malheureusement cette
+dernière ne fonctionne pas avec le modèle de Poisson. Si on voulait implémenter
+cette sélection exhaustive nous-même, justifier qu’il y aurait 30 sous-modèles (avec
+constante) à tester, en comptant le modèle le plus général.
+
+::: {.content-visible when-meta="is_answer_print_5"}
+
+::: answer
+
 On peut découper le combinaison de paramétrage pour l'ordonnée à
-l'origine et pour la pente associée à la variable `Weight`. L'ensemble
+l'origine et pour la pente associée à la variable $\texttt{Weight}$. L'ensemble
 des combinaisons possibles de sous-modèle sera ainsi le produit
 cartésien de ces deux sous ensembles.
 
@@ -556,23 +637,14 @@ une constante.
 -   Une constante par croisement du type de forêt et conditions de
     recueil : `Site:Conditions`
 
-**Choix pour la pente associée à la variable `weight`**
+**Choix pour la pente associée à la variable $\texttt{Weight}$**
 
--   
-
-    Pente nulle qui signifie l'absence d'effet du poids de l'échantillon
-
-    :   `0*Weight`
-
+-   Pente nulle qui signifie l'absence d'effet du poids de l'échantillon :   `0*Weight`
 -   Une pente unique : `Weight`
-
 -   Une pente type de forêt : `Weight:Site`
-
 -   Une pente selon les conditions de recueil : `Weight:Site`
-
 -   Une pente qui additionne l'effet du type de forêt et les conditions
     de recueil : `Weight:Site + Weight:Conditions`
-
 -   Une pente par croisement du type de forêt et conditions de recueil :
     `Weight:Site:Conditions`
 
@@ -582,7 +654,7 @@ Il y a donc $5 \times 6 = 30$ modèles possibles.
 ### Compléments : Implémentation de la recherche exhaustive
 
 On pourrait implémenter soi-même la recherche exhaustive avec quelques
-lignes de codes en R. Ce n'est pas immédiat et donc pas demandé dans
+lignes de codes en {{< iconify logos:r-lang >}}. Ce n'est pas immédiat et donc pas demandé dans
 l'exercice.
 
 ```{webr}
@@ -609,7 +681,23 @@ lapply(
 ```
 :::
 
+:::
+
+:::
+
 ## Question 6
+
+On admet qu’à l’issue d’une telle sélection exhaustive, le meilleur sous-modèle au
+sens de l’AIC et du BIC est celui dont les coefficients de $\texttt{Weight}$ sont déclinés en
+autant de modalités croisées que contiennent les facteurs $\texttt{Site}$ et
+$\texttt{Conditions}$ (c’est à dire 8), mais qui a une ordonnée à l’origine
+identique pour toutes les modalités croisées de $\texttt{Site}$ et
+$\texttt{Conditions}$. Estimer ce modèle, calculer son AIC et son BIC et
+comparer avec ceux des modèles sélectionnés précédemment.
+
+::: {.content-visible when-meta="is_answer_print_6"}
+
+::: answer
 
 On estime le meilleur modèle log-linéaire de Poisson au sens du BIC et
 de l'AIC.
@@ -647,7 +735,19 @@ BIC(modele_q6)
 On obtient AIC=1008 et BIC=1036.6, qui sont bien plus faibles que ceux
 des modèles retenus par sélection stepwise.
 
+:::
+
+:::
+
 ## Question 7
+
+En guise d’alternative, nous souhaitons essayer d’ajuster un modèle généralisé binomial
+négatif. Si on inclut toutes les interactions possibles, cette approche semble-t-elle
+préférable au modèle de Poisson ?
+
+::: {.content-visible when-meta="is_answer_print_7"}
+
+::: answer
 
 On adopte la même démarche. On estime d'abord le modèle avec le plus de
 termes. On utilise la fonction `glm.nb` du package `MASS`.
@@ -685,13 +785,24 @@ modèle de Poisson avec interaction triple (AIC=1010 et BIC=1061).
 Ce résultat est encourageant et nous incite à chercher le meilleur
 sous-modèle possible.
 
+:::
+
+:::
+
 ## Question 8
+
+Après une sélection exhaustive, on admet que le meilleur sous-modèle binomial négatif
+au sens de l’AIC fait intervenir les mêmes variables que le meilleur modèle de
+Poisson. Par contre, pour le critère BIC, il s’agit du modèle ne faisant intervenir que
+$\texttt{Weight}$ et $\texttt{Site}$, dans lequel le coefficient de $\texttt{Weight}$
+varie selon $\texttt{Site}$, mais l’ordonnée
+à l’origine est constante. Estimer ces deux modèles et calculer leur AIC et BIC.
 
 ::: {.callout-note collapse="true"}
 ### Complément : Implémentation de la recherche exhaustive
 
 On pourrait à nouveau implémenter soi-même la recherche exhaustive avec
-quelques lignes de codes en R pour retrouver le résultat de l'énoncé. Ce
+quelques lignes de codes en {{< iconify logos:r-lang >}} pour retrouver le résultat de l'énoncé. Ce
 n'est toujours pas immédiat.
 
 ```{webr}
@@ -706,6 +817,10 @@ lapply(
 ) |> do.call(what = rbind.data.frame)
 ```
 :::
+
+::: {.content-visible when-meta="is_answer_print_8"}
+
+::: answer
 
 **Modèle binomial négatif sélectionné par l'AIC**
 
@@ -774,7 +889,18 @@ Son AIC vaut 997 et son BIC 1016.
 Evidemment l’AIC du premier est inférieur à celui du second, et
 inversement pour le BIC.
 
+:::
+
+:::
+
 ## Question 9
+
+Etant donné l’avis des experts, il semble important que le modèle tienne compte des
+conditions d’humidité. Quel modèle final retenir ?
+
+::: {.content-visible when-meta="is_answer_print_9"}
+
+::: answer
 
 Le meilleur modèle de Poisson au sens de l’AIC et du BIC dépend de
 `Weight:Site:Conditions`. Il fait donc intervenir les conditions
@@ -789,7 +915,18 @@ modèle binomial négatif avec les mêmes variables : les critères AIC et
 BIC nous conduisent tous deux au second choix : le meilleur modèle
 binomal négatif au sens de l'AIC.
 
+:::
+
+:::
+
 ## Question 10
+
+Ecrire l’équation du modèle retenu suivant les différents sites et les conditions de
+recueil.
+
+::: {.content-visible when-meta="is_answer_print_10"}
+
+::: answer
 
 Le modèle sélectionné de la variables s'écrit :
 
@@ -832,15 +969,29 @@ tableau à double entrée.
 : Estimations de
 $\lambda(\texttt{Weight}, \texttt{Site},\texttt{Conditions})$
 
+:::
+
+:::
+
 ## Question 11
 
-On réalise une prédiction pour `Weight=10`, `Site="INWT"` et
-`Conditions="Dry"` afin d'obtenir les valeur de la moyenne `\lambda` de
+D’après le modèle sélectionné, quelle est la probabilité d’observer plus de 15 espèces
+sur un sol de type $\texttt{INWT}$ par temps sec, basé sur un échantillon de terre qui pèse
+10 kg ? Même question si le temps est humide.
+
+::: {.content-visible when-meta="is_answer_print_11"}
+
+::: answer
+
+On réalise une prédiction pour 
+$\texttt{Weight}=10$, $\texttt{Site}=\textrm{"}\texttt{INWT}\textrm{"}$
+et $\texttt{Conditions}=\textrm{"}\texttt{Dry}\textrm{"}$
+afin d'obtenir les valeur de la moyenne $\lambda$ de
 la loi binomiale négative avec la fonction `predict`.
 
 La probabilité d’observer plus de 15 espèces s’obtient ensuite grâce à
-la fonction de répartition d’une loi binomiale négative sous R (fonction
-`pnbinom`) dans laquelle $\lambda$ joue le rôle de la moyenne `mu` et
+la fonction de répartition d’une loi binomiale négative sous {{< iconify logos:r-lang >}} (fonction
+`pnbinom`) dans laquelle $\lambda$ joue le rôle de la moyenne $\mu$ et
 $\theta$ joue le rôle de la taille d’échantillon `size`.
 
 ::: {.panel-tabset group="language"}
@@ -873,7 +1024,8 @@ lambda <- predict(
 
 Cette probabilité est de 0.19.
 
-Pour `Weight=10`, `Site="INWT"` et `Conditions="Wet"`,
+Pour $\texttt{Weight}=10$, $\texttt{Site}=\textrm{"}\texttt{INWT}\textrm{"}$
+et $\texttt{Conditions}=\textrm{"}\texttt{Wet}\textrm{"}$,
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -903,4 +1055,8 @@ lambda <- predict(
 ```
 :::
 
-la probabilité est de 0.66.
+La probabilité est de 0.66.
+
+:::
+
+:::

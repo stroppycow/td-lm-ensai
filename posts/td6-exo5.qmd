@@ -2,7 +2,9 @@
 title: "TD 6 - Exercice 5 - Santé mentale"
 lang: fr
 author: "Théo Leroy"
-date: "19 novembre 2024"
+date: "5 decembre 2025"
+params:
+  question_courante: 0
 format:
   live-html:
     code-background: true
@@ -19,13 +21,53 @@ webr:
       - tidyr
       - VGAM
 editor: 
+  mode: source
   markdown: 
     wrap: 72
+fig-align: center
+filters: 
+  - custom-callout
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    icon: true
+    icon-symbol: "📝"
+    appearance: "default"
+    title: "Correction"
 ---
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
+On considère les données `mental`, contenues dans le fichier
+`Mental.txt`. Ce jeu de données, de taille $n = 40$,
+est extrait d’une étude sur la santé mentale d’adultes vivant dans le comté américain
+d’Alachua, en Floride. Il contient trois variables :
+
+- Une variable $\texttt{impair}$ décrivant l’état mental de la personne concernée, de 1 (sain) à
+4 (en mauvaise santé),
+- Une variable $\texttt{ses}$ qui vaut 1 si la personne a un statut socio-économique élevé, 0
+sinon,
+- Une variable $\texttt{life}$ mesurant le nombre et l’intensité des bouleversements qu’a connus
+la personne au cours des trois dernières années, de 0 (aucun changement) à 9
+(changements très importants).
+
+
+Le but de l’exercice est de modéliser la variable $\texttt{imapir}$.
+
 ## Question 1
+
+Importer les données sous {{< iconify logos:r-lang >}}. La variable $\texttt{ses}$
+est-elle qualitative ou quantitative ?
+Même question pour la variable $\texttt{life}$.
+Changer leur classe sous {{< iconify logos:r-lang >}} si besoin.
+
+::: {.content-visible when-meta="is_answer_print_1"}
+
+::: answer
+
+Importons le fichier de données `Mental.txt` en {{< iconify logos:r-lang >}} sous forme de
+`data.frame`.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -61,20 +103,31 @@ data_mental
 ```
 :::
 
-La variable `ses` (statut socio-économique) est qualitative. On peut la
+La variable $\texttt{ses}$ (statut socio-économique) est qualitative. On peut la
 charger comme `factor` ou comme `integer` car cette variable ne comporte
 que deux modalités.
 
-À l'inverse, on peut voir la variable `life`comme quantitative. On
+À l'inverse, on peut voir la variable $\texttt{life}$comme quantitative. On
 suppose que l'accroissement d'une unité de cette variable a du sens et
 correspond à une augmentation de la fréquence d'évènements troublants
-pour un individu. Considérer la variable `life` comme qualitative ne
+pour un individu. Considérer la variable $\texttt{life}$ comme qualitative ne
 serait pas une erreur mais ferait exploser le nombre de regresseurs dans
 la modélisation alors qu'il n'y a que 40 observations.
 
+:::
+
+:::
+
 ## Question 2
 
-### Lien entre `ses` et `impair`
+Effectuer une petite étude descriptive pour identifier un lien éventuel entre la variable
+$\texttt{imapir}$ et les autres variables du jeu de données.
+
+::: {.content-visible when-meta="is_answer_print_2"}
+
+::: answer
+
+**Lien entre $\texttt{ses}$ et $\texttt{impair}$**
 
 ::: {.panel-tabset group="language"}
 #### Base R
@@ -127,7 +180,7 @@ ggplot2::ggplot(
 ```
 :::
 
-### Lien entre `life` et `impair`
+**Lien entre $\texttt{life}$ et $\texttt{impair}$**
 
 ::: {.panel-tabset group="language"}
 #### Base R
@@ -169,16 +222,30 @@ ggplot2::ggplot(
 :::
 
 Ce graphique illustre une relation empirique positive entre les
-variables `life` et `impair`. Plus la fréquence et l'intensité des
+variables $\texttt{life}$ et $\texttt{impair}$. Plus la fréquence et l'intensité des
 bouleversements vécus sont importants et plus les personnes sont dans
 une situation de mauvaise santé mentale.
 
+:::
+
+:::
+
 ## Question 3
 
+Ecrire mathématiquement le modèle de régression logistique cumulatif proportionnel
+sans terme d’interaction liant $\texttt{impair}$ à $\texttt{ses}$ et $\texttt{life}$,
+et permettant d’estimer les probabilités que
+$\texttt{impair} = 1, \ \texttt{impair} \leq 2$ et $\texttt{impair} \leq 3$.
+Combien ce modèle a-t-il de coefficients ?
+
+::: {.content-visible when-meta="is_answer_print_3"}
+
+::: answer
+
 La loi décrivant l'état mental d'un individu conditionnellement à son
-statut économique (`ses`) et le nombre et l'intensité des
+statut économique ($\texttt{ses}$) et le nombre et l'intensité des
 bouleversements qu'il a connu au cours des trois dernières années
-(`life`) est une loi de multinomiale.
+($\texttt{life}$) est une loi de multinomiale.
 
 Le modèle de régression logistique cumulatif avec structure
 proportionnelle s'écrit :
@@ -203,9 +270,21 @@ $$
 Il y a 5 paramètres à estimer : $\beta_0^{(1)}$, $\beta_0^{(2)}$,
 $\beta_0^{(3)}$, $\beta_1$ et $\beta_2$.
 
+:::
+
+:::
+
 ## Question 4 {#question-4}
 
-Nous allons estimer ce modèle, toutefois, les fonctionnalités R de base
+Estimer les coefficients de ce modèle à l’aide de la fonction `vglm` du package
+`VGAM`, associée à l’option `family=cumulative(parallel=TRUE)`. Contrôler que
+le nombre de coefficients est bien celui attendu.
+
+::: {.content-visible when-meta="is_answer_print_4"}
+
+::: answer
+
+Nous allons estimer ce modèle, toutefois, les fonctionnalités {{< iconify logos:r-lang >}} de base
 ne permettent pas d'estimer ce modèle directement avec une fontion comme
 `lm` ou `glm`. Le cours nous invite, par exemple, à utiliser le package
 `VGAM` et la fonction `vglm` en son sein.
@@ -264,7 +343,18 @@ On peut lire les valeurs des 5 coefficients attendus dans la colonne
 `Estimate` (3 pour les constantes de chaque probabilité cumulée et 2
 associées à chaque régresseur).
 
+:::
+
+:::
+
 ## Question 5
+
+Ecrire la définition mathématique de l’odds ratio associé à la variable $\texttt{ses}$
+et interpréter cette quantité.
+
+::: {.content-visible when-meta="is_answer_print_5"}
+
+::: answer
 
 L'odds de l'évènement
 $\texttt{impair}\leq k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})$
@@ -283,7 +373,9 @@ $\textbf{x}=(\texttt{ses}=1, \texttt{life}=x_{\texttt{life}})$ et un
 autre individu avec les caractéristiques
 $\textbf{x}'=(\texttt{ses}=0, \texttt{life}=x_{\texttt{life}})$, on a :
 
-$$\texttt{OR}(\textbf{x},\textbf{x}') = \frac{\texttt{odds}_k(\textbf{x})}{\texttt{odds}_k(\textbf{x}')}=\frac{\exp(\beta_0^{(k)}+\beta_1+\beta_2x_\texttt{life})}{\exp(\beta_0^{(k)}+\beta_2x_\texttt{life})}=\exp(\beta_1)$$
+$$
+\texttt{OR}(\textbf{x},\textbf{x}') = \frac{\texttt{odds}_k(\textbf{x})}{\texttt{odds}_k(\textbf{x}')}=\frac{\exp(\beta_0^{(k)}+\beta_1+\beta_2x_\texttt{life})}{\exp(\beta_0^{(k)}+\beta_2x_\texttt{life})}=\exp(\beta_1)
+$$
 
 Ainsi un estimateur de $\texttt{OR}(\textbf{x},\textbf{x}')$ est
 
@@ -427,11 +519,24 @@ ggplot2::ggplot(
 ```
 :::
 
+:::
+
+:::
+
 ## Question 6
+
+Donner un intervalle de confiance asymptotique au niveau de confiance 95 % pour le
+paramètre lié à la variable $\texttt{ses}$.
+
+::: {.content-visible when-meta="is_answer_print_6"}
+
+::: answer
 
 L'intervalle de confiance asymptotique au niveau de confiance
 $1 − \alpha$ pour $\hat{\beta_1}$ est donnée par :
-$$\left[\hat{\beta}_1 - q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \ ; \ \hat{\beta}_1 + q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \right]$$
+$$
+\left[\hat{\beta}_1 - q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \ ; \ \hat{\beta}_1 + q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \right]
+$$
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -493,7 +598,18 @@ confint(modele_q4)
 ```
 :::
 
+:::
+
+:::
+
 ## Question 7
+
+En déduire un intervalle de confiance asymptotique au niveau de confiance 95 % pour
+l’odds ratio associé.
+
+::: {.content-visible when-meta="is_answer_print_7"}
+
+::: answer
 
 Par monotonie de la fonction $\exp$, on peut construire un intervalle de
 confiance en passant à l'exponentielle dans les bornes de l'IC
@@ -517,13 +633,37 @@ exp(confint(modele_q4)["ses",])
 ```
 :::
 
+:::
+
+:::
+
 ## Question 8
+
+Y a-t-il une influence du statut socio-économique sur l’état de santé mentale au seuil
+5 % ? Et au seuil 10 % ?
+
+::: {.content-visible when-meta="is_answer_print_8"}
+
+::: answer
 
 D'après la sortie obtenue à la [question 4](#question-4) et les p-valeur
 des tests de Wald, le coefficient $\beta_1$ est non significatif au
 seuil d'erreur 5 % mais il est significatif au seuil 10 %.
 
+:::
+
+:::
+
 ## Question 9 {#question-9}
+
+On souhaite voir si un modèle plus complexe s’ajusterait mieux aux données. Ecrire
+mathématiquement puis estimer un modèle de régression logistique cumulatif proportionnel
+avec terme d’interaction. Interpréter le résultat obtenu. Ce modèle est-il
+significativement meilleur, au seuil d’erreur asymptotique 5 % ?
+
+::: {.content-visible when-meta="is_answer_print_9"}
+
+::: answer
 
 On peut ajouter un terme d'interaction entre deux variables avec
 l'opérateur `:` afin d'évaluer si l'effet du nombre et de l'intensité
@@ -587,7 +727,9 @@ un test du rapport de vraisemblance entre ces deux modèles emboités.
 L'hypothèse nulle $H_0$ est $\beta_3=0$
 
 Sous $H_0$, la statistique de test du rapport de vraisemblance :
-$$ -2 \ln\left(\frac{L_n^{(\textrm{modele contraint})}}{L_n^{(\textrm{modele non contraint})}}\right) \sim \chi^2(\underbrace{\textrm{nb de coefficients contraints}}_{1})$$
+$$
+-2 \ln\left(\frac{L_n^{(\textrm{modele contraint})}}{L_n^{(\textrm{modele non contraint})}}\right) \sim \chi^2(\underbrace{\textrm{nb de coefficients contraints}}_{1})
+$$
 
 avec :
 
@@ -627,7 +769,18 @@ de première espèce $\alpha=0.05$.
 Ainsi, le modèle avec le terme d'intéraction n'est pas significativement
 meilleur au seuil d'erreur asymptotique de 5 %.
 
+:::
+
+:::
+
 ## Question 10
+
+Même question avec un modèle de régression logistique cumulatif sans structure
+proportionnelle, mais sans terme d’interaction.
+
+::: {.content-visible when-meta="is_answer_print_10"}
+
+::: answer
 
 Le modèle de régression logistique cumulatif sans structure
 proportionnelle et sans terme d'intéraction s'écrit :
@@ -720,10 +873,20 @@ quantile $q_{0.95}^{\chi^2(4)}$.
 Ainsi, le modèle avec la structure non proportionnelle n'est pas
 significativement meilleur.
 
+:::
+
+:::
+
 ## Question 11
 
+Inversement, pourrait-on proposer un modèle plus simple ?
+
+::: {.content-visible when-meta="is_answer_print_11"}
+
+::: answer
+
 Au vu de la sortie du modèle à odds proportionnels et de l’analyse
-descriptive préliminaire, on peut essayer d'enlever la variable `ses`.
+descriptive préliminaire, on peut essayer d'enlever la variable $\texttt{ses}$.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -777,7 +940,18 @@ qchisq(0.95,1)
 
 Au seuil de 5 %, on est donc amené à privilégier ce modèle plus simple.
 
+:::
+
+:::
+
 ## Question 12
+
+Pour finir, on décide de ne pas exploiter le fait que la variable $\texttt{impair}$ est ordinale, et de la modéliser par un modèle logistique multinomial. Comparer cette approche
+à la modélisation précédente.
+
+::: {.content-visible when-meta="is_answer_print_12"}
+
+::: answer
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -838,3 +1012,7 @@ BIC(modele_q12)
 :::
 
 Les deux critères conduisent au choix du modèle obtenu à la question 11.
+
+:::
+
+:::

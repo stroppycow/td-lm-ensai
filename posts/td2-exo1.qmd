@@ -3,6 +3,8 @@ title: "TD 2 - Exercice 1"
 lang: fr
 author: "Théo Leroy"
 date: "17 septembre 2025"
+params:
+  question_courante: 9
 format:
   live-html:
     code-background: true
@@ -28,14 +30,15 @@ editor:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
 
 ![](/static/img/eucalyptus.jpg){fig-align="center"}
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On veut expliquer la hauteur des eucalyptus en fonction de leur
@@ -46,6 +49,8 @@ eucalyptus, qui se trouvent dans le fichier `eucalyptus.txt`.
 ## Question 1
 
 Extraire et représenter les données dans le plan.
+
+::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
 On charge les données du fichier `eucalyptus.txt` en {{< iconify logos:r-lang >}} sous forme de
@@ -126,10 +131,14 @@ Une régression semble semble indiquée, les points étant disposés
 grossièrement le long d'une droite.
 :::
 
+:::
+
 ## Question 2
 
 Effectuer la régression $y=\beta_1+\beta_2x+\epsilon$ où $y$ représente
 la hauteur et $x$ la circonférence. Commenter les résultats.
+
+::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
 On effectue la régression $y = \beta_1+\beta_2x+\varepsilon$ à l'aide de
@@ -293,10 +302,14 @@ Commentons la sortie détaillée donnée par la fonction générique
     $H_1 : \beta_2 \neq 0$.
 :::
 
+:::
+
 ## Question 3
 
 Quelle est la formule théorique de $\hat{\beta}_1$ et $\hat{\beta}_2$ ?
 Retrouver les estimations fournies par {{< iconify logos:r-lang >}} en l’utilisant.
+
+::: {.content-visible when-meta="is_answer_print_3"}
 
 ::: answer
 Pour le modèle linéaire simple, on a :
@@ -375,18 +388,24 @@ solve(t(X)%*%X)%*%t(X)%*%Y
 On retrouve les mêmes valeurs.
 :::
 
+:::
+
 ## Question 4
 
 Calculer un intervalle de confiance à 95 % pour $\beta_1$ et $\beta_2$,
 en supposant la normalité des données.
 
+::: {.content-visible when-meta="is_answer_print_4"}
+
 ::: answer
 La formule de l'intervalle de confiance pour le coefficient $\beta_j$
 sous l'hypothèse d'erreurs gaussiennes, centrées et homoscédastiques est
-: $$
+:
+$$
 I C_{1-\alpha}\left(\beta_j\right)=\left[\hat{\beta}_j \pm q_{1-\alpha/2}^{\mathcal{T}_{n-p}} \hat{\sigma}_{\hat{\beta}_j}\right]
-$$ où
-$\hat{\sigma}_{\hat{\beta}_j}=\hat{\sigma} \sqrt{\left(X^{\prime} X\right)_{j j}^{-1}}$
+$$
+
+où $\hat{\sigma}_{\hat{\beta}_j}=\hat{\sigma} \sqrt{\left(X^{\prime} X\right)_{j j}^{-1}}$
 est l'estimateur de l'écart-type de $\hat{\beta}_j$.
 
 En reportant les résultats du modèle de régression, on obtient pour
@@ -538,10 +557,14 @@ I C_{95\ \%}\left(\beta_2\right)&=\left[0,250\ ;\ 0,264\right]
 $$
 :::
 
+:::
+
 ## Question 5
 
 Si le bruit $\epsilon$ ne suit pas une loi normale, les intervalles de
 confiance précédents restent-ils valables ?
+
+::: {.content-visible when-meta="is_answer_print_5"}
 
 ::: answer
 Pour que ces intervalles de confiances soient exacts, l'erreur doit être
@@ -552,11 +575,15 @@ se fier à ces intervalles de confiance même si la normalité des erreurs
 n'est pas vérifiée.
 :::
 
+:::
+
 ## Question 6
 
 Tracer l’estimateur de la droite de régression et un intervalle de
 confiance à 95 % de celle-ci. Que déduisez-vous de la qualité de
 l’estimation ?
+
+::: {.content-visible when-meta="is_answer_print_6"}
 
 ::: answer
 ::: {.panel-tabset group="language"}
@@ -629,12 +656,16 @@ ggplot2::ggplot() +
 On constate une faible incertitude sur la droite estimée.
 :::
 
+:::
+
 ## Question 7
 
 On veut à présent prédire la hauteur d’une nouvelle série d’eucalyptus
 de circonférences 50, 100, 150 et 200. Donner les estimateurs de la
 taille de chacun d’entre eux et les intervalles de prévision à 95 %
 associés, en supposant la normalité des données.
+
+::: {.content-visible when-meta="is_answer_print_7"}
 
 ::: answer
 La prévision $\widehat{y}_{n+1}^p$ pour une circonférence $x_{n+1}$ est
@@ -643,7 +674,10 @@ $$\widehat{y}_{n+1}^p = \widehat{\beta}_1+\widehat{\beta}_2x_{n+1}$$
 
 Sous l'hypothèse de gaussianité des erreurs, un IC de $y_{n+1}$ est
 donné par
-$$I C_{1-\alpha}\left(y_{n+1}\right)=\left[\widehat{y}_{n+1}^p \pm q_{1-\alpha/2}^{\mathcal{T}_{n-p}} \hat{\sigma}\sqrt{1+\frac{1}{n}+\frac{\left(x_{n+1}-\overline{x_n}\right)^2}{\sum\limits_{i=1}^n \left(x_i - \overline{x_n} \right)^2}}\right]$$
+
+$$
+I C_{1-\alpha}\left(y_{n+1}\right)=\left[\widehat{y}_{n+1}^p \pm q_{1-\alpha/2}^{\mathcal{T}_{n-p}} \hat{\sigma}\sqrt{1+\frac{1}{n}+\frac{\left(x_{n+1}-\overline{x_n}\right)^2}{\sum\limits_{i=1}^n \left(x_i - \overline{x_n} \right)^2}}\right]
+$$
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -744,10 +778,14 @@ l’erreur de prévision cumule deux erreurs :
     $\mathrm{Var}(\varepsilon_{n+1})=\sigma^2$.
 :::
 
+:::
+
 ## Question 8
 
 Ajouter à la représentation graphique de la question 6 les intervalles
 de prévision (associés aux mêmes valeurs de la circonférence).
+
+::: {.content-visible when-meta="is_answer_print_8"}
 
 ::: answer
 ::: {.panel-tabset group="language"}
@@ -839,12 +877,17 @@ ggplot2::ggplot() +
  ggplot2::theme_light()
 ```
 :::
+
+:::
+
 :::
 
 ## Question 9
 
 Si le bruit $\epsilon$ ne suit pas une loi normale, les intervalles de
 prévision précédents restent-ils valables ?
+
+::: {.content-visible when-meta="is_answer_print_9"}
 
 ::: answer
 Non, les intervalles de confiance pour les prévisions ne sont plus du
@@ -861,4 +904,6 @@ erreurs :
 À cause de cette deuxième erreur, $Y_{n+1}-\widehat{Y}_{n+1}$ ne suit
 pas une loi Gaussienne et donc les intervalles de confiance de la
 prédiction ne sont plus valables.
+:::
+
 :::

@@ -4,6 +4,10 @@ lang: fr
 format:
   live-html:
     code-background: true
+editor: 
+  mode: source
+  markdown: 
+    wrap: 72
 ---
 
 ## Exercices de la séance 1
@@ -46,7 +50,6 @@ format:
 
 [Exercice 12](/posts/td2-exo12.html)
 
-::: {.content-hidden when-format="html"}
 ## Exercices des séances 6 à 8
 
 [Exercice 1](/posts/td6-exo1.html)
@@ -62,4 +65,3 @@ format:
 [Exercice 6](/posts/td6-exo6.html)
 
 [Exercice 7](/posts/td6-exo7.html)
-:::

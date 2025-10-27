@@ -16,6 +16,7 @@ webr:
       - cowplot
 fig-align: center
 editor: 
+  mode: source
   markdown: 
     wrap: 72
 ---

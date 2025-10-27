@@ -3,6 +3,8 @@ title: "TD 2 - Exercice 4 - Le coefficient de corrélation multiple avec ou sans
 lang: fr
 author: "Théo Leroy"
 date: "26 septembre 2025"
+params:
+  question_courante: 0
 format:
   live-html:
     code-background: true
@@ -18,11 +20,14 @@ editor:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
+
+{{< include ./../_extensions/conditionnal.qmd >}}
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère le modèle de régression
 
@@ -43,13 +48,16 @@ vecteurs $Y$, $\widehat{Y}$, $\overline{y}\mathbb{1}$,
 $Y-\overline{y}\mathbb{1}$, $\widehat{Y}-\overline{y}\mathbb{1}$ et
 $\hat{\epsilon}$.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_1"}
+
 ::: answer
 $\widehat{Y}$ est la projection orthogonale de $Y$ sur $[X]$ (i.e.
 l'espace vectoriel engendré par $\mathbb{1}$ et les $X^{(k)}$).
 
 ![](/static/img/representation-variables.svg){fig-align="center"}
+
 :::
+
 :::
 
 
@@ -64,7 +72,8 @@ $$
 \end{align}
 $$
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_2"}
+
 ::: answer
 D'après le théorème de Pythagore dans le triangle $0$, $Y$ et
 $\widehat{Y}$,
@@ -88,9 +97,15 @@ $$
 
 c'est à dire
 
-$$ \sum\limits_{i=1}^n \left(y_i-\overline{y}\right)^2 = \sum\limits_{i=1}^n \widehat{\varepsilon}_i^2+ \sum\limits_{i=1}^n \left(\widehat{y}_i-\overline{y}\right)^2  $$
+$$ 
+\sum\limits_{i=1}^n \left(y_i-\overline{y}\right)^2 = \sum\limits_{i=1}^n \widehat{\varepsilon}_i^2+ \sum\limits_{i=1}^n \left(\widehat{y}_i-\overline{y}\right)^2 
+$$
+
 :::
+
 :::
+
+
 
 ## Question 3
 
@@ -103,7 +118,8 @@ $$
 
 Justifier que $R_1^2 \geq R_2^2$. Dans quel cas, a-t-on égalité ?
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_3"}
+
 ::: answer
 Grâce aux relations précédentes, on a $$
 R_1^2=1-\frac{\sum_{i=1}^n \hat{\epsilon}_i^2}{\sum_{i=1}^n y_i^2} \qquad R_2^2=1-\frac{\sum_{i=1}^n \hat{\epsilon}_i^2}{\sum_{i=1}^n\left(y_i-\bar{y}\right)^2} .
@@ -116,7 +132,9 @@ $\sum y_i^2-n \bar{y}^2=\sum y_i^2$ c'est à dire si et seulement si
 $\bar{y}=0.$
 
 Le cas d'égalité a lieu si et seulement si la variable $Y$ est centrée.
+
 :::
+
 :::
 
 ## Question 4
@@ -124,11 +142,14 @@ Le cas d'égalité a lieu si et seulement si la variable $Y$ est centrée.
 Quelle est la définition du coefficient de corrélation multiple pour le
 modèle $(*)$ ?
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_4"}
+
 ::: answer
+
 Dans le modèle $(*)$ une constante est présente et par définition
 $R^2=R_2^2$.
 :::
+
 :::
 
 ## Question 5
@@ -138,7 +159,8 @@ dire que l’on fixe $\beta_0 = 0$ dans $(*)$. Les égalités montrées dans
 la question 2 restent-elles valables ? Quelle est dans ce cas la
 définition du coefficient de corrélation multiple ?
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_5"}
+
 ::: answer
 Si l'on fixe $\beta_0=0$, $\mathbb{1}$ n'appartient plus à $[X]$ et donc
 $\hat{\epsilon}=Y-\hat{Y}$ n'est plus orthogonal à
@@ -147,6 +169,7 @@ théorème de Pythagore, la relation $(b)$ n'est plus vérifiée.
 
 Dans ce cas, on définit $R^2 = R_1^2$.
 :::
+
 :::
 
 ## Question 6
@@ -155,7 +178,8 @@ Après estimation du modèle $(*)$ avec ou sans la constante, on obtient
 $R^2 = 0.72$ avec la constante et $R^2 = 0.96$ sans la constante.
 L’introduction de la constante est-elle pertinente ?
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_6"}
+
 ::: answer
 Il est incohérent de comparer le $R^2$ d’un modèle avec constante à
 celui d’un modèle sans constante, car les formules utilisées pour les
@@ -164,5 +188,7 @@ question 3, on a toujours $R_1^2 \geq R_2^2$. Ainsi, par construction,
 le $R^2$ d’un modèle sans constante tend à être bien plus élevé que
 celui d’un modèle avec constante, sans que cela indique pour autant une
 meilleure qualité du modèle sans constante.
+
 :::
+
 :::

@@ -3,6 +3,8 @@ title: "TD 2 - Exercice 6 - Effet de la multicolinéarité"
 lang: fr
 author: "Théo Leroy"
 date: "10 octobre 2025"
+params:
+  question_courante: 3
 format:
   live-html:
     code-background: true
@@ -25,11 +27,14 @@ diagram:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
+
+{{< include ./../_extensions/conditionnal.qmd >}}
+{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère un modèle à deux variables explicatives, supposées centrées. De l’estimation sur $n$ individus, on a obtenu les matrices $X'X$ et $X'Y$ suivantes :
 
@@ -63,13 +68,19 @@ Calculer les coefficients estimés de la régression dans les deux cas.
 ::: callout-tip
 ## Formule d'inversion des matrices $2 \times 2$
 
-Soit $M \in \mathcal{M}_2\left(\mathbb{R} \right)$ avec $$
+Soit $M \in \mathcal{M}_2\left(\mathbb{R} \right)$ avec
+
+$$
 M = \begin{pmatrix}
 a & b \\
 c & d \\
 \end{pmatrix}
-$$ $M$ est inversible si et seulement si $\det(M) = ad-cb \neq 0$ et
-dans ce cas $$
+$$
+
+$M$ est inversible si et seulement si $\det(M) = ad-cb \neq 0$ et
+dans ce cas
+
+$$
 M^{-1}=\frac{1}{ad-cb}\begin{pmatrix}
 d & -b \\
 -c & a \\
@@ -78,13 +89,14 @@ $$
 
 :::
 
+::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
 
 On estime les coefficients par les moindres carrés ordinaires dans ces
 deux cas.
 
-**Cas 1 : Estimation sur** $n$ individus
+**Cas 1 : Estimation sur** $n$ **individus**
 
 $$
 \begin{align*}
@@ -102,7 +114,11 @@ $$
 -1,5 & 2 \\
 \end{pmatrix}
 \end{align*}
-$$ Ainsi, $$
+$$
+
+Ainsi,
+
+$$
 \widehat{\beta}_n = \left( X^{'} X \right)^{-1}X^{'}Y = \begin{pmatrix}
 1,13 & -1,5 \\
 -1,5 & 2 \\
@@ -119,7 +135,7 @@ $$ Ainsi, $$
 \end{pmatrix}
 $$
 
-**Cas 2 : Estimation sur** $n-1$ individus
+**Cas 2 : Estimation sur** $n-1$ **individus**
 
 $$
 \begin{align*}
@@ -137,7 +153,11 @@ $$
 -149 & 199 \\
 \end{pmatrix}
 \end{align*}
-$$ Ainsi, $$
+$$
+
+Ainsi,
+
+$$
 \widehat{\beta}_{n-1} = \left( X^{'} X \right)^{-1}X^{'}Y = \frac{1}{87}\begin{pmatrix}
 112 & -149 \\
 -149 & 199 \\
@@ -156,9 +176,13 @@ $$ Ainsi, $$
 -0,5 \\
 3
 \end{pmatrix}
-$$ À première vue, les estimations $\widehat{\beta}_n$ sont assez
+$$
+
+À première vue, les estimations $\widehat{\beta}_n$ sont assez
 différentes $\widehat{\beta}_{n-1}$ alors que les données sont presque
 les mêmes.
+
+:::
 
 :::
 
@@ -167,6 +191,7 @@ les mêmes.
 Sur la base des $n$ individus, calculer le coefficient de corrélation linéaire entre les
 deux variables explicatives.
 
+::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
 
@@ -176,12 +201,18 @@ variables explicatives :
 Si on base le calcul sur les $n$ individus initiaux, en notant
 $x_{i, 1}$ les valeurs de la première variable et $x_{i, 2}$ les valeurs
 de la seconde (de telle sorte que les entrées de la matrice $X$ sont
-$\left.x_{i, j}\right):$ $$
+$\left.x_{i, j}\right):$
+
+$$
 \begin{aligned}
 \hat{\rho}_n & =\frac{\sum\limits_{i=1}^n\left(x_{i, 1}-\bar{x}_1\right)\left(x_{i, 2}-\bar{x}_2\right)}{\sqrt{\sum\limits_{i=1}^n\left(x_{i, 1}-\bar{x}_1\right)^2 \sum\limits_{i=1}^n\left(x_{i, 2}-\bar{x}_2\right)^2}} \\
 & =\frac{\sum\limits_{i=1}^n x_{i, 1} x_{i, 2}}{\sqrt{\sum\limits_{i=1}^n x_{i, 1}^2 \sum\limits_{i=1}^n x_{i, 2}^2}}
 \end{aligned}
-$$ car $\bar{x}_1=\bar{x}_2=0$ par hypothèse. Or $$
+$$
+
+car $\bar{x}_1=\bar{x}_2=0$ par hypothèse. Or
+
+$$
 X^{\prime} X=\left(\begin{array}{cc}
 \sum\limits_{i=1}^n x_{i, 1}^2 & \sum\limits_{i=1}^n x_{i, 1} x_{i, 2} \\
 \sum\limits_{i=1}^n x_{i, 1} x_{i, 2} & \sum\limits_{i=1}^n x_{i, 2}^2
@@ -192,9 +223,13 @@ Donc $\hat{\rho}_n=150 / \sqrt{200 \times 113} \approx 0,9979$.
 
 :::
 
+:::
+
 ## Question 3
 
 Commenter.
+
+::: {.content-visible when-meta="is_answer_print_3"}
 
 ::: answer
 
@@ -208,5 +243,6 @@ le détecter, entre autres, grâce au calcul des VIF, et le résoudre en
 supprimant par exemple la variable la moins pertinente parmi celles en
 cause.
 
+:::
 
 :::

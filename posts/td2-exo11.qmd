@@ -3,6 +3,8 @@ title: "TD 2 - Exercice 11"
 lang: fr
 author: "Théo Leroy"
 date: "17 octobre 2025"
+params:
+  question_courante: 3
 format:
   live-html:
     code-background: true
@@ -32,12 +34,13 @@ filters:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère de nouveau les données `ozone.txt` étudiées dans l’exercice 7. On désire
@@ -51,7 +54,8 @@ le modèle construit dans l’exercice 7.
 On reprend le modèle sélectionné dans l’exercice 7, soit $\texttt{maxO3}$ en fonction de
 $\texttt{T12}$, $\texttt{Ne9}$, $\texttt{Vx9}$ et $\texttt{maxO3v}$ où $\texttt{maxO3v}$ représente la concentration maximale en ozone de la veille (créer cette variable si besoin). Ajuster ce modèle sur les données.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_1"}
+
 ::: answer
 
 On charge les données du fichier `ozone.txt` en {{< iconify logos:r-lang >}} sous forme de `data.frame`.
@@ -162,7 +166,8 @@ Représenter graphiquement $\texttt{maxO3}$ en fonction de la présence de pluie
 semble-t-il présent ? Le confirmer par un test statistique.
 
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_2"}
+
 ::: answer
 
 On peut faire une boite à moustaches de la variable $\texttt{maxO3}$ selon les
@@ -302,6 +307,7 @@ On rejette l'hypothèse nulle du test de Welch : les moyennes de la
 variable $\texttt{maxO3}$ diffèrent entre les journées avec et sans pluie.
 
 :::
+
 :::
 
 ## Question 3
@@ -311,7 +317,8 @@ générale possible (i.e. en incluant une interaction avec chaque variable en pl
 effet sur la constante). Tester la significativité de ces ajouts en effectuant un test de
 Fisher de modèles emboités entre ce modèle et le modèle initial.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_3"}
+
 ::: answer
 
 On ajoute la variable $\texttt{pluie}$ en incluant l'effet sur la constante et
@@ -439,7 +446,8 @@ Tester de même le modèle plus simple dans lequel seul un effet additif de la v
 $\texttt{pluie}$ est intégré, et non ses interactions avec les autres variables. Le résultat est-il
 en désaccord avec l’analyse graphique de la question 2 ? Comment expliquer le résultat ?
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_4"}
+
 ::: answer
 
 En prenant la modalité $\texttt{Pluie}$ comme référence, le modèle peut
@@ -502,7 +510,8 @@ question 2), ce qui en fait un facteur de confusion.
 De même : représenter graphiquement $\texttt{maxO3}$ en fonction de la direction du vent
 et étudier la pertinence d’inclure un effet vent dans le modèle initial.
 
-::: {.content-hidden when-format="html"}
+::: {.content-visible when-meta="is_answer_print_5"}
+
 ::: answer
 
 On trace les boxplots selon les modalités de la variables vent.

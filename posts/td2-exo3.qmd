@@ -3,6 +3,8 @@ title: "TD 2 - Exercice 3"
 lang: fr
 author: "Théo Leroy"
 date: "26 septembre 2025"
+params:
+  question_courante: 10
 format:
   live-html:
     code-background: true
@@ -28,14 +30,15 @@ editor:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
 
 ![](/static/img/icecream.jpg){fig-align="center"}
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On étudie la consommation de glaces aux Etats-Unis sur une période de 30
@@ -52,7 +55,10 @@ fichier `icecream-R.dat`.
 Extraire les données et représenter la consommation en fonction des
 différentes variables.
 
+::: {.content-visible when-meta="is_answer_print_1"}
+
 ::: answer
+
 On charge les données du fichier `icecream-R.dat` en {{< iconify logos:r-lang >}} sous forme de
 `data.frame`.
 
@@ -135,6 +141,8 @@ raison convaincante d'explorer une relation non-linéaire (carré, racine,
 logarithme...).
 :::
 
+:::
+
 ## Question 2
 
 On propose de régresser linéairement la consommation sur les trois
@@ -143,6 +151,8 @@ constante est présente dans le modèle. On note la constante $\beta_1$ et
 les trois coefficients associés aux variables précédentes respectivement
 $\beta_2$, $\beta_3$ et $\beta_4$. Réaliser la phase d’estimation de
 cette régression et commenter le signe des coefficients estimés.
+
+::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
 On effectue la régression
@@ -188,10 +198,14 @@ consommation n'est donc pas confirmé. On ne devrait pas le commenter
 (cf. question 4).
 :::
 
+:::
+
 ## Question 3
 
 Tester la significativité globale du modèle proposé, i.e.
 $H_0 \ : \ \beta_2=\beta_3=\beta_4=0$ à l’aide du test de Fisher global.
+
+::: {.content-visible when-meta="is_answer_print_3"}
 
 ::: answer
 On teste $H_0: \ \beta_2 = \beta_3 = \beta_4 = 0$ contre
@@ -203,18 +217,24 @@ La p-value est bien inférieure à $0,05$ donc on rejette $H_0$. Ainsi, au
 moins un coefficient (autre que la constante) est significatif.
 :::
 
+:::
+
 ## Question 4
 
 Tester la significativité de la variable $\texttt{Price}$ dans ce modèle au seuil
 de 5 %. Tester de même la significativité de $\texttt{Income}$, puis de $\texttt{Temp}$.
+
+::: {.content-visible when-meta="is_answer_print_4"}
 
 ::: answer
 On applique un test de Student de significativité à chaque coefficient
 associé. C’est le test proposé dans la sortie
 {{< iconify logos:r-lang >}} (troisième et quatrième colonne). A la
 lecture des p-values par exemple, au seuil de 5 %, les variables
-<tt>Income</tt> et <tt>Temp</tt> sont significatives (les p-values sont
+$\texttt{Income}$ et $\texttt{Temp}$ sont significatives (les p-values sont
 inférieures à 0,05).
+:::
+
 :::
 
 
@@ -232,6 +252,8 @@ $\texttt{Price}$ à l’aide d’un test de Fisher :
 
 Quel est la différence entre ce test et le test de Student de
 significativité de la variable $\texttt{Price}$ ?
+
+::: {.content-visible when-meta="is_answer_print_5"}
 
 ::: answer
 On estime un modèle sans la variable $\texttt{Price}$.
@@ -403,6 +425,8 @@ La significativité d’un seul coefficient est équivalent au test de
 Student associé, on a d'ailleurs $T_2^2=F$.
 :::
 
+:::
+
 ## Question 6
 
 Comparer le modèle complet et le modèle sans la variable $\texttt{Price}$ et sans
@@ -411,8 +435,10 @@ décrites ci-dessus.
 
 Commenter.
 
+::: {.content-visible when-meta="is_answer_print_6"}
+
 ::: answer
-On estime un modèle sans la variable <tt>Price</tt> et la constante. On
+On estime un modèle sans la variable $\texttt{Price}$ et la constante. On
 teste
 
 $$H_0: \ \beta_1 = \beta_2  = 0 \textrm{ contre } H_1: \ \beta_1 \neq 0 \ \textrm{ou} \ \beta_2 \neq 0$$
@@ -585,6 +611,9 @@ anova(
 )
 ```
 :::
+
+:::
+
 :::
 
 ## Question 7
@@ -597,6 +626,8 @@ $$\texttt{Price} = 0.3, \quad \texttt{Income} = 85 \quad \textrm{et}  \quad \tex
 Proposer la prévision qui vous semble la meilleure au vu des modèles étudiés
 précédemment. Donner un intervalle de prévision au niveau 95 % autour de
 cette prévision.
+
+::: {.content-visible when-meta="is_answer_print_7"}
 
 ::: answer
 D'après la question précédente, le modèle sans la constante et le
@@ -635,11 +666,15 @@ On prédit une consommation de $0,41$ avec $IC = [0,33; \ 0,49]$ à
 $95\ \%$.
 :::
 
+:::
+
 ## Question 8
 
 Sous quelle hypothèse l’intervalle de prévision précédent est-il valable
 ? Vérifier-la en observant le QQ-plot des résidus de la régression et en
 effectuant un test statistique.
+
+::: {.content-visible when-meta="is_answer_print_8"}
 
 ::: answer
 L'intervalle de prévision est valable uniquement sous hypothèse
@@ -673,18 +708,26 @@ test de Shapiro-Wilk ne permet pas de rejeter l’hypothèse nulle de
 Gaussianité des résidus.
 :::
 
+:::
+
 ## Question 9
 
 Vérifier les autres hypothèses en rappelant la définition et en
 calculant les VIF ("Variance Inflation Factor") de chaque variable
 explicative et en effectuant une analyse graphique des résidus.
 
+::: {.content-visible when-meta="is_answer_print_9"}
+
 ::: answer
 **Analyse de l'absence de multicolinéarité**
 
-Le VIF pour la variable $X^{(j)}$ vaut $$
+Le VIF pour la variable $X^{(j)}$ vaut 
+
+$$
 VIF_j=\frac{1}{1-R_j^2}
-$$ où $R_j^2$ est le $R^2$ dans la régression de $X^{(j)}$ par rapport
+$$
+
+où $R_j^2$ est le $R^2$ dans la régression de $X^{(j)}$ par rapport
 aux autres variables explicatives. $R_j^2$ peut être vu comme la mesure
 de la corrélation entre $X^{(j)}$ est les autres variables, de telle
 sorte que $VIF_j$ explose si $R_j^2$ est proche de 1 , c'est à dire s'il
@@ -779,11 +822,15 @@ indiquerait qu'il est influent et/ou aberrant, mais ce n'est pas le cas
 ici.
 :::
 
+:::
+
 ## Question 10
 
 Observer le nuage de points en 3D des variables $\texttt{Consumption}$, $\texttt{Income}$
 et $\texttt{Temp}$, et l’ajustement par le modèle linéaire, à l’aide de
 `scatter3d` de la librairie `car`.
+
+::: {.content-visible when-meta="is_answer_print_10"}
 
 ::: answer
 ::: {.panel-tabset group="language"}
@@ -819,4 +866,7 @@ car::scatter3d(
 rgl::rglwidget()
 ```
 :::
+
+:::
+
 :::

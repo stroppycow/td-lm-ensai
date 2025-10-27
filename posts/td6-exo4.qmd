@@ -2,7 +2,9 @@
 title: "TD 6 - Exercice 4 - Pannes de voiture"
 lang: fr
 author: "Théo Leroy"
-date: "19 novembre 2024"
+date: "14 novembre 2025"
+params:
+  question_courante: 0
 format:
   live-html:
     code-background: true
@@ -17,15 +19,44 @@ webr:
       - readr
       - ggplot2
 editor: 
+  mode: source
   markdown: 
     wrap: 72
+fig-align: center
+filters: 
+  - custom-callout
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    icon: true
+    icon-symbol: "📝"
+    appearance: "default"
+    title: "Correction"
 ---
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
+On considère les données `break`. 
+Ce jeu de données, de taille $n = 33$, comporte trois variables ayant trait
+à l’état d’une automobile :
+
+- Une variable $\texttt{fault}$ qui vaut 1 si la voiture concernée a connu une panne, 0 sinon ;
+- Une variable $\texttt{age}$ qui donne l’âge de la voiture ;
+- Une variable $\texttt{brand}$  qui donne la marque de la voiture.
+
+Le but de l’exercice est de modéliser la variable $\texttt{fault}$.
 
 ## Question 1
 
-Importons le fichier de données `break.csv` en R sous forme de
+Importer les données sous {{< iconify logos:r-lang >}} et recoder la classe
+de chaque variable si nécessaire.
+
+::: {.content-visible when-meta="is_answer_print_1"}
+
+::: answer
+
+Importons le fichier de données `break.csv` en {{< iconify logos:r-lang >}} sous forme de
 `data.frame`.
 
 ::: {.panel-tabset group="language"}
@@ -61,17 +92,28 @@ data_break
 ```
 :::
 
-La variable `age` est quantitative (l'âge de la voiture) alors que
-`brand` (la marque) est qualitative. On transforme la variable `brand`
+La variable $\texttt{age}$ est quantitative (l'âge de la voiture) alors que
+$\texttt{brand}$ (la marque) est qualitative. On transforme la variable $\texttt{brand}$
 en type `factor`.
 
 Cette transformation est importante pour l'estimation de modèles par la
 suite avec la fonction `glm`. Cette transformation permet d'automatiser
 la dichotomisation de cette variable qualitative dans les modèles.
 
+:::
+
+:::
+
 ## Question 2
 
-### Lien entre `fault` et `age`
+Observer graphiquement le lien éventuel entre $\texttt{fault}$ et $\texttt{age}$ d’une part,
+et entre $\texttt{fault}$ et $\texttt{brand}$ d’autre part.
+
+::: {.content-visible when-meta="is_answer_print_2"}
+
+::: answer
+
+**Lien entre $\texttt{fault}$ et $\texttt{age}$**
 
 ::: {.panel-tabset group="language"}
 #### Base R
@@ -187,7 +229,7 @@ généralement cette courbe en 3 phases.
 -   La dernière période est celle du vieillissement et d'usure. La
     proportion de panne croit avec le temps.
 
-### Lien entre `fault` et `brand`
+**Lien entre $\texttt{fault}$ et $\texttt{brand}$**
 
 ::: {.panel-tabset group="language"}
 #### Base R
@@ -239,7 +281,21 @@ Ce graphique semble indiquer que la marque "2" est plus fiable que les
 autres marques, cependant, les données recueillies sont limitées en
 effectif.
 
+:::
+
+:::
+
 ## Question 3
+
+On souhaite mettre en oeuvre un modèle de régression logistique expliquant la probabilité
+d’avoir une panne en fonction de l’âge de la voiture et de sa marque. Lancer
+cette modélisation sous {{< iconify logos:r-lang >}} et écrire la formule mathématique du modèle obtenu. On
+précisera en particulier le modèle estimé spécifique aux voitures de la marque 0, puis
+de la marque 1, puis de la marque 2.
+
+::: {.content-visible when-meta="is_answer_print_3"}
+
+::: answer
 
 Estimons un modèle de régression logistique avec toutes les variables
 explicatives à notre disposition en utilisant la fonction `glm`.
@@ -284,9 +340,9 @@ avec
 $$ \textrm{logit}(p(x_{\texttt{age}},x_{\texttt{brand}}))=\beta_0+\beta_1x_\texttt{age}  + \beta_{21}\mathbb{1}_{x_\texttt{brand}=1}+ \beta_{22}\mathbb{1}_{x_\texttt{brand}=2}$$
 
 Pour intégrer une variable explicative catégorielle dans un modèle
-statististique comme ici `brand`, on "dichotomise" la variable,
+statististique comme ici $\texttt{brand}$, on "dichotomise" la variable,
 c'est-à-dire qu'on transforme chaque modalité en une nouvelle variable
-indicatrice de la présence de cette modalité. Comme la variable `brand`
+indicatrice de la présence de cette modalité. Comme la variable $\texttt{brand}$
 comporte 3 modalités $\{0,1,2\}$. On peut faire apparaitre 3 indiatrices
 dans l'expression du modèle :
 $\beta_{20}\mathbb{1}_{x_\texttt{brand}=0}+\beta_{21}\mathbb{1}_{x_\texttt{brand}=1}+ \beta_{22}\mathbb{1}_{x_\texttt{brand}=2}$.
@@ -312,7 +368,7 @@ Le coefficient $\beta_{21}$ (respectivement $\beta_{22})$ s'interprètent
 comme l'effet propre de la marque marque 1 (resp. 2) par rapport à la
 marque de référence 0.
 
-::::: {.callout-note collapse="true"}
+::: {.callout-note collapse="true"}
 ### Remarque
 
 On peut définir les contraintes si on ne souhaite pas conserver le choix
@@ -352,7 +408,9 @@ summary(modele_q3_bis)
 ```
 :::
 
-Dans ce cas, on estime le modèle $$
+Dans ce cas, on estime le modèle
+
+$$
 \begin{align*}
 \textrm{logit}(\mathbb{P}(\texttt{fault}=1 | \texttt{age}&=x_{\texttt{age}},\texttt{brand}=0))=\alpha_0+\alpha_1x_\texttt{age} + \alpha_{20} \\
 \textrm{logit}(\mathbb{P}(\texttt{fault}=1 | \texttt{age}&=x_{\texttt{age}},\texttt{brand}=1))=\alpha_0+\alpha_1x_\texttt{age} \\
@@ -361,7 +419,7 @@ Dans ce cas, on estime le modèle $$
 $$
 
 Ou encore, on pourrait imposer la sommation à zéro des coefficients
-associés aux indicatrices pour la variable `brand` :
+associés aux indicatrices pour la variable $\texttt{brand}$ :
 
 ::: {.panel-tabset group="language"}
 #### Base R
@@ -395,8 +453,8 @@ summary(modele_q3_ter)
 
 Attention ici, le nommage n'est pas variables indicatrices dans la
 sortie peut être une source d'erreur d'interprétation car 1 et 2 sont
-aussi des modalités de la variable `brand`. La variable `brand1`
-correspond à la première variable de contraste pour `brand` et non à une
+aussi des modalités de la variable $\texttt{brand}$. La variable `brand1`
+correspond à la première variable de contraste pour $\texttt{brand}$ et non à une
 indicatrice la marque 1. On peut s'en convaincre en renommant les
 modalités par des lettres ; les variables `brand1` et `brand2`
 apparaitront tout de même dans la sortie. Le modèle estimé ici est donc
@@ -428,9 +486,19 @@ $$
 \hat{\beta}_0+\hat{\beta}_{22} &=  \hat{\alpha}_0 + \hat{\alpha}_{21} &&= \hat{\gamma}_0- \hat{\gamma}_{21}-\hat{\gamma}_{22} &&&= -0.978 \\
 \end{align*}
 $$
-:::::
+:::
+
+:::
+
+:::
 
 ## Question 4
+
+Analyser la qualité globale du modèle.
+
+::: {.content-visible when-meta="is_answer_print_4"}
+
+::: answer
 
 Pour évaluer la pertinence du modèle, on peut réaliser un test de
 rapport de vraisemblance entre le modèle et le modèle nul.
@@ -450,7 +518,9 @@ avec :
 
 La valeur de cette statististique de test peut être calculé facilement à
 partir des sorties ci-dessus (il s'agit de
-$\texttt{Null deviance}-\texttt{Residual deviance}$ car : $$
+$\texttt{Null deviance}-\texttt{Residual deviance}$ car : 
+
+$$
 \begin{align*}
 \texttt{Null deviance}&=-2\ln\left(\frac{L_n^{(\textrm{nul})}}{L_n^{(sat)}}\right) \\
 \texttt{Residual deviance}&=-2\ln\left(\frac{L_n(\widehat{\beta_n})}{L_n^{(sat)}}\right)
@@ -483,7 +553,7 @@ Le quantile 0.95 d'une $\chi^2$ à 3 degrés de liberté est supérieur à la
 statistique de test. On ne rejette pas l'hypothèse nulle pour un risque
 de première espèce $\alpha=0.05$.
 
-On pouvait faire ce test en R directement avec l'instruction `anova`.
+On pouvait faire ce test en {{< iconify logos:r-lang >}} directement avec l'instruction `anova`.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -514,16 +584,31 @@ anova(
 Ce qui donne également une $\textit{p-value}$ de 0.529. Le modèle n'est
 donc globalement pas significatif.
 
+:::
+
+:::
+
 ## Question 5
 
-On construit un nouveau modèle avec seulement un terme linéaire en `age`
+Recommencer la modélisation en incluant seulement la variable $\texttt{age}$ dans le modèle.
+Est-ce mieux ?
+
+::: {.content-visible when-meta="is_answer_print_5"}
+
+::: answer
+
+On construit un nouveau modèle avec seulement un terme linéaire en $\texttt{age}$
 et la constante. Ce modèle s'écrit :
 
-$$\texttt{fault}|(\texttt{age}=x_{\texttt{age}}) \sim \mathcal{B}(p(x_{\texttt{age}}))$$
+$$
+\texttt{fault}|(\texttt{age}=x_{\texttt{age}}) \sim \mathcal{B}(p(x_{\texttt{age}}))
+$$
 
 avec
 
-$$ \textrm{logit}(p(x_{\texttt{age}}))=\beta_0+\beta_1x_\texttt{age}$$
+$$
+\textrm{logit}(p(x_{\texttt{age}}))=\beta_0+\beta_1x_\texttt{age}
+$$
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -553,13 +638,29 @@ summary(modele_q5)
 ```
 :::
 
-Ce modèle ne semble pas beaucoup mieux. La variable `age` n'est pas
+Ce modèle ne semble pas beaucoup mieux. La variable $\texttt{age}$ n'est pas
 significative dans ce modèle pour un seuil d'erreur de 5 %. Le fait que
-la variable `age` ne soit pas significative dans le modèle est
+la variable $\texttt{age}$ ne soit pas significative dans le modèle est
 surprenant, en général les voitures plus anciennes ont plus de risque de
 tomber en panne.
 
+:::
+
+:::
+
 ## Question 6
+
+Le nuage de points entre la variable $\texttt{age}$ et la variable $\texttt{fault}$
+semble suggérer que les pannes ont lieu en début de vie du véhicule 
+("défauts de jeunesse" ou de "rodage") et en fin de vie (pannes d’usure).
+Ce comportement de la probabilité de pannes en forme de parabole nous incite
+à essayer d’inclure un terme quadratique en la variable $\texttt{age}$.
+Effectuer cet ajout dans le modèle en incluant également la variable $\texttt{brand}$ et
+analyser les résultats. Le modèle est-il significatif ?
+
+::: {.content-visible when-meta="is_answer_print_6"}
+
+::: answer
 
 Le modèle estimé est désormais :
 
@@ -628,16 +729,30 @@ anova(
 :::
 
 On rejette l'hypothèse nulle de globalité de tous les coefficients en
-dehors de la constante au seuil 5 % car la p-valeur \< 0.05. Le modèle
-est significatif cette fois-ci.
+dehors de la constante au seuil 5 % car la $\textit{p-value}$ est inférieure à 0,05.
+Le modèle est significatif cette fois-ci.
+
+:::
+
+:::
 
 ## Question 7
+
+Que vaut l’odds ratio associé à la marque "2" par rapport à la marque "0" de la
+variable $\texttt{brand}$ ? Interpréter cette valeur et donner un intervalle de
+confiance à 95 % autour de cette estimation. L’inclusion de la variable $\texttt{brand}$
+dans le modèle est-il pertinent ?
+
+::: {.content-visible when-meta="is_answer_print_7"}
+
+::: answer
 
 L'odds d'avoir une panne
 $\texttt{fault}=1|(\texttt{fault}|(\texttt{age}=x_{\texttt{age}},\texttt{brand}=x_{\texttt{brand}})$
 est :
 
-$$\begin{align*}
+$$
+\begin{align*}
 \texttt{odds}(x_{\texttt{age}}, x_{\texttt{brand}}) &= \frac{\mathbb{P}(\texttt{fault}=1|(\texttt{age}=x_{\texttt{age}},\texttt{brand}=x_{\texttt{brand}}))}{1-\mathbb{P}(\texttt{fault}=1|(\texttt{age}=x_{\texttt{age}},\texttt{brand}=x_{\texttt{brand}}))} \\
 &= \exp(\textrm{logit}(\mathbb{P}(\texttt{fault}=1|(\texttt{age}=x_{\texttt{age}},\texttt{brand}=x_{\texttt{brand}}))))
 \end{align*}
@@ -649,7 +764,8 @@ individu avec les caractéristiques
 $\textbf{x}'=(x_{\texttt{age}}, x_{\texttt{brand}}=0)$, on a :
 
 $$
-\texttt{OR}(\textbf{x},\textbf{x}') = \frac{\texttt{odds}(\textbf{x})}{\texttt{odds}(\textbf{x}')}=\frac{\exp(\beta_0+\beta_1x_\texttt{age}+\beta_2x_\texttt{age}^2+\beta_{32})}{\exp(\beta_0+\beta_1x_\texttt{age}+\beta_2x_\texttt{age}^2)}=\exp(\beta_{32})$$
+\texttt{OR}(\textbf{x},\textbf{x}') = \frac{\texttt{odds}(\textbf{x})}{\texttt{odds}(\textbf{x}')}=\frac{\exp(\beta_0+\beta_1x_\texttt{age}+\beta_2x_\texttt{age}^2+\beta_{32})}{\exp(\beta_0+\beta_1x_\texttt{age}+\beta_2x_\texttt{age}^2)}=\exp(\beta_{32})
+$$
 
 On peut estimer cet odds-ratio avec $\exp(\hat{\beta}_{32})$.
 
@@ -722,7 +838,7 @@ Comme 1 appartient l'intervalle de confiance à 95 %, cet odds-ratio
 n'est pas significativement différent de 1 compte tenu des données
 disponibles.
 
-Pour tester, globalement la significativité de `brand`, on peut faire un
+Pour tester, globalement la significativité de $\texttt{brand}$, on peut faire un
 test de déviance pour des modèles emboités. L'hypothèse nulle est
 $H_0: \ \beta_{31}=\beta_{32}=0$.
 
@@ -759,7 +875,7 @@ qchisq(p = 0.95, df = 2)
 ```
 :::
 
-La variable `brand` ne semble pas être significative.
+La variable $\texttt{brand}$ ne semble pas être significative.
 
 On pouvait également faire ce test plus rapidement avec `anova`.
 
@@ -787,4 +903,8 @@ anova(glm(
   data = data_break
 ), modele_q6, test = 'Chisq')
 ```
+:::
+
+:::
+
 :::

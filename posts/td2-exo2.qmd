@@ -3,6 +3,8 @@ title: "TD 2 - Exercice 2"
 lang: fr
 author: "Théo Leroy"
 date: "17 septembre 2025"
+params:
+  question_courante: 3
 format:
   live-html:
     code-background: true
@@ -21,12 +23,13 @@ editor:
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère un modèle de régression linéaire multiple
@@ -55,6 +58,8 @@ $\textrm{SCR}_c$.
 Relire les slides 92 et 93 du cours
 :::
 
+::: {.content-visible when-meta="is_answer_print_1"}
+
 ::: answer
 On utilise le test de Fisher. La statistique de test s’écrit
 
@@ -63,16 +68,22 @@ F=\frac{n-p}{q}\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}
 $$
 :::
 
+:::
+
 ## Question 2
 
 Quelle loi suit cette statistique sous $H_0$ lorsque $\epsilon$ suit une
 loi normale ? Que peut-on dire de sa loi si aucune hypothèse de
 normalité n’est faite sur $\epsilon$ ?
 
+::: {.content-visible when-meta="is_answer_print_2"}
+
 ::: answer
 Sous $H_0$ et si $\epsilon\sim\mathcal{N}(0,\sigma^2 I_n)$,
 
-$$F \sim F(q, n-p)$$
+$$
+F \sim F(q, n-p)
+$$
 
 Si on n’impose pas l’hypothèse de normalité, il n’existe en général pas
 de loi exacte $F(q,n-p)$ pour la statistique. Toutefois, sous quelques
@@ -85,6 +96,8 @@ reste donc valide approximativement même sans normalité stricte des
 $\epsilon$
 :::
 
+:::
+
 ## Question 3
 
 Montrer que si une constante est présente dans le modèle contraint,
@@ -95,6 +108,8 @@ $$
 
 où $R^2$ (respectivement $R_c^2$) désigne le coefficient de
 détermination du modèle initial (respectivement du modèle contraint).
+
+::: {.content-visible when-meta="is_answer_print_3"}
 
 ::: answer
 Par définition du coefficient de détermination (avec $\mathrm{SCT}$ la
@@ -113,3 +128,4 @@ F=\frac{n-p}{q}\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}=\frac{n-p}{q}\fr
 $$
 :::
 
+:::

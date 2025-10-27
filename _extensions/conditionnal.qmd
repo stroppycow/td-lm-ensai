@@ -1,0 +1,21 @@
+```{r}
+#| echo: false
+#| output: asis
+if(exists("params")){
+  if(!is.null(params$question_courante)){
+    if(is.integer(params$question_courante)){
+      if(length(params$question_courante) == 1L){
+        if(params$question_courante >= 1){
+          variant <- seq.int(from = 1, to = params$question_courante)
+          quarto::write_yaml_metadata_block(
+            .list = setNames(
+              as.list(rep(TRUE, length(variant))),
+              nm = sprintf("is_answer_print_%d", variant)
+            )
+          )
+        }
+      }
+    }
+  }
+}
+```

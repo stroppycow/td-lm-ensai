@@ -2,7 +2,9 @@
 title: "TD 6 - Exercice 1 - Maladie coronarienne"
 lang: fr
 author: "Théo Leroy"
-date: "19 novembre 2024"
+date: "14 novembre 2025"
+params:
+  question_courante: 0
 format:
   live-html:
     code-background: true
@@ -22,15 +24,36 @@ webr:
       - leaps
       - lmtest
 editor: 
+  mode: source
   markdown: 
     wrap: 72
+fig-align: center
+filters: 
+  - custom-callout
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    icon: true
+    icon-symbol: "📝"
+    appearance: "default"
+    title: "Correction"
 ---
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+
+Le jeu de donnée `chdage.txt`, contient les données
+de 100 patients âgés de 20 à 69 ans (variable $\texttt{age}$), présentant pour certains une maladie coronarienne (variable $\texttt{chd}$ valant $\texttt{Yes}$ ou $\texttt{No}$).
 
 ## Question 1
 
-On charge les données du fichier `chdage.txt` en R sous forme de
+Importer ces données sous {{< iconify logos:r-lang >}} sous la forme d’un `data.frame`. Observer le contenu de chaque variable et transformer leur `class` si nécessaire.
+
+::: {.content-visible when-meta="is_answer_print_1"}
+
+::: answer
+
+On charge les données du fichier `chdage.txt` en {{< iconify logos:r-lang >}} sous forme de
 `data.frame`.
 
 ::: {.panel-tabset group="language"}
@@ -70,7 +93,18 @@ data_chdage
 ```
 :::
 
+:::
+
+:::
+
 ## Question 2
+
+Proposer une ou des visualisation(s) graphique(s) permettant d’analyser le lien éventuel
+entre les variables $\texttt{chd}$ et $\texttt{age}$.
+
+::: {.content-visible when-meta="is_answer_print_2"}
+
+::: answer
 
 Une possibilité est de visualiser les données sous forme de boîtes à
 moustache pour comparer les distributions de l'âge des individus dans
@@ -173,7 +207,17 @@ ggplot2::ggplot(
 ```
 :::
 
+:::
+
+:::
+
 ## Question 3
+
+Un lien est-t-il apparent ? Quel test statistique simple permettrait de le confirmer ?
+
+::: {.content-visible when-meta="is_answer_print_3"}
+
+::: answer
 
 Dans la question précédente, on observe graphiquement que les individus
 malades sont plus âgés que les individus sains. On souhaiterait tester
@@ -302,28 +346,70 @@ grande partie unimodales et pas excessivement asymétriques (bien que
 légèrement asymétriques tout de même pour les individus malade). De
 plus, l'égalité des variances semble plausible au vu des boxplots.
 
+:::
+
+:::
+
 ## Question 4
+
+On note $Y = \mathbb{1}_{\texttt{chd}=\texttt{Yes}}$  et $p(x) = \mathbb{P}(Y = 1|\texttt{age} = x)$. Donner la loi de $Y$ sachant que $\texttt{age}=x$ en fonction de $p(x)$.
+
+::: {.content-visible when-meta="is_answer_print_4"}
+
+::: answer
 
 Le support de la variable aléatoire $Y|(\texttt{age}=x)$ est $\{0, 1\}$
 donc :
 
-$$Y|(\texttt{age}=x) \sim \mathcal{B}(p(x))$$
+$$
+Y|(\texttt{age}=x) \sim \mathcal{B}(p(x))
+$$
+
+:::
+
+:::
 
 ## Question 5
+
+En s’appuyant sur cette loi, donner la vraisemblance des observations $(y_1, \dots , y_n)$
+en fonction de $\left(p(x_1), \dots , p(x_n)\right)$ où $x_i$ désigne l’âge de l’individu $i$ et 
+$y_i = 1$ si ce dernier a une maladie coronarienne.
+
+::: {.content-visible when-meta="is_answer_print_5"}
+
+::: answer
 
 Les variables aléatoires
 $\left(Y_i|(\texttt{age}=x)\right)_{i \in \{1, \dots, n\}}$ sont
 indépendantes de fonction de masse
 $$\mathbb{P}(Y_i=y_i |\texttt{age}=x_i)=p(x_i)^{y_i}(1-p(x_i))^{1-y_i}$$
 
-Ainsi, $$
+Ainsi, 
+
+$$
 \begin{align*}
 L_n\left(p(x_1), \dots, p(x_n)\right)&=\prod\limits_{i=1}^n \mathbb{P}(Y_i=y_i | \texttt{age}=x_i) \\
 &=\prod\limits_{i=1}^n p(x_i)^{y_i}(1-p(x_i))^{1-y_i}
 \end{align*}
 $$
 
+:::
+
+:::
+
 ## Question 6
+
+En guise de première estimation de $p(x)$, on met en oeuvre la démarche suivante :
+
+a. Utiliser les 8 groupes d’âge proposés via la variable $\texttt{agegrp}$ du jeu de données,
+ce qui forme 8 groupes d’individus associés à ces classes. Calculer 
+$\overline{x}_1, \dots , \overline{x}_8$ le milieu de chaque classe d’âge.
+b. Calculer les proportions de $\texttt{chd} = \texttt{Yes}$ dans chaque groupe, notées 
+$\hat{p}_1, \dots , \hat{p}_8$  (on pourra utiliser les fonctions `table` et `prop.table`).
+
+::: {.content-visible when-meta="is_answer_print_6"}
+
+::: answer
 
 Les milieux des 8 classes d'âges sont :
 
@@ -427,12 +513,28 @@ data_milieu_classe_prop
 ```
 :::
 
+:::
+
+:::
+
 ## Question 7
+
+Afin d’analyser la qualité de l’estimation précédente, transformer la variable 
+$\texttt{chd}$ en variable numérique prenant les deux valeurs 0 et 1, et 
+représenter sur un même graphique le nuage de points de 
+$\texttt{age}$ et $\texttt{chd}$ (recodé) et les proportions estimées dans
+chaque classe $(\overline{x}_k, \hat{p}_k)$ pour $k = 1, \dots , 8$.
+
+Quelles vertus et quelles limites cette procédure d’estimation a-t-elle ?
+
+::: {.content-visible when-meta="is_answer_print_7"}
+
+::: answer
 
 Dans cette question et la précédente, on modélise en fait la loi de
 d'être atteint par une maladie coronarienne conditionnellement à la
 classe d'âge des individus (i.e. la variable aléatoire
-$Y|(\texttt{agegrp}=x))$.
+$Y|(\texttt{agegrp}=x)$).
 
 Comme le découpage proposé dans l'exercice contient 8 classes d'âge,
 huit paramètres interviennent dans cette modélisation. De façon analogue
@@ -634,7 +736,24 @@ graphique_q7
     variable explicative sur la variable à expliquer et donc
     d'interpréter les résultats.
 
+:::
+
+:::
+
 ## Question 8
+
+On décide de modéliser $p(x)$ à l’aide d’un modèle de régression logistique de
+paramètre $\beta = (\beta_0, \beta_1) \in \mathbb{R}^2$ 
+
+Quelle hypothèse cela signifie-t-il sur l’expression de $p(x)$ ? 
+
+Cela est-il compatible avec le graphique précédent ? 
+
+Quelle(s) autre(s) alternative(s) de modélisation pourrait-on suggérer ?
+
+::: {.content-visible when-meta="is_answer_print_8"}
+
+::: answer
 
 Le modèle logistique s'écrit :
 
@@ -758,7 +877,7 @@ standard (modèle probit) ou la fonction de répartition d'une loi de
 Gumbel standard (modèle log-log complémentaire), qui sont parmi les plus
 couramment utilisées.
 
-Il peut être utile de définrir en R, les deux fonctions vectorielles
+Il peut être utile de définrir en {{< iconify logos:r-lang >}}, les deux fonctions vectorielles
 suivantes :
 
 ::: {.panel-tabset group="language"}
@@ -781,7 +900,20 @@ logit_inv <- function(x){exp(x)/(1+exp(x))}
 ```
 :::
 
+:::
+
+:::
+
 ## Question 9
+
+Ecrire la log-vraisemblance du modèle logistique en fonction de $\beta$ et en déduire le
+système que doit résoudre le maximum de vraisemblance $\hat{\beta}$.
+
+Peut-on résoudre ce système analytiquement ?
+
+::: {.content-visible when-meta="is_answer_print_9"}
+
+::: answer
 
 On injecte l'expression de $p(x)$ pour le modèle logistique dans
 l'expression de la vraisemblance "générale" pour des variables
@@ -835,9 +967,20 @@ car les équations ne sont pas linéaires en $\boldsymbol{\beta}$.
 On va rechercher des solutions approchées numériquement dans la question
 suivante.
 
+:::
+
+:::
+
 ## Question 10
 
-On peut utiliser la fonction `glm` de R pour l'approximation numérique.
+Calculer l’estimateur du maximum de vraisemblance via la fonction `glm`.
+
+::: {.content-visible when-meta="is_answer_print_10"}
+
+
+::: answer
+
+On peut utiliser la fonction `glm` de {{< iconify logos:r-lang >}} pour l'approximation numérique.
 C'est ce qu'on doit faire en pratique. Les arguments sont semblables à
 la fonction `lm`. Il faut faire attention à bien paramétrer l'argument
 `family` sans quoi on estimerait un modèle de régression linéaire
@@ -895,7 +1038,19 @@ summary(modele_logit)
 On peut lire l'estimation par maximum de vraissemblance :
 $\widehat{\beta_0} = -5,30945$ et $\widehat{\beta_1} = 0,11092$.
 
+:::
+
+:::
+
 ## Question 11
+
+Rappeler la définition théorique du rapport de cotes (odds ratio) d’avoir une maladie
+coronarienne entre un individu d’âge $x_1$ et un individu d’âge $x_2$. Que vaut-il pour le
+modèle précédent lorsque les 2 individus ont 10 ans d’écart (c’est à dire $x_1 = x_2+10$) ?
+
+::: {.content-visible when-meta="is_answer_print_11"}
+
+::: answer
 
 La cote (l'odds) pour un individu avec des caractéristiques $x$ est le
 ratio entre la probabilité que l'événement (ici avoir un maladie
@@ -938,7 +1093,20 @@ On peut donc affirmer que la cote de survenue de la maladie coronarienne
 est environ multipliée par 3 tous les 10 ans toutes choses égales par
 ailleurs.
 
+:::
+
+:::
+
 ## Question 12
+
+On s’intéresse à présent au rapport de probabilités (et non de cotes) d’avoir une
+maladie coronarienne entre un individu d’âge $x_1$ et un individu d’âge $x_2$. Que vaut
+ce rapport pour le modèle précédent lorsque les 2 individus ont 10 ans d’écart (c’est
+à dire $x_1 = x_2 + 10$) ? On pourra représenter ce rapport en fonction de $x_2$, pour $x_2$ prenant des valeurs de 20 à 70 ans.
+
+::: {.content-visible when-meta="is_answer_print_12"}
+
+::: answer
 
 D'après la question 6, pour le modèle logistique, on a
 
@@ -1001,7 +1169,43 @@ ggplot2::ggplot(
 ```
 :::
 
+:::
+
+:::
+
+
 ## Question 13
+
+On rappelle que sous "de bonnes conditions", l’estimateur du maximum de vraisemblance $\beta$ dans un modèle de régression logistique portant sur $p$ variables explicatives et 
+$n$ individus vérifie la convergence en loi suivante, lorsque $n \to \infty$,
+
+$$
+J_n(\beta)^{1/2}\left(\hat{\beta}-\beta\right) \overset{\mathcal{L}}{\longrightarrow} \mathcal{N}\left(0_p, I_p\right)
+$$
+
+où $J_n(\beta)$ est la matrice d’information de Fisher. Cette dernière admet l’expression
+
+$$
+J_n(\beta)=\boldsymbol{X}^{'}W_{\beta}\boldsymbol{X}
+$$
+
+où $\boldsymbol{X}$ est la matrice de design et $W_{\beta}$ est la matrice diagonale
+
+$$
+W_{\beta} =
+\begin{pmatrix}
+p_{\beta}(x_1)\left(1-p_{\beta}(x_1)\right) & & 0 \\
+ & \ddots & \\
+0 &      &  p_{\beta}(x_n)\left(1-p_{\beta}(x_n)\right) 
+\end{pmatrix}
+$$
+
+
+Justifier qu’une approximation asymptotique de la loi de $(\hat{\beta}-\beta)$ est $\mathcal{N}\left(0_p, J_n^{-1}(\beta)\right)$
+
+::: {.content-visible when-meta="is_answer_print_13"}
+
+::: answer
 
 D'après la convergence en loi rappelée dans l'énoncé, on a
 approximatovement :
@@ -1010,7 +1214,18 @@ $$J_n(\beta)^{1/2}(\boldsymbol{\hat{\beta}}-\boldsymbol{\beta}) \approx \mathcal
 En multipliant par $J_n(\beta)^{-1/2}$ à gauche, on a :
 $$\boldsymbol{\hat{\beta}}-\boldsymbol{\beta} \approx \mathcal{N}(0_2, J_n(\beta)^{-1})$$
 
+:::
+
+:::
+
 ## Question 14
+
+Comment peut-on exploiter ce résultat pour estimer l’écart-type de chaque coordonnée de $\hat{\beta}$ ? On donnera la démarche concrète à appliquer, mais on ne demande pas
+de la mettre en pratique numériquement.
+
+::: {.content-visible when-meta="is_answer_print_14"}
+
+::: answer
 
 -   On estime la matrice $J_n(\beta)$ par
     $J_n(\widehat{\beta})=\boldsymbol{X}'W_{\widehat{\beta}}\boldsymbol{X}$.
@@ -1026,13 +1241,33 @@ $$\boldsymbol{\hat{\beta}}-\boldsymbol{\beta} \approx \mathcal{N}(0_2, J_n(\beta
     $\widehat{\beta}_j$ . Sa racine carrée constitue ainsi une
     estimation de l'écart-type de $\widehat{\beta}_j$.
 
+:::
+
+:::
+
 ## Question 15
 
+Cette procédure d’estimation est utilisée par la fonction `glm`. 
+En utilisant sa sortie, donner une estimation de l’écart-type de 
+$\hat{\beta}_0$ et $\hat{\beta}_1$.
+
+::: {.content-visible when-meta="is_answer_print_15"}
+
+::: answer
 Il s'agit de la deuxième colonne dans la sortie de `summary`. Cela nous
 donne un écart type estimé de 1,13365 pour $\widehat{\beta}_0$ et de
 0,02406 pour $\widehat{\beta}_1$.
+:::
+
+:::
 
 ## Question 16
+
+Construire un intervalle de confiance asymptotique à 95 % pour le paramètre $\beta_1$.
+
+::: {.content-visible when-meta="is_answer_print_16"}
+
+::: answer
 
 L'intervalle de confiance asymptotique au niveau de confiance
 $1 − \alpha$ pour $\hat{\beta_1}$ est donnée par :
@@ -1080,7 +1315,7 @@ paste0(
 ```
 :::
 
-Ou plus simplement en R,
+Ou plus simplement en {{< iconify logos:r-lang >}},
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -1100,7 +1335,20 @@ confint.default(modele_logit, parm = "age")
 ```
 :::
 
+:::
+
+:::
+
 ## Question 17
+
+D’après la question précédente, le paramètre $\beta_1$ est-il différent de 0 
+au seuil d’erreur asymptotique 5 % ?
+Quel est le nom de cette procédure de test. 
+Donner la $\textit{p-value}$ associée à ce test et vérifier qu’elle concorde bien avec la sortie de `glm`.
+
+::: {.content-visible when-meta="is_answer_print_17"}
+
+::: answer
 
 Comme $0$ n'appartient pas à l'intervalle de confiance précédent,
 $\beta_1$ est différent de $0$ au seuil d'erreur asymptotique 5 %.
@@ -1131,15 +1379,24 @@ $$2\left(1-F_{\mathcal{N(0,1)}}(T)\right) \quad \textrm{avec} \ T=\frac{\widehat
 :::
 
 Numériquement on obtient $\textit{p-valeur} = 4,022426\times10^{-06}$.
-C'est la même valeur que dans la sortie GLM.
+C'est la même valeur que dans la sortie de la fonction `glm`.
+
+:::
+
+:::
 
 ## Question 18
+
+Calculer la statistique du test de déviance de significativité du modèle GLM (par
+rapport au modèle nul). En déduire la p-value et conclure aux seuils d’erreur 10 %,
+5 % et 1 %. Comparer avec les résultats du test effectué sous {{< iconify logos:r-lang >}} à l’aide de la fonction
+`anova` appliqué au modèle, avec l’option `test="Chisq"`.
 
 ::: {.callout-note collapse="true"}
 #### Fonction de répartition et quantiles pour des lois du chi-2 sous R
 
 Pour une loi du chi-2 à $d$ degrés de liberté, l'image de la fonction de
-répartition de la loi $\mathcal{\chi}^2(d)$ en $x$ est calculable sous R
+répartition de la loi $\mathcal{\chi}^2(d)$ en $x$ est calculable sous {{< iconify logos:r-lang >}}
 avec la fonction `pchisq`.
 $F_{\mathcal{\chi}^2(d)}(x) =\mathbb{P}\left(\mathcal{\chi}^2(d) < x\right)$
 s'obtient avec l'expression :
@@ -1151,12 +1408,16 @@ pchisq(q = x, df = d)
 Pour cette même loi $\mathcal{\chi}^2(d)$, le quantile
 $q_{\alpha}^{\mathcal{\chi}^2(d)}$ avec $\alpha \in ]0, 1[$ tel que
 $F_{\mathcal{\chi}^2(d)}\left(q_{\alpha}^{\mathcal{\chi}^2(d)}\right)= \alpha$
-est calculable sous R grâce à la fonction `qchisq` via l'expression
+est calculable sous {{< iconify logos:r-lang >}} grâce à la fonction `qchisq` via l'expression
 
 ```         
 qchisq(p = alpha, df = d)
 ```
 :::
+
+::: {.content-visible when-meta="is_answer_print_18"}
+
+::: answer
 
 On veut tester la significativité globale du modèle avec un test du
 rapport de vraisemblance. On veut vérifier ou non qu'au moins une des
@@ -1266,7 +1527,18 @@ anova(modele_logit, test = "Chisq")
 ```
 :::
 
+:::
+
+:::
+
 ## Question 19
+
+Reprendre le graphique effectué à la question 7 et superposer (sous forme d’une
+courbe) les valeurs prédites $\hat{p}(x)$ par le modèle logistique, calculées pour une grille de valeurs de $x$ couvrant l’étendue prise par les observations. On pourra utiliser la fonction `predict` associée à l’option `type="response"`.
+
+::: {.content-visible when-meta="is_answer_print_19"}
+
+::: answer
 
 On ajoute les valeurs prédites par le modèle logistique.
 
@@ -1363,9 +1635,23 @@ graphique_q19
 ```
 :::
 
+:::
+
+:::
+
 ## Question 20
 
-On note $$
+En partant de la convergence en loi de $\hat{\beta}$ rappelée ci-dessus, en déduire un intervalle de confiance au niveau asymptotique 95 % pour $p(x)$.
+Ajouter cet intervalle de confiance pour chaque $x$ considéré au graphique précédent.
+On pourra exploiter avec profit l’option `se=TRUE` de la fonction `predict` dans le cas `type="link"`.
+
+::: {.content-visible when-meta="is_answer_print_20"}
+
+::: answer
+
+On note
+
+$$
 \boldsymbol{V}(\boldsymbol{\beta})^{-1}=(\mathbb{X}'\boldsymbol{W}(\boldsymbol{\beta})\mathbb{X})^{-1}=\begin{pmatrix}
 \sigma_0^2 & \gamma \\ \gamma & \sigma_{1}^2
 \end{pmatrix}
@@ -1397,7 +1683,7 @@ $$
 \end{align*}
 $$
 
-Pour faire ce calcul dans R deux options sont envisageables :
+Pour faire ce calcul dans {{< iconify logos:r-lang >}} deux options sont envisageables :
 
 -   On peut calculer les bornes de l'intervalle de confiance avec
     l'expression qu'on vient d'obtenir.
@@ -1407,7 +1693,7 @@ Pour faire ce calcul dans R deux options sont envisageables :
     via l'attribut `se.fit` et $\widehat{\beta}_0+\widehat{\beta}_1x$
     via l'attribut `fit`.
 
-::::: panel-tabset
+::: panel-tabset
 ### À la main
 
 ::: {.panel-tabset group="language"}
@@ -1684,4 +1970,9 @@ graphique_q20 <- graphique_q19 +
 graphique_q20
 ```
 :::
-:::::
+
+:::
+
+:::
+
+:::

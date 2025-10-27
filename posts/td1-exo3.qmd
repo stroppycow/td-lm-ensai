@@ -3,6 +3,8 @@ title: "TD 1 - Exercice 3"
 lang: fr
 author: "Théo Leroy"
 date: "3 septembre 2025"
+params:
+  question_courante: 10
 format:
   live-html:
     code-background: true
@@ -12,27 +14,21 @@ webr:
   render-df: gt-interactive
 fig-align: center
 filters: 
-  - diagram
   - custom-callout
 editor: 
   mode: source
   markdown: 
     wrap: 72
-diagram:
-  engine:
-    tikz:
-      execpath: lualatex
-      header-includes:
-        - '\usepackage{tkz-tab}'
 custom-callout:    
   answer:
     color: "#CCCCCC"
-    icon: false
-    icon-symbol: ""
+    icon: true
+    icon-symbol: "📝"
     appearance: "default"
     title: "Correction"
 ---
 
+{{< include ./../_extensions/conditionnal.qmd >}}
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère le modèle de régression linéaire simple où l’on observe $n$
@@ -46,8 +42,12 @@ entre elles.
 
 Écrire le modèle sous forme matricielle
 
+::: {.content-visible when-meta="is_answer_print_1"}
+
 ::: answer
-Le modèle s'écrit matricellement $Y=X\beta+\epsilon$ avec $$
+Le modèle s'écrit matricellement $Y=X\beta+\epsilon$ avec
+
+$$
 Y = \underbrace{\begin{pmatrix}
 y_1\\
 \vdots \\
@@ -73,10 +73,14 @@ avec les hypothèses
 $\mathbb{E}(\epsilon) =0_{n,1} \ \textrm{et} \ \mathbb{V}(\epsilon)=\sigma^2I_n$.
 :::
 
+:::
+
 ## Question 2
 
 De quel problème de minimisation l’estimateur des moindres carrés
 $\hat{\beta}= (\hat{\beta}_0, \hat{\beta}_1)$ est-il la solution ?
+
+::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
 L'estimateur des moindres carrés ordinaires est solution du problème :
@@ -85,13 +89,17 @@ $$
 $$
 :::
 
+:::
+
 ## Question 3
 
 On peut trouver $\hat{\beta}$ en annulant le gradient de la fonction à
 minimiser précédente. Cela a déjà été fait et les solutions sont à
 connaitre par coeur : que valent-elles ?
 
-:::: answer
+::: {.content-visible when-meta="is_answer_print_3"}
+
+::: answer
 On a (*cf slide 24*)
 
 $$\hat{\beta}_1=\frac{\textrm{cov}(x,y)}{\textrm{var}(x)}=\frac{\frac{1}{n}\sum\limits_{i=1}^n\left(x_i-\overline{x}\right)\left(y_i-\overline{y}\right)}{\frac{1}{n}\sum\limits_{i=1}^n\left(x_i-\overline{x}\right)^2} \qquad \hat{\beta}_0= \overline{y}-\hat{\beta}_1\overline{x}$$
@@ -99,14 +107,18 @@ $$\hat{\beta}_1=\frac{\textrm{cov}(x,y)}{\textrm{var}(x)}=\frac{\frac{1}{n}\sum\
 ::: {.callout-note collapse="true"}
 ### Preuve
 
-On considère la fonction $$
+On considère la fonction
+
+$$
 S(\beta_0,\beta_1) \;=\; \sum_{i=1}^n \left( y_i - \beta_0 - \beta_1 x_i \right)^2,
 \qquad S:\mathbb{R}^2 \to \mathbb{R}.
 $$
 
 **Calcul du gradient**
 
-On calcule les dérivées partielles : $$
+On calcule les dérivées partielles :
+
+$$
 \begin{align*}
 \frac{\partial S}{\partial \beta_0}
 &= -2 \sum_{i=1}^n (y_i - \beta_0 - \beta_1 x_i)
@@ -118,7 +130,9 @@ On calcule les dérivées partielles : $$
 \end{align*}
 $$
 
-Ainsi $$
+Ainsi
+
+$$
 \nabla S(\beta_0,\beta_1)
 = 2\begin{pmatrix}
 n\beta_0+\beta_1 \sum\limits_{i=1}^n x_i - \sum\limits_{i=1}^n  y_i \\
@@ -128,7 +142,9 @@ $$
 
 **Équations normales**
 
-Les conditions du premier ordre donnent : $$
+Les conditions du premier ordre donnent :
+
+$$
 \begin{align*}
 \begin{cases}
 n\beta_0 + \beta_1 \sum\limits_{i=1}^n x_i - \sum\limits_{i=1}^n y_i =0\\
@@ -159,7 +175,9 @@ $$
 
 **Hessienne et convexité**
 
-La matrice Hessienne $H_S$ de $S$ est $$
+La matrice Hessienne $H_S$ de $S$ est
+
+$$
 H_S(\beta_0,\beta_1)
 = \begin{pmatrix}
 \frac{\partial^2 S}{\partial \beta_0^2} & \frac{\partial^2 S}{\partial \beta_0\partial \beta_1} \\
@@ -174,7 +192,9 @@ $$
 Montrons que la matrice $H_S$ est semi définie positive et donc que la
 fonction $S$ est convexe.
 
-Soit $v = (v_1, v_2)\in\mathbb{R}^2$, $$
+Soit $v = (v_1, v_2)\in\mathbb{R}^2$,
+
+$$
 \begin{align*}
 v' H_S v =2\begin{pmatrix}
 v_1 & v_2
@@ -217,7 +237,9 @@ $$
 \forall i \in [\![1,\dots,n]\!], v_1x_i=-v_0 \textrm{ et } \forall i \in [\![1,\dots,n]\!], v_1^2x_i^2=v_0^2
 $$
 
-En sommant ces égalités, on a : $$
+En sommant ces égalités, on a :
+
+$$
 \sum\limits_{i=1}^n v_1x_i=-nv_0 \quad \sum\limits_{i=1}^n v_1^2x_i^2=nv_0^2
 $$
 
@@ -247,12 +269,17 @@ $$
     minimisateurs ne le sont pas). Ils vérifient la relation :
     $$\hat{\beta}_0 = \overline{y}-\hat{\beta}_1\overline{x}$$
 :::
-::::
+
+:::
+
+:::
 
 ## Question 4
 
 Retrouver $\hat{\beta}$ en utilisant la formule générale
 $\hat{\beta} = (X'X)^{-1}X'Y$:
+
+::: {.content-visible when-meta="is_answer_print_4"}
 
 ::: answer
 On calcule $\hat{\beta}$ à partir de la formule générale étape par étape
@@ -347,14 +374,20 @@ $$
 $$
 :::
 
+:::
+
 ## Question 5
 
 Justifier pourquoi la droite de régression passe nécessairement par le
 point $(\overline{x}; \overline{y})$.
 
+::: {.content-visible when-meta="is_answer_print_5"}
+
 ::: answer
 D'après la question 3, on a :
 $\hat{\beta}_0 = \overline{y}-\hat{\beta}_1\overline{x}$
+:::
+
 :::
 
 ## Question 6
@@ -364,8 +397,12 @@ nouvel individu, en supposant que ce dernier suit exactement le même
 modèle que les $n$ individus précédents. Que vaut la prévision
 $\hat{y}_o$ de $y_o$ ?
 
+::: {.content-visible when-meta="is_answer_print_6"}
+
 ::: answer
 On a $\hat{y}_o = \hat{\beta}_0+\hat{\beta}_1x_o$
+:::
+
 :::
 
 ## Question 7
@@ -373,8 +410,11 @@ On a $\hat{y}_o = \hat{\beta}_0+\hat{\beta}_1x_o$
 Montrer que l’espérance de l’erreur de prévision $\hat{y}_o$ de $y_o$
 est nulle.
 
+::: {.content-visible when-meta="is_answer_print_7"}
+
 ::: answer
-On calcule l'espérance de l'erreur de prévision\
+On calcule l'espérance de l'erreur de prévision
+
 $$
 \begin{align*}
 \mathbb{E}(y_o-\hat{y}_o)
@@ -393,7 +433,10 @@ Or
     $\beta_0$ et $\beta_1$ sont déterministes ;
 -   $\mathbb{E}(\epsilon_o)=0$ par hypothèse du modèle.
 
-Ainsi, $$\mathbb{E}(y_o-\hat{y}_o)=0$$
+Ainsi,
+$$
+\mathbb{E}(y_o-\hat{y}_o)=0
+$$
 
 ::: {.callout-note collapse="true"}
 ### Rappel de la preuve : l'estimateur MCO d'un modèle de régression linéaire simple est sans biais
@@ -467,6 +510,9 @@ $$
 
 Donc $\hat{\beta}$ est sans biais.
 :::
+
+:::
+
 :::
 
 ## Question 8
@@ -479,6 +525,8 @@ qu’ici cette variance peut se récrire :
 $$
 \sigma^2\left(1+\frac{1}{n}+\frac{(x_o-\overline{x})^2}{\sum\limits_{i=1}^n (x_i-\overline{x})^2} \right)
 $$
+
+::: {.content-visible when-meta="is_answer_print_8"}
 
 ::: answer
 On applique la formule du cours avec
@@ -515,10 +563,14 @@ x_o
 $$
 :::
 
+:::
+
 ## Question 9
 
 Discuter de la qualité de la prévision selon que $x_o$ est proche ou non
 de la moyenne empirique $x_n$.
+
+::: {.content-visible when-meta="is_answer_print_9"}
 
 ::: answer
 D'après la question précédente, la variance croît avec
@@ -526,9 +578,13 @@ $(x_o - \overline{x})^2$ ; la prévision est d’autant plus précise
 lorsque $x_o$ est proche de la moyenne $\overline{x}$.
 :::
 
+:::
+
 ## Question 10
 
 Qu’en est-il si $n$ est grand ?
+
+::: {.content-visible when-meta="is_answer_print_10"}
 
 ::: answer
 Il n'est pas possible de répondre en toute généralité car cela dépend du
@@ -541,7 +597,8 @@ $$
 \begin{align*}
 \frac{1}{n}\sum\limits_{i=1}^n x_i \underset{n \to +\infty}{\longrightarrow} m \quad \textrm{et} \quad 
 \frac{1}{n}\sum\limits_{i=1}^n (x_i-\overline{x})^2 \underset{n \to +\infty}{\longrightarrow} \rho > 0
-\end{align*}$$
+\end{align*}
+$$
 
 Cela signifie que les $x_i$ ne deviennent pas tous égaux (variance non
 dégénérée), et que leur dispersion ne « s’effondre » ou au contraire «
@@ -557,12 +614,19 @@ $$
 
 puis
 
-$$\frac{(x_o-\overline{x})^2}{\sum\limits_{i=1}^n (x_i-\overline{x})^2}=\frac{(x_o-\overline{x})^2}{n} \times\frac{1}{\frac{1}{n}\sum\limits_{i=1}^n (x_i-\overline{x})^2 }\underset{n \to +\infty}{\longrightarrow}0$$
+$$
+\frac{(x_o-\overline{x})^2}{\sum\limits_{i=1}^n (x_i-\overline{x})^2}=\frac{(x_o-\overline{x})^2}{n} \times\frac{1}{\frac{1}{n}\sum\limits_{i=1}^n (x_i-\overline{x})^2 }\underset{n \to +\infty}{\longrightarrow}0
+$$
 D'où
 
-$$\mathbb{V}(\hat{y}_o) \underset{n \to +\infty}{\longrightarrow} \sigma^2$$
+$$
+\mathbb{V}(\hat{y}_o) \underset{n \to +\infty}{\longrightarrow} \sigma^2
+$$
 
 Ainsi lorsque $n$ est grand, seul le terme $\sigma^2$ reste dominant
 dans la variance de prévision. La position de $x_o$ par rapport à
 $\overline{x}$ devient peu importante en comparaison.
 :::
+
+:::
+

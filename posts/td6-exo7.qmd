@@ -2,7 +2,9 @@
 title: "TD 6 - Exercice 7 - Crabes fer à cheval"
 lang: fr
 author: "Théo Leroy"
-date: "19 novembre 2024"
+date: "5 decembre 2025"
+params:
+  question_courante: 0
 format:
   live-html:
     code-background: true
@@ -21,15 +23,46 @@ webr:
       - MASS
       - pscl
 editor: 
+  mode: source
   markdown: 
     wrap: 72
+fig-align: center
+filters: 
+  - custom-callout
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    icon: true
+    icon-symbol: "📝"
+    appearance: "default"
+    title: "Correction"
 ---
+
+{{< include ./../_extensions/conditionnal.qmd >}}
 
 {{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
 
+Le jeu de données `crabs` contient l’observation
+de 173 limules femelles (Horshoe crabs). Il s’agit d’animaux marins qui ressemblent à des
+crabes ayant une forme de fer à cheval. Pour chaque limule femelle, on relève sa couleur
+$\texttt{color}$ (codée de 1 à 4, du plus clair au plus sombre), sa largeur
+$\texttt{width}$ , son poids $\texttt{weight}$ et $\texttt{satell}$ : le nombre
+de limules mâles satellites (c’est à dire accrochés à la femelle). La
+couleur est un signe de l’âge de la limule, cette dernière ayant tendance
+à s’assombrir au cours du temps.
+
+On cherche à modéliser le nombre $\texttt{satell}$ en fonction des variables à disposition.
+
 ## Question 1
 
-On charge les données du fichier `crabs.txt` en R sous forme de
+Mettre en oeuvre un modèle log-linéaire de Poisson et un modèle binomial négatif.
+Evaluer leur qualité. On pourra en particulier discuter de la pertinence de considérer
+la variable $\texttt{color}$ comme une variable quantitative ou un facteur.
+
+::: {.content-visible when-meta="is_answer_print_1"}
+::: answer
+
+On charge les données du fichier `crabs.txt` en {{< iconify logos:r-lang >}} sous forme de
 `data.frame`.
 
 ::: {.panel-tabset group="language"}
@@ -72,11 +105,11 @@ data_crabs
 :::
 
 Le jeu de données contient bien 173 observations de limules femelles. La
-variable cible est `satell` le comptage de nombre de limules mâles
+variable cible est $\texttt{satell}$ le comptage de nombre de limules mâles
 satellite. Les potentielles variables explicatives sont la couleur
-`color`, `width` et `weight` le poids de la femelle.
+$\texttt{color}$, $\texttt{width}$ et $\texttt{weight}$ le poids de la femelle.
 
-La variable `color` peut être vu comme catégorielle dans ce cas on
+La variable $\texttt{color}$ peut être vu comme catégorielle dans ce cas on
 s'intéressera à l'effet de passer d'une modalité à une autre sur la
 moyenne du nombre de limules mâles accrochées. Elle peut être également
 vu comme quantitative et dans ce cas on s'intéressera à l'effet de
@@ -116,14 +149,14 @@ GGally::ggpairs(
 ```
 :::
 
-Graphiquement, on remarque que les variables `width` et `weight` sont
+Graphiquement, on remarque que les variables $\texttt{width}$ et $\texttt{weight}$ sont
 très corrélées. Pour éviter des problème de multicolinéarité et
 améliorer la qualité des estimations, on choisit de retirer la variable
-`width` dans les futures modèles.
+$\texttt{width}$ dans les futures modèles.
 
 On estime les différents modèles.
 
-**Modèle log-linéaire de Poisson avec `color` en `factor`**
+**Modèle log-linéaire de Poisson avec $\texttt{color}$ en `factor`**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -153,7 +186,7 @@ summary(modele_poisson_factor)
 ```
 :::
 
-**Modèle log-linéaire de Poisson avec `color` en `numeric`**
+**Modèle log-linéaire de Poisson avec $\texttt{color}$ en `numeric`**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -183,7 +216,7 @@ summary(modele_poisson_num)
 ```
 :::
 
-**Modèle binomial négatif avec `color` en `factor`**
+**Modèle binomial négatif avec $\texttt{color}$ en `factor`**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -211,7 +244,7 @@ summary(modele_nb_factor)
 ```
 :::
 
-**Modèle binomial négatif avec `color` en `numeric`**
+**Modèle binomial négatif avec $\texttt{color}$ en `numeric`**
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -241,16 +274,16 @@ summary(modele_nb_num)
 
 Pour la modélisation avec loglinéaire de Poisson, la déviance est
 beaucoup plus élevée que le nombre de degré de liberté même pour le cas
-le plus favorable ou `color` est intégré comme variable quantitative. Il
+le plus favorable ou $\texttt{color}$ est intégré comme variable quantitative. Il
 ya sans doute un problème de surdispersion, l'hypothèse que la moyenne
 est égale à la variance dans la modélisation de Poisson n'est sans doute
 pas vérifiée.
 
 L'ajustement avec le modèle binomial négatif est meilleur (en regardant
-les déviances et l'AIC) surtout en considérant `color` comme
+les déviances et l'AIC) surtout en considérant $\texttt{color}$ comme
 quantitative qui ne semble pas significative au final.
 
-On peut étudier la distribution empirique de `satell` par rapport à la
+On peut étudier la distribution empirique de $\texttt{satell}$ par rapport à la
 distribution prédite par le modèle `modele_nb_num` pour analyser la
 qualité des prédictions du modèle.
 
@@ -354,7 +387,15 @@ ggplot2::ggplot(
 On voit que la modélisation ne permet pas de prédire convenablement le
 nombre de femelles lorsque le nombre de mâles satellite est faible.
 
+:::
+:::
+
 ## Question 2
+
+Améliorer la modélisation en tenant compte de l’inflation de zéros.
+
+::: {.content-visible when-meta="is_answer_print_2"}
+::: answer
 
 On peut essayer de mettre en place un modèle à inflation de zéros dans
 le modèle binomial négatif pour améliorer les prédictions. Pour se
@@ -484,3 +525,6 @@ ggplot2::ggplot(
 :::
 
 La répartition des petites valeurs est mieux modélisée.
+
+:::
+:::
