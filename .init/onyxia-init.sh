@@ -4,6 +4,7 @@ tlmgr update --self && tlmgr install luatex85 && tlmgr install tkz-tab
 curl -sSL https://git.io/get-mo -o mo
 chmod +x mo
 sudo mv mo /usr/local/bin/
+chmod +x /home/onyxia/work/td-lm-ensai/.init/onyxia-serve-nginx.sh
 QUARTO_PREVIEW_URL=$1
 arrIN=(${QUARTO_PREVIEW_URL//./ })
 export QUARTO_INGRESS_NAME=${arrIN[0]}
