@@ -14,16 +14,15 @@ jobs:
       id-token: write
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
       - name: Install Inkscape
         run: sudo add-apt-repository ppa:inkscape.dev/stable && sudo apt-get update && sudo apt-get install -y inkscape texlive-fonts-recommended
       - name: Setup TeX Live
         uses: xu-cheng/texlive-action@v4
         with:
           texlive_version: 2024
-          install_packages: |
-            luatex85
-            tkz-tab
+          run: 
+            tlmgr install luatex85 tkz-tab
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
       - name: Install R
