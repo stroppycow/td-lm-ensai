@@ -18,7 +18,7 @@ jobs:
       - name: Install Inkscape
         run: sudo add-apt-repository ppa:inkscape.dev/stable && sudo apt-get update && sudo apt-get install -y inkscape texlive-fonts-recommended
       - name: Setup TeX Live
-        uses: xu-cheng/texlive-action@v4
+        uses: xu-cheng/texlive-action@v3
         with:
           texlive_version: 2024
           run: 
