@@ -28,7 +28,7 @@ jobs:
           r-version: '4.5.1'
           
       - name: Install Latex
-        run: tlmgr update --self && tlmgr install luatex85 && tlmgr install tkz-tab
+        run: tlmgr init-usertree && tlmgr update --self && tlmgr install luatex85 tkz-tab
 
       - name: Install Python Dependencies
         run: 'python3 -m pip install jupyter'
