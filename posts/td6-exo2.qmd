@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "14 novembre 2025"
 params:
-  question_courante: 0
+  question_courante: 2
 format:
   live-html:
     code-background: true
@@ -44,6 +44,10 @@ $$
 
 Montrer que pour tout $x \in \mathbb{R}^d$
 
+$$
+\mathbb{P}(Y=1 |X =x) = \frac{1}{1+e^{-h(x)}}
+$$
+
 ::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
@@ -71,7 +75,7 @@ $$
 
 ## Question 2
 
-On rappelle qu’une loi sur Rd fait partie de la famille exponentielle si sa densité
+On rappelle qu’une loi sur $\mathbb{R}^d$ fait partie de la famille exponentielle si sa densité
 s’écrit $a(x)b(x)e^{\theta^{'}T(x)}$, pour un certain paramètre 
 $\theta \in \mathbb{R}^q$, où $a$ et $b$ sont des fonctions positives 
 et $T : \mathbb{R}^d \longrightarrow \mathbb{R}^q$ est une fonction 

@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "14 novembre 2025"
 params:
-  question_courante: 0
+  question_courante: 20
 format:
   live-html:
     code-background: true
@@ -1486,7 +1486,7 @@ qchisq(p = c(0.9, 0.95, 0.99), df = 1)
 
 On rejette donc l'hypothèse nulle aux seuils 10 %, 5 % et 1 %.
 
-La p-valeur vaut $1-F_{\mathcal{N}(0,1)}(T)$ où $T$ est la statistique
+La p-valeur vaut $1-F_{\chi^2(1)}(T)$ où $T$ est la statistique
 de test.
 
 ::: {.panel-tabset group="language"}
@@ -1495,7 +1495,7 @@ de test.
 ```{webr}
 #| envir: baser
 #| autorun: true
-1-pnorm(stat_test_deviance, mean = 0, sd = 1)
+1-pchisq(stat_test_deviance, df=1)
 ```
 
 ### Tidyverse
@@ -1503,7 +1503,7 @@ de test.
 ```{webr}
 #| envir: tdv
 #| autorun: true
-1-pnorm(stat_test_deviance, mean = 0, sd = 1)
+1-pchisq(stat_test_deviance, df=1)
 ```
 :::
 
