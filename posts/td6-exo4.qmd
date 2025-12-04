@@ -732,6 +732,79 @@ On rejette l'hypothèse nulle de globalité de tous les coefficients en
 dehors de la constante au seuil 5 % car la $\textit{p-value}$ est inférieure à 0,05.
 Le modèle est significatif cette fois-ci.
 
+::: {.callout-note}
+### Intérêt du terme quadratique
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| fig-width: 9
+## Génération des données
+age <- seq(from = 0, to = 15, by = 0.05)
+fake_data <- data.frame(
+  age   = rep(age, 3),
+  brand = rep(as.factor(c("0", "1", "2")), each = length(age))
+)
+
+## Prédictions
+fake_data$p_hat <- predict(modele_q6, newdata = fake_data, type = "response")
+
+## --- Graphique en base R ---
+plot(
+  x = c(0, 15),
+  y = c(0, 1),
+  type = "n",
+  xlab = "Âge",
+  ylab = "Probabilité estimée d'un véhicule de tomber en panne"
+)
+
+# Définition des couleurs
+cols <- c("0" = "black", "1" = "red", "2" = "blue")
+
+
+# Ajout des autres marques
+for (b in c("0", "1", "2")) {
+  dat <- fake_data[fake_data$brand == b, ]
+  lines(dat$age, dat$p_hat, col = cols[b], lwd = 2)
+}
+
+# Légende
+legend("bottomright",
+       legend = c("0", "1", "2"),
+       col = cols,
+       lwd = 2,
+       title = "brand")
+grid()
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#| fig-width: 8
+age <- seq(from = 0, to = 15, by = 0.05)
+fake_data <- data.frame(
+  age = rep(age, 3),
+  brand = rep(as.factor(c("0", "1", "2")), each=length(age))
+)
+fake_data$p_hat <- predict(modele_q6, newdata=fake_data, type = "response")
+ggplot2::ggplot(
+  data = fake_data,
+  mapping = ggplot2::aes(x = age, col = brand, y = p_hat)
+) +
+  ggplot2::geom_line(linewidth = 1) +  # Ajouter la courbe
+  ggplot2::labs(
+    x = "Âge", 
+    y = "Probabilité estimée d'un véhicule de tomber en panne"
+  ) +
+  ggplot2::theme_light()
+```
+:::
+
 :::
 
 :::
@@ -904,6 +977,7 @@ anova(glm(
 ), modele_q6, test = 'Chisq')
 ```
 :::
+
 
 :::
 

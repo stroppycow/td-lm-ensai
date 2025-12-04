@@ -64,8 +64,8 @@ $$
 \frac{f_1(x) p}{f_1(x) p+f_0(x)(1-p)} \\
 & =\frac{1}{1+\frac{f_0(x)(1-p)}{f_1(x) p}} \\
 & =\frac{1}{1+\exp \left(\log \left(\frac{f_0(x)(1-p)}{f_1(x) p}\right)\right)} \\
-& =\frac{1}{1+\exp \left(\log \left(\frac{f_0(x)}{f_1(x)}\right)+\log \left(\frac{p}{1-p}\right)\right)} \\
-& =\frac{1}{1+e^{-h(x)}} \textrm{ car } h(x) = \log\left(\frac{f_1(x)}{f_2(x)}\right)+\log\left(\frac{p}{1-p}\right).
+& =\frac{1}{1+\exp \left(\log \left(\frac{f_0(x)}{f_1(x)}\right)+\log \left(\frac{1-p}{p}\right)\right)} \\
+& =\frac{1}{1+e^{-h(x)}} \textrm{ car } h(x) = \log\left(\frac{f_1(x)}{f_0(x)}\right)+\log\left(\frac{p}{1-p}\right).
 \end{aligned}
 $$
 
@@ -107,7 +107,7 @@ h(x)&=\log\left(\frac{a(x) b\left(\theta_1\right) e^{\theta_1 \cdot T(x)}p}{a(x)
 $$
 
 où
-$\beta=\left(\log \frac{b\left(\theta_1\right) p}{b\left(\theta_0\right)(1-p)}, \theta_1-\theta_0\right)$
+$\beta=\left(\log\left(\frac{b\left(\theta_1\right) p}{b\left(\theta_0\right)(1-p)}\right), \theta_1-\theta_0\right)$
 est un vecteur de taille $q+1$ et $\tilde{T}(x)=(1, T(x))$.
 
 On a donc d'après la question précédente

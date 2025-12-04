@@ -231,14 +231,154 @@ une situation de mauvaise santé mentale.
 :::
 
 ## Question 3
+Pour commencer, on décide d’ignorer le fait que la variable impair est ordinale et de la
+modéliser par un modèle logistique multinomial (sans interaction entre les variables).
+Ecrire mathématiquement ce modèle. Combien a-t-il de coefficients à estimer ?
 
-Ecrire mathématiquement le modèle de régression logistique cumulatif proportionnel
+::: {.content-visible when-meta="is_answer_print_3"}
+
+::: answer
+
+Le modèle de régression logistique multinomial s'écrit :
+
+$$
+\begin{align*}
+\texttt{impair}&|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}) \sim \mathcal{M}( \\
+&n=1, \\
+&1-\sum\limits_{k=2}^4\mathbb{P}(\texttt{impair}= k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
+&\mathbb{P}(\texttt{impair}= 2|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
+&\mathbb{P}(\texttt{impair}= 3|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
+&\mathbb{P}(\texttt{impair}= 4|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))) \\
+\end{align*}
+$$
+On estime les rapports en prennant une des modalités comme référence (par défaut, {{< iconify logos:r-lang >}} choisit la première dans c'est à dire la modalité 1):
+
+$$
+\forall \ k \in \{2, \ 3,\ 4 \}, \ \ln\left(\frac{\mathbb{P}(\texttt{impair}= k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))}{\mathbb{P}(\texttt{impair}= 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))}\right)=\beta_0^{(k)}+\beta_1x_{\texttt{ses}}+\beta_2x_\texttt{life}
+$$
+
+On estime donc 9 coefficients (3 par rapport).
+
+:::
+
+:::
+
+
+## Question 4
+
+Estimer ce modèle à l’aide de la fonction `vglm` du package `VGAM`, en choisissant comme
+modalité de référence `impair=1`, et sélectionner le meilleur sous-modèle possible.
+
+::: {.content-visible when-meta="is_answer_print_4"}
+
+::: answer
+
+Nous allons estimer ce modèle, toutefois, les fonctionnalités {{< iconify logos:r-lang >}}
+de base ne permettent pas d'estimer ce modèle directement avec une fontion comme
+`lm` ou `glm`. Le cours nous invite, par exemple, à utiliser le package
+`VGAM` et la fonction `vglm` en son sein.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+modele_q4_full <- VGAM::vglm(
+  formula = factor(impair, ordered = FALSE) ~ life + ses,
+  family = multinomial(refLevel="1"),
+  data = data_mental
+)
+summary(modele_q4_full)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_q4_full <- VGAM::vglm(
+  formula = factor(impair, ordered = FALSE) ~ life + ses,
+  family = multinomial(refLevel="1"),
+  data = data_mental
+)
+summary(modele_q4_full)
+```
+:::
+
+On retrouve bien les 9 coefficients attendus. À première vue, la variable `ses` (statut socio-économique) ne semble pas significative.
+
+On estime les sous modèles possibles :
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+modele_q4_ses <- VGAM::vglm(
+  formula = factor(impair, ordered = FALSE) ~ ses,
+  family = multinomial(refLevel="1"),
+  data = data_mental
+)
+modele_q4_life <- VGAM::vglm(
+  formula = factor(impair, ordered = FALSE) ~ life,
+  family = multinomial(refLevel="1"),
+  data = data_mental
+)
+modele_q4_const <- VGAM::vglm(
+  formula = factor(impair, ordered = FALSE) ~ 1,
+  family = multinomial(refLevel="1"),
+  data = data_mental
+)
+
+data.frame(
+  `Modèle`=c("Avec impair et ses", "Avec ses uniquement", "Avec life uniquement", "Modèle nul"),
+  AIC = sapply(X=c(modele_q4_full, modele_q4_ses, modele_q4_life, modele_q4_const), FUN = AIC),
+  BIC = sapply(X=c(modele_q4_full, modele_q4_ses, modele_q4_life, modele_q4_const), FUN = BIC)
+)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_q4_ses <- VGAM::vglm(
+  formula = factor(impair, ordered = FALSE) ~ ses,
+  family = multinomial(refLevel="1"),
+  data = data_mental
+)
+modele_q4_life <- VGAM::vglm(
+  formula = factor(impair, ordered = FALSE) ~ life,
+  family = multinomial(refLevel="1"),
+  data = data_mental
+)
+modele_q4_const <- VGAM::vglm(
+  formula = factor(impair, ordered = FALSE) ~ 1,
+  family = multinomial(refLevel="1"),
+  data = data_mental
+)
+
+data.frame(
+  `Modèle`=c("Avec impair et ses", "Avec ses uniquement", "Avec life uniquement", "Modèle nul"),
+  AIC = sapply(X=c(modele_q4_full, modele_q4_ses, modele_q4_life, modele_q4_const), FUN = AIC),
+  BIC = sapply(X=c(modele_q4_full, modele_q4_ses, modele_q4_life, modele_q4_const), FUN = BIC)
+)
+```
+:::
+:::
+
+
+## Question 5
+
+On souhaite à présent exploiter le fait que la variable impair est ordonnée. Écrire mathématiquement le modèle de régression logistique cumulatif proportionnel
 sans terme d’interaction liant $\texttt{impair}$ à $\texttt{ses}$ et $\texttt{life}$,
 et permettant d’estimer les probabilités que
 $\texttt{impair} = 1, \ \texttt{impair} \leq 2$ et $\texttt{impair} \leq 3$.
 Combien ce modèle a-t-il de coefficients ?
 
-::: {.content-visible when-meta="is_answer_print_3"}
+::: {.content-visible when-meta="is_answer_print_5"}
 
 ::: answer
 
@@ -274,42 +414,17 @@ $\beta_0^{(3)}$, $\beta_1$ et $\beta_2$.
 
 :::
 
-## Question 4 {#question-4}
+## Question 6
 
 Estimer les coefficients de ce modèle à l’aide de la fonction `vglm` du package
 `VGAM`, associée à l’option `family=cumulative(parallel=TRUE)`. Contrôler que
 le nombre de coefficients est bien celui attendu.
 
-::: {.content-visible when-meta="is_answer_print_4"}
+::: {.content-visible when-meta="is_answer_print_6"}
 
 ::: answer
 
-Nous allons estimer ce modèle, toutefois, les fonctionnalités {{< iconify logos:r-lang >}} de base
-ne permettent pas d'estimer ce modèle directement avec une fontion comme
-`lm` ou `glm`. Le cours nous invite, par exemple, à utiliser le package
-`VGAM` et la fonction `vglm` en son sein.
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: false
-?VGAM::vglm()
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: false
-?VGAM::vglm()
-```
-:::
-
-On peut alors estimer le modèle. La syntaxe s'apparente à celle de
-`glm`. Il faut faire attention comme souvent au paramètre `family` pour
-spécifier le type de modèle.
+Nous allons estimer ce modèle avec `vglm` du package `VGAM`.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -317,12 +432,12 @@ spécifier le type de modèle.
 ```{webr}
 #| envir: baser
 #| autorun: true
-modele_q4 <- VGAM::vglm(
+modele_q6 <- VGAM::vglm(
   formula = impair ~ ses + life,
   family = cumulative(parallel = TRUE),
   data = data_mental
 )
-summary(modele_q4)
+summary(modele_q6)
 ```
 
 ### Tidyverse
@@ -330,12 +445,12 @@ summary(modele_q4)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-modele_q4 <- VGAM::vglm(
+modele_q6 <- VGAM::vglm(
   formula = impair ~ ses + life,
   family = cumulative(parallel = TRUE),
   data = data_mental
 )
-summary(modele_q4)
+summary(modele_q6)
 ```
 :::
 
@@ -347,291 +462,20 @@ associées à chaque régresseur).
 
 :::
 
-## Question 5
-
-Ecrire la définition mathématique de l’odds ratio associé à la variable $\texttt{ses}$
-et interpréter cette quantité.
-
-::: {.content-visible when-meta="is_answer_print_5"}
-
-::: answer
-
-L'odds de l'évènement
-$\texttt{impair}\leq k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})$
-est :
-
-$$
-\begin{align*}
-\texttt{odds}_k(\textbf{x}) &= \frac{\mathbb{P}(\texttt{impair}\leq k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))}{1-\mathbb{P}(\texttt{impair}\leq k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))} \\
-&=\exp\left(\textrm{logit}\left(\mathbb{P}(\texttt{impair}\leq k | (\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))\right)\right) \\
-&= \exp\left(\beta_0^{(k)}+\beta_1x_{\texttt{ses}=1}+\beta_2x_\texttt{life} \right)
-\end{align*}
-$$
-
-Ainsi pour un individu avec des caractéristiques
-$\textbf{x}=(\texttt{ses}=1, \texttt{life}=x_{\texttt{life}})$ et un
-autre individu avec les caractéristiques
-$\textbf{x}'=(\texttt{ses}=0, \texttt{life}=x_{\texttt{life}})$, on a :
-
-$$
-\texttt{OR}(\textbf{x},\textbf{x}') = \frac{\texttt{odds}_k(\textbf{x})}{\texttt{odds}_k(\textbf{x}')}=\frac{\exp(\beta_0^{(k)}+\beta_1+\beta_2x_\texttt{life})}{\exp(\beta_0^{(k)}+\beta_2x_\texttt{life})}=\exp(\beta_1)
-$$
-
-Ainsi un estimateur de $\texttt{OR}(\textbf{x},\textbf{x}')$ est
-
-$\exp\left(\hat{\beta}_1\right)$
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-exp(modele_q4@coefficients[4])
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-exp(modele_q4@coefficients[4])
-```
-:::
-
-::: {.callout-note appearance="simple"}
-### Remarque
-
-Les objets retournés par la méthode `vglm` sont de type S4 contrairement
-à ceux retournés par `glm` (qui sont de type S3). Pour accéder au
-attributs, on utilise le symbole `@` au lieu de `$`.
-:::
-
-Cette quantité permet d'évaluer l'évolution de la côte sur la santé
-mentale lorsqu'une personne a un statut socio-économique par rapport a
-quelqu'un qui a un statut économique faible toutes choses égales par
-ailleurs.
-
-On peut dire :
-
-**"Toutes choses égales par ailleurs, lorsqu'un indivdu passe d'un
-statut socio-économique faible à élevé, l'odds d'avoir au plus un
-certain niveau de dégénérescence mentale est multiplié par 3"**.
-
-Les individus avec un statut économique plus élevés ont donc toutes
-choses égales par ailleurs une meilleur santé mentale.
-
-::: callout-warning
-**Il faut faire attention à ne pas interpréter à tort cette évolution
-sur l'odds (en français cote) comme une évolution sur le risque (c'est à
-dire sur la probabilité de l'évènement qui nous intéresse)**. Ici, il
-s'agirait de la probabilité d'avoir au plus un certain niveau de
-dégénérescence mentale :
-$P(\texttt{impair}\leq k|\textbf{X}=\textbf{x})$.
-
-On ne peut donc pas dire : ~~"Toutes choses égales par ailleurs,
-lorsqu'un indivdu passe d'un statut socio-économique faible à élevé, la
-probabilité d'avoir au plus un certain niveau de dégénérescence mentale
-est multipliée par 3"~~
-
-La probabilité et la cote sont deux quantités différentes. La première
-est bornée entre 0 et 1 contrairement à la seconde qui n'a pas de
-maximum. On peut le voir visuellement avec cette relation liant les deux
-sur le graphique ci-dessous qui se différencie de la première
-bissectrice du plan.
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-proba <- seq(from=0,to=0.9,by=0.05)
-cote <- proba/(1-proba)
-ggplot2::ggplot(
-  mapping = aes(x=x,y=y),
-  data = data.frame(
-    x=proba,
-    y=cote
-  )
-) +
-  ggplot2::geom_line(color="red") +
-  ggplot2::geom_line(
-    mapping = ggplot2::aes(x=x,y=y),
-    data=data.frame(x=proba,y=proba),
-    color="black"
-  ) +
-  ggplot2::labs(
-    title = "Lien (en rouge) entre odds et probabilité d'un évènement",
-    x = "Probabilité d'un évènement",
-    y = "Côte/Odds d'un évènement"
-  ) +
-  ggplot2::theme_minimal()
-```
-
-Cependant, on peut remarquer sur ce graphique qu'on peut faire cette
-approximation pour des faibles probabilités (par exemple pour des
-probabilités inférieures à 10 %) ou plus formellement avec un
-développement limité à l'ordre 1.
-
-$$
-\frac{p}{1-p} \underset{p \to 0}{=} p + o(p)
-$$
-
-Dans cet exercice avec ce modèle cumulatif, l'emploi de cette
-approximation n'est pas acceptable car les évènements d'avoir au plus un
-certain niveau de dégénérescence mentale ne sont pas rares.
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-x_life <- seq(from=0,to=9,by=0.25)
-logit_proba_predites_cumulees <-  predict(
-  object = modele_q4,
-  newdata = data.frame(ses = 0, life = x_life),
-  type = "link"
-)
-proba_predites_cumulees <- as.data.frame(apply(
-  X = logit_proba_predites_cumulees,
-  MARGIN = 2,
-  FUN = function(x){exp(x)/(1+exp(x))}
-))
-colnames(proba_predites_cumulees) <- c(
-  "P[impair <= 1]",
-  "P[impair <= 2]",
-  "P[impair <= 3]"
-)
-
-proba_predites_cumulees$life <- x_life
-
-proba_predites_cumulees_long <-  proba_predites_cumulees |>
-  tidyr::gather(key="type_proba", value="valeur_proba", -life)
-
-ggplot2::ggplot(
-  mapping = aes(x=life,y=valeur_proba, color=type_proba),
-  data = proba_predites_cumulees_long
-) +
-  ggplot2::geom_line() +
-  ggplot2::labs(
-    title = "Probabilités cumulées prédites par le modèle selon la variable life (ses=0)",
-    x = "life",
-    y = "Probabilité", 
-    colour = "Type de probabilité"
-  ) +
-  ggplot2::theme_minimal()
-```
-:::
-
-:::
-
-:::
-
-## Question 6
-
-Donner un intervalle de confiance asymptotique au niveau de confiance 95 % pour le
-paramètre lié à la variable $\texttt{ses}$.
-
-::: {.content-visible when-meta="is_answer_print_6"}
-
-::: answer
-
-L'intervalle de confiance asymptotique au niveau de confiance
-$1 − \alpha$ pour $\hat{\beta_1}$ est donnée par :
-$$
-\left[\hat{\beta}_1 - q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \ ; \ \hat{\beta}_1 + q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \right]
-$$
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-alpha <- 0.05
-beta_mle_1 <- modele_q4@coefficients[4]
-sigma_est_1 <- sqrt(vcov(modele_q4)[4,4])
-quantile_alpha <- qnorm(mean = 0, sd = 1, p = 1-alpha/2) 
-
-paste0(
-  "[",
-  beta_mle_1-quantile_alpha*sigma_est_1,
-  " ; ",
-  beta_mle_1+quantile_alpha*sigma_est_1,
-  "]"
-)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-alpha <- 0.05
-beta_mle_1 <- modele_q4@coefficients[4]
-sigma_est_1 <- sqrt(vcov(modele_q4)[4,4])
-quantile_alpha <- qnorm(mean = 0, sd = 1, p = 1-alpha/2) 
-
-paste0(
-  "[",
-  beta_mle_1-quantile_alpha*sigma_est_1,
-  " ; ",
-  beta_mle_1+quantile_alpha*sigma_est_1,
-  "]"
-)
-```
-:::
-
-On pouvait aussi utiliser la fonction `confint`.
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-confint(modele_q4)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-confint(modele_q4)
-```
-:::
-
-:::
-
-:::
-
 ## Question 7
 
-En déduire un intervalle de confiance asymptotique au niveau de confiance 95 % pour
-l’odds ratio associé.
+Y a-t-il une influence du statut socio-économique sur l’état de santé mentale au seuil
+5 % ? Et au seuil 10 % ?
 
 ::: {.content-visible when-meta="is_answer_print_7"}
 
 ::: answer
 
-Par monotonie de la fonction $\exp$, on peut construire un intervalle de
-confiance en passant à l'exponentielle dans les bornes de l'IC
-précédent.
+D'après la sortie obtenue à la [question 6](#question-6) et les p-valeur
+des tests de Wald, le coefficient $\beta_1$ est non significatif au
+seuil d'erreur 5 % mais il est significatif au seuil 10 %.
 
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-exp(confint(modele_q4)["ses",])
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-exp(confint(modele_q4)["ses",])
-```
-:::
+Toutefois, l'effectif relativement faible (40 personnes), ce qui limite la puissance statistique des tests. En d’autres termes, l’absence de significativité pourrait simplement provenir d’un manque de données. Sur le plan médical, on ne peut donc pas écarter totalement l’éventuelle influence de cette variable sur l’état de santé mentale.
 
 :::
 
@@ -639,146 +483,78 @@ exp(confint(modele_q4)["ses",])
 
 ## Question 8
 
-Y a-t-il une influence du statut socio-économique sur l’état de santé mentale au seuil
-5 % ? Et au seuil 10 % ?
+Peut-on proposer un modèle plus simple ?
 
 ::: {.content-visible when-meta="is_answer_print_8"}
 
 ::: answer
 
-D'après la sortie obtenue à la [question 4](#question-4) et les p-valeur
-des tests de Wald, le coefficient $\beta_1$ est non significatif au
-seuil d'erreur 5 % mais il est significatif au seuil 10 %.
+Au vu de la question précédente, on peut essayer de retirer la variable $\texttt{ses}$ :
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+modele_q8 <- VGAM::vglm(
+  formula = impair ~ life,
+  family = cumulative(parallel = TRUE),
+  data = data_mental
+)
+summary(modele_q8)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+modele_q8 <- VGAM::vglm(
+  formula = impair ~ life,
+  family = cumulative(parallel = TRUE),
+  data = data_mental
+)
+summary(modele_q8)
+```
+:::
+
+On peut faire un test de rapport de vraisemblance comparant ce modèle au modèle avec la variable $\texttt{ses}$.
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+anova(modele_q8, modele_q6, type = "I")
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+anova(modele_q8, modele_q6, type = "I")
+```
+:::
+
+Au seuil de 5 %, on est donc amené à privilégier ce modèle plus simple.
+
+Cependant, compte tenu de la p-value proche du seuil et du faible effectif de l’étude, ce choix peut être questionné.
 
 :::
 
 :::
 
-## Question 9 {#question-9}
 
-On souhaite voir si un modèle plus complexe s’ajusterait mieux aux données. Ecrire
-mathématiquement puis estimer un modèle de régression logistique cumulatif proportionnel
-avec terme d’interaction. Interpréter le résultat obtenu. Ce modèle est-il
-significativement meilleur, au seuil d’erreur asymptotique 5 % ?
+## Question 9
+
+On souhaite vérifier que le modèle à odds proportionnel est adéquat par rapport
+au modèle de régression logistique cumulatif (sans interaction). Écrire l’expression
+mathématique de ce modèle, l’estimer et comparer au modèle à odds proportionnel.
 
 ::: {.content-visible when-meta="is_answer_print_9"}
-
-::: answer
-
-On peut ajouter un terme d'interaction entre deux variables avec
-l'opérateur `:` afin d'évaluer si l'effet du nombre et de l'intensité
-des bouleversements connus est le même sur la santé mentale quel que
-soit le niveau socio-économique.
-
-Ce nouveau modèle de régression cumulatif proportionnel avec terme
-d'interaction s'écrit :
-
-$$
-\begin{align*}
-\texttt{impair}&|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}) \sim \mathcal{M}( \\
-&n=1, \\
-&\mathbb{P}(\texttt{impair}\leq 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
-&\mathbb{P}(\texttt{impair}\leq 2|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))-\mathbb{P}(\texttt{impair}\leq 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
-&\mathbb{P}(\texttt{impair}\leq 3|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))-\mathbb{P}(\texttt{impair}\leq 2|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life})), \\
-&1 - \mathbb{P}(\texttt{impair}\leq 3|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))) \\
-\end{align*}
-$$
-
-avec pour tout $k \in \{1,2,3\}$
-
-$$
- \textrm{logit}\left(\mathbb{P}(\texttt{impair}\leq k | (\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))\right) = \alpha_0^{(k)}+\alpha_1x_{\texttt{ses}}+\alpha_2x_\texttt{life}+\alpha_3x_{\texttt{ses}=1}x_\texttt{life}
-$$
-
-Il y a 6 paramètres à estimer : $\alpha_0^{(1)}$, $\alpha_0^{(2)}$,
-$\alpha_0^{(3)}$, $\alpha_1$ et $\alpha_2$, $\alpha_3$.
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-modele_q9 <- vglm(
-  formula = impair ~ ses + life + ses:life,
-  family = cumulative(parallel = TRUE),
-  data = data_mental
-)
-summary(modele_q9)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-modele_q9 <- VGAM::vglm(
-  formula = impair ~ ses + life + ses:life,
-  family = cumulative(parallel = TRUE),
-  data = data_mental
-)
-summary(modele_q9)
-```
-:::
-
-Pour évaluer la pertinence de ce terme d'intéraction, on peut réaliser
-un test du rapport de vraisemblance entre ces deux modèles emboités.
-
-L'hypothèse nulle $H_0$ est $\beta_3=0$
-
-Sous $H_0$, la statistique de test du rapport de vraisemblance :
-$$
--2 \ln\left(\frac{L_n^{(\textrm{modele contraint})}}{L_n^{(\textrm{modele non contraint})}}\right) \sim \chi^2(\underbrace{\textrm{nb de coefficients contraints}}_{1})
-$$
-
-avec :
-
--   $L_n^{(\textrm{modele contraint})}$ : la vraisemblance du modèle
-    contraint par l'hypothèse nulle (il s'agit du modèle estimé à la
-    [question 4](#question-4))
--   $L_n^{(\textrm{modele non contraint})}$ : la vraisemblance du modèle
-    non contraint ou il faut estimer le coefficient d'intéraction
-    $\beta_3$, celui qu'on vient d'estimer dans cette question.
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-2*(logLik(modele_q9)-logLik(modele_q4))
-summary(modele_q4)@criterion$deviance - summary(modele_q9)@criterion$deviance
-qchisq(0.95,1)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-2*(logLik(modele_q9)-logLik(modele_q4))
-summary(modele_q4)@criterion$deviance - summary(modele_q9)@criterion$deviance
-qchisq(0.95,1)
-```
-:::
-
-Le quantile 0.95 d'une $\chi^2$ à 1 degrés de liberté est supérieur à la
-statistique de test. On ne rejette pas l'hypothèse nulle pour un risque
-de première espèce $\alpha=0.05$.
-
-Ainsi, le modèle avec le terme d'intéraction n'est pas significativement
-meilleur au seuil d'erreur asymptotique de 5 %.
-
-:::
-
-:::
-
-## Question 10
-
-Même question avec un modèle de régression logistique cumulatif sans structure
-proportionnelle, mais sans terme d’interaction.
-
-::: {.content-visible when-meta="is_answer_print_10"}
 
 ::: answer
 
@@ -812,12 +588,12 @@ $\gamma_2^{(1)}$, $\gamma_2^{(2)}$ et $\gamma_2^{(3)}$.
 ```{webr}
 #| envir: baser
 #| autorun: true
-modele_q10 <- VGAM::vglm(
-  formula = impair~ses+life,
-  family = cumulative(parallel = F),
-  data=data_mental
+modele_q9<- VGAM::vglm(
+  formula = impair ~ ses + life,
+  family = cumulative(parallel = FALSE),
+  data = data_mental
 )
-summary(modele_q10)
+summary(modele_q9)
 ```
 
 ### Tidyverse
@@ -825,16 +601,16 @@ summary(modele_q10)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-modele_q10 <- VGAM::vglm(
-  formula = impair~ses+life,
-  family = cumulative(parallel = F),
-  data=data_mental
+modele_q9 <- VGAM::vglm(
+  formula = impair ~ ses + life,
+  family = cumulative(parallel = FALSE),
+  data = data_mental
 )
-summary(modele_q10)
+summary(modele_q9)
 ```
 :::
 
-À l'image de la [question 9](#question-9), on peut faire un test du
+À l'image de la [question 8](#question-8), on peut faire un test du
 rapport de vraisemblance entre ces deux modèles emboités.
 
 L'hypothèse nulle est
@@ -850,7 +626,7 @@ Les valeurs de la statistique de test et le quantile de comparaison sont
 ```{webr}
 #| envir: baser
 #| autorun: true
-summary(modele_q4)@criterion$deviance - summary(modele_q10)@criterion$deviance
+summary(modele_q6)@criterion$deviance - summary(modele_q9)@criterion$deviance
 qchisq(0.95,4)
 ```
 
@@ -859,7 +635,7 @@ qchisq(0.95,4)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-summary(modele_q4)@criterion$deviance - summary(modele_q10)@criterion$deviance
+summary(modele_q6)@criterion$deviance - summary(modele_q9)@criterion$deviance
 qchisq(0.95,4)
 ```
 :::
@@ -873,20 +649,46 @@ quantile $q_{0.95}^{\chi^2(4)}$.
 Ainsi, le modèle avec la structure non proportionnelle n'est pas
 significativement meilleur.
 
+::: {.callout-note collapse="true"}
+### Alternative avec la fonction `anova`
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+anova(modele_q6, modele_q9, type = "I")
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+anova(modele_q6, modele_q9, type = "I")
+```
+:::
+
+
 :::
 
 :::
 
-## Question 11
+:::
 
-Inversement, pourrait-on proposer un modèle plus simple ?
 
-::: {.content-visible when-meta="is_answer_print_11"}
+## Question 10
+
+Conclure sur la modélisation de la variable $\texttt{impair}$.
+
+
+::: {.content-visible when-meta="is_answer_print_10"}
 
 ::: answer
 
-Au vu de la sortie du modèle à odds proportionnels et de l’analyse
-descriptive préliminaire, on peut essayer d'enlever la variable $\texttt{ses}$.
+
+Le modèle à odds proportionnels est le plus simple et se révèle préférable au modèle cumulatif (voir question précédente).
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -894,12 +696,10 @@ descriptive préliminaire, on peut essayer d'enlever la variable $\texttt{ses}$.
 ```{webr}
 #| envir: baser
 #| autorun: true
-modele_q11 <- VGAM::vglm(
-  formula = impair~life,
-  family = cumulative(parallel = TRUE),
-  data = data_mental
-)
-summary(modele_q11)
+AIC(modele_q6)
+AIC(modele_q9)
+BIC(modele_q6)
+BIC(modele_q9)
 ```
 
 ### Tidyverse
@@ -907,111 +707,16 @@ summary(modele_q11)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-modele_q11 <- VGAM::vglm(
-  formula = impair~life,
-  family = cumulative(parallel = TRUE),
-  data = data_mental
-)
-summary(modele_q11)
+AIC(modele_q6)
+AIC(modele_q9)
+BIC(modele_q6)
+BIC(modele_q9)
 ```
 :::
 
-On fait un test du rapport de vraisemblance.
+Les critères AIC et BIC confirment également qu’il est supérieur au modèle multinomial. Nous retenons donc ce modèle pour expliquer $\texttt{impair}$.
 
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-summary(modele_q11)@criterion$deviance - summary(modele_q4)@criterion$deviance
-qchisq(0.95,1)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-summary(modele_q11)@criterion$deviance - summary(modele_q4)@criterion$deviance
-qchisq(0.95,1)
-```
-:::
-
-Au seuil de 5 %, on est donc amené à privilégier ce modèle plus simple.
-
-:::
-
-:::
-
-## Question 12
-
-Pour finir, on décide de ne pas exploiter le fait que la variable $\texttt{impair}$ est ordinale, et de la modéliser par un modèle logistique multinomial. Comparer cette approche
-à la modélisation précédente.
-
-::: {.content-visible when-meta="is_answer_print_12"}
-
-::: answer
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-modele_q12 <- VGAM::vglm(
-  formula = impair ~ life,
-  family = multinomial,
-  data = data_mental
-)
-summary(modele_q12)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-modele_q12 <- VGAM::vglm(
-  formula = impair ~ life,
-  family = multinomial,
-  data = data_mental
-)
-summary(modele_q12)
-```
-:::
-
-Pour comparer avec les modèles précédents, nous ne pouvons pas utiliser
-le test du rapport de vraisemblance (ou test de déviance) car les
-modèles ne sont pas emboités. Nous pouvons par contre comparer leur
-critère AIC et BIC. Pour les deux “meilleurs” modèles de chaque
-approche, cela donne.
-
-::: {.panel-tabset group="language"}
-### Base R
-
-```{webr}
-#| envir: baser
-#| autorun: true
-AIC(modele_q11)
-AIC(modele_q12)
-BIC(modele_q11)
-BIC(modele_q12)
-```
-
-### Tidyverse
-
-```{webr}
-#| envir: tdv
-#| autorun: true
-AIC(modele_q11)
-AIC(modele_q12)
-BIC(modele_q11)
-BIC(modele_q12)
-```
-:::
-
-Les deux critères conduisent au choix du modèle obtenu à la question 11.
+Reste à décider s’il faut inclure la variable ses dans l’analyse, décision pour laquelle une expertise métier serait précieuse.
 
 :::
 
