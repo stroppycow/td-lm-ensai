@@ -353,7 +353,7 @@ $\beta_{22}$ car on a toujours
 $\mathbb{1}_{\texttt{brand}=0}+\mathbb{1}_{\texttt{brand}=1}+\mathbb{1}_{\texttt{brand}=2}=1$.
 Ici la fonction `glm` a choisi d'imposer $\beta_{20}=0$.
 
-Si on détaille l'expression du modèle par marque comme demandé dans
+Si on détaille l'expression du modèle par marque comme demandée dans
 l'enoncé, on a:
 
 $$
@@ -375,7 +375,7 @@ On peut définir les contraintes si on ne souhaite pas conserver le choix
 par défaut de la méthode `glm`. On peut alors utiliser le paramètre
 `contrasts`.
 
-On pourait, par exemple, choisir la deuxième modalité modalité (i.e.
+On pourait, par exemple, choisir la deuxième modalité (i.e.
 `brand=1`) comme référence :
 
 ::: {.panel-tabset group="language"}
