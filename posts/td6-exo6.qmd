@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "5 decembre 2025"
 params:
-  question_courante: 0
+  question_courante: 11
 format:
   live-html:
     code-background: true
@@ -101,7 +101,7 @@ La variable $\texttt{Effectifs}$ correspondant au nombre d'espèces différentes
 fourmis dans l'échantillon prélevé est une variable de comptage. On
 l'importe comme `integer`.
 
-La variable $\texttt{Weight}$ contient le poids des échantillons.C'est une
+La variable $\texttt{Weight}$ contient le poids des échantillons. C'est une
 variable quantitative, on l'importe en `numeric`.
 
 La variable $\texttt{Site}$ indique la provenance des différents échantillons
@@ -258,7 +258,7 @@ fourmis.
 #| envir: baser
 #| autorun: true
 boxplot(
-  Conditions ~ Effectifs,
+  Effectifs ~ Conditions,
   data = data_fourmis,
   main = "Distribution du nombre d'espèces de fourmis en fonction des conditions de recueil"
 )
@@ -642,7 +642,7 @@ une constante.
 -   Pente nulle qui signifie l'absence d'effet du poids de l'échantillon :   `0*Weight`
 -   Une pente unique : `Weight`
 -   Une pente type de forêt : `Weight:Site`
--   Une pente selon les conditions de recueil : `Weight:Site`
+-   Une pente selon les conditions de recueil : `Weight:Conditions`
 -   Une pente qui additionne l'effet du type de forêt et les conditions
     de recueil : `Weight:Site + Weight:Conditions`
 -   Une pente par croisement du type de forêt et conditions de recueil :

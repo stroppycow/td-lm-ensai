@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "5 decembre 2025"
 params:
-  question_courante: 0
+  question_courante: 10
 format:
   live-html:
     code-background: true
@@ -53,7 +53,7 @@ la personne au cours des trois dernières années, de 0 (aucun changement) à 9
 (changements très importants).
 
 
-Le but de l’exercice est de modéliser la variable $\texttt{imapir}$.
+Le but de l’exercice est de modéliser la variable $\texttt{impair}$.
 
 ## Question 1
 
@@ -107,7 +107,7 @@ La variable $\texttt{ses}$ (statut socio-économique) est qualitative. On peut l
 charger comme `factor` ou comme `integer` car cette variable ne comporte
 que deux modalités.
 
-À l'inverse, on peut voir la variable $\texttt{life}$comme quantitative. On
+À l'inverse, on peut voir la variable $\texttt{life}$ comme quantitative. On
 suppose que l'accroissement d'une unité de cette variable a du sens et
 correspond à une augmentation de la fréquence d'évènements troublants
 pour un individu. Considérer la variable $\texttt{life}$ comme qualitative ne
@@ -121,7 +121,7 @@ la modélisation alors qu'il n'y a que 40 observations.
 ## Question 2
 
 Effectuer une petite étude descriptive pour identifier un lien éventuel entre la variable
-$\texttt{imapir}$ et les autres variables du jeu de données.
+$\texttt{impair}$ et les autres variables du jeu de données.
 
 ::: {.content-visible when-meta="is_answer_print_2"}
 
@@ -251,10 +251,10 @@ $$
 &\mathbb{P}(\texttt{impair}= 4|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))) \\
 \end{align*}
 $$
-On estime les rapports en prennant une des modalités comme référence (par défaut, {{< iconify logos:r-lang >}} choisit la première dans c'est à dire la modalité 1):
+On estime les rapports en prennant une des modalités comme référence (par défaut, {{< iconify logos:r-lang >}} choisit la première c'est à dire la modalité $\texttt{impair}=1$):
 
 $$
-\forall \ k \in \{2, \ 3,\ 4 \}, \ \ln\left(\frac{\mathbb{P}(\texttt{impair}= k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))}{\mathbb{P}(\texttt{impair}= 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))}\right)=\beta_0^{(k)}+\beta_1x_{\texttt{ses}}+\beta_2x_\texttt{life}
+\forall \ k \in \{2, \ 3,\ 4 \}, \ \ln\left(\frac{\mathbb{P}(\texttt{impair}= k|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))}{\mathbb{P}(\texttt{impair}= 1|(\texttt{ses}=x_\texttt{ses},\texttt{life}=x_\texttt{life}))}\right)=\alpha_0^{(k)}+\alpha_1^{(k)}x_{\texttt{ses}}+\alpha_2^{(k)}x_\texttt{life}
 $$
 
 On estime donc 9 coefficients (3 par rapport).
@@ -286,7 +286,7 @@ de base ne permettent pas d'estimer ce modèle directement avec une fontion comm
 #| autorun: true
 modele_q4_full <- VGAM::vglm(
   formula = factor(impair, ordered = FALSE) ~ life + ses,
-  family = multinomial(refLevel="1"),
+  family = VGAM::multinomial(refLevel="1"),
   data = data_mental
 )
 summary(modele_q4_full)
@@ -299,7 +299,7 @@ summary(modele_q4_full)
 #| autorun: true
 modele_q4_full <- VGAM::vglm(
   formula = factor(impair, ordered = FALSE) ~ life + ses,
-  family = multinomial(refLevel="1"),
+  family = VGAM::multinomial(refLevel="1"),
   data = data_mental
 )
 summary(modele_q4_full)
@@ -318,24 +318,19 @@ On estime les sous modèles possibles :
 #| autorun: true
 modele_q4_ses <- VGAM::vglm(
   formula = factor(impair, ordered = FALSE) ~ ses,
-  family = multinomial(refLevel="1"),
+  family = VGAM::multinomial(refLevel="1"),
   data = data_mental
 )
 modele_q4_life <- VGAM::vglm(
   formula = factor(impair, ordered = FALSE) ~ life,
-  family = multinomial(refLevel="1"),
-  data = data_mental
-)
-modele_q4_const <- VGAM::vglm(
-  formula = factor(impair, ordered = FALSE) ~ 1,
-  family = multinomial(refLevel="1"),
+  family = VGAM::multinomial(refLevel="1"),
   data = data_mental
 )
 
 data.frame(
-  `Modèle`=c("Avec impair et ses", "Avec ses uniquement", "Avec life uniquement", "Modèle nul"),
-  AIC = sapply(X=c(modele_q4_full, modele_q4_ses, modele_q4_life, modele_q4_const), FUN = AIC),
-  BIC = sapply(X=c(modele_q4_full, modele_q4_ses, modele_q4_life, modele_q4_const), FUN = BIC)
+  `Modèle`=c("Avec impair et ses", "Avec ses uniquement", "Avec life uniquement"),
+  AIC = sapply(X=c(modele_q4_full, modele_q4_ses, modele_q4_life), FUN = AIC),
+  BIC = sapply(X=c(modele_q4_full, modele_q4_ses, modele_q4_life), FUN = BIC)
 )
 ```
 
@@ -346,24 +341,19 @@ data.frame(
 #| autorun: true
 modele_q4_ses <- VGAM::vglm(
   formula = factor(impair, ordered = FALSE) ~ ses,
-  family = multinomial(refLevel="1"),
+  family = VGAM::multinomial(refLevel="1"),
   data = data_mental
 )
 modele_q4_life <- VGAM::vglm(
   formula = factor(impair, ordered = FALSE) ~ life,
-  family = multinomial(refLevel="1"),
-  data = data_mental
-)
-modele_q4_const <- VGAM::vglm(
-  formula = factor(impair, ordered = FALSE) ~ 1,
-  family = multinomial(refLevel="1"),
+  family = VGAM::multinomial(refLevel="1"),
   data = data_mental
 )
 
 data.frame(
-  `Modèle`=c("Avec impair et ses", "Avec ses uniquement", "Avec life uniquement", "Modèle nul"),
-  AIC = sapply(X=c(modele_q4_full, modele_q4_ses, modele_q4_life, modele_q4_const), FUN = AIC),
-  BIC = sapply(X=c(modele_q4_full, modele_q4_ses, modele_q4_life, modele_q4_const), FUN = BIC)
+  `Modèle`=c("Avec life et ses", "Avec ses uniquement", "Avec life uniquement"),
+  AIC = sapply(X=c(modele_q4_full, modele_q4_ses, modele_q4_life), FUN = AIC),
+  BIC = sapply(X=c(modele_q4_full, modele_q4_ses, modele_q4_life), FUN = BIC)
 )
 ```
 :::
@@ -437,7 +427,7 @@ Nous allons estimer ce modèle avec `vglm` du package `VGAM`.
 #| autorun: true
 modele_q6 <- VGAM::vglm(
   formula = impair ~ ses + life,
-  family = cumulative(parallel = TRUE),
+  family = VGAM::cumulative(parallel = TRUE),
   data = data_mental
 )
 summary(modele_q6)
@@ -450,7 +440,7 @@ summary(modele_q6)
 #| autorun: true
 modele_q6 <- VGAM::vglm(
   formula = impair ~ ses + life,
-  family = cumulative(parallel = TRUE),
+  family = VGAM::cumulative(parallel = TRUE),
   data = data_mental
 )
 summary(modele_q6)
@@ -502,7 +492,7 @@ Au vu de la question précédente, on peut essayer de retirer la variable $\text
 #| autorun: true
 modele_q8 <- VGAM::vglm(
   formula = impair ~ life,
-  family = cumulative(parallel = TRUE),
+  family = VGAM::cumulative(parallel = TRUE),
   data = data_mental
 )
 summary(modele_q8)
@@ -515,7 +505,7 @@ summary(modele_q8)
 #| autorun: true
 modele_q8 <- VGAM::vglm(
   formula = impair ~ life,
-  family = cumulative(parallel = TRUE),
+  family = VGAM::cumulative(parallel = TRUE),
   data = data_mental
 )
 summary(modele_q8)
@@ -591,9 +581,9 @@ $\gamma_2^{(1)}$, $\gamma_2^{(2)}$ et $\gamma_2^{(3)}$.
 ```{webr}
 #| envir: baser
 #| autorun: true
-modele_q9<- VGAM::vglm(
+modele_q9 <- VGAM::vglm(
   formula = impair ~ ses + life,
-  family = cumulative(parallel = FALSE),
+  family = VGAM::cumulative(parallel = FALSE),
   data = data_mental
 )
 summary(modele_q9)
@@ -606,7 +596,7 @@ summary(modele_q9)
 #| autorun: true
 modele_q9 <- VGAM::vglm(
   formula = impair ~ ses + life,
-  family = cumulative(parallel = FALSE),
+  family = VGAM::cumulative(parallel = FALSE),
   data = data_mental
 )
 summary(modele_q9)
