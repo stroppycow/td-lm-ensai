@@ -10,7 +10,9 @@ editor:
     wrap: 72
 ---
 
-## Exercices de la séance 1
+## Exercices des planches de régression linéaire et généralisée
+
+### Exercices de la séance 1
 
 [Exercice 1](/posts/td1-exo1.html)
 
@@ -24,7 +26,7 @@ editor:
 
 [Exercice 6](/posts/td1-exo6.html)
 
-## Exercices des séances 2 à 5
+### Exercices des séances 2 à 5
 
 [Exercice 1](/posts/td2-exo1.html)
 
@@ -50,7 +52,7 @@ editor:
 
 [Exercice 12](/posts/td2-exo12.html)
 
-## Exercices des séances 6 à 8
+### Exercices des séances 6 à 8
 
 [Exercice 1](/posts/td6-exo1.html)
 
@@ -65,3 +67,27 @@ editor:
 [Exercice 6](/posts/td6-exo6.html)
 
 [Exercice 7](/posts/td6-exo7.html)
+
+## Rappels de cours
+
+1. Régression linéaire
+
+    a) [Régression linéaire simple (modélisation, estimation, et inférence)](/posts/cours/regression-lineaire-simple.html)
+    b) Régression linéaire multiple (modélisation, estimation, et inférence)
+    c) Validation de modèle
+    d) Critères de sélection de modèles
+    e) Aide-mémoire (*cheatsheet*) en R
+
+2. Analyse de la variance (ANOVA) et de la covariance (ANCOVA)
+
+    a) Analyse de la variance à 1 facteur
+    b) Analyse de la varaiance à 2 facteurs
+    c) Analyse de la variance à $k$ facteurs
+    d) Analyse de la covariance (ANOVA)
+  
+3. Modèles linéaires généralisés
+
+    a) Généralités
+    b) Le modèle logistique pour $Y$ binaire
+    c) Modèles pour données catégorielles
+    d) Modèles pour données de comptage

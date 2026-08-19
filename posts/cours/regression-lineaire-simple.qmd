@@ -1,0 +1,83 @@
+---
+title: "Régression linéaire simple (modélisation, estimation, et inférence)"
+lang: fr
+author: "Théo Leroy"
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+webr:
+  render-df: gt-interactive
+fig-align: center
+editor: 
+  mode: source
+  markdown: 
+    wrap: 72
+---
+
+## Modélisation
+
+### Définition 
+Soient $Y$ et $X$ deux variables aléatoire réelles et $(\beta_1, \beta_2) \in \mathbb{R}^2$.
+
+La régression linéaire simple modélise l'espérance conditionnelle de la variable expliquée $Y$
+sachant une variable explicative $X$ sous la forme d'une fonction affine
+
+$$
+\boxed{\mathbb{E}(Y|X) = \beta_1 + \beta_2 X}
+$$ {#eq-regression-lineaire-simple-esperance}
+
+On définit $\epsilon = Y - (\beta_1 + \beta_2 X)$. $\epsilon$ est une variable aléatoire réelle appelée bruit ou erreur.
+
+Par construction, on a
+
+$$\boxed{Y = \beta_1 + \beta_2 X + \epsilon \quad \textrm{avec} \ \mathbb{E}(\epsilon|X) = 0}$$ {#eq-regression-lineaire-simple-somme}
+
+car
+$$
+\begin{align*}
+\mathbb{E}(\epsilon|X) &= \mathbb{E}(Y - (\beta_1 + \beta_2 X) \mid X) \\
+&= \mathbb{E}(Y|X) - \mathbb{E}(\beta_1 + \beta_2 X \mid X) \quad \textrm{par linéarité de l'espérance conditionnelle}\\
+&= \underbrace{\beta_1 + \beta_2 X}_{\textrm{par hypothèse}} - \underbrace{(\beta_1 + \beta_2 X)}_{\substack{\textrm{car } g: x \mapsto \beta_1+\beta_2x \\ \textrm{est continue sur } \mathbb{R} \\ \textrm{donc } \mathbb{E}(g(X)|X)=g(X) }} \\
+&=0
+\end{align*}
+$$
+
+
+Ces deux écritures du modèle de régression linéaire simple @eq-regression-lineaire-simple-esperance et @eq-regression-lineaire-simple-somme sont bien équivalentes,
+
+Réciproquement si, 
+
+$$ Y = \beta_1 + \beta_2 X + \epsilon \quad \textrm{avec} \ \mathbb{E}(\epsilon|X) = 0$$
+
+$$
+\begin{align*}
+\mathbb{E}(Y|X) &= \mathbb{E}(\beta_1 + \beta_2 X + \epsilon | X) \\
+&= \mathbb{E}(\beta_1 + \beta_2 X | X) + \mathbb{E}(\epsilon | X) \quad \textrm{par linéarité de l'espérance conditionnelle} \\
+&= \underbrace{(\beta_1 + \beta_2 X)}_{\substack{\textrm{car } g: x \mapsto \beta_1+\beta_2x \\ \textrm{est continue sur } \mathbb{R} \\ \textrm{donc } \mathbb{E}(g(X)|X)=g(X) }} + \underbrace{0}_{\textrm{par hypothèse}} \\
+&= \beta_1 + \beta_2 X
+\end{align*}
+$$
+
+### Vocabulaire
+
+On trouve de nombreuses formulations différentes pour les différents objets mathématiques introduits ci-dessus dans la litérrature (statistique, *machine learning*, économétrie etc.). Les plus usuelles  
+
+*   **$Y$** 
+
+      - Français
+      
+        - Variable à expliquer
+        - Variable dépendante
+        - Variable réponse 
+        - Variable endogène
+        
+      - Anglais 
+      
+        - explained variable
+        - dependant variable
+        - response variable
+        - target variable
+        
+*   **$X$** : 

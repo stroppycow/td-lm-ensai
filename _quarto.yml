@@ -31,6 +31,7 @@ project:
     - posts/td6-exo5.qmd
     - posts/td6-exo6.qmd
     - posts/td6-exo7.qmd
+    - posts/cours/regression-lineaire-simple.qmd
   preview: 
     timeout: 3600
     navigate: false

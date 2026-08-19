@@ -6,6 +6,5 @@
 /.quarto/
 
 _site/
-posts/*
-!posts/*.qmd
+posts/td1-exo1_files/
 **/*.quarto_ipynb
