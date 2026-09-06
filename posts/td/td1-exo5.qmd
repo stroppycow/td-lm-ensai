@@ -1,8 +1,8 @@
 ---
-title: "TD 1 - Exercice 6"
+title: "TD 1 - Exercice 5"
 lang: fr
 author: "Théo Leroy"
-date: "3 septembre 2025"
+date: "8 septembre 2026"
 params:
   question_courante: 7
 format:
@@ -28,8 +28,8 @@ custom-callout:
     title: "Correction"
 ---
 
-{{< include ./../_extensions/conditionnal.qmd >}}
-{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+{{< include ./../../_extensions/conditionnal.qmd >}}
+{{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
 Des données, publiées par le Chicago Tribune en 1993, montrent la
 consommation de confiseries en millions de livres et la population en

@@ -13,7 +13,7 @@ format:
 webr:
   render-df: gt-interactive
   resources:
-    - ./../data/Fourmis.txt
+    - ./../../data/Fourmis.txt
   packages:
       - dplyr
       - readr
@@ -37,8 +37,8 @@ custom-callout:
     title: "Correction"
 ---
 
-{{< include ./../_extensions/conditionnal.qmd >}}
-{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+{{< include ./../../_extensions/conditionnal.qmd >}}
+{{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
 Le but de l’étude est d’étudier la diversité des fourmis
 sur le site expérimental des Nourragues en Guyane Française.

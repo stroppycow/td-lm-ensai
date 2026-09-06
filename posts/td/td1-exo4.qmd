@@ -1,10 +1,10 @@
 ---
-title: "TD 1 - Exercice 5"
+title: "TD 1 - Exercice 4"
 lang: fr
 author: "Théo Leroy"
-date: "3 septembre 2025"
+date: "8 septembre 2026"
 params:
-  question_courante: 0
+  question_courante: 5
 format:
   live-html:
     code-background: true
@@ -28,8 +28,12 @@ custom-callout:
     title: "Correction"
 ---
 
-{{< include ./../_extensions/conditionnal.qmd >}}
-{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+{{< include ./../../_extensions/conditionnal.qmd >}}
+{{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
+
+$$
+\newcommand{\textcircled}[1]{{\large\raise .02em\bigcirc}\llap{\text{#1}\kern .335em}}
+$$
 
 On se place comme dans l’exercice précédent dans le cadre d’un modèle de
 régression linéaire simple. On rappelle que la matrice de design $X$ et
@@ -55,16 +59,33 @@ chaque cas.
 
 Rappeler ce que vaut l’erreur quadratique moyenne de $\hat{\beta}$,
 l’estimateur par MCO de
+
 $\beta = \begin{pmatrix} \beta_0 & \beta_1 \end{pmatrix}'$.
 
 ::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
+
 L'erreur quadratique moyenne vaut
 
 $$
-\textrm{EQM}\left(\widehat{\beta} \right) = \mathbb{E}\left(\left[\widehat{\beta} -\beta \right]^2\right) =  \mathbb{V}\left(\widehat{\beta} \right) + \underbrace{\left(\mathbb{E}\left(\widehat{\beta} -\beta \right)\right)^2}_{=0 \textrm{ car } \widehat{\beta} \textrm{ est sans biais}}=\mathbb{V}\left(\widehat{\beta} \right) = \sigma^2\left(X^{'}X \right)^{-1}
+\textrm{EQM}\left[\widehat{\beta} \right] \underset{}{=} \mathbb{E}\left[\left(\widehat{\beta} - \beta \right)\left(\widehat{\beta} -\beta \right)^{'}\right] \underset{\textcircled{1}}{=}  \mathbb{V}\left[\widehat{\beta} \right] + \underbrace{\left(\mathbb{E}\left[\widehat{\beta} - \mathbb{E}\left[\widehat{\beta}\right] \right]\right)\left(\mathbb{E}\left[\widehat{\beta} - \mathbb{E}\left[\widehat{\beta}\right] \right]\right)^{'}}_{\underset{\textcircled{2}}{=} 0_{2,2} \textrm{ car } \widehat{\beta} \textrm{ est sans biais}}=\mathbb{V}\left|\widehat{\beta} \right] \underset{\textcircled{3}}{=} \sigma^2\left(X^{'}X \right)^{-1}
 $$
+
+::: {.callout-note collapse="true"}
+### Rappel de la preuve ① : décomposition biais-variance de l'EQM
+
+$$
+\begin{align*}
+\mathbb{E}\left[\left(\widehat{\beta} - \mathbb{E}\left[\widehat{\beta}\right] \right)\left(\widehat{\beta} -\mathbb{E}\left[\widehat{\beta}\right] \right)^{'}\right] &= \mathbb{E}\left[\widehat{\beta}\widehat{\beta}^{'} - \widehat{\beta}\left(\mathbb{E}\left[\widehat{\beta}\right]\right)^{'} - \mathbb{E}\left[\widehat{\beta}\right]\widehat{\beta}^{'}+ \mathbb{E}\left[\widehat{\beta}\right]\left(\mathbb{E}\left[\widehat{\beta}\right] \right)^{'} \right] \\
+&= \mathbb{E}\left[\widehat{\beta}\left(\widehat{\beta} -\mathbb{E}\left[\widehat{\beta}\right] \right)^{'}\right]- \mathbb{E}\left[\widehat{\beta}\right]\mathbb{E}\left[\left(\widehat{\beta} -\mathbb{E}\left[\widehat{\beta}\right] \right)^{'}\right] \\
+&= \mathbb{E}\left[\widehat{\beta}\left(\widehat{\beta} -\mathbb{E}\left[\widehat{\beta}\right] \right)^{'}\right]- \mathbb{E}\left[\widehat{\beta}\right]\mathbb{E}\left[\left(\widehat{\beta} -\mathbb{E}\left[\widehat{\beta}\right] \right)^{'}\right] \\
+&= \mathbb{V}\left[\widehat{\beta} \right] + \left(\mathbb{E}\left[\widehat{\beta} - \mathbb{E}\left[\widehat{\beta}\right] \right]\right)\left(\mathbb{E}\left[\widehat{\beta} - \mathbb{E}\left[\widehat{\beta}\right] \right]\right)^{'}
+\end{align*}
+$$
+
+:::
+
 :::
 
 :::

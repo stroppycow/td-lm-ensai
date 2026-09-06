@@ -13,7 +13,7 @@ format:
 webr:
   render-df: gt-interactive
   resources:
-    - ./../data/ozone.txt
+    - ./../../data/ozone.txt
   packages:
       - dplyr
       - readr
@@ -40,8 +40,8 @@ custom-callout:
     title: "Correction"
 ---
 
-{{< include ./../_extensions/conditionnal.qmd >}}
-{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+{{< include ./../../_extensions/conditionnal.qmd >}}
+{{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère de nouveau les données `ozone.txt` étudiées dans l’exercice 7. On désire
 tirer profit des variables qualitatives présentes dans le jeu de données (c’est à dire la
