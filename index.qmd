@@ -10,58 +10,89 @@ editor:
     wrap: 72
 ---
 
-## Exercices de la séance 1
+## Exercices des planches de régression linéaire et généralisée
 
-[Exercice 1](/posts/td1-exo1.html)
+### Exercices de la séance 1
 
-[Exercice 2](/posts/td1-exo2.html)
+[Exercice 1](/posts/td/td1-exo1.html)
 
-[Exercice 3](/posts/td1-exo3.html)
+[Exercice 2](/posts/td/td1-exo2.html)
 
-[Exercice 4](/posts/td1-exo4.html)
+[Exercice 3](/posts/td/td1-exo3.html)
 
-[Exercice 5](/posts/td1-exo5.html)
+[Exercice 4](/posts/td/td1-exo4.html)
 
-[Exercice 6](/posts/td1-exo6.html)
+[Exercice 5](/posts/td/td1-exo5.html)
 
-## Exercices des séances 2 à 5
 
-[Exercice 1](/posts/td2-exo1.html)
+::: {.content-hidden when-format="html"}
 
-[Exercice 2](/posts/td2-exo2.html)
+### Exercices des séances 2 à 5
 
-[Exercice 3](/posts/td2-exo3.html)
+[Exercice 1](/posts/td/td2-exo1.html)
 
-[Exercice 4](/posts/td2-exo4.html)
+[Exercice 2](/posts/td/td2-exo2.html)
 
-[Exercice 5](/posts/td2-exo5.html)
+[Exercice 3](/posts/td/td2-exo3.html)
 
-[Exercice 6](/posts/td2-exo6.html)
+[Exercice 4](/posts/td/td2-exo4.html)
 
-[Exercice 7](/posts/td2-exo7.html)
+[Exercice 5](/posts/td/td2-exo5.html)
 
-[Exercice 8](/posts/td2-exo8.html)
+[Exercice 6](/posts/td/td2-exo6.html)
 
-[Exercice 9](/posts/td2-exo9.html)
+[Exercice 7](/posts/td/td2-exo7.html)
 
-[Exercice 10](/posts/td2-exo10.html)
+[Exercice 8](/posts/td/td2-exo8.html)
 
-[Exercice 11](/posts/td2-exo11.html)
+[Exercice 9](/posts/td/td2-exo9.html)
 
-[Exercice 12](/posts/td2-exo12.html)
+[Exercice 10](/posts/td/td2-exo10.html)
 
-## Exercices des séances 6 à 8
+[Exercice 11](/posts/td/td2-exo11.html)
 
-[Exercice 1](/posts/td6-exo1.html)
+[Exercice 12](/posts/td/td2-exo12.html)
 
-[Exercice 2](/posts/td6-exo2.html)
+### Exercices des séances 6 à 8
 
-[Exercice 3](/posts/td6-exo3.html)
+[Exercice 1](/posts/td/td6-exo1.html)
 
-[Exercice 4](/posts/td6-exo4.html)
+[Exercice 2](/posts/td/td6-exo2.html)
 
-[Exercice 5](/posts/td6-exo5.html)
+[Exercice 3](/posts/td/td6-exo3.html)
 
-[Exercice 6](/posts/td6-exo6.html)
+[Exercice 4](/posts/td/td6-exo4.html)
 
-[Exercice 7](/posts/td6-exo7.html)
+[Exercice 5](/posts/td/td6-exo5.html)
+
+[Exercice 6](/posts/td/td6-exo6.html)
+
+[Exercice 7](/posts/td/td6-exo7.html)
+
+
+
+## Rappels de cours
+
+1. Régression linéaire
+
+    a) [Régression linéaire simple (modélisation, estimation, et inférence)](/posts/cours/regression-lineaire-simple.html)
+    b) Régression linéaire multiple (modélisation, estimation, et inférence)
+    c) Validation de modèle
+    d) Critères de sélection de modèles
+    e) Aide-mémoire (*cheatsheet*) en R
+
+2. Analyse de la variance (ANOVA) et de la covariance (ANCOVA)
+
+    a) Analyse de la variance à 1 facteur
+    b) Analyse de la varaiance à 2 facteurs
+    c) Analyse de la variance à $k$ facteurs
+    d) Analyse de la covariance (ANOVA)
+  
+3. Modèles linéaires généralisés
+
+    a) Généralités
+    b) Le modèle logistique pour $Y$ binaire
+    c) Modèles pour données catégorielles
+    d) Modèles pour données de comptage
+    
+:::

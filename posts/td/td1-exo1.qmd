@@ -1,8 +1,8 @@
 ---
-title: "TD 1 - Exercice 2"
+title: "TD 1 - Exercice 1"
 lang: fr
 author: "Théo Leroy"
-date: "3 septembre 2025"
+date: "8 septembre 2026"
 params:
   question_courante: 5
 format:
@@ -28,8 +28,8 @@ custom-callout:
     title: "Correction"
 ---
 
-{{< include ./../_extensions/conditionnal.qmd >}}
-{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+{{< include ./../../_extensions/conditionnal.qmd >}}
+{{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
 Les modèles suivants sont-ils des modèles de régression linéaire ? Si
 non, peut-on appliquer une transformation pour s’y ramener ? Pour chaque
@@ -47,12 +47,14 @@ corrélées. On désire estimer $a$ et $b$.
 
 ::: answer
 Le modèle $y_{i} = a + b x_{i} + \epsilon_{i}$ est effectivement un
-modèle de régression linéaire car il décrit l'espérance d’une variable
-réponse continue $Y$ d’un échantillon aléatoire de taille $n$ comme
-fonction linéaire du couple de variables explicatives $(1, X_i)$ :
-$\mathbb{E}(Y_i|1,X_i)=a+bX_i$
+modèle de régression linéaire car il décrit l'espérance d'une variable
+réponse continue $Y$ d'un échantillon aléatoire de taille $n$. En
+notant $X_i$ la variable aléatoire dont $x_i$ est une réalisation :
+$$
+\mathbb{E}(Y_i|1,X_i)=a+bX_i
+$$
 
-Le modèle donné sur les $n$ obervations s'écrit alors matriciellement
+Le modèle donné sur les $n$ observations s'écrit alors matriciellement
 $Y = X\beta + \epsilon$, et nous pouvons identifier les éléments
 suivants :
 
@@ -78,8 +80,14 @@ b
 \end{pmatrix}}_{\in \mathcal{M}_{n,1}(\mathbb{R})} 
 $$
 
-Il s'agit du modèle de régression linéaire simple car il n'y a qu'un
-seul régresseur et une constante (slide 46).
+Il s'agit du modèle de régression linéaire simple car il n'y a
+qu'un seul régresseur $x$ et une constante (slide 46), par opposition
+à la régression multiple où plusieurs régresseurs interviennent
+(voir Question 2).
+
+Pour que $\beta = (a,b)^\top$ soit estimable de façon unique, il faut
+également que $X$ soit de plein rang colonne, c'est-à-dire
+$\text{rang}(X)=2$ (les $x_i$ ne sont pas tous égaux).
 :::
 
 :::
@@ -95,12 +103,26 @@ corrélées. On désire estimer $a_1$ et $a_2$.
 
 ::: answer
 Il s'agit bien d'un modèle de régression linéaire car il décrit
-l'espérance d’une variable réponse continue $Y$ d’un échantillon
-aléatoire de taille $n$ comme fonction linéaire du couple de variables
-explicatives $(X_i, X_i^2)$ :
-$\mathbb{E}(Y_i|X_i,X_i^2)=a_1X_i+a_2X_i^2$
+l'espérance d'une variable réponse continue $Y$ d'un échantillon
+aléatoire de taille $n$ :
+$$
+\mathbb{E}(Y_i|X_i,X_i^2)=a_1X_i+a_2X_i^2
+$$
 
-Le modèle donné sur les $n$ obervations s'écrit alors matriciellement
+Ce modèle n'est pas linéaire en $x$
+(il contient un terme en $x^2$), mais il est linéaire en les
+paramètres $a_1$ et $a_2$ : c'est bien cette seconde propriété qui
+définit un modèle de régression linéaire, et non la forme des
+régresseurs eux-mêmes. On peut ainsi introduire une nouvelle variable
+$Z_i = X_i^2$ et retrouver la forme habituelle
+$\mathbb{E}(Y_i|X_i,Z_i)=a_1X_i+a_2Z_i$.
+
+On notera aussi l'absence de constante dans ce modèle (pas de terme
+$a_0$) : c'est une hypothèse de modélisation qui impose que
+$\mathbb{E}(Y_i|X_i=0)=0$, et qu'il conviendrait de justifier selon le
+contexte.
+
+Le modèle donné sur les $n$ observations s'écrit alors matriciellement
 $Y = X\beta + \epsilon$, et nous pouvons identifier les éléments
 suivants :
 
@@ -141,22 +163,27 @@ relation et estimer $\alpha_1$, $\alpha_2$ et $\alpha_3$.
 
 ::: answer
 La relation Cobb-Douglas qui lie la production $P_i$ au capital $K_i$,
-et au facteur travail $T_i$ au sein de chaque pays est théorique : cela
-se traduit plus formellement par une espérance.
-
+et au facteur travail $T_i$ au sein de chaque pays est théorique et
+déterministe. Pour en faire un modèle statistique, il faut introduire
+un aléa. Contrairement à un modèle linéaire classique, l'erreur
+naturelle ici est multiplicative :
+$$
+P_i = \alpha_1K_i^{\alpha_2}T_i^{\alpha_3}\cdot \exp(\eta_i)
+$$
+où $\eta_i$ est un terme d'erreur centré. Cela se traduit, de façon
+équivalente, par une espérance conditionnelle :
 $$
 \mathbb{E}(P_i | K_i, T_i) = \alpha_1K_i^{\alpha_2}T_i^{\alpha_3}
 $$
 
 Ce modèle n'est pas un modèle de régression linéaire car cette espérance
-conditionnelle n'est pas une combinaison liénaire des paramètres
+conditionnelle n'est pas une combinaison linéaire des paramètres
 $\alpha_1$, $\alpha_2$ et $\alpha_3$.
 
-On peut transformer la relation initiale en appliquant la fonction
-logarithme.
-
+C'est précisément parce que l'erreur $\eta_i$ est multiplicative que
+l'on peut linéariser la relation en appliquant la fonction logarithme :
 $$
-\ln(P) = \ln(\alpha_1)+\alpha_2\ln(K)+\alpha_3\ln(T)
+\ln(P_i) = \ln(\alpha_1)+\alpha_2\ln(K_i)+\alpha_3\ln(T_i)+\eta_i
 $$
 
 Le modèle statistique s'écrit donc
@@ -166,12 +193,9 @@ $$
 $$
 
 Il s'agit bien d'un modèle de régression linéaire car il décrit
-l'espérance d’une variable réponse continue $Y=ln(P)$ d’un échantillon
-aléatoire de taille $n$ comme fonction linéaire des variables
-explicatives $(1, \ln(K_i), \ln(T_i))$ :
-$\mathbb{E}(\ln(P_i)|1, \ln(K_i), \ln(T_i))= \ln(\alpha_1)+\alpha_2\ln(K_i)+\alpha_3\ln(T_i)$
+l'espérance d'une variable réponse continue $Y=\ln(P)$ sous forme de combinaison linéaire des paramètres $(\ln(\alpha_1), \alpha_2, \alpha_3)$.
 
-Le modèle donné sur les $n$ obervations s'écrit alors matriciellement
+Le modèle donné sur les $n$ observations s'écrit alors matriciellement
 $Y = X\beta + \epsilon$, et nous pouvons identifier les éléments
 suivants :
 
@@ -197,6 +221,9 @@ X = \underbrace{\begin{pmatrix}
 \epsilon_n
 \end{pmatrix}}_{\in \mathcal{M}_{n,1}(\mathbb{R})} 
 $$
+
+**Remarque :** l'estimabilité de $\beta$ suppose en outre que la
+matrice $X$ soit de plein rang.
 :::
 
 :::
@@ -211,14 +238,19 @@ désire vérifier cette relation et estimer $\beta_1$ et $\beta_2$.
 ::: {.content-visible when-meta="is_answer_print_4"}
 
 ::: answer
-Comme dans l'exemple précédent, il s'agit d'une relation théorique mais
-il y a bien un aléas implicite. De même la relation,
-$\beta_1e^{-\beta_2t}$ n'est pas linéaire en les paramètres.
-
-On peut passer au logarithme afin de linéariser la relation :
+Comme dans l'exemple précédent, il s'agit d'une relation théorique et
+déterministe : il faut y introduire un aléa pour obtenir un modèle
+statistique. Ici encore, l'aléa naturel est multiplicatif :
+$$
+y_i = \beta_1e^{-\beta_2t_i}\cdot \exp(u_i)
+$$
+où $u_i$ est centré. La relation $\beta_1e^{-\beta_2t}$ n'est pas
+linéaire en les paramètres $\beta_1$ et $\beta_2$, mais l'erreur étant
+multiplicative, on peut passer au logarithme afin de linéariser la
+relation :
 
 $$
-\ln(y_i) = \ln(\beta_1)-\beta_2 t_i
+\ln(y_i) = \ln(\beta_1)-\beta_2 t_i + u_i
 $$
 
 Le modèle statistique s'écrit donc
@@ -227,13 +259,10 @@ $$
 \mathbb{E}(\ln(Y_i) | 1, T_i) = \ln(\beta_1)-\beta_2 t_i
 $$
 
-Il s'agit
-bien d'un modèle de régression linéaire car il décrit l'espérance d’une
-variable réponse continue $Y=ln(P)$ d’un échantillon aléatoire de taille
-$n$ comme fonction linéaire des variables explicatives $(1, T_i)$ :
-$\mathbb{E}(\ln(Y_i)|1,  T_i)=  \ln(\beta_1)-\beta_2 T_i$
+Il s'agit bien d'un modèle de régression linéaire car il décrit
+l'espérance d'une variable réponse continue $Y=\ln(y)$ sous forme de combinaison linéaire des paramètres $(\ln(\beta_1), \ -\beta_2)$.
 
-Le modèle donné sur les $n$ obervations s'écrit alors matriciellement
+Le modèle donné sur les $n$ observations s'écrit alors matriciellement
 $Y = X\beta + \epsilon$, et nous pouvons identifier les éléments
 suivants :
 
@@ -244,9 +273,9 @@ Y = \underbrace{\begin{pmatrix}
 \ln(y_n)
 \end{pmatrix}}_{\in \mathcal{M}_{n,1}(\mathbb{R})} \qquad
 X = \underbrace{\begin{pmatrix}
-1 & T_1\\
+1 & t_1\\
 \vdots & \vdots \\
-1 &  T_n
+1 &  t_n
 \end{pmatrix}}_{\in \mathcal{M}_{n,2}(\mathbb{R})} \qquad
 \beta = \underbrace{\begin{pmatrix}
 \ln(\beta_1) \\
@@ -258,6 +287,8 @@ X = \underbrace{\begin{pmatrix}
 \epsilon_n
 \end{pmatrix}}_{\in \mathcal{M}_{n,1}(\mathbb{R})} 
 $$
+
+
 :::
 
 :::
@@ -272,10 +303,45 @@ $\sigma^2$ et non-corrélées.
 ::: {.content-visible when-meta="is_answer_print_5"}
 
 ::: answer
-Le modèle n'est pas linéaire car le lien initial n'est pas linéaire en
-les paramètres et on ne peut pas appliquer de transformation
-logarithmique pour se ramener à un modèle linéaire classique car
-l'erreur dans le modèle initial est additive.
+
+Le modèle s'écrit ici $y_i = \beta_1e^{-\beta_2t_i}+u_i$, où
+l'erreur $u_i$ est additive (elle s'ajoute au terme
+$\beta_1e^{-\beta_2t_i}$), contrairement à la question précédente où
+l'aléa était multiplicatif et implicite dans la relation
+$y = \beta_1e^{-\beta_2t}$.
+
+Si l'on applique le logarithme à la relation, on obtient
+
+$$
+\ln(y_i) = \ln\left(\beta_1e^{-\beta_2t_i}+u_i\right)
+$$
+
+Cette expression ne se simplifie pas en une fonction linéaire de
+$\ln(\beta_1)$ et $\beta_2$, car le logarithme d'une somme n'est pas la
+somme des logarithmes : 
+$$
+\ln\left(\beta_1e^{-\beta_2t_i}+u_i\right) \neq \ln(\beta_1)-\beta_2t_i+g(u_i)
+$$
+pour une quelconque fonction $g$ ne dépendant que de $u_i$.
+
+De plus, comme $\mathbb{E}(u_i)=0$, l'inégalité de Jensen
+(le logarithme étant une fonction concave) donne
+
+$$
+\mathbb{E}\left[\ln\left(\beta_1e^{-\beta_2t_i}+u_i\right)\right] \leq \underbrace{\ln\left(\mathbb{E}\left[\beta_1e^{-\beta_2t_i}+u_i\right]\right)}_{ \ln(\beta_1)-\beta_2t_i}
+$$
+
+avec égalité seulement si $u_i$ est presque sûrement nul. La
+transformation logarithmique introduit donc un biais et ne permet
+pas de retrouver une espérance conditionnelle linéaire en les
+paramètres $\ln(\beta_1)$ et $\beta_2$.
+
+Conclusion, le modèle $y_i = \beta_1e^{-\beta_2t_i}+u_i$ n'est pas
+un modèle de régression linéaire, et aucune transformation usuelle
+(logarithme ou autre) ne permet de s'y ramener, car l'erreur est
+additive et non multiplicative. Il faudra recourir à des méthodes
+d'estimation non linéaire (par exemple les moindres carrés non
+linéaires) pour estimer $\beta_1$ et $\beta_2$.
 :::
 
 :::

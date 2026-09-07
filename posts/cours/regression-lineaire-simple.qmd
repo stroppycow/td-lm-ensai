@@ -1,0 +1,652 @@
+---
+title: "Régression linéaire simple (modélisation, estimation, et inférence)"
+lang: fr
+author: "Théo Leroy"
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+webr:
+  render-df: gt-interactive
+filters: 
+  - custom-callout
+custom-callout:    
+  definition:
+    color: "#2300FF"
+    icon: false
+    icon-symbol: "🏱"
+    appearance: "default"
+    title: "Définition"
+fig-align: center
+editor: 
+  mode: source
+  markdown: 
+    wrap: 72
+---
+
+::: {.hidden}
+$$
+\newcommand{\entiers}[2]{\left[\!\left[#1, #2 \right]\!\right]}
+$$
+:::
+
+
+## Modélisation
+
+### Définition 
+Soient $Y$ et $X$ deux variables aléatoire réelles et $(\beta_1, \beta_2) \in \mathbb{R}^2$.
+
+La régression linéaire simple modélise l'espérance conditionnelle de la variable expliquée $Y$
+sachant une variable explicative $X$ sous la forme d'une fonction affine
+
+$$
+\boxed{\mathbb{E}\left[Y \mid X\right] = \beta_1 + \beta_2 X}
+$$ {#eq-regression-lineaire-simple-esperance}
+
+::: {.callout-note title="De quelle « linéarité » parle-t-on ?"}
+L'expression « régression linéaire » peut être source de confusion.
+
+Dans le modèle, la fonction $m: x\longmapsto \beta_1+\beta_2x$ est une fonction affine de $x$, 
+et non une fonction linéaire, puisque généralement $\beta_1\neq0$.
+
+Le modèle est néanmoins qualifié de linéaire parce que l'espérance conditionnelle dépend linéairement des paramètres $\beta_1$ et de $\beta_2$.
+
+
+$$
+\mathbb{E}\left[Y \mid X\right]=\beta_1\underbrace{X^{(1)}}_{1}+\beta_2\underbrace{X^{(2)}}_{X}
+$$
+Autrement dit, les paramètres ne sont ni transformés ni combinés entre eux : ils apparaissent uniquement comme coefficient d'une combinaison linéaire.
+
+:::
+
+On définit $\varepsilon = Y - (\beta_1 + \beta_2 X)$. $\varepsilon$ est une variable aléatoire réelle appelée bruit ou erreur.
+
+Par construction, on a
+
+$$\boxed{Y = \beta_1 + \beta_2 X + \varepsilon \quad \textrm{avec} \ \mathbb{E}\left[\varepsilon \mid X\right] = 0}$$ {#eq-regression-lineaire-simple-somme}
+
+car
+$$
+\begin{align*}
+\mathbb{E}\left[\varepsilon|X\right] &= \mathbb{E}\left[Y - (\beta_1 + \beta_2 X) \mid X\right] \\
+&= \mathbb{E}\left[Y|X\right] - \mathbb{E}\left[\beta_1 + \beta_2 X \mid X\right] \quad \textrm{par linéarité de l'espérance conditionnelle}\\
+&= \underbrace{\beta_1 + \beta_2 X}_{\textrm{par hypothèse}} - \underbrace{(\beta_1 + \beta_2 X)}_{\substack{\textrm{car } g: x \mapsto \beta_1+\beta_2x \\ \textrm{est mesurable sur } \mathbb{R} \\ \textrm{donc } \mathbb{E}\left[g(X)|X\right]=g(X) }} \\
+&=0
+\end{align*}
+$$
+
+
+Ces deux écritures du modèle de régression linéaire simple @eq-regression-lineaire-simple-esperance et @eq-regression-lineaire-simple-somme sont bien équivalentes,
+
+Réciproquement si, 
+
+$$ Y = \beta_1 + \beta_2 X + \varepsilon \quad \textrm{avec} \ \mathbb{E}\left[\varepsilon \mid X\right] = 0$$
+
+$$
+\begin{align*}
+\mathbb{E}\left[Y \mid X\right] &= \mathbb{E}\left[\beta_1 + \beta_2 X + \varepsilon \mid X\right] \\
+&= \mathbb{E}\left[\beta_1 + \beta_2 X \mid X\right] + \mathbb{E}\left[\varepsilon \mid X\right] \quad \textrm{par linéarité de l'espérance conditionnelle} \\
+&= \underbrace{(\beta_1 + \beta_2 X)}_{\substack{\textrm{car } g: x \mapsto \beta_1+\beta_2x \\ \textrm{est mesurable sur } \mathbb{R} \\ \textrm{donc } \mathbb{E}\left[g(X)|X\right]=g(X) }} + \underbrace{0}_{\textrm{par hypothèse}} \\
+&= \beta_1 + \beta_2 X
+\end{align*}
+$$
+
+### Interprétation des paramètres
+
+
+Posons $m(x)=\mathbb{E}[Y\mid X=x]$.  Le modèle suppose que $m(x)=\beta_1+\beta_2x$.
+
+**Interprétation de $\beta_1$**
+
+En prenant $x=0$, on obtient
+
+$$
+m(0)=\mathbb{E}[Y\mid X=0]=\beta_1.
+$$
+
+Ainsi, $\beta_1$ est l'espérance conditionnelle de $Y$ lorsque $X=0$, lorsque cette valeur de $X$ est pertinente dans le contexte étudié.
+
+Géométriquement, $\beta_1$ est l'ordonnée à l'origine de la droite de régression.
+
+Il faut toutefois être prudent dans l'interprétation concrète : si $X=0$ n'a pas de sens ou n'est pas observé dans la population étudiée, $\beta_1$ reste un paramètre mathématique nécessaire à l'écriture de la droite, mais son interprétation comme moyenne de $Y$ pour $X=0$ peut ne pas avoir de portée pratique.
+
+**Interprétation de $\beta_2$**
+
+Considérons deux valeurs $x$ et $x+h$ de $X$. Le modèle donne
+
+$$
+\mathbb{E}[Y\mid X=x+h] - \mathbb{E}[Y\mid X=x] = (\beta_1+\beta_2(x+h)) - (\beta_1+\beta_2x)\ =\beta_2h
+$$
+  
+En particulier, pour une augmentation d'une unité de $X$ (i.e. $h=1$),
+
+$$
+\mathbb{E}\left[Y\mid X=x+1\right]- \mathbb{E}\left[Y\mid X=x\right] = \beta_2
+$$
+
+pour toute valeur $x$ pertinente.
+
+Ainsi, $\beta_2$ représente la variation moyenne de $Y$ associée à une augmentation d'une unité de $X$.
+
+
+> **Exemple.** Si $X$ représente l'ancienneté en années et $Y$ un salaire exprimé en euros, une valeur $\beta_2=1,500$ signifie que, selon le modèle, l'espérance conditionnelle du salaire est supérieure de $1,500$ euros lorsqu'on compare deux niveaux d'ancienneté différant d'une année.
+
+Cette formulation doit être distinguée d'une interprétation causale. Une régression estimant une association entre $X$ et $Y$ ne permet pas, à elle seule, de conclure qu'une augmentation de $X$ provoque une augmentation de $Y$. Une interprétation causale nécessite des hypothèses supplémentaires sur le mécanisme de génération des données et notamment sur les facteurs susceptibles de confondre la relation entre $X$ et $Y$.
+
+
+### Du modèle populationnel aux données observées
+
+Le modèle précédent est un modèle populationnel : $X$ et $Y$ désignent des variables aléatoires représentant respectivement la variable explicative et la variable expliquée dans la population étudiée. Cette expression constitue une hypothèse portant sur la population ou, plus généralement, sur le mécanisme probabiliste que l'on cherche à modéliser.
+
+Dans la pratique, on ne dispose généralement pas de l'ensemble de la population. 
+On observe un échantillon de $n$ individus. Pour chaque individu $i$, on introduit donc deux variables aléatoires $X_i$ et $Y_i$ représentant les valeurs que prendraient $X$ et $Y$ pour cet individu.
+
+On suppose que le même modèle s'applique à chacun des individus :
+
+$$
+Y_i = \beta_1+\beta_2X_i+\varepsilon_i,
+\qquad i=1,\ldots,n,
+$$
+
+où $\varepsilon_i$ est le terme d'erreur associé à l'individu $i$.
+
+Dans une base de données, on observe finalement pour chaque $i \in \entiers{1}{n}$, les réalisations $(x_i, y_i)$ des 
+variables aléatoires $X_i$ et $Y_i$. Les $x_i$ et $y_i$ sont donc des valeurs observées et ne sont plus aléatoires. 
+On peut alors écrire, pour les données observées.
+
+
+### Deux façons de considérer $X$ : aléatoire ou déterministe
+
+Selon le contexte, les valeurs de $X$ peuvent être considérées comme aléatoires ouu comme fixées.
+
+Lorsqu'elles varient d'un individu à l'autre sans être déterminées à l'avance par le protocole d'observation, on les modélise comme des réalisations d'une variable aléatoire $X$ (comme dans la définition ci-dessus). 
+
+Dans d'autres situations, le statisticien ou l'expérimentateur fixe à l'avance les valeurs de $X$ : par exemple, on impose différentes doses d'un traitement à plusieurs individus. On peut alors considérer les $x_i$ comme des valeurs fixées et ne modéliser l'aléa que dans $Y_i$.
+
+
+Dans les deux cas, le modèle décrit la relation entre $Y$ et les valeurs de $X$, notamment à travers l'espérance conditionnelle de $Y$ sachant $X$. En particulier, le fait de condidérer $X$ de considérer $X$ comme aléatoire ne signifie pas que l'on cherche à modéliser sa loi.
+
+
+::: {.callout-note title="Remarque"}
+
+Les méthodes classiques de régression linéaire peuvent être développées dans les deux cadres.
+Le choix entre les deux ne modifie pas les méthodes usuelles de régression. 
+Les estimateurs des moindres carrés ordinaires, ainsi que les résultats d'inférence associés, s'obtiennent de la même manière. 
+Pour simplifier les notations, on considère souvent que les valeurs de $X$ sont fixées et l'on écrit simplement
+
+$$
+Y_i=\beta_1+\beta_2x_i+\varepsilon_i,
+\qquad
+\mathbb{E}[\varepsilon_i]=0.
+$$
+
+
+Cette convention permet notamment d'éviter d'écrire explicitement « sachant $X$ » dans les hypothèses et les résultats. Elle ne signifie pas que, dans le contexte statistique considéré, les valeurs de $X$ seraient intrinsèquement non aléatoires : il s'agit essentiellement d'une convention de présentation. C'est notamment la convention adoptée dans les slides de régression.
+
+:::
+
+
+### Vocabulaire
+
+On trouve de nombreuses formulations différentes pour les objets mathématiques introduits ci-dessus dans la littérature (statistique, *machine learning*, économétrie etc.). Les plus usuelles sont répertoriées dans le tableau ci-après :
+
++-----------------------------------+--------------------------------------------+------------------------------------------+
+| Objet                             | Désignations usuelles en français          | Désignations usuelles en anglais         |
++===================================+============================================+==========================================+
+| $Y$                               | - variable à expliquer                     | - explained variable                     |
+|                                   | - variable dépendante                      | - dependent variable                     |
+|                                   | - variable réponse                         | - response variable                      |
+|                                   | - variable cible$^*$                       | - target variable$^*$                    |
+|                                   | - variable à prédire$^*$                   | - outcome variable                       |
++-----------------------------------+--------------------------------------------+------------------------------------------+
+| $X$                               | - variable explicative                     | - explanatory variable                   |
+|                                   | - variable indépendante                    | - independent variable                   |
+|                                   | - régresseur                               | - regressor                              |
+|                                   | - covariable                               | - covariate                              |
+|                                   | - prédicteur$^*$                           | - predictor$^*$                          |
++-----------------------------------+--------------------------------------------+------------------------------------------+
+| $(\beta_1, \beta_2)$              | - paramètres du modèle                     | - model parameters                       |
+|                                   | - paramètres de régression                 | - regression parameters                  |
+|                                   | - coefficients de regression théoriques    | - population regression coefficients     |
++-----------------------------------+--------------------------------------------+------------------------------------------+
+| $\beta_1$                         | - constante                                | - intercept                              |
+|                                   | - intercept                                | - intercept term                         |
+|                                   | - ordonnée à l'origine                     | - constant                               |
++-----------------------------------+--------------------------------------------+------------------------------------------+
+| $\beta_2$                         | - coefficients associé à $X$               | - coefficient of $X$                     |
+|                                   | - coefficient de pente                     | - slope coefficient                      |
+|                                   | - pente                                    | - slope                                  |
++-----------------------------------+--------------------------------------------+------------------------------------------+
+| $\varepsilon$                     | - terme d'erreur                           | - error term                             |
+|                                   | - erreur                                   | - disturbance term                       |
+|                                   | - bruit                                    | - noise                                  |
++-----------------------------------+--------------------------------------------+------------------------------------------+
+
+[Légende :]{.underline} 
+
+$^*$ : Plutôt employé en *machine learning*
+
+## Estimation
+
+
+Le modèle
+
+$$
+\mathbb{E}[Y\mid X]=\beta_1+\beta_2X
+$$
+
+décrit une caractéristique de la population étudiée. Les paramètres $\beta_1$ et $\beta_2$ sont donc des paramètres populationnels : ils sont déterminés par le modèle, mais leur valeur est généralement inconnue.
+
+En pratique, on dispose seulement des données observées $(x_1,y_1),\ldots,(x_n,y_n)$.
+
+
+L'objectif de l'estimation est donc d'utiliser ces observations pour construire des valeurs 
+numériques $\widehat{\beta}_1$ et $\widehat{\beta}_2$ qui fournissent une information sur les
+paramètres inconnus $\beta_1$ et $\beta_2$.
+
+### Estimateur des moindres carrés ordinaires
+
+::: {.definition }
+::: {#def-estimateur-mco-simple}
+##### estimateurs des moindres carrés ordinaires
+\n
+
+On appelle estimateurs des moindres carrés ordinaires (MCO) de
+$\beta_1$ et $\beta_2$ les variables aléatoires
+$\widehat{\beta}_1$ et $\widehat{\beta}_2$ définies par
+
+$$
+\left(\widehat{\beta}_1, \widehat{\beta_2} \right) = \underset{(b_1, b_2) \in \mathbb{R}^2}{\textrm{argmin}} \sum\limits_{i=1}^n(Y_i-b_1-b_2X_i)^2$$
+:::
+:::
+
+
+On cherche à choisir $\beta_1$ et $\beta_2$ de telle sorte que les valeurs
+
+$$
+\beta_1+\beta_2x_i
+$$
+
+soient aussi proches que possible des valeurs observées $y_i$.
+
+Pour une valeur donnée du couple $(b_1,b_2)$, on appelle
+
+$$
+y_i-(b_1+b_2x_i)
+$$
+
+le résidu associé à l'individu $i$ pour ce couple de coefficients.
+
+Le critère des **moindres carrés ordinaires** (MCO), ou *Ordinary Least Squares* (OLS), consiste à choisir les coefficients qui minimisent la somme des carrés de ces résidus :
+
+$$
+\boxed{
+(\widehat{\beta}_1,\widehat{\beta}_2)
+=====================================
+
+\underset{(b_1,b_2)\in\mathbb{R}^2}{\operatorname{arg,min}}
+\sum_{i=1}^n
+\left(y_i-b_1-b_2x_i\right)^2
+}
+$$
+
+Le carré des résidus permet notamment d'éviter que les écarts positifs et négatifs ne se compensent et d'accorder davantage de poids aux écarts importants.
+
+#### Pourquoi ce critère ?
+
+Le choix des moindres carrés est intimement lié à l'objectif même de la régression.
+
+Pour une variable aléatoire $Y$, parmi toutes les variables aléatoires $Z$ qui peuvent servir de prédiction de $Y$ à partir de l'information disponible, l'espérance conditionnelle $\mathbb{E}[Y\mid X]$ est celle qui minimise l'erreur quadratique moyenne :
+
+$$
+\mathbb{E}\left[(Y-Z)^2\right].
+$$
+
+La régression linéaire ajoute une contrainte : on ne cherche pas une fonction quelconque de $X$, mais une fonction affine
+
+$$
+x\longmapsto b_1+b_2x.
+$$
+
+Les MCO recherchent alors, à partir des données observées, la fonction affine qui minimise la version empirique de cette erreur quadratique :
+
+$$
+\frac1n\sum_{i=1}^n
+\left(y_i-b_1-b_2x_i\right)^2.
+$$
+
+Le facteur $1/n$ ne change pas le minimum et est donc généralement omis.
+
+Ainsi, les MCO ne sont pas un choix arbitraire : ils correspondent à la recherche de la meilleure approximation affine des données au sens des moindres carrés.
+
+### Calcul des estimateurs
+
+Posons
+
+$$
+Q(b_1,b_2)
+==========
+
+\sum_{i=1}^n
+\left(y_i-b_1-b_2x_i\right)^2.
+$$
+
+Le couple $(\widehat{\beta}_1,\widehat{\beta}_2)$ minimise $Q$.
+
+La fonction $Q$ est un polynôme de degré $2$ en $(b_1,b_2)$. Lorsqu'un unique minimum existe, il est donc caractérisé par l'annulation de son gradient :
+
+$$
+\frac{\partial Q}{\partial b_1}=0
+\qquad\text{et}\qquad
+\frac{\partial Q}{\partial b_2}=0.
+$$
+
+On obtient
+
+$$
+\frac{\partial Q}{\partial b_1}
+===============================
+
+-2\sum_{i=1}^n(y_i-b_1-b_2x_i),
+$$
+
+et
+
+$$
+\frac{\partial Q}{\partial b_2}
+===============================
+
+-2\sum_{i=1}^n x_i(y_i-b_1-b_2x_i).
+$$
+
+Les coefficients MCO vérifient donc les **équations normales**
+
+$$
+\begin{cases}
+\displaystyle
+\sum_{i=1}^n(y_i-\widehat{\beta}_1-\widehat{\beta}*2x_i)=0,
+[1.2em]
+\displaystyle
+\sum*{i=1}^n x_i
+(y_i-\widehat{\beta}_1-\widehat{\beta}_2x_i)=0.
+\end{cases}
+$$
+
+La première équation donne
+
+$$
+n\widehat{\beta}_1
++\widehat{\beta}*2\sum*{i=1}^n x_i
+==================================
+
+\sum_{i=1}^n y_i,
+$$
+
+soit, en notant
+
+$$
+\overline{x}=\frac1n\sum_{i=1}^n x_i,
+\qquad
+\overline{y}=\frac1n\sum_{i=1}^n y_i,
+$$
+
+$$
+\boxed{
+\widehat{\beta}_1
+=================
+
+\overline{y}-\widehat{\beta}_2\overline{x}
+}.
+$$
+
+En reportant cette expression dans la seconde équation, on obtient
+
+$$
+\sum_{i=1}^n
+(x_i-\overline{x})(y_i-\overline{y})
+====================================
+
+\widehat{\beta}*2
+\sum*{i=1}^n(x_i-\overline{x})^2.
+$$
+
+Ainsi,
+
+$$
+\boxed{
+\widehat{\beta}_2
+=================
+
+\frac{
+\displaystyle\sum_{i=1}^n
+(x_i-\overline{x})(y_i-\overline{y})
+}{
+\displaystyle\sum_{i=1}^n
+(x_i-\overline{x})^2
+}
+}
+$$
+
+et
+
+$$
+\boxed{
+\widehat{\beta}_1
+=================
+
+\overline{y}-\widehat{\beta}_2\overline{x}.
+}
+$$
+
+L'estimateur de la pente est donc le rapport entre la **covariation empirique** de $X$ et $Y$ et la **variabilité empirique** de $X$.
+
+### Quand les estimateurs MCO existent-ils ?
+
+L'expression précédente nécessite
+
+$$
+\sum_{i=1}^n(x_i-\overline{x})^2>0.
+$$
+
+Cette condition signifie que les valeurs observées de $X$ ne sont pas toutes identiques.
+
+Dans le cas de la régression simple avec constante, elle est équivalente à
+
+$$
+\operatorname{rg}(X)=2
+$$
+
+pour la matrice de régression
+
+$$
+X=
+\begin{pmatrix}
+1 & x_1\
+\vdots & \vdots\
+1 & x_n
+\end{pmatrix}.
+$$
+
+Lorsque cette condition est vérifiée, le minimum du critère des MCO est unique et les deux coefficients $\widehat{\beta}_1$ et $\widehat{\beta}_2$ sont donc bien définis.
+
+#### Si les valeurs de $X$ sont considérées comme fixées
+
+Lorsque les $x_i$ sont considérés comme déterministes, la condition d'existence d'un estimateur MCO unique est simplement une condition sur les données :
+
+$$
+\boxed{
+\sum_{i=1}^n(x_i-\overline{x})^2>0.
+}
+$$
+
+Autrement dit, il faut observer au moins deux valeurs distinctes de $X$.
+
+Si toutes les valeurs de $X$ sont identiques, on ne peut pas distinguer l'effet d'une constante d'un effet associé à la pente : pour les observations disponibles,
+
+$$
+b_1+b_2x_i=b_1+b_2x_0
+$$
+
+quel que soit $(b_1,b_2)$ donnant la même valeur de $b_1+b_2x_0$.
+
+Le modèle permet alors d'estimer la moyenne de $Y$ au niveau $x_0$, mais pas de déterminer séparément une constante et une pente.
+
+#### Si $X$ est considérée comme aléatoire
+
+Lorsque les $X_i$ sont des variables aléatoires, la condition précédente devient elle-même aléatoire :
+
+$$
+\sum_{i=1}^n(X_i-\overline{X})^2>0.
+$$
+
+On obtient alors un estimateur MCO lorsque les valeurs effectivement observées de $X$ ne sont pas toutes identiques.
+
+Ainsi, contrairement au cas où les $x_i$ sont fixés, l'existence de l'estimateur dépend de la réalisation de l'échantillon.
+
+Par exemple, si $X$ possède une loi continue non dégénérée et si $n\geq2$, deux réalisations sont égales avec probabilité nulle. L'estimateur MCO existe donc presque sûrement.
+
+Pour une variable $X$ discrète, il peut en revanche exister une probabilité non nulle que toutes les observations prennent la même valeur. Dans ce cas, les MCO ne permettent pas, pour cette réalisation particulière, d'estimer séparément $\beta_1$ et $\beta_2$.
+
+### Interprétation géométrique : la régression comme projection
+
+L'interprétation géométrique permet de comprendre plus profondément le critère des moindres carrés.
+
+On considère maintenant les données observées comme des vecteurs de $\mathbb{R}^n$ :
+
+$$
+\mathbf y=
+\begin{pmatrix}
+y_1\
+\vdots\
+y_n
+\end{pmatrix},
+\qquad
+\mathbf 1=
+\begin{pmatrix}
+1\
+\vdots\
+1
+\end{pmatrix},
+\qquad
+\mathbf x=
+\begin{pmatrix}
+x_1\
+\vdots\
+x_n
+\end{pmatrix}.
+$$
+
+Pour un couple $(b_1,b_2)$, le vecteur des valeurs ajustées est
+
+$$
+b_1\mathbf 1+b_2\mathbf x.
+$$
+
+L'ensemble des vecteurs de $\mathbb R^n$ qui peuvent être obtenus de cette manière est le sous-espace vectoriel
+
+$$
+\mathcal E
+==========
+
+\operatorname{Vect}(\mathbf 1,\mathbf x).
+$$
+
+Le critère MCO peut alors s'écrire
+
+$$
+\sum_{i=1}^n
+(y_i-b_1-b_2x_i)^2
+==================
+
+\left|
+\mathbf y-
+(b_1\mathbf 1+b_2\mathbf x)
+\right|^2.
+$$
+
+Les MCO consistent donc à chercher, parmi les vecteurs de $\mathcal E$, celui qui est le plus proche de $\mathbf y$ pour la distance euclidienne.
+
+Lorsque $\mathbf 1$ et $\mathbf x$ sont linéairement indépendants, c'est-à-dire lorsque les $x_i$ ne sont pas tous identiques, il existe un unique vecteur de $\mathcal E$ minimisant cette distance : c'est la **projection orthogonale** de $\mathbf y$ sur $\mathcal E$.
+
+On note ce vecteur $\widehat{\mathbf y}$ :
+
+$$
+\boxed{
+\widehat{\mathbf y}
+===================
+
+\widehat{\beta}_1\mathbf 1
++
+\widehat{\beta}_2\mathbf x
+}.
+$$
+
+Le vecteur des résidus
+
+$$
+\widehat{\boldsymbol\varepsilon}
+================================
+
+\mathbf y-\widehat{\mathbf y}
+$$
+
+est alors orthogonal à $\mathcal E$. En particulier,
+
+$$
+\widehat{\boldsymbol\varepsilon}^{,\top}\mathbf 1=0
+\qquad\text{et}\qquad
+\widehat{\boldsymbol\varepsilon}^{,\top}\mathbf x=0.
+$$
+
+Ces deux relations sont exactement les deux équations normales obtenues précédemment.
+
+Ainsi, les deux points de vue sont équivalents :
+
+$$
+\boxed{
+\text{minimisation de la somme des carrés}
+\Longleftrightarrow
+\text{projection orthogonale}.
+}
+$$
+
+Dans la notation matricielle, en posant
+
+$$
+X=
+\begin{pmatrix}
+1 & x_1\
+\vdots & \vdots\
+1 & x_n
+\end{pmatrix},
+\qquad
+\beta=
+\begin{pmatrix}
+\beta_1\
+\beta_2
+\end{pmatrix},
+\qquad
+Y=
+\begin{pmatrix}
+y_1\
+\vdots\
+y_n
+\end{pmatrix},
+$$
+
+on retrouve
+
+$$
+\widehat{\beta}
+===============
+
+(X^\top X)^{-1}X^\top Y,
+$$
+
+lorsque $X^\top X$ est inversible.
+
+Cette interprétation géométrique est la généralisation du raisonnement précédent à la régression linéaire multiple : le vecteur observé $Y$ est projeté sur l'espace engendré par les colonnes de la matrice de régression. Les slides introduisent précisément cet espace, puis identifient la matrice de projection
+$$
+P_X=X(X^\top X)^{-1}X^\top.
+$$

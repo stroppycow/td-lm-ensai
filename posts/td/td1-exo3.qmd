@@ -2,9 +2,9 @@
 title: "TD 1 - Exercice 3"
 lang: fr
 author: "Théo Leroy"
-date: "3 septembre 2025"
+date: "8 septembre 2026"
 params:
-  question_courante: 10
+  question_courante: 15
 format:
   live-html:
     code-background: true
@@ -28,21 +28,51 @@ custom-callout:
     title: "Correction"
 ---
 
-{{< include ./../_extensions/conditionnal.qmd >}}
-{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+{{< include ./../../_extensions/conditionnal.qmd >}}
+{{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère le modèle de régression linéaire simple où l’on observe $n$
 réalisations $(x_i, y_i)_{i \in [\![1,n]\!]}$; liées par la relation
 $y_i = \beta_0 + \beta_1x_i + \epsilon_i$; $i = 1, \ \dots, \ n$. On
-suppose que les $x_i$ sont déterministes et que les variables
-$\epsilon_i$ sont centrées, de variance $\sigma^2$ et non-corrélées
-entre elles.
+suppose que les $x_i$ sont déterministes.
 
 ## Question 1
 
-Écrire le modèle sous forme matricielle
+Quelle sont les hypothèses standards sur les erreurs de modélisation $\epsilon_i$ ?
 
 ::: {.content-visible when-meta="is_answer_print_1"}
+
+::: answer
+
+Les erreurs de modélisation $\epsilon_1, \dots, \epsilon_n$ sont des variables aléatoires réelles :
+
+$$
+\begin{array}{l}
+\begin{array}{l}
+\text{centrées } \bigl(\textrm{i.e. }\forall\ i \in [\![1,n]\!], \ \mathbb{E}[\epsilon_i]=0\bigr) ; 
+\end{array} \\
+\left.
+\begin{array}{l}
+\text{homoscédastiques}  \ \bigl(\textrm{i.e. }\exists\  \sigma^2 \in \mathbb{R}_+, \ \forall\ i \in [\![1,n]\!], \ \mathbb{V}[\epsilon_i]=\sigma^2\bigr) ;\\
+\text{et non-corrélées deux à deux} \ \bigl(\textrm{i.e. }\forall\ (i,j) \in [\![1,n]\!]^2, i \neq j, \ \mathbb{C}\mathbb{o}\mathbb{v}(\epsilon_i,\epsilon_j)=0\bigr)
+\end{array}
+\right\}
+\quad
+\mathbb{V}[\epsilon]=\sigma^2 I_n
+\end{array}
+$$
+
+
+:::
+
+:::
+
+
+## Question 2
+
+Écrire le modèle sous forme matricielle
+
+::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
 Le modèle s'écrit matricellement $Y=X\beta+\epsilon$ avec
@@ -70,34 +100,56 @@ X = \underbrace{\begin{pmatrix}
 $$
 
 avec les hypothèses
-$\mathbb{E}(\epsilon) =0_{n,1} \ \textrm{et} \ \mathbb{V}(\epsilon)=\sigma^2I_n$.
+$\mathbb{E}\left[\epsilon\right] =0_{n,1} \ \textrm{et} \ \mathbb{V}\left[\epsilon\right]=\sigma^2I_n$.
+:::
+
+## Question 3
+
+Sous quelle hypothèse le modèle est-il identifiable, au sens où
+$\beta_0$ et $\beta_1$ sont définis de manière unique ?
+
+::: {.content-visible when-meta="is_answer_print_3"}
+
+::: answer
+Il faut que les variables explicatives ne soient pas linéairement liées.
+En effet, si $\textrm{rang}(X) < p$ (i.e. il existe des colonnes
+linéairement dépendantes) : plusieurs vecteurs $\beta$ différents
+produisent le même ajustement $X\beta$. Dans ce cas, le modèle n’est pas
+identifiable.
+
+Pour le modèle de régression linéaire simple $\textrm{rang}(X)=2$
+signifie le vecteur du régresseur $(x_1, \dots, x_n)$ n'est pas
+proportionnel au vecteur constant $(1, \dots, 1)$ : c'est à dire que les
+$x_i$ ne prennent pas tous la même valeur.
 :::
 
 :::
 
-## Question 2
+:::
+
+## Question 4
 
 De quel problème de minimisation l’estimateur des moindres carrés
 $\hat{\beta}= (\hat{\beta}_0, \hat{\beta}_1)$ est-il la solution ?
 
-::: {.content-visible when-meta="is_answer_print_2"}
+::: {.content-visible when-meta="is_answer_print_4"}
 
 ::: answer
-L'estimateur des moindres carrés ordinaires est solution du problème :
+L'estimateur des moindres carrés ordinaires s'écrit 
 $$
-\underset{(\beta_0, \beta_1) \in \mathbb{R}^2}{{\textrm{argmin}}} \ \sum\limits_{i=1}^n\left(y_i-\beta_0-\beta_1x_i\right)^2
+\widehat{\beta} = \underset{(a, b) \in \mathbb{R}^2}{{\textrm{argmin}}} \ \sum\limits_{i=1}^n\left(y_i-a-bx_i\right)^2
 $$
 :::
 
 :::
 
-## Question 3
+## Question 5
 
 On peut trouver $\hat{\beta}$ en annulant le gradient de la fonction à
 minimiser précédente. Cela a déjà été fait et les solutions sont à
 connaitre par coeur : que valent-elles ?
 
-::: {.content-visible when-meta="is_answer_print_3"}
+::: {.content-visible when-meta="is_answer_print_5"}
 
 ::: answer
 On a (*cf slide 24*)
@@ -274,14 +326,31 @@ $$
 
 :::
 
-## Question 4
+## Question 6
 
-Retrouver $\hat{\beta}$ en utilisant la formule générale
-$\hat{\beta} = (X'X)^{-1}X'Y$:
+Sous quelle hypothèse l’estimateur par MCO de $\beta_0$ et $\beta_1$
+existe-t-il ?
 
-::: {.content-visible when-meta="is_answer_print_4"}
+::: {.content-visible when-meta="is_answer_print_6"}
 
 ::: answer
+C'est la même hypothèse que pour la question 3. D'après l'expression de la question 5, l'estimateur existe si $\sum\limits_{i=1}^n\left(x_i-\overline{x}\right)^2 \neq 0$ c'est à dire si tous les $x_i$ ne sont pas tous égaux.
+
+:::
+
+:::
+
+
+## Question 7
+
+Retrouver $\hat{\beta}$ en utilisant la formule générale
+$\hat{\beta} = (X'X)^{-1}X'Y$ :
+
+::: {.content-visible when-meta="is_answer_print_7"}
+
+::: answer
+
+
 On calcule $\hat{\beta}$ à partir de la formule générale étape par étape
 :
 
@@ -316,7 +385,7 @@ $x_i$ ne sont pas égaux, on a :
 
 $$
 \begin{align*}
-(X'X)^{-1}&=\frac{1}{\det(X'X)}\left(\textrm{Com(X'X)}\right)'=\frac{1}{n^2\textrm{var}(x)}\begin{pmatrix}
+(X'X)^{-1}&=\frac{1}{\det(X'X)}\left(\textrm{Com}(X'X)\right)'=\frac{1}{n^2\textrm{var}(x)}\begin{pmatrix}
 \sum\limits_{i=1}^n x_i^2 & -\sum\limits_{i=1}^n x_i \\
 -\sum\limits_{i=1}^n x_i & n
 \end{pmatrix} = \underbrace{\frac{1}{n\textrm{var}(x)}\begin{pmatrix}
@@ -372,32 +441,73 @@ $$
 \end{pmatrix}
 \end{align*}
 $$
-:::
 
 :::
 
-## Question 5
+:::
+
+## Question 8
 
 Justifier pourquoi la droite de régression passe nécessairement par le
 point $(\overline{x}; \overline{y})$.
 
-::: {.content-visible when-meta="is_answer_print_5"}
+::: {.content-visible when-meta="is_answer_print_8"}
 
 ::: answer
-D'après la question 3, on a :
+D'après la question 5, on a :
 $\hat{\beta}_0 = \overline{y}-\hat{\beta}_1\overline{x}$
 :::
 
 :::
 
-## Question 6
+## Question 9
+
+Les estimateurs par MCO des coefficients $\hat{\beta}_0$
+et $\hat{\beta}_1$ sont-ils non-corrélés ?
+
+::: {.content-visible when-meta="is_answer_print_9"}
+
+::: answer
+Étudions la matrice de
+variance-covariance de $\hat{\beta}$ :
+
+$$\mathbb{V}\left[\hat{\beta}\right]=\sigma^2(X'X)^{-1}=\frac{\sigma^2}{n\textrm{var}(x)}\begin{pmatrix}
+\overline{x^2} & -\overline{x} \\
+-\overline{x} & 1
+\end{pmatrix}$$
+
+Cette matrice n'est pas nécessairement diagonale (il faut que
+$\overline{x}=0$).
+:::
+
+:::
+
+## Question 10
+
+Est-il possible de trouver des estimateurs des coefficients de
+régression de plus faible variance que celle des estimateurs par MCO ?
+
+::: {.content-visible when-meta="is_answer_print_10"}
+
+::: answer
+Oui, en particulier si on accepte du biais, on peut trouver des
+estimateurs de variance plus faible.
+
+On peut considérer $\hat{\beta}= \frac{1}{2}\hat{\beta}_{\textrm{MCO}}$
+par exemple.
+:::
+
+:::
+
+
+## Question 11
 
 On souhaite prédire la valeur $y_o$ associée à la valeur $x_o$ d’un
 nouvel individu, en supposant que ce dernier suit exactement le même
 modèle que les $n$ individus précédents. Que vaut la prévision
 $\hat{y}_o$ de $y_o$ ?
 
-::: {.content-visible when-meta="is_answer_print_6"}
+::: {.content-visible when-meta="is_answer_print_11"}
 
 ::: answer
 On a $\hat{y}_o = \hat{\beta}_0+\hat{\beta}_1x_o$
@@ -405,12 +515,12 @@ On a $\hat{y}_o = \hat{\beta}_0+\hat{\beta}_1x_o$
 
 :::
 
-## Question 7
+## Question 12
 
 Montrer que l’espérance de l’erreur de prévision $\hat{y}_o$ de $y_o$
 est nulle.
 
-::: {.content-visible when-meta="is_answer_print_7"}
+::: {.content-visible when-meta="is_answer_print_12"}
 
 ::: answer
 On calcule l'espérance de l'erreur de prévision
@@ -515,7 +625,7 @@ Donc $\hat{\beta}$ est sans biais.
 
 :::
 
-## Question 8
+## Question 13
 
 Pour un modèle de régression linéaire générale, la variance de l’erreur
 de prévision associée à un nouveau vecteur de régresseur $x$, de
@@ -526,7 +636,7 @@ $$
 \sigma^2\left(1+\frac{1}{n}+\frac{(x_o-\overline{x})^2}{\sum\limits_{i=1}^n (x_i-\overline{x})^2} \right)
 $$
 
-::: {.content-visible when-meta="is_answer_print_8"}
+::: {.content-visible when-meta="is_answer_print_13"}
 
 ::: answer
 On applique la formule du cours avec
@@ -565,12 +675,12 @@ $$
 
 :::
 
-## Question 9
+## Question 14
 
 Discuter de la qualité de la prévision selon que $x_o$ est proche ou non
 de la moyenne empirique $x_n$.
 
-::: {.content-visible when-meta="is_answer_print_9"}
+::: {.content-visible when-meta="is_answer_print_14"}
 
 ::: answer
 D'après la question précédente, la variance croît avec
@@ -580,11 +690,11 @@ lorsque $x_o$ est proche de la moyenne $\overline{x}$.
 
 :::
 
-## Question 10
+## Question 15
 
 Qu’en est-il si $n$ est grand ?
 
-::: {.content-visible when-meta="is_answer_print_10"}
+::: {.content-visible when-meta="is_answer_print_15"}
 
 ::: answer
 Il n'est pas possible de répondre en toute généralité car cela dépend du

@@ -13,7 +13,7 @@ format:
 webr:
   render-df: gt-interactive
   resources:
-    - ./../data/Mental.txt
+    - ./../../data/Mental.txt
   packages:
       - dplyr
       - readr
@@ -36,8 +36,8 @@ custom-callout:
     title: "Correction"
 ---
 
-{{< include ./../_extensions/conditionnal.qmd >}}
-{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+{{< include ./../../_extensions/conditionnal.qmd >}}
+{{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère les données `mental`, contenues dans le fichier
 `Mental.txt`. Ce jeu de données, de taille $n = 40$,

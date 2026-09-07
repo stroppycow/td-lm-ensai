@@ -27,8 +27,8 @@ custom-callout:
     title: "Correction"
 ---
 
-{{< include ./../_extensions/conditionnal.qmd >}}
-{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+{{< include ./../../_extensions/conditionnal.qmd >}}
+{{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère un modèle de régression linéaire visant à expliquer $Y$ en fonction des variables
 $X^{(1)}, \dots, X^{(p)}$. On désire choisir entre le modèle avec $X^{(p)}$ et le modèle sans $X^{(p)}$ (les autres

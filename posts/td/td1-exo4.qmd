@@ -1,0 +1,884 @@
+---
+title: "TD 1 - Exercice 4"
+lang: fr
+author: "Théo Leroy"
+date: "8 septembre 2026"
+params:
+  question_courante: 5
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+webr:
+  render-df: gt-interactive
+fig-align: center
+filters: 
+  - custom-callout
+editor: 
+  mode: source
+  markdown: 
+    wrap: 72
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    icon: true
+    icon-symbol: "📝"
+    appearance: "default"
+    title: "Correction"
+---
+
+{{< include ./../../_extensions/conditionnal.qmd >}}
+{{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
+
+$$
+\newcommand{\textcircled}[1]{{\large\raise .02em\bigcirc}\llap{\text{#1}\kern .335em}}
+$$
+
+On se place comme dans l’exercice précédent dans le cadre d’un modèle de
+régression linéaire simple. On rappelle que la matrice de design $X$ et
+la matrice $(X'X)^{-1}$ valent dans ce cas :
+
+$$
+X = \underbrace{\begin{pmatrix}
+1 & x_1\\
+\vdots & \vdots \\
+1 & x_n
+\end{pmatrix}}_{\in \mathcal{M}_{n,2}(\mathbb{R})}, \quad (X'X)^{-1}=\frac{1}{\sum\limits_{i=1}^n (x_i-\overline{x})^2}\begin{pmatrix}
+\frac{1}{n}\sum\limits_{i=1}^n x_i^2 & -\overline{x} \\
+-\overline{x} & 1
+\end{pmatrix}
+$$
+
+On va examiner quelques exemples de design, c’est à dire de répartition
+des valeurs de $x_1, \dots, x_n$, et vérifier la convergence (ou non)
+des estimateurs par MCO des paramètres $\beta_0$ et $\beta_1$ dans
+chaque cas.
+
+## Question 1
+
+Rappeler ce que vaut l’erreur quadratique moyenne de $\hat{\beta}$,
+l’estimateur par MCO de
+
+$\beta = \begin{pmatrix} \beta_0 & \beta_1 \end{pmatrix}'$.
+
+::: {.content-visible when-meta="is_answer_print_1"}
+
+::: answer
+
+L'erreur quadratique moyenne vaut
+
+$$
+\textrm{EQM}\left[\widehat{\beta} \right] \underset{}{=} \mathbb{E}\left[\left(\widehat{\beta} - \beta \right)\left(\widehat{\beta} -\beta \right)^{'}\right] \underset{\textcircled{1}}{=}  \mathbb{V}\left[\widehat{\beta} \right] + \underbrace{\left(\mathbb{E}\left[\widehat{\beta} - \mathbb{E}\left[\widehat{\beta}\right] \right]\right)\left(\mathbb{E}\left[\widehat{\beta} - \mathbb{E}\left[\widehat{\beta}\right] \right]\right)^{'}}_{\underset{\textcircled{2}}{=} 0_{2,2} \textrm{ car } \widehat{\beta} \textrm{ est sans biais}}=\mathbb{V}\left|\widehat{\beta} \right] \underset{\textcircled{3}}{=} \sigma^2\left(X^{'}X \right)^{-1}
+$$
+
+::: {.callout-note collapse="true" icon=false}
+### ① : décomposition biais-variance de l'EQM
+
+$$
+\begin{align*}
+\mathbb{E}\left[\left(\widehat{\beta} -\beta \right)\left(\widehat{\beta} -\beta \right)^{'}\right] &= \mathbb{E}\left[\widehat{\beta}\left(\widehat{\beta} -\beta \right)^{'} - \beta\left(\widehat{\beta} -\beta \right)^{'} \right] \\
+&= \mathbb{E}\left[\widehat{\beta}\widehat{\beta}^{'} - \widehat{\beta}\beta^{'}  \right] - \beta\mathbb{E}\left[\left(\widehat{\beta} -\beta \right)^{'} \right] \textrm{ par linéarité de l'espérance}\\
+&= \mathbb{E}\left[\widehat{\beta}\widehat{\beta}^{'} \right] - \mathbb{E}\left[\widehat{\beta} \right]\beta^{'} -\beta\mathbb{E}\left[\left(\widehat{\beta} -\beta \right)^{'} \right] \\
+&= \mathbb{E}\left[\widehat{\beta}\widehat{\beta}^{'} \right] -\mathbb{E}\left[\widehat{\beta}\right]\left(\mathbb{E}\left[\widehat{\beta}\right]\right)^{'}+\mathbb{E}\left[\widehat{\beta}\right]\left(\mathbb{E}\left[\widehat{\beta}\right]\right)^{'} - \mathbb{E}\left[\widehat{\beta} \right]\beta^{'} -\beta\mathbb{E}\left[\left(\widehat{\beta} -\beta \right)^{'} \right] \\
+&= \mathbb{V}\left[\widehat{\beta}  \right] + \mathbb{E}\left[\widehat{\beta}\right]\left(\mathbb{E}\left[\widehat{\beta}\right]\right)^{'} - \mathbb{E}\left[\widehat{\beta} \right]\beta^{'} -\beta\mathbb{E}\left[\left(\widehat{\beta} -\beta \right)^{'} \right]  \textrm{ d'après l'égalité de König-Huygens} \\
+&= \mathbb{V}\left[\widehat{\beta}  \right] + \mathbb{E}\left[\widehat{\beta}\right]\mathbb{E}\left[\left(\widehat{\beta} -\beta \right)^{'}\right] -\beta\mathbb{E}\left[\left(\widehat{\beta} -\beta \right)^{'} \right]  \textrm{en factorisant les termes 2 et 3} \\
+&= \mathbb{V}\left[\widehat{\beta} \right] + \left(\mathbb{E}\left[\widehat{\beta} - \mathbb{E}\left[\widehat{\beta}\right] \right]\right)\left(\mathbb{E}\left[\widehat{\beta} - \mathbb{E}\left[\widehat{\beta}\right] \right]\right)^{'}
+\end{align*}
+$$
+
+
+:::
+
+::: {.callout-note collapse="true" icon=false}
+### ② : espérance de l'estimateur des MCO
+
+$$
+\begin{align*}
+\mathbb{E}\left[\widehat{\beta}\right] &= \mathbb{E}\left[ (X'X)^{-1} X'Y \right] \\
+&= \mathbb{E}\left[ (X'X)^{-1} X'(\beta X + \epsilon) \right] \\
+&= \mathbb{E}\left[ (X'X)^{-1} X'X\beta + (X'X)^{-1} X'\epsilon \right] \\
+&= \mathbb{E}\left[ \beta + (X'X)^{-1} X'\epsilon \right] \\
+&= \beta + (X'X)^{-1} X' \mathbb{E}\left[\epsilon\right] \\
+\text{Comme } \mathbb{E}\left[\epsilon\right] = 0, \text{ on a : } & \\
+\mathbb{E}\left[\widehat{\beta}\right] &= \beta
+\end{align*}
+$$
+
+:::
+
+::: {.callout-note collapse="true" icon=false}
+### ③ : matrice de variance-covariance de l'estimateur des MCO
+
+$$
+\begin{align*}
+\mathbb{V}\left[\widehat{\beta}\right] &= \mathbb{V}\left[ (X'X)^{-1} X'Y \right] \\
+&= (X'X)^{-1} X' \mathbb{V}(Y) X (X'X)^{-1} \\
+\text{En supposant } \mathbb{V}\left[Y\right] = \sigma^2 I_n : & \\
+\mathbb{V}\left[\widehat{\beta}\right] &= (X'X)^{-1} X' (\sigma^2 I) X (X'X)^{-1} \\
+&= \sigma^2 (X'X)^{-1} X'X (X'X)^{-1} \\
+&= \sigma^2 (X'X)^{-1}
+\end{align*}
+$$
+
+:::
+
+
+:::
+
+:::
+
+## Question 2
+
+Dans ce premier exemple, on se place dans le cas où les observations ont
+lieu de façon régulièrement espacées, et deviennent de plus en plus
+nombreuses avec $n$. Quitte à renormaliser, on suppose ainsi que
+$x_i = i$ pour tout $i \in [\![1,n]\!]$.
+
+a.  Donner la limite de la matrice $\mathbb{V}(\hat{\beta})$ lorsque
+    $n \to +\infty$.
+
+b.  En déduire le comportement asymptotique en moyenne quadratique de
+    $\hat{\beta}_0$ et $\hat{\beta}_1$.
+
+::: {.content-visible when-meta="is_answer_print_2"}
+
+::: answer
+a.  Dans le cas où $x_i=i$ pour tout $i=1, \dots, n$, on:
+
+    $$
+    \begin{align*}
+    \overline{x} &= \frac{1}{n}\sum\limits_{i=1}^n x_i = \frac{1}{n}\sum\limits_{i=1}^n i =\frac{1}{n}\frac{n(n+1)}{2}=\frac{n+1}{2} \\
+    \sum\limits_{i=1}^n x_i^2 &= \sum\limits_{i=1}^n i^2 = \frac{n(n+1)(2n+1)}{6} \\ 
+    \sum\limits_{i=1}^n (x_i-\overline{x})^2&=\sum\limits_{i=1}^n x_i^2-n\overline{x}^2=\frac{n(n+1)(2n+1)}{6}-\frac{n(n+1)^2}{4}=\frac{n(n-1)(n+1)}{12} 
+    \end{align*}
+    $$
+
+    Ainsi,
+
+    $$
+    \mathbb{V}\left(\hat{\beta} \right) =\sigma^2\left(X^{'}X \right)^{-1}=
+    \sigma^2
+    \begin{pmatrix}
+    \frac{2(2n+1)}{n(n-1)} &
+    -\frac{6}{n(n-1)} \\
+    -\frac{6}{n(n-1)} &
+    \frac{12}{n(n-1)(n+1)}
+    \end{pmatrix}$$
+
+    Asymptotiquement, on a alors
+
+    $$
+    \mathbb{V}\left(\hat{\beta} \right)  \underset{n\ \to\ + \infty}{\sim} \sigma^2
+    \begin{pmatrix}
+    \frac{4}{n} &
+    -\frac{6}{n^2} \\
+    -\frac{6}{n^2} &
+    \frac{12}{n^3}
+    \end{pmatrix}
+    $$
+
+    D'où
+    $\mathbb{V}\left(\hat{\beta} \right)  \underset{n\ \to\ + \infty}{\longrightarrow} 0_{2,2}$.
+
+b.  D'après la première question
+    $\mathbb{V}\left(\hat{\beta} \right)=\textrm{EQM}\left(\hat{\beta} \right)$,
+    donc il y a convergence en moyenne quadratique (i.e dans
+    $\mathcal{L}^2$) de $\hat{\beta}$ vers $\beta$.
+    
+
+::: {.callout-note collapse="true" icon=false}
+### Illustration graphique par simulation
+
+On illustre ici numériquement le résultat de la question 2. On se
+place sous l'hypothèse $\epsilon \sim \mathcal{N}(0, \sigma^2 I_n)$,
+avec le design $x_i = i$, $i = 1, \dots, n$. Choisissez des valeurs de
+$\beta_0$, $\beta_1$, $\sigma^2$ et $n$ à l'aide des curseurs
+ci-dessous. Pour chaque jeu de paramètres, on tire **100 réalisations
+indépendantes** du vecteur $\epsilon$, on construit à chaque fois
+$Y = X\beta + \epsilon$, et on calcule l'estimateur MCO
+$\hat{\beta} = (X'X)^{-1}X'Y$ correspondant.
+
+```{ojs}
+//| echo: false
+viewof q2_beta0 = Inputs.range([-10, 10], {value: 2, step: 0.1, label: "β₀"})
+```
+
+```{ojs}
+//| echo: false
+viewof q2_beta1 = Inputs.range([-5, 5], {value: 1, step: 0.1, label: "β₁"})
+```
+
+```{ojs}
+//| echo: false
+viewof q2_sigma2 = Inputs.range([0.1, 25], {value: 4, step: 0.1, label: "σ²"})
+```
+
+```{ojs}
+//| echo: false
+viewof q2_n = Inputs.range([5, 200], {value: 30, step: 1, label: "n"})
+```
+
+```{ojs}
+//| echo: false
+q2_nRep = 100
+
+// Génère une v.a. N(0,1) via Box-Muller
+function randn() {
+  let u = 1 - Math.random();
+  let v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+// Design x_i = i, i = 1, ..., n
+q2_x = d3.range(1, q2_n + 1)
+q2_xbar = d3.mean(q2_x)
+q2_Sxx = d3.sum(q2_x, xi => (xi - q2_xbar) ** 2)
+
+// 100 tirages indépendants de epsilon, calcul de Y et de beta_hat pour chacun
+q2_replications = {
+  const q2_sigma = Math.sqrt(q2_sigma2)
+  const q2_reps = []
+  for (let r = 0; r < q2_nRep; r++) {
+    const q2_y = q2_x.map(xi => q2_beta0 + q2_beta1 * xi + q2_sigma * randn())
+    const q2_ybar = d3.mean(q2_y)
+    let q2_Sxy = 0
+    for (let i = 0; i < q2_x.length; i++) q2_Sxy += (q2_x[i] - q2_xbar) * (q2_y[i] - q2_ybar)
+    const q2_b1hat = q2_Sxy / q2_Sxx
+    const q2_b0hat = q2_ybar - q2_b1hat * q2_xbar
+    q2_reps.push({ rep: r, q2_y, q2_b0hat, q2_b1hat })
+  }
+  return q2_reps
+}
+
+// Variances Monte Carlo de beta0_hat et beta1_hat (sur les 100 tirages)
+q2_mc_var_b0 = d3.variance(q2_replications, d => d.q2_b0hat)
+q2_mc_var_b1 = d3.variance(q2_replications, d => d.q2_b1hat)
+```
+
+**Graphique 1 — nuage de points $(x_i, y_i)$ pour les 100 tirages.**
+Chaque point gris correspond à une observation $(x_i, y_i)$ obtenue
+lors de l'un des 100 tirages de $\epsilon$ ; la droite rouge est la
+vraie droite de régression $y = \beta_0 + \beta_1 x$.
+
+
+**Nuage de points $(x, y)$ pour les 100 tirages de $\epsilon$**
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: 700,
+  height: 350,
+  x: {label: "x"},
+  y: {label: "y"},
+  marks: [
+    Plot.dot(
+      q2_replications.flatMap(rep => q2_x.map((xi, i) => ({x: xi, y: rep.q2_y[i]}))),
+      {x: "x", y: "y", r: 1.6, fillOpacity: 0.12, fill: "steelblue"}
+    ),
+    Plot.line(
+      [{x: d3.min(q2_x), y: q2_beta0 + q2_beta1 * d3.min(q2_x)}, {x: d3.max(q2_x), y: q2_beta0 + q2_beta1 * d3.max(q2_x)}],
+      {x: "x", y: "y", stroke: "red", strokeWidth: 2}
+    )
+  ]
+})
+```
+
+**Graphiques 2 et 3 — variance de $\hat{\beta}_0$ et $\hat{\beta}_1$.**
+On compare, en fonction de $n$ :
+
+-   la formule **exacte** trouvée à la question 2.a,
+    $\mathbb{V}(\hat{\beta}_0) = \sigma^2 \dfrac{2(2n+1)}{n(n-1)}$ et
+    $\mathbb{V}(\hat{\beta}_1) = \sigma^2 \dfrac{12}{n(n-1)(n+1)}$ ;
+-   son **équivalent asymptotique**,
+    $\sigma^2 \dfrac{4}{n}$ et $\sigma^2 \dfrac{12}{n^3}$ ;
+-   la **variance empirique obtenue par Monte Carlo** sur les 100
+    tirages, pour la valeur de $n$ choisie au curseur (point noir).
+
+Les échelles verticales sont en log, car les variances décroissent
+très vite avec $n$ (particulièrement pour $\hat{\beta}_1$).
+
+**Variance de $\widehat{\beta}_0$ : exacte vs asymptotique vs Monte Carlo**
+
+```{ojs}
+//| echo: false
+q2_nGrid = d3.range(5, 251)
+
+q2_exactB0 = q2_nGrid.map(nn => ({n: nn, value: q2_sigma2 * 2 * (2 * nn + 1) / (nn * (nn - 1)), type: "Formule exacte"}))
+q2_asymB0  = q2_nGrid.map(nn => ({n: nn, value: q2_sigma2 * 4 / nn, type: "Équivalent asymptotique"}))
+
+Plot.plot({
+  width: 700,
+  height: 350,
+  x: {label: "n"},
+  y: {label: "V(β̂₀)", type: "log"},
+  color: {legend: true},
+  marks: [
+    Plot.line(q2_exactB0, {x: "n", y: "value", stroke: "type"}),
+    Plot.line(q2_asymB0, {x: "n", y: "value", stroke: "type", strokeDasharray: "4,2"}),
+    Plot.ruleX([q2_n], {stroke: "grey", strokeDasharray: "2,2"}),
+    Plot.dot([{n: q2_n, value: q2_mc_var_b0}], {x: "n", y: "value", fill: "black", r: 5})
+  ]
+})
+```
+
+**Variance de $\widehat{\beta}_1$ : exacte vs asymptotique vs Monte Carlo**
+
+
+```{ojs}
+//| echo: false
+q2_exactB1 = q2_nGrid.map(nn => ({n: nn, value: q2_sigma2 * 12 / (nn * (nn - 1) * (nn + 1)), type: "Formule exacte"}))
+q2_asymB1  = q2_nGrid.map(nn => ({n: nn, value: q2_sigma2 * 12 / (nn ** 3), type: "Équivalent asymptotique"}))
+
+Plot.plot({
+  width: 700,
+  height: 350,
+  x: {label: "n"},
+  y: {label: "V(β̂₁)", type: "log"},
+  color: {legend: true},
+  marks: [
+    Plot.line(q2_exactB1, {x: "n", y: "value", stroke: "type"}),
+    Plot.line(q2_asymB1, {x: "n", y: "value", stroke: "type", strokeDasharray: "4,2"}),
+    Plot.ruleX([q2_n], {stroke: "grey", strokeDasharray: "2,2"}),
+    Plot.dot([{n: q2_n, value: q2_mc_var_b1}], {x: "n", y: "value", fill: "black", r: 5})
+  ]
+})
+```
+
+
+On observe que le point noir (Monte Carlo) reste très proche de la
+courbe "Formule exacte" quel que soit $n$ (aux fluctuations
+d'échantillonnage près, dues au nombre fini de 100 réplications), et
+que la courbe exacte se rapproche de son équivalent asymptotique
+lorsque $n$ devient grand — ce qui confirme visuellement le résultat
+de convergence en moyenne quadratique établi à la question 2.b.
+
+:::
+
+:::
+
+## Question 3
+
+Même question lorsque les observations deviennent de plus en plus dense
+dans un intervalle (pour simplifier : l’intervalle $[0, 1]$). On suppose
+ainsi que $x_i = \frac{i}{n}$ pour tout $i \in [\![1,n]\!]$.
+
+::: {.content-visible when-meta="is_answer_print_3"}
+
+::: answer
+Dans le cas où $x_i=\frac{i}{n}$ pour tout $i=1, \dots, n$, on a :
+
+$$\begin{align*}
+\overline{x} &= \frac{1}{n}\sum\limits_{i=1}^n x_i = \frac{1}{n}\sum\limits_{i=1}^n \frac{i}{n} =\frac{1}{n^2}\frac{n(n+1)}{2}=\frac{n+1}{2n} \\
+\sum\limits_{i=1}^n x_i^2 &= \sum\limits_{i=1}^n \frac{i^2}{n^2} = \frac{(n+1)(2n+1)}{6n} \\ 
+\sum\limits_{i=1}^n (x_i-\overline{x})^2 &=\sum\limits_{i=1}^n x_i^2-n\overline{x}^2=\frac{(n+1)(2n+1)}{6n}-\frac{(n+1)^2}{4n}=\frac{(n-1)(n+1)}{12n} 
+\end{align*}$$
+
+Ainsi,
+
+$$
+\mathbb{V}\left(\hat{\beta} \right) =\sigma^2\left(X^{'}X \right)^{-1}=
+\sigma^2
+\begin{pmatrix}
+\frac{2(2n+1)}{n(n-1)} &
+-\frac{6}{n-1} \\
+-\frac{6}{n-1} &
+\frac{12n}{(n-1)(n+1)}
+\end{pmatrix}
+$$
+
+Asymptotiquement, on a alors
+
+$$
+\mathbb{V}\left(\hat{\beta} \right)   \underset{n\ \to\ + \infty}{\sim}
+\sigma^2
+\begin{pmatrix}
+\frac{4}{n} &
+-\frac{6}{n} \\
+-\frac{6}{n} &
+\frac{12}{n}
+\end{pmatrix}
+$$
+
+$\textrm{EQM}\left(\hat{\beta} \right)=\mathbb{V}\left(\hat{\beta} \right) \underset{n\ \to\ + \infty}{\longrightarrow} 0_{2,2}$,
+donc il y a convergence en moyenne quadratique (i.e dans
+$\mathcal{L}^2$) de $\hat{\beta}$ vers $\beta$.
+
+::: {.callout-note collapse="true" icon=false}
+### Illustration graphique par simulation
+
+On illustre ici numériquement le résultat de la question 3. Le design
+change maintenant avec $n$ : les observations se densifient dans
+$[0,1]$, avec $x_i = i/n$, $i = 1, \dots, n$. On garde le même
+protocole que pour la question 2 : sous $\epsilon \sim \mathcal{N}(0,
+\sigma^2 I_n)$, on tire **100 réalisations indépendantes** de
+$\epsilon$, on construit $Y = X\beta + \epsilon$, et on calcule
+$\hat{\beta}$ par MCO pour chacune.
+
+```{ojs}
+//| echo: false
+viewof q3_beta0 = Inputs.range([-10, 10], {value: 2, step: 0.1, label: "β₀"})
+```
+
+```{ojs}
+//| echo: false
+viewof q3_beta1 = Inputs.range([-5, 5], {value: 1, step: 0.1, label: "β₁"})
+```
+
+```{ojs}
+//| echo: false
+viewof q3_sigma2 = Inputs.range([0.1, 25], {value: 4, step: 0.1, label: "σ²"})
+```
+
+```{ojs}
+//| echo: false
+viewof q3_n = Inputs.range([5, 200], {value: 30, step: 1, label: "n"})
+```
+
+```{ojs}
+//| echo: false
+q3_nRep = 100
+
+// Design x_i = i/n, i = 1, ..., n (dépend de n, dense dans [0,1])
+q3_x = d3.range(1, q3_n + 1).map(i => i / q3_n)
+q3_xbar = d3.mean(q3_x)
+q3_Sxx = d3.sum(q3_x, xi => (xi - q3_xbar) ** 2)
+
+// 100 tirages indépendants de epsilon, calcul de Y et de beta_hat pour chacun
+q3_replications = {
+  const q3_sigma = Math.sqrt(q3_sigma2)
+  const q3_reps = []
+  for (let r = 0; r < q3_nRep; r++) {
+    const q3_y = q3_x.map(xi => q3_beta0 + q3_beta1 * xi + q3_sigma * randn())
+    const q3_ybar = d3.mean(q3_y)
+    let q3_Sxy = 0
+    for (let i = 0; i < q3_x.length; i++) q3_Sxy += (q3_x[i] - q3_xbar) * (q3_y[i] - q3_ybar)
+    const q3_b1hat = q3_Sxy / q3_Sxx
+    const q3_b0hat = q3_ybar - q3_b1hat * q3_xbar
+    q3_reps.push({ rep: r, q3_y, q3_b0hat, q3_b1hat })
+  }
+  return q3_reps
+}
+
+// Variances Monte Carlo de beta0_hat et beta1_hat (sur les 100 tirages)
+q3_mc_var_b0 = d3.variance(q3_replications, d => d.q3_b0hat)
+q3_mc_var_b1 = d3.variance(q3_replications, d => d.q3_b1hat)
+```
+
+**Nuage de points $(x, y)$ pour les 100 tirages de $\epsilon$**
+($x_i = i/n$, les points se resserrent dans $[0,1]$ au lieu de
+s'étaler comme en question 2)
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: 700,
+  height: 350,
+  x: {label: "x"},
+  y: {label: "y"},
+  marks: [
+    Plot.dot(
+      q3_replications.flatMap(rep => q3_x.map((xi, i) => ({x: xi, y: rep.q3_y[i]}))),
+      {x: "x", y: "y", r: 1.6, fillOpacity: 0.12, fill: "steelblue"}
+    ),
+    Plot.line(
+      [{x: d3.min(q3_x), y: q3_beta0 + q3_beta1 * d3.min(q3_x)}, {x: d3.max(q3_x), y: q3_beta0 + q3_beta1 * d3.max(q3_x)}],
+      {x: "x", y: "y", stroke: "red", strokeWidth: 2}
+    )
+  ]
+})
+```
+
+On compare, en fonction de $n$ :
+
+-   la formule **exacte** trouvée à la question 3,
+    $\mathbb{V}(\hat{\beta}_0) = \sigma^2 \dfrac{2(2n+1)}{n(n-1)}$ et
+    $\mathbb{V}(\hat{\beta}_1) = \sigma^2 \dfrac{12n}{(n-1)(n+1)}$ ;
+-   son **équivalent asymptotique**,
+    $\sigma^2 \dfrac{4}{n}$ et $\sigma^2 \dfrac{12}{n}$ ;
+-   la **variance empirique obtenue par Monte Carlo** sur les 100
+    tirages, pour la valeur de $n$ choisie au curseur (point noir).
+
+**Variance de $\widehat{\beta}_0$ : exacte vs asymptotique vs Monte Carlo**
+
+```{ojs}
+//| echo: false
+q3_nGrid = d3.range(5, 251)
+
+q3_exactB0 = q3_nGrid.map(nn => ({n: nn, value: q3_sigma2 * 2 * (2 * nn + 1) / (nn * (nn - 1)), type: "Formule exacte"}))
+q3_asymB0  = q3_nGrid.map(nn => ({n: nn, value: q3_sigma2 * 4 / nn, type: "Équivalent asymptotique"}))
+
+Plot.plot({
+  width: 700,
+  height: 350,
+  x: {label: "n"},
+  y: {label: "V(β̂₀)", type: "log"},
+  color: {legend: true},
+  marks: [
+    Plot.line(q3_exactB0, {x: "n", y: "value", stroke: "type"}),
+    Plot.line(q3_asymB0, {x: "n", y: "value", stroke: "type", strokeDasharray: "4,2"}),
+    Plot.ruleX([q3_n], {stroke: "grey", strokeDasharray: "2,2"}),
+    Plot.dot([{n: q3_n, value: q3_mc_var_b0}], {x: "n", y: "value", fill: "black", r: 5})
+  ]
+})
+```
+
+**Variance de $\widehat{\beta}_1$ : exacte vs asymptotique vs Monte Carlo**
+(remarquez qu'ici $\mathbb{V}(\hat{\beta}_1)$ décroît en $1/n$, plus
+lentement qu'en question 2 où elle décroissait en $1/n^3$ : la
+convergence a lieu, mais elle est plus lente)
+
+```{ojs}
+//| echo: false
+q3_exactB1 = q3_nGrid.map(nn => ({n: nn, value: q3_sigma2 * 12 * nn / ((nn - 1) * (nn + 1)), type: "Formule exacte"}))
+q3_asymB1  = q3_nGrid.map(nn => ({n: nn, value: q3_sigma2 * 12 / nn, type: "Équivalent asymptotique"}))
+
+Plot.plot({
+  width: 700,
+  height: 350,
+  x: {label: "n"},
+  y: {label: "V(β̂₁)", type: "log"},
+  color: {legend: true},
+  marks: [
+    Plot.line(q3_exactB1, {x: "n", y: "value", stroke: "type"}),
+    Plot.line(q3_asymB1, {x: "n", y: "value", stroke: "type", strokeDasharray: "4,2"}),
+    Plot.ruleX([q3_n], {stroke: "grey", strokeDasharray: "2,2"}),
+    Plot.dot([{n: q3_n, value: q3_mc_var_b1}], {x: "n", y: "value", fill: "black", r: 5})
+  ]
+})
+```
+
+Comme en question 2, le point Monte Carlo suit fidèlement la courbe
+exacte, qui rejoint son équivalent asymptotique quand $n$ grandit,
+confirmant la convergence en moyenne quadratique établie à la
+question 3.
+
+:::
+
+:::
+
+:::
+
+
+## Question 4
+
+On se place ici dans un cas où les observations sont mal dispersées : on
+suppose que $x_i = \frac{1}{i}$ pour tout $i = 1, \dots, n$. Ainsi les
+observations se concentrent en 0. Qu’en est-il du comportement
+asymptotique en moyenne quadratique de $\hat{\beta}_0$ et
+$\hat{\beta}_1$ ?
+
+::: {.content-visible when-meta="is_answer_print_4"}
+
+::: answer
+Dans le cas où $x_i=\frac{1}{i}$ pour tout $i=1, \dots, n$, on a :
+
+$$
+\begin{align*}
+\overline{x} &= \frac{1}{n}\sum\limits_{i=1}^n x_i = \frac{1}{n}\sum\limits_{i=1}^n \frac{1}{i}  \\
+\sum\limits_{i=1}^n x_i^2 &= \sum\limits_{i=1}^n \frac{1}{i^2} \\
+\sum\limits_{i=1}^n (x_i-\overline{x})^2 &=\sum\limits_{i=1}^n x_i^2-n\overline{x}^2=\sum\limits_{i=1}^n \frac{1}{i^2}-\frac{1}{n}\left(\sum\limits_{i=1}^n \frac{1}{i} \right)^2
+\end{align*}
+$$
+
+D'où
+
+$$\mathbb{V}\left(\hat{\beta} \right)=\sigma^2(X'X)^{-1}=\frac{1}{\sum\limits_{i=1}^n \frac{1}{i^2}-\frac{1}{n}\left(\sum\limits_{i=1}^n \frac{1}{i} \right)^2}\begin{pmatrix}
+\frac{1}{n}\sum\limits_{i=1}^n \frac{1}{i^2} & -\frac{1}{n}\sum\limits_{i=1}^n \frac{1}{i} \\
+-\frac{1}{n}\sum\limits_{i=1}^n \frac{1}{i} & 1
+\end{pmatrix}$$
+
+Asymptotiquement, on a :
+
+$$
+\begin{align*}
+\frac{1}{n}\sum\limits_{i=1}^n \frac{1}{i}  \ &\underset{n\ \to\ + \infty}{\sim} \frac{\ln(n)}{n} \\
+\sum\limits_{i=1}^n \frac{1}{i^2}  &\underset{n\ \to\ + \infty}{\sim} \frac{\pi^2}{6}
+\end{align*}
+$$
+
+Ainsi,
+
+$$\mathbb{V}\left(\hat{\beta} \right)=\underset{n\ \to\ + \infty}{\sim} \sigma^2\begin{pmatrix}
+\frac{1}{n} & -\frac{6\ln(n)}{n\pi^2} \\
+-\frac{6\ln(n)}{n\pi^2}  & \frac{6}{\pi^2}
+\end{pmatrix}$$
+
+Dans ce $\hat{\beta}$ ne converge pas en moyenne quadratique vers
+$\beta$.
+
+::: {.callout-note collapse="true" icon=false}
+### Illustration graphique par simulation
+
+On illustre ici numériquement le résultat de la question 4, avec le
+design $x_i = 1/i$, $i = 1, \dots, n$, qui se concentre près de 0.
+Comme il n'y a pas de forme close pour
+$\sum_{i=1}^n 1/i$ et $\sum_{i=1}^n 1/i^2$, on les calcule
+numériquement (sommes cumulées) pour obtenir la variance **exacte**
+$\mathbb{V}(\hat\beta)=\sigma^2(X'X)^{-1}$ à tout $n$, que l'on compare
+à son équivalent asymptotique et à la variance Monte Carlo sur 100
+tirages, comme précédemment.
+
+```{ojs}
+//| echo: false
+viewof q4_beta0 = Inputs.range([-10, 10], {value: 2, step: 0.1, label: "β₀"})
+```
+
+```{ojs}
+//| echo: false
+viewof q4_beta1 = Inputs.range([-5, 5], {value: 1, step: 0.1, label: "β₁"})
+```
+
+```{ojs}
+//| echo: false
+viewof q4_sigma2 = Inputs.range([0.1, 25], {value: 4, step: 0.1, label: "σ²"})
+```
+
+```{ojs}
+//| echo: false
+viewof q4_n = Inputs.range([5, 200], {value: 30, step: 1, label: "n"})
+```
+
+```{ojs}
+//| echo: false
+q4_nRep = 100
+q4_nMax = 250
+
+// Sommes cumulées de 1/i et 1/i^2 jusqu'à q4_nMax (pas de forme close)
+q4_cum = {
+  const invSum = new Array(q4_nMax + 1).fill(0)
+  const invSqSum = new Array(q4_nMax + 1).fill(0)
+  let s1 = 0, s2 = 0
+  for (let i = 1; i <= q4_nMax; i++) {
+    s1 += 1 / i
+    s2 += 1 / (i * i)
+    invSum[i] = s1
+    invSqSum[i] = s2
+  }
+  return { invSum, invSqSum }
+}
+
+// Sxx exact pour un n donné, à partir des sommes cumulées
+q4_Sxx_at = nn => q4_cum.invSqSum[nn] - (q4_cum.invSum[nn] ** 2) / nn
+
+// Design x_i = 1/i, i = 1, ..., n
+q4_x = d3.range(1, q4_n + 1).map(i => 1 / i)
+q4_xbar = q4_cum.invSum[q4_n] / q4_n
+q4_Sxx = q4_Sxx_at(q4_n)
+
+// 100 tirages indépendants de epsilon, calcul de Y et de beta_hat pour chacun
+q4_replications = {
+  const q4_sigma = Math.sqrt(q4_sigma2)
+  const q4_reps = []
+  for (let r = 0; r < q4_nRep; r++) {
+    const q4_y = q4_x.map(xi => q4_beta0 + q4_beta1 * xi + q4_sigma * randn())
+    const q4_ybar = d3.mean(q4_y)
+    let q4_Sxy = 0
+    for (let i = 0; i < q4_x.length; i++) q4_Sxy += (q4_x[i] - q4_xbar) * (q4_y[i] - q4_ybar)
+    const q4_b1hat = q4_Sxy / q4_Sxx
+    const q4_b0hat = q4_ybar - q4_b1hat * q4_xbar
+    q4_reps.push({ rep: r, q4_y, q4_b0hat, q4_b1hat })
+  }
+  return q4_reps
+}
+
+// Variances Monte Carlo de beta0_hat et beta1_hat (sur les 100 tirages)
+q4_mc_var_b0 = d3.variance(q4_replications, d => d.q4_b0hat)
+q4_mc_var_b1 = d3.variance(q4_replications, d => d.q4_b1hat)
+```
+
+**Nuage de points $(x, y)$ pour les 100 tirages de $\epsilon$**
+($x_i = 1/i$, les points s'accumulent près de 0, contrairement aux
+questions 2 et 3)
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: 700,
+  height: 350,
+  x: {label: "x"},
+  y: {label: "y"},
+  marks: [
+    Plot.dot(
+      q4_replications.flatMap(rep => q4_x.map((xi, i) => ({x: xi, y: rep.q4_y[i]}))),
+      {x: "x", y: "y", r: 1.6, fillOpacity: 0.12, fill: "steelblue"}
+    ),
+    Plot.line(
+      [{x: d3.min(q4_x), y: q4_beta0 + q4_beta1 * d3.min(q4_x)}, {x: d3.max(q4_x), y: q4_beta0 + q4_beta1 * d3.max(q4_x)}],
+      {x: "x", y: "y", stroke: "red", strokeWidth: 2}
+    )
+  ]
+})
+```
+
+On compare, en fonction de $n$ :
+
+-   la formule **exacte** trouvée à la question 4 (calculée
+    numériquement, sans forme close),
+    $\mathbb{V}(\hat{\beta}_0) = \sigma^2 \dfrac{\frac{1}{n}\sum_{i=1}^n 1/i^2}{S_{xx}(n)}$
+    et
+    $\mathbb{V}(\hat{\beta}_1) = \dfrac{\sigma^2}{S_{xx}(n)}$ ;
+-   son **équivalent asymptotique**,
+    $\sigma^2/n$ pour $\hat\beta_0$, et **la constante**
+    $6\sigma^2/\pi^2$ pour $\hat\beta_1$ ;
+-   la **variance empirique obtenue par Monte Carlo** sur les 100
+    tirages, pour la valeur de $n$ choisie au curseur (point noir).
+
+**Variance de $\widehat{\beta}_0$ : exacte vs asymptotique vs Monte Carlo**
+
+```{ojs}
+//| echo: false
+q4_nGrid = d3.range(5, q4_nMax + 1)
+
+q4_exactB0 = q4_nGrid.map(nn => ({n: nn, value: q4_sigma2 * (q4_cum.invSqSum[nn] / nn) / q4_Sxx_at(nn), type: "Formule exacte"}))
+q4_asymB0  = q4_nGrid.map(nn => ({n: nn, value: q4_sigma2 / nn, type: "Équivalent asymptotique"}))
+
+Plot.plot({
+  width: 700,
+  height: 350,
+  x: {label: "n"},
+  y: {label: "V(β̂₀)", type: "log"},
+  color: {legend: true},
+  marks: [
+    Plot.line(q4_exactB0, {x: "n", y: "value", stroke: "type"}),
+    Plot.line(q4_asymB0, {x: "n", y: "value", stroke: "type", strokeDasharray: "4,2"}),
+    Plot.ruleX([q4_n], {stroke: "grey", strokeDasharray: "2,2"}),
+    Plot.dot([{n: q4_n, value: q4_mc_var_b0}], {x: "n", y: "value", fill: "black", r: 5})
+  ]
+})
+```
+
+**Variance de $\widehat{\beta}_1$ : exacte vs asymptotique vs Monte Carlo**
+— contrairement aux questions 2 et 3, cette variance **ne tend pas
+vers 0** : elle se stabilise autour de la constante $6\sigma^2/\pi^2$
+(ligne pointillée horizontale). C'est la traduction graphique de la
+non-convergence en moyenne quadratique de $\hat\beta_1$ établie à la
+question 4.
+
+```{ojs}
+//| echo: false
+q4_exactB1 = q4_nGrid.map(nn => ({n: nn, value: q4_sigma2 / q4_Sxx_at(nn), type: "Formule exacte"}))
+q4_asymB1  = q4_nGrid.map(nn => ({n: nn, value: q4_sigma2 * 6 / (Math.PI ** 2), type: "Équivalent asymptotique (constante)"}))
+
+Plot.plot({
+  width: 700,
+  height: 350,
+  x: {label: "n"},
+  y: {label: "V(β̂₁)", type: "log"},
+  color: {legend: true},
+  marks: [
+    Plot.line(q4_exactB1, {x: "n", y: "value", stroke: "type"}),
+    Plot.line(q4_asymB1, {x: "n", y: "value", stroke: "type", strokeDasharray: "4,2"}),
+    Plot.ruleX([q4_n], {stroke: "grey", strokeDasharray: "2,2"}),
+    Plot.dot([{n: q4_n, value: q4_mc_var_b1}], {x: "n", y: "value", fill: "black", r: 5})
+  ]
+})
+```
+
+On voit ainsi les deux comportements coexister dans ce même exemple :
+$\mathbb{V}(\hat\beta_0)$ décroît vers 0 (convergence de
+$\hat\beta_0$), tandis que $\mathbb{V}(\hat\beta_1)$ plafonne à une
+valeur strictement positive (absence de convergence en moyenne
+quadratique de $\hat\beta_1$), quel que soit $n$ choisi au curseur.
+:::
+
+:::
+
+:::
+
+
+## Question 5
+
+Dans les exemples précédents, les $x_i$ étaient déterministes. On
+suppose ici que les $x_i$ sont aléatoires, i.i.d, de carré intégrable et
+de variance non nulle. On suppose également que les $x_i$ et les erreurs
+de modélisation $\epsilon_i$ sont indépendants. Cette situation peut
+être vue comme l’équivalent aléatoire des situations déterministes
+traitées dans les questions 2 et 3 (selon que la loi des $x_i$ est
+discrète ou continue).
+
+a.  Exprimer $\hat{\beta}-\beta$ en fonction de la matrice $X$ et du
+    vecteur $\epsilon$.
+
+b.  En déduire que $\hat{\beta}$ converge presque sûrement vers $\beta$
+    lorsque $n \to +\infty$.
+
+::: {.content-visible when-meta="is_answer_print_5"}
+
+::: answer
+a.  Exprimons $\hat{\beta}-\beta$ en fonction de la matrice $X$ et du
+    vecteur $\epsilon$. $$
+    \hat{\beta}-\beta = (X'X)^{-1}X'Y-\beta = (X'X)^{-1}X'(X\beta+\epsilon)-\beta  = (X'X)^{-1}X'\epsilon
+    $$
+
+b.  On réinjecte alors l'expression des matrices $X$ et $(X'X)^{-1}$
+    dans le cas du modèle de régression linéaire simple.
+    $$\begin{align*}
+    \hat{\beta}-\beta &= \frac{1}{\sum\limits_{i=1}^n (x_i-\overline{x})^2}
+    \begin{pmatrix}
+    \frac{1}{n}\sum\limits_{i=1}^n x_i^2 & -\overline{x} \\
+    -\overline{x} & 1
+    \end{pmatrix}
+    \begin{pmatrix}
+    1 & \dots & 1\\
+    x_1 & \dots & x_n
+    \end{pmatrix}
+    \begin{pmatrix}
+    \epsilon_1 \\
+    \vdots  \\
+    \epsilon_n \\
+    \end{pmatrix} \\
+    &= \frac{1}{\sum\limits_{i=1}^n (x_i-\overline{x})^2}
+    \begin{pmatrix}
+    \frac{1}{n}\sum\limits_{i=1}^n x_i^2 & -\overline{x} \\
+    -\overline{x} & 1
+    \end{pmatrix}
+    \begin{pmatrix}
+    \sum\limits_{i=1}^n \epsilon_i \\
+    \sum\limits_{i=1}^n x_i\epsilon_i \\
+    \end{pmatrix} \\
+    &= \frac{1}{\sum\limits_{i=1}^n (x_i-\overline{x})^2}
+    \begin{pmatrix}
+    \overline{\epsilon}\sum\limits_{i=1}^n x_i^2-\overline{x}\sum\limits_{i=1}^n x_i\epsilon_i \\
+    -\overline{x}\sum\limits_{i=1}^n \epsilon_i + \sum\limits_{i=1}^n x_i\epsilon_i
+    \end{pmatrix} \\
+    &=\frac{1}{\frac{1}{n}\sum\limits_{i=1}^n (x_i-\overline{x})^2}
+    \begin{pmatrix}
+    \overline{\epsilon}\frac{1}{n}\sum\limits_{i=1}^n x_i^2-\overline{x}\frac{1}{n}\sum\limits_{i=1}^n x_i\epsilon_i \\
+    -\overline{x}\cdot \overline{\epsilon} + \frac{1}{n}\sum\limits_{i=1}^n x_i\epsilon_i
+    \end{pmatrix}
+    \end{align*}
+    $$
+
+    D'après la loi forte des grands nombres,
+
+    -   comme les $x_i$ sont i.i.d, de carré intégrable $$
+        \frac{1}{n}\sum\limits_{i=1}^n (x_i-\overline{x})^2 \overset{ps}{\longrightarrow} \mathbb{V}(X)
+        $$
+
+    -   comme les $\epsilon_i$ sont i.i.d et dans $\mathcal{L}^2$ $$
+        \frac{1}{n}\sum\limits_{i=1}^n \epsilon_i \overset{ps}{\longrightarrow} \mathbb{E}(\epsilon)=0
+        $$
+
+    -   comme les $x_i$ sont i.i.d et dans $\mathcal{L}^2$ $$
+        \frac{1}{n}\sum\limits_{i=1}^n x_i^2 \overset{ps}{\longrightarrow} \mathbb{V}(X)+(\mathbb{E}(X))^2
+        $$
+
+    -   comme les $x_i$ sont i.i.d et dans $\mathcal{L}^1$ $$
+        \frac{1}{n}\sum\limits_{i=1}^n x_i \overset{ps}{\longrightarrow} \mathbb{E}(X)
+        $$
+
+    -   comme les $x_i$ sont i.i.d et les $\epsilon_i$ sont i.i.d alors
+        $x_i\epsilon_i$ sont i.i.d. de plus
+        $\mathbb{E}(x_i\epsilon_i)=\mathbb{E}(x_i)\mathbb{E}(\epsilon_i)=0$
+        car les $x_i$ et les $\epsilon_i$ sont indépendants.
+
+    $$
+    \frac{1}{n}\sum\limits_{i=1}^n x_i\epsilon_i \overset{ps}{\longrightarrow} 0
+    $$
+
+    Ainsi, $\hat{\beta}$ converge presque sûrement vers $\beta$ lorsque
+    $n \to +\infty$.
+:::
+
+:::

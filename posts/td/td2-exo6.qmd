@@ -33,8 +33,8 @@ custom-callout:
     title: "Correction"
 ---
 
-{{< include ./../_extensions/conditionnal.qmd >}}
-{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+{{< include ./../../_extensions/conditionnal.qmd >}}
+{{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On considère un modèle à deux variables explicatives, supposées centrées. De l’estimation sur $n$ individus, on a obtenu les matrices $X'X$ et $X'Y$ suivantes :
 

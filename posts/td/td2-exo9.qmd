@@ -27,8 +27,8 @@ custom-callout:
     title: "Correction"
 ---
 
-{{< include ./../_extensions/conditionnal.qmd >}}
-{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+{{< include ./../../_extensions/conditionnal.qmd >}}
+{{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
 On se place dans le cadre de l’exercice précédent, mais on suppose de plus que la variable
 $X^{(p)}$ n’est pas significative dans le modèle (i.e. son coefficient est nul dans la régression)

@@ -13,7 +13,7 @@ format:
 webr:
   render-df: gt-interactive
   resources:
-    - ./../data/chemical.txt
+    - ./../../data/chemical.txt
   packages:
       - dplyr
       - readr
@@ -36,8 +36,8 @@ custom-callout:
     title: "Correction"
 ---
 
-{{< include ./../_extensions/conditionnal.qmd >}}
-{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+{{< include ./../../_extensions/conditionnal.qmd >}}
+{{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
 Le fichier `chemical.txt` contient la concentration dans le sang (en *ng/ml*) d’un certain 
 produit chimique chez 40 patients selon qu’ils ont absorbé un médicament dosé à 

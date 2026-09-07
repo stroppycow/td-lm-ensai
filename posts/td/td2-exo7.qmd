@@ -13,7 +13,7 @@ format:
 webr:
   render-df: gt-interactive
   resources:
-    - ./../data/ozone.txt
+    - ./../../data/ozone.txt
   packages:
       - dplyr
       - readr
@@ -41,8 +41,8 @@ custom-callout:
     
 ---
 
-{{< include ./../_extensions/conditionnal.qmd >}}
-{{< include ./../_extensions/r-wasm/live/_knitr.qmd >}}
+{{< include ./../../_extensions/conditionnal.qmd >}}
+{{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
 Le jeu de données `ozone.txt` contient la concentration maximale d’ozone ($\texttt{maxO3}$)
 mesurée chaque jour de l’été 2001 à Rennes. Il contient également les températures, la nébulosité et la vitesse du vent mesurés à 9h, 12h et 15h (respectivement $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$, $\texttt{Ne9}$, $\texttt{Ne12}$, $\texttt{Ne15}$ et $\texttt{Vx9}$, $\texttt{Vx12}$, $\texttt{Vx15}$), ainsi que la direction principale du vent et la présence ou non de pluie. On désire expliquer au mieux la concentration d’ozone à l’aide des variables disponibles dans le jeu de données.
