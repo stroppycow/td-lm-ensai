@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "8 septembre 2026"
 params:
-  question_courante: 5
+  question_courante: 0
 format:
   live-html:
     code-background: true
@@ -144,6 +144,7 @@ b.  En déduire le comportement asymptotique en moyenne quadratique de
 ::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
+
 a.  Dans le cas où $x_i=i$ pour tout $i=1, \dots, n$, on:
 
     $$
@@ -352,6 +353,8 @@ d'échantillonnage près, dues au nombre fini de 100 réplications), et
 que la courbe exacte se rapproche de son équivalent asymptotique
 lorsque $n$ devient grand — ce qui confirme visuellement le résultat
 de convergence en moyenne quadratique établi à la question 2.b.
+
+:::
 
 :::
 

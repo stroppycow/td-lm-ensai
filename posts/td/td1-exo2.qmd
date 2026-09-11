@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "8 septembre 2026"
 params:
-  question_courante: 0
+  question_courante: 3
 format:
   live-html:
     code-background: true
@@ -54,18 +54,17 @@ $$
 ::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
-La fonction $S$ est une fonction polynomiale. Elle est donc dérivable
+La fonction $S$ est une fonction polynomiale de degré 2. Elle est donc dérivable
 sur $\mathbb{R}$. On note $S'$ la fonction dérivée de $S$. Pour
-$m \in \mathbb{R}$, on a : $$S'(m)=\sum\limits_{i=1}^n 2(m-z_i)$$ On
-peut ainsi dresser un tableau de variation de la fonction $S$ en
-étudiant le signe de $S'$.
+$m \in \mathbb{R}$, on a : 
 
+$$S'(m)=\sum\limits_{i=1}^n 2(m-z_i)$$ 
+
+Comme le coefficient associé au degré 2 de la fonction polynomiale $S$ vaut $n$ qui est strictement positif,
+le minimum est atteint lorsque $S'(m) = 0$.
+ 
 $$
-\begin{align*}
-S'(m) < 0 &\Longleftrightarrow \sum\limits_{i=1}^n \left(m-z_i\right) = 0 \Longleftrightarrow nm-\sum\limits_{i=1}^n z_i  < 0 \Longleftrightarrow m < \frac{1}{n} \sum\limits_{i=1}^n z_i \\
-S'(m) = 0 &\Longleftrightarrow \sum\limits_{i=1}^n \left(m-z_i\right) = 0 \Longleftrightarrow nm-\sum\limits_{i=1}^n z_i  = 0 \Longleftrightarrow m = \frac{1}{n} \sum\limits_{i=1}^n z_i \\
-S'(m) > 0 &\Longleftrightarrow \sum\limits_{i=1}^n \left(m-z_i\right) = 0 \Longleftrightarrow nm-\sum\limits_{i=1}^n z_i  > 0 \Longleftrightarrow m > \frac{1}{n} \sum\limits_{i=1}^n z_i 
-\end{align*}
+S'(m) = 0 \Longleftrightarrow \sum\limits_{i=1}^n \left(m-z_i\right) = 0 \Longleftrightarrow nm-\sum\limits_{i=1}^n z_i  = 0 \Longleftrightarrow m = \frac{1}{n} \sum\limits_{i=1}^n z_i
 $$
 
 Si on note $\overline{z}=\frac{1}{n}\sum\limits_{i=1}^n z_i$ la moyenne
@@ -127,7 +126,7 @@ z_n
 $$
 
 Les moindres carrés ordinaires (MCO) consistent à trouver la valeur de
-$\beta$ qui minimise la quantité
+$\beta$ qui minimise la quantité (cf. slide 56)
 $$
 \|Y-X\beta\|^2  = \sum\limits_{i=1}^n \left(z_i-\beta\right)^2=S(\beta)
 $$

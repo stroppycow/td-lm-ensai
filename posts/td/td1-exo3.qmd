@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "8 septembre 2026"
 params:
-  question_courante: 15
+  question_courante: 10
 format:
   live-html:
     code-background: true
@@ -53,7 +53,7 @@ $$
 \end{array} \\
 \left.
 \begin{array}{l}
-\text{homoscédastiques}  \ \bigl(\textrm{i.e. }\exists\  \sigma^2 \in \mathbb{R}_+, \ \forall\ i \in [\![1,n]\!], \ \mathbb{V}[\epsilon_i]=\sigma^2\bigr) ;\\
+\text{homoscédastiques}  \ \bigl(\textrm{i.e. }\exists\  \sigma^2 \in \mathbb{R}_+^*, \ \forall\ i \in [\![1,n]\!], \ \mathbb{V}[\epsilon_i]=\sigma^2\bigr) ;\\
 \text{et non-corrélées deux à deux} \ \bigl(\textrm{i.e. }\forall\ (i,j) \in [\![1,n]\!]^2, i \neq j, \ \mathbb{C}\mathbb{o}\mathbb{v}(\epsilon_i,\epsilon_j)=0\bigr)
 \end{array}
 \right\}
@@ -75,6 +75,7 @@ $$
 ::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
+
 Le modèle s'écrit matricellement $Y=X\beta+\epsilon$ avec
 
 $$
@@ -99,8 +100,8 @@ X = \underbrace{\begin{pmatrix}
 \end{pmatrix}}_{\in \mathcal{M}_{n,1}(\mathbb{R})} 
 $$
 
-avec les hypothèses
-$\mathbb{E}\left[\epsilon\right] =0_{n,1} \ \textrm{et} \ \mathbb{V}\left[\epsilon\right]=\sigma^2I_n$.
+:::
+
 :::
 
 ## Question 3
@@ -121,11 +122,11 @@ Pour le modèle de régression linéaire simple $\textrm{rang}(X)=2$
 signifie le vecteur du régresseur $(x_1, \dots, x_n)$ n'est pas
 proportionnel au vecteur constant $(1, \dots, 1)$ : c'est à dire que les
 $x_i$ ne prennent pas tous la même valeur.
-:::
 
 :::
 
 :::
+
 
 ## Question 4
 
@@ -152,7 +153,7 @@ connaitre par coeur : que valent-elles ?
 ::: {.content-visible when-meta="is_answer_print_5"}
 
 ::: answer
-On a (*cf slide 24*)
+On a (*cf slide 25*)
 
 $$\hat{\beta}_1=\frac{\textrm{cov}(x,y)}{\textrm{var}(x)}=\frac{\frac{1}{n}\sum\limits_{i=1}^n\left(x_i-\overline{x}\right)\left(y_i-\overline{y}\right)}{\frac{1}{n}\sum\limits_{i=1}^n\left(x_i-\overline{x}\right)^2} \qquad \hat{\beta}_0= \overline{y}-\hat{\beta}_1\overline{x}$$
 
@@ -344,15 +345,14 @@ C'est la même hypothèse que pour la question 3. D'après l'expression de la qu
 ## Question 7
 
 Retrouver $\hat{\beta}$ en utilisant la formule générale
-$\hat{\beta} = (X'X)^{-1}X'Y$ :
+$\hat{\beta} = (X'X)^{-1}X'Y$
+
 
 ::: {.content-visible when-meta="is_answer_print_7"}
 
 ::: answer
 
-
-On calcule $\hat{\beta}$ à partir de la formule générale étape par étape
-:
+On calcule $\hat{\beta}$ à partir de la formule générale étape par étape :
 
 $$
 \begin{align*}
@@ -455,7 +455,10 @@ point $(\overline{x}; \overline{y})$.
 
 ::: answer
 D'après la question 5, on a :
-$\hat{\beta}_0 = \overline{y}-\hat{\beta}_1\overline{x}$
+$\hat{\beta}_0 = \overline{y}-\hat{\beta}_1\overline{x}$ donc $\overline{y}=\hat{\beta}_0 + \hat{\beta}_1\overline{x}$
+
+Ainsi, la droite de régression passe nécessairement par le
+point $(\overline{x}; \overline{y})$
 :::
 
 :::
@@ -495,6 +498,13 @@ estimateurs de variance plus faible.
 
 On peut considérer $\hat{\beta}= \frac{1}{2}\hat{\beta}_{\textrm{MCO}}$
 par exemple.
+
+Les [estimateurs ridge](https://en.wikipedia.org/wiki/Ridge_regression) (en dehors du cadre du cours)
+sont aussi des contre-exemples. Ils sont plus interessant en pratique que le premier contre-exemple. 
+Dans le cas où la matrice de *design* $X$ contient des variables assez correlées, l'estimateur ridge 
+a une variance beaucoup plus faible que l'estimateur MCO en contrepartie d'un peu de biais. 
+
+
 :::
 
 :::
@@ -510,7 +520,7 @@ $\hat{y}_o$ de $y_o$ ?
 ::: {.content-visible when-meta="is_answer_print_11"}
 
 ::: answer
-On a $\hat{y}_o = \hat{\beta}_0+\hat{\beta}_1x_o$
+Par définition, on a $\hat{y}_o = \hat{\beta}_0+\hat{\beta}_1x_o$ (*cf slide 78*).
 :::
 
 :::
@@ -527,25 +537,25 @@ On calcule l'espérance de l'erreur de prévision
 
 $$
 \begin{align*}
-\mathbb{E}(y_o-\hat{y}_o)
-&=\mathbb{E}(y_o) - \mathbb{E}(\hat{y}_o)\ \textrm{par linéarité de l'espérance} \\
-&=\mathbb{E}(\beta_0+\beta_1x_o+\epsilon_o)-\mathbb{E}(\hat{\beta}_0+\hat{\beta}_1x_o) \\
-&=\mathbb{E}(\beta_0)+x_o\mathbb{E}(\beta_1)+\mathbb{E}(\epsilon_o)-\mathbb{E}(\hat{\beta}_0)-x_o\mathbb{E}(\hat{\beta}_1) \ \textrm{par linéarité de l'espérance}
+\mathbb{E}\left[y_o-\hat{y}_o\right]
+&=\mathbb{E}\left[y_o\right] - \mathbb{E}\left[\hat{y}_o\right]\ \textrm{par linéarité de l'espérance} \\
+&=\mathbb{E}\left[\beta_0+\beta_1x_o+\epsilon_o\right]-\mathbb{E}\left[\hat{\beta}_0+\hat{\beta}_1x_o\right] \\
+&=\mathbb{E}\left[\beta_0\right]+x_o\mathbb{E}\left[\beta_1\right]+\mathbb{E}\left[\epsilon_o\right]-\mathbb{E}\left[\hat{\beta}_0\right]-x_o\mathbb{E}\left[\hat{\beta}_1\right] \ \textrm{par linéarité de l'espérance}
 \end{align*}
 $$
 
 Or
 
--   $\mathbb{E}(\hat{\beta}_0)=\beta_0$ et
-    $\mathbb{E}(\hat{\beta}_1)=\beta_1$ car l'estimateur des moindres
+-   $\mathbb{E}\left[\hat{\beta}_0\right]=\beta_0$ et
+    $\mathbb{E}\left[\hat{\beta}_1\right]=\beta_1$ car l'estimateur des moindres
     carrés ordinaires est sans biais ;
--   $\mathbb{E}(\beta_0)=\beta_0$ et $\mathbb{E}(\beta_1)=\beta_1$ car
+-   $\mathbb{E}\left[\beta_0\right]=\beta_0$ et $\mathbb{E}(\beta_1)=\beta_1$ car
     $\beta_0$ et $\beta_1$ sont déterministes ;
--   $\mathbb{E}(\epsilon_o)=0$ par hypothèse du modèle.
+-   $\mathbb{E}\left[\epsilon_o\right]=0$ par hypothèse du modèle.
 
 Ainsi,
 $$
-\mathbb{E}(y_o-\hat{y}_o)=0
+\mathbb{E}\left[y_o-\hat{y}_o\right]=0
 $$
 
 ::: {.callout-note collapse="true"}
@@ -568,18 +578,18 @@ $$
 $$
 
 En prenant l'espérance (comme les $x_i$ sont déterministes et
-$\mathbb{E}(\epsilon_i)=0$), on obtient
+$\mathbb{E}\left[\epsilon_i\right]=0$), on obtient
 
 $$
-\mathbb{E}\left(\sum_{i=1}^n (x_i-\overline{x})(y_i-\overline{y})\right)
-=\beta_1\sum_{i=1}^n (x_i-\overline{x})^2 + \sum_{i=1}^n (x_i-\overline{x})\mathbb{E}(\epsilon_i)
+\mathbb{E}\left[\sum_{i=1}^n (x_i-\overline{x})(y_i-\overline{y})\right]
+=\beta_1\sum_{i=1}^n (x_i-\overline{x})^2 + \sum_{i=1}^n (x_i-\overline{x})\mathbb{E}\left[ \epsilon_i \right]
 =\beta_1\sum_{i=1}^n (x_i-\overline{x})^2
 $$
 
 Donc
 
 $$
-\mathbb{E}(\widehat{\beta}_1)=\beta_1
+\mathbb{E}\left[\widehat{\beta}_1\right]=\beta_1
 $$
 
 Pour $\widehat{\beta}_0$, on utilise
@@ -587,7 +597,7 @@ $\widehat{\beta}_0=\overline{y}-\widehat{\beta}_1\,\overline{x}$ et la
 linéarité de l'espérance :
 
 $$
-\mathbb{E}(\hat{\beta}_0)=\mathbb{E}(\overline{y})-\mathbb{E}(\widehat{\beta}_1)\overline{x}
+\mathbb{E}\left[\hat{\beta}_0\right]=\mathbb{E}\left[\overline{y}\right]-\mathbb{E}\left[\widehat{\beta}_1\right]\overline{x}
 = (\beta_0+\beta_1\overline{x}) - \beta_1\overline{x} = \beta_0
 $$
 
@@ -612,10 +622,10 @@ $$
 $$
 
 En prenant l'espérance (conditionnelle sur $X$ fixé, ou sous l'hypothèse
-$\mathbb{E}(\epsilon\mid X)=0$), on obtient
+$\mathbb{E}\left[\epsilon \mid X\right]=0$), on obtient
 
 $$
-\mathbb{E}(\hat{\beta}) = \beta + (X' X)^{-1}X'\mathbb{E}(\epsilon) = \beta.
+\mathbb{E}\left[\hat{\beta}\right] = \beta + (X' X)^{-1}X'\mathbb{E}\left[\epsilon\right] = \beta.
 $$
 
 Donc $\hat{\beta}$ est sans biais.
@@ -730,7 +740,7 @@ $$
 D'où
 
 $$
-\mathbb{V}(\hat{y}_o) \underset{n \to +\infty}{\longrightarrow} \sigma^2
+\mathbb{V}\left[\hat{y}_o\right] \underset{n \to +\infty}{\longrightarrow} \sigma^2
 $$
 
 Ainsi lorsque $n$ est grand, seul le terme $\sigma^2$ reste dominant
