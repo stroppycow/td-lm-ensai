@@ -49,9 +49,10 @@ corrélées. On désire estimer $a$ et $b$.
 Le modèle $y_{i} = a + b x_{i} + \epsilon_{i}$ est effectivement un
 modèle de régression linéaire car il décrit l'espérance d'une variable
 réponse continue $Y$ d'un échantillon aléatoire de taille $n$. En
-notant $X_i$ la variable aléatoire dont $x_i$ est une réalisation :
+notant $X_i$ la variable aléatoire dont $x_i$ est une réalisation, on suppose que pour tout $i \in [\![1,n]\!]$ 
+
 $$
-\mathbb{E}(Y_i|1,X_i)=a+bX_i
+\mathbb{E}\left[Y_i \mid X_i \right]=a+bX_i
 $$
 
 Le modèle donné sur les $n$ observations s'écrit alors matriciellement
@@ -81,7 +82,7 @@ b
 $$
 
 Il s'agit du modèle de régression linéaire simple car il n'y a
-qu'un seul régresseur $x$ et une constante (slide 46), par opposition
+qu'un seul régresseur $x$ et une constante (slide 52), par opposition
 à la régression multiple où plusieurs régresseurs interviennent
 (voir Question 2).
 
@@ -104,9 +105,10 @@ corrélées. On désire estimer $a_1$ et $a_2$.
 ::: answer
 Il s'agit bien d'un modèle de régression linéaire car il décrit
 l'espérance d'une variable réponse continue $Y$ d'un échantillon
-aléatoire de taille $n$ :
+aléatoire de taille $n$.
+On suppose que pour tout $i \in [\![1,n]\!]$ 
 $$
-\mathbb{E}(Y_i|X_i,X_i^2)=a_1X_i+a_2X_i^2
+\mathbb{E}\left[Y_i \mid X_i,X_i^2 \right]=a_1X_i+a_2X_i^2
 $$
 
 Ce modèle n'est pas linéaire en $x$
@@ -166,30 +168,31 @@ La relation Cobb-Douglas qui lie la production $P_i$ au capital $K_i$,
 et au facteur travail $T_i$ au sein de chaque pays est théorique et
 déterministe. Pour en faire un modèle statistique, il faut introduire
 un aléa. Contrairement à un modèle linéaire classique, l'erreur
-naturelle ici est multiplicative :
+naturelle ici est multiplicative. On suppose que pour tout $i \in [\![1,n]\!]$ 
+
 $$
-P_i = \alpha_1K_i^{\alpha_2}T_i^{\alpha_3}\cdot \exp(\eta_i)
+P_i = \alpha_1K_i^{\alpha_2}T_i^{\alpha_3}\cdot \exp(\epsilon_i)
 $$
-où $\eta_i$ est un terme d'erreur centré. Cela se traduit, de façon
+où $\epsilon_i$ est un terme d'erreur centré. Cela se traduit, de façon
 équivalente, par une espérance conditionnelle :
 $$
-\mathbb{E}(P_i | K_i, T_i) = \alpha_1K_i^{\alpha_2}T_i^{\alpha_3}
+\mathbb{E}\left[P_i \mid K_i, T_i \right] = \alpha_1K_i^{\alpha_2}T_i^{\alpha_3}
 $$
 
 Ce modèle n'est pas un modèle de régression linéaire car cette espérance
 conditionnelle n'est pas une combinaison linéaire des paramètres
 $\alpha_1$, $\alpha_2$ et $\alpha_3$.
 
-C'est précisément parce que l'erreur $\eta_i$ est multiplicative que
+C'est précisément parce que l'erreur $\epsilon_i$ est multiplicative que
 l'on peut linéariser la relation en appliquant la fonction logarithme :
 $$
-\ln(P_i) = \ln(\alpha_1)+\alpha_2\ln(K_i)+\alpha_3\ln(T_i)+\eta_i
+\ln(P_i) = \ln(\alpha_1)+\alpha_2\ln(K_i)+\alpha_3\ln(T_i)+\epsilon_i
 $$
 
 Le modèle statistique s'écrit donc
 
 $$
-\mathbb{E}(\ln(P_i) | K_i, T_i) = \ln(\alpha_1)+\alpha_2\ln(K_i)+\alpha_3\ln(T_i)
+\mathbb{E}\left[\ln(P_i) \mid K_i, T_i \right] = \ln(\alpha_1)+\alpha_2\ln(K_i)+\alpha_3\ln(T_i)
 $$
 
 Il s'agit bien d'un modèle de régression linéaire car il décrit
@@ -240,7 +243,8 @@ désire vérifier cette relation et estimer $\beta_1$ et $\beta_2$.
 ::: answer
 Comme dans l'exemple précédent, il s'agit d'une relation théorique et
 déterministe : il faut y introduire un aléa pour obtenir un modèle
-statistique. Ici encore, l'aléa naturel est multiplicatif :
+statistique. Ici encore, l'aléa naturel est multiplicatif. 
+On suppose que pour tout $i \in [\![1,n]\!]$ 
 $$
 y_i = \beta_1e^{-\beta_2t_i}\cdot \exp(u_i)
 $$
@@ -256,7 +260,7 @@ $$
 Le modèle statistique s'écrit donc
 
 $$
-\mathbb{E}(\ln(Y_i) | 1, T_i) = \ln(\beta_1)-\beta_2 t_i
+\mathbb{E}\left[\ln(Y_i) \mid T_i\right] = \ln(\beta_1)-\beta_2 t_i
 $$
 
 Il s'agit bien d'un modèle de régression linéaire car il décrit
@@ -282,9 +286,9 @@ X = \underbrace{\begin{pmatrix}
 -\beta_2 \\
 \end{pmatrix}}_{\in \mathcal{M}_{2,1}(\mathbb{R})} \qquad
 \epsilon =Y-X\beta= \underbrace{\begin{pmatrix}
-\epsilon_1\\
+u_1\\
 \vdots \\
-\epsilon_n
+u_n
 \end{pmatrix}}_{\in \mathcal{M}_{n,1}(\mathbb{R})} 
 $$
 
@@ -304,7 +308,7 @@ $\sigma^2$ et non-corrélées.
 
 ::: answer
 
-Le modèle s'écrit ici $y_i = \beta_1e^{-\beta_2t_i}+u_i$, où
+Le modèle s'écrit ici $y_i = \beta_1e^{-\beta_2t_i}+u_i$ pour $i \in [\![1,n]\!]$, où
 l'erreur $u_i$ est additive (elle s'ajoute au terme
 $\beta_1e^{-\beta_2t_i}$), contrairement à la question précédente où
 l'aléa était multiplicatif et implicite dans la relation

@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "8 septembre 2026"
 params:
-  question_courante: 7
+  question_courante: 4
 format:
   live-html:
     code-background: true
@@ -113,7 +113,7 @@ déduire sa valeur.
 Un estimateur sans biais $\hat{\sigma}^2$ de $\sigma^2$ est
 $$
 \hat{\sigma}^2=\frac{\textrm{SCR}}{n-p}
-$$ (cf. slide 56)
+$$ (cf. slide 62)
 
 avec
 
