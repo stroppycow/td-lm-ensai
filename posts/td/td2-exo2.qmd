@@ -93,7 +93,7 @@ résultat asymptotique $F$ converge en loi vers $\tfrac{1}{q}\chi^2_q$.
 
 En pratique, pour des échantillons de grande taille, le test de Fisher
 reste donc valide approximativement même sans normalité stricte des
-$\epsilon$
+$\epsilon$.
 :::
 
 :::
@@ -113,8 +113,7 @@ détermination du modèle initial (respectivement du modèle contraint).
 
 ::: answer
 Par définition du coefficient de détermination (avec $\mathrm{SCT}$ la
-somme totale des carrés et $\mathrm{SCE}$ la somme des carrés expliqués)
-:
+somme totale des carrés et $\mathrm{SCE}$ la somme des carrés expliqués) :
 
 $$
 \begin{align*}

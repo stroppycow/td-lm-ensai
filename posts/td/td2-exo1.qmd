@@ -188,9 +188,9 @@ Commentons la sortie détaillée donnée par la fonction générique
 
 -   La première partie du tableau <tt>Residuals</tt> donne quelques
     statistiques descriptives sur la distribution des résidus de la
-    régression linéaire Pour rappel, le résidu $\widehat{\epsilon}_i$
+    régression linéaire. Pour rappel, le résidu $\widehat{\epsilon}_i$
     de l'observation $i$ est la différence entre la variable à expliquer
-    $Y_i$ et la valeur ajustée de $Y_i$ par le modèle c'est à dire :
+    $Y_i$ et la valeur ajustée de $Y_i$ par le modèle, c'est-à-dire :
 
     $$
     \widehat{\epsilon}_i = Y_i- \underbrace{(\widehat{\beta}_1 + \widehat{\beta}_2X_i)}_{\widehat{Y}_i}
@@ -213,10 +213,11 @@ Commentons la sortie détaillée donnée par la fonction générique
         $\widehat{\beta}_1 \approx 9,03$ et
         $\widehat{\beta}_2 \approx 0,26$.
 
-        L'estimation du coefficient estimété $\widehat{\beta}_2$
-        interprète de la manière suivante : "Lorsque la circonférence
-        d'un arbre augmente d'un centimètre sa hauteur gagne 26
-        centimètres."
+        L'estimation du coefficient $\widehat{\beta}_2$ s'interprète de
+        la manière suivante : "Lorsque la circonférence d'un arbre
+        augmente d'un centimètre, sa hauteur moyenne augmente d'environ
+        0,26 mètre, soit 26 centimètres." Il s'agit ici d'une simple
+        association statistique et non d'un lien de causalité.
 
     -   La seconde colonne ( <tt>Std. Error</tt>) contient les
         écarts-types estimés des estimateurs $\widehat{\beta}_1$ et
@@ -232,8 +233,8 @@ Commentons la sortie détaillée donnée par la fonction générique
 
         ::: callout-important
         Ce test exact est valable uniquement sous l'hypothèse de
-        normalité et indépendance des erreurs, c'est à dire si on
-        suppose que :
+        normalité, d'indépendance et d'homoscédasticité des erreurs,
+        c'est-à-dire si l'on suppose que :
 
         $$
         \epsilon  = \begin{pmatrix} 
@@ -282,7 +283,7 @@ Commentons la sortie détaillée donnée par la fonction générique
     de liberté inscrit sur la même ligne $n-p = 1~429-2 = 1~427$ car
 
     $$
-    (n-p)\frac{\widehat{\sigma}}{\sigma} \sim \chi^2\left(n-p \right)
+    (n-p)\frac{\widehat{\sigma}^2}{\sigma^2} \sim \chi^2\left(n-p \right)
     $$
 
 -   La ligne suivante donne la valeur du coefficient de détermination
@@ -595,12 +596,15 @@ confiance précédents restent-ils valables ?
 ::: {.content-visible when-meta="is_answer_print_5"}
 
 ::: answer
-Pour que ces intervalles de confiances soient exacts, l'erreur doit être
-gausienne. Cependant, ils le deviennent asymptotiquement sous certaines
-conditions assez faible de régularité grâce au théorème central limite
-(cf. remarque slide 70 du cours). Comme, ici $n=1\ 429 \gg 30$ , on peut
-se fier à ces intervalles de confiance même si la normalité des erreurs
-n'est pas vérifiée.
+Pour que ces intervalles de confiance soient exacts (au sens où le
+niveau de confiance est respecté pour tout $n$), l'erreur doit être
+gaussienne. Cependant, ils deviennent valables asymptotiquement sous
+des conditions de régularité assez faibles (variance finie du bruit,
+notamment), grâce au théorème central limite qui assure que
+$\widehat{\beta}$ suit approximativement une loi gaussienne quand $n$
+est grand (cf. remarque slide 70 du cours). Comme ici
+$n = 1\ 429 \gg 30$, on peut donc se fier à ces intervalles de
+confiance même si la normalité des erreurs n'est pas vérifiée.
 :::
 
 :::
@@ -725,7 +729,7 @@ sigma_hat <- sigma(fit_lm_eucalyptus)
 
 newdata <- data.frame(circ = c(50, 100, 150, 200))
 newdata$hauteurs_predites <- beta_1_hat + newdata$circ*beta_2_hat
-newdata$pm <- q975*sigma_hat*sqrt(1+1/n+(newdata$circ-x_bar)**2/(n*var_x))
+newdata$pm <- q975*sigma_hat*sqrt(1+1/n+(newdata$circ-x_bar)**2/((n-1)*var_x))
 newdata$borne_inf_pred <- newdata$hauteurs_predites - newdata$pm
 newdata$borne_sup_pred <- newdata$hauteurs_predites + newdata$pm
 newdata$pm <- NULL
@@ -750,7 +754,7 @@ sigma_hat <- sigma(fit_lm_eucalyptus)
 newdata <- tibble::tibble(circ = c(50, 100, 150, 200)) |>
   dplyr::mutate(
     hauteurs_predites = beta_1_hat + circ*beta_2_hat,
-    pm = q975*sigma_hat*sqrt(1+1/n+(circ-x_bar)**2/(n*var_x)),
+    pm = q975*sigma_hat*sqrt(1+1/n+(circ-x_bar)**2/((n-1)*var_x)),
     borne_inf_pred = hauteurs_predites - pm,
     borne_sup_pred = hauteurs_predites + pm 
 ) |>
