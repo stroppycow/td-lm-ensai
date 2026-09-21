@@ -2,7 +2,7 @@
 title: "TD 2 - Exercice 3"
 lang: fr
 author: "Théo Leroy"
-date: "26 septembre 2025"
+date: "23 septembre 2026"
 params:
   question_courante: 10
 format:

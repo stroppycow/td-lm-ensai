@@ -2,7 +2,7 @@
 title: "TD 2 - Exercice 1"
 lang: fr
 author: "Théo Leroy"
-date: "17 septembre 2025"
+date: "23 septembre 2026"
 params:
   question_courante: 9
 format:
@@ -18,7 +18,6 @@ webr:
       - dplyr
       - readr
       - ggplot2
-      - cowplot
 fig-align: center
 filters: 
   - diagram
@@ -53,8 +52,25 @@ Extraire et représenter les données dans le plan.
 ::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
-On charge les données du fichier `eucalyptus.txt` en {{< iconify logos:r-lang >}} sous forme de
-`data.frame`.
+
+On regarde le contenu du fichier `eucalyptus.txt` avant de l’importer en {{< iconify logos:r-lang >}} :
+
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| edit: false
+#| echo: false
+readLines("data/eucalyptus.txt", n = 5, encoding = "UTF-8") |>
+  paste0(collapse = "\n") |>
+  cat()
+```
+
+
+Il s’agit d’un fichier plat dont le séparateur est l’espace et dans lequel les valeurs non numériques sont entourées de guillemets droits doubles (`"`). La première ligne contient un en-tête qui indique le nom des variables, à l’exception du numéro de ligne.
+
+On charge alors les données du fichier `eucalyptus.txt` dans {{< iconify logos:r-lang >}} sous la forme d’un `data.frame`.
+
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -63,7 +79,7 @@ On charge les données du fichier `eucalyptus.txt` en {{< iconify logos:r-lang >
 #| envir: baser
 #| autorun: true
 data_eucalyptus <- read.csv(
-  file = "data/eucalyptus.txt",
+  file = "data/eucalyptus.txt", # à adapter selon l'emplacement du fichier de données
   header = TRUE,
   sep = " ",
   quote = '"'
@@ -77,7 +93,7 @@ data_eucalyptus
 #| envir: tdv
 #| autorun: true
 data_eucalyptus <- readr::read_delim(
-  file = "data/eucalyptus.txt",
+  file = "data/eucalyptus.txt",  # à adapter selon l'emplacement du fichier de données
   col_types = "_nnic",
   col_names = c("ht", "circ", "bloc", "clone"),
   skip = 1,
@@ -127,8 +143,8 @@ ggplot2::ggplot(
 ```
 :::
 
-Une régression semble semble indiquée, les points étant disposés
-grossièrement le long d'une droite.
+Une régression linéaire semble bien adaptée, les points étant grossièrement disposés le long d’une droite.
+
 :::
 
 :::
@@ -141,7 +157,7 @@ la hauteur et $x$ la circonférence. Commenter les résultats.
 ::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
-On effectue la régression $y = \beta_1+\beta_2x+\varepsilon$ à l'aide de
+On effectue la régression $y = \beta_1+\beta_2x+\epsilon$ à l'aide de
 la fonction `lm` disponible nativement dans
 {{< iconify logos:r-lang >}}. On cherche ainsi une estimation de
 $\beta_1$ et $\beta_2$ à l'aide de la méthode des moindres carrés
@@ -172,12 +188,12 @@ Commentons la sortie détaillée donnée par la fonction générique
 
 -   La première partie du tableau <tt>Residuals</tt> donne quelques
     statistiques descriptives sur la distribution des résidus de la
-    régression linéaire Pour rappel, le résidu $\widehat{\varepsilon}_i$
+    régression linéaire Pour rappel, le résidu $\widehat{\epsilon}_i$
     de l'observation $i$ est la différence entre la variable à expliquer
     $Y_i$ et la valeur ajustée de $Y_i$ par le modèle c'est à dire :
 
     $$
-    \widehat{\varepsilon}_i = Y_i- \underbrace{(\widehat{\beta}_1 + \widehat{\beta}_2X_i)}_{\widehat{Y}_i}
+    \widehat{\epsilon}_i = Y_i- \underbrace{(\widehat{\beta}_1 + \widehat{\beta}_2X_i)}_{\widehat{Y}_i}
     $$
 
 -   La seconde partie notée <tt>Coefficients</tt> est présentée sous
@@ -207,7 +223,7 @@ Commentons la sortie détaillée donnée par la fonction générique
         $\widehat{\beta}_2$ . Ils sont donnés par
 
         $$
-        \forall\ j \in \{1, \dots, p\}, \  \widehat{\sigma}_{\widehat{\beta}_j} = \widehat{\sigma}\sqrt{(X'X)^{-1}_{j,j}} \ \textrm{avec} \ \widehat{\sigma} = \sqrt{\frac{1}{n-p}\sum\limits_{i=1}^n \widehat{\varepsilon}_i^2}
+        \forall\ j \in \{1, \dots, p\}, \  \widehat{\sigma}_{\widehat{\beta}_j} = \widehat{\sigma}\sqrt{(X'X)^{-1}_{j,j}} \ \textrm{avec} \ \widehat{\sigma} = \sqrt{\frac{1}{n-p}\sum\limits_{i=1}^n \widehat{\epsilon}_i^2}
         $$
 
     -   Dans la troisième colonne (<tt>t. value</tt>) figure la valeur
@@ -220,10 +236,10 @@ Commentons la sortie détaillée donnée par la fonction générique
         suppose que :
 
         $$
-        \varepsilon  = \begin{pmatrix} 
-        \varepsilon_1 \\
+        \epsilon  = \begin{pmatrix} 
+        \epsilon_1 \\
         \vdots \\
-        \varepsilon_n
+        \epsilon_n
         \end{pmatrix} \sim \mathcal{N}\left(0, \sigma^2 I_n \right)
         $$
         :::
@@ -250,7 +266,7 @@ Commentons la sortie détaillée donnée par la fonction générique
     -   La quatrième colonne (colonne <tt>Pr(\>\|t\|)</tt>) contient la
         p-value pour ces mêmes tests de Student. C'est la probabilité
         pour la statistique de test sous $H_0$ de dépasser la valeur
-        estimée c'est à dire explicitement :
+        estimée c'est à dire explicitement :
         $$P(\mathcal{T}_{n-p}>|t|)=2\left(1-\mathcal{F}^{\mathcal{T}_{n-p}}(t)\right)$$
 
         De manière équivalente à la troisième colonne, ces tests de
@@ -261,7 +277,7 @@ Commentons la sortie détaillée donnée par la fonction générique
         fixé.
 
 -   La ligne <tt>Residual standard error</tt> correspond à l'estimation
-    de l'écart-type $\sigma$ des erreurs de modélisation $\varepsilon_i$
+    de l'écart-type $\sigma$ des erreurs de modélisation $\epsilon_i$
     . On lit donc $\widehat{\sigma} \approx 1,199$. Le nombre de degré
     de liberté inscrit sur la même ligne $n-p = 1~429-2 = 1~427$ car
 
@@ -274,19 +290,19 @@ Commentons la sortie détaillée donnée par la fonction générique
 
     $$
     \begin{align*}
-    R^2 &=\frac{SCE}{SCT}= \frac{\left\| \widehat{Y}-\overline{y}\mathbb{1}\right\|^2}{\left\| Y-\overline{y}\mathbb{1}\right\|^2} = \frac{\sum\limits_{i=1}^n \left(\widehat{y}_i-\overline{y_n} \right)^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y_n} \right)^2} \\
-    &= 1 - \frac{SCR}{SCT} = 1-\frac{\left\|\widehat{\varepsilon} \right\|^2}{\left\|Y - \overline{y_n}\mathbb{1}\right\|^2}=1-\frac{\sum\limits_{i=1}^n \widehat{\varepsilon}_i^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y_n} \right)^2}
+    R^2 &=\frac{\textrm{SCE}}{\textrm{SCT}}= \frac{\left\| \widehat{Y}-\overline{y}\mathbb{1}\right\|^2}{\left\| Y-\overline{y}\mathbb{1}\right\|^2} = \frac{\sum\limits_{i=1}^n \left(\widehat{y}_i-\overline{y_n} \right)^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y_n} \right)^2} \\
+    &= 1 - \frac{\textrm{SCR}}{\textrm{SCT}} = 1-\frac{\left\|\widehat{\epsilon} \right\|^2}{\left\|Y - \overline{y_n}\mathbb{1}\right\|^2}=1-\frac{\sum\limits_{i=1}^n \widehat{\epsilon}_i^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y_n} \right)^2}
     \end{align*}
     $$
 
-    On peut lire $R^2 \approx 0,77$. Cela signifie que 77 % de la
+    On peut lire $R^2 \approx 0,77$. Cela signifie que 77 % de la
     variance des hauteurs des eucalyptus dans le jeu de données est
     expliquée par la circonférence.
 
     On trouve ensuite sur la même ligne le coefficient de détermination
     ajusté $R_a^2$ (<tt>Adjusted R-squared</tt>) défini par
 
-    $$R_a^2=1-\frac{n-1}{n-p}\frac{SCR}{SCT} = 1-\frac{n-1}{n-p}\frac{\left\|\widehat{\varepsilon} \right\|^2}{\left\|Y - \overline{y_n}\mathbb{1}\right\|^2}=1-\frac{n-1}{n-p}\frac{\sum\limits_{i=1}^n \widehat{\varepsilon}_i^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y_n} \right)^2}$$
+    $$R_a^2=1-\frac{n-1}{n-p}\frac{\textrm{SCR}}{\textrm{SCT}} = 1-\frac{n-1}{n-p}\frac{\left\|\widehat{\epsilon} \right\|^2}{\left\|Y - \overline{y_n}\mathbb{1}\right\|^2}=1-\frac{n-1}{n-p}\frac{\sum\limits_{i=1}^n \widehat{\epsilon}_i^2}{\sum\limits_{i=1}^n \left(y_i-\overline{y_n} \right)^2}$$
 
     Cet ajustement permet de contrebalancer l'effet de l'ajout d'une
     variable dans la modélisation même non significative sur la valeur
@@ -316,8 +332,8 @@ Pour le modèle linéaire simple, on a :
 
 $$
 \begin{align*}
-\widehat{\beta}_1 &= \overline{Y_n} -  \widehat{\beta}_2\overline{x_n} = \overline{Y}_n -  \frac{\textrm{Cov}(x, Y)}{\textrm{Var}(x)}\overline{x_n}\\
-\widehat{\beta}_2 &=  \frac{\sum\limits_{i=1}^n \left(x_i-\overline{x_n}\right)\left(Y_i-\overline{Y_n}\right)}{\sum\limits_{i=1}^n \left(x_i-\overline{x_n}\right)^2}=\frac{\textrm{Cov}(x, Y)}{\textrm{Var}(x)} 
+\widehat{\beta}_1 &= \overline{Y_n} -  \widehat{\beta}_2\overline{x_n} = \overline{Y}_n -  \frac{\textrm{cov}(x, Y)}{\textrm{var}(x)}\overline{x_n}\\
+\widehat{\beta}_2 &=  \frac{\sum\limits_{i=1}^n \left(x_i-\overline{x_n}\right)\left(Y_i-\overline{Y_n}\right)}{\sum\limits_{i=1}^n \left(x_i-\overline{x_n}\right)^2}=\frac{\textrm{cov}(x, Y)}{\textrm{var}(x)} 
 \end{align*}
 $$
 
@@ -341,13 +357,20 @@ matrix(data = c(beta_1_hat, beta_2_hat), ncol = 1)
 ```{webr}
 #| envir: tdv
 #| autorun: true
-y_bar <- mean(data_eucalyptus$ht)
-x_bar <- mean(data_eucalyptus$circ)
-cov_xy <- cov(data_eucalyptus$ht, data_eucalyptus$circ)
-var_x <- var(data_eucalyptus$circ)
-beta_2_hat <- cov_xy/var_x
-beta_1_hat <- y_bar - beta_2_hat*x_bar
-matrix(data = c(beta_1_hat, beta_2_hat), ncol = 1)
+data_eucalyptus |>
+  dplyr::summarise(
+    x_bar = mean(circ),
+    y_bar = mean(ht),
+    cov_xy = cov(ht, circ),
+    var_x = var(circ)    
+  ) |>
+  dplyr::mutate(
+    beta_2_hat = cov_xy / var_x,
+    beta_1_hat =  y_bar - beta_2_hat*x_bar
+  ) |>
+  dplyr::select(beta_1_hat, beta_2_hat) |>
+  t() |>
+  matrix(ncol = 1)
 ```
 :::
 
@@ -370,8 +393,6 @@ $$
 X <- cbind(1, data_eucalyptus$circ)
 Y <- matrix(data = data_eucalyptus$ht, ncol=1)
 solve(t(X)%*%X)%*%t(X)%*%Y
-
-
 ```
 
 ### Tidyverse
@@ -379,8 +400,15 @@ solve(t(X)%*%X)%*%t(X)%*%Y
 ```{webr}
 #| envir: tdv
 #| autorun: true
-X <- cbind(1, data_eucalyptus$circ)
-Y <- matrix(data = data_eucalyptus$ht, ncol=1)
+X <- data_eucalyptus |>
+  dplyr::mutate(const = 1) |>
+  dplyr::select(const, circ) |>
+  as.matrix() |>
+  unname()
+Y <- data_eucalyptus |>
+  dplyr::select(ht) |>
+  as.matrix() |>
+  unname()
 solve(t(X)%*%X)%*%t(X)%*%Y
 ```
 :::
@@ -635,12 +663,12 @@ ggplot2::ggplot() +
   ggplot2::labs(x = "Circonférence", y = "Hauteur") + 
   ggplot2::geom_point(
     data = data_eucalyptus,
-    mapping = aes(x = circ, y = ht),
+    mapping = ggplot2::aes(x = circ, y = ht),
     col = "grey70"
   ) + 
  ggplot2::geom_ribbon(
    data = confint_val,
-   mapping = aes(ymin = lwr, ymax = upr, x = circ),
+   mapping = ggplot2::aes(ymin = lwr, ymax = upr, x = circ),
    fill = "red",
    alpha = 0.5
  ) +
@@ -714,8 +742,8 @@ n <- nrow(data_eucalyptus)
 p <- 2L
 beta_1_hat <- fit_lm_eucalyptus$coefficients[1] 
 beta_2_hat <- fit_lm_eucalyptus$coefficients[2]
-x_bar <- mean(data_eucalyptus$circ)
-var_x <- var(data_eucalyptus$circ)
+x_bar <- data_eucalyptus |> dplyr::pull(circ) |> mean()
+var_x <- data_eucalyptus |> dplyr::pull(circ) |> var()
 q975 <- qt(p = 0.975, df = n-p)
 sigma_hat <- sigma(fit_lm_eucalyptus)
 
@@ -773,9 +801,9 @@ l’erreur de prévision cumule deux erreurs :
 
 -   l’erreur due à l’estimation de la droite (celle-ci est moins précise
     loin de la moyenne des données) ;
--   l’erreur due à $\varepsilon_{n+1}$: elle est stable quelle que soit
+-   l’erreur due à $\epsilon_{n+1}$: elle est stable quelle que soit
     la valeur de $\texttt{circ}$ et incompressible car
-    $\mathrm{Var}(\varepsilon_{n+1})=\sigma^2$.
+    $\mathbb{V}\left[\epsilon_{n+1}\right]=\sigma^2$.
 :::
 
 :::
@@ -854,18 +882,18 @@ ggplot2::ggplot() +
   ggplot2::labs(x = "Circonférence", y = "Hauteur") + 
   ggplot2::geom_point(
     data = data_eucalyptus,
-    mapping = aes(x = circ, y = ht),
+    mapping = ggplot2::aes(x = circ, y = ht),
     col = "grey70"
   ) + 
  ggplot2::geom_ribbon(
    data = predint_val,
-   mapping = aes(ymin = lwr, ymax = upr, x = circ),
+   mapping = ggplot2::aes(ymin = lwr, ymax = upr, x = circ),
    fill = "blue",
    alpha = 0.5
  ) +
  ggplot2::geom_ribbon(
    data = confint_val,
-   mapping = aes(ymin = lwr, ymax = upr, x = circ),
+   mapping = ggplot2::aes(ymin = lwr, ymax = upr, x = circ),
    fill = "red",
    alpha = 0.5
  ) +
@@ -898,7 +926,7 @@ erreurs :
 -   l’erreur due à l’estimation de la droite i.e. l'erreur liée à
     $\widehat{\beta}$. Cet estimateur suit asymptotiquement une loi
     gaussienne même si les erreurs ne sont pas gaussienne.
--   l’erreur due à $\varepsilon_{n+1}$ : cette erreur suit sa propre loi
+-   l’erreur due à $\epsilon_{n+1}$ : cette erreur suit sa propre loi
     et il n'y a pas de convergence lorsque $n$ augmente.
 
 À cause de cette deuxième erreur, $Y_{n+1}-\widehat{Y}_{n+1}$ ne suit
