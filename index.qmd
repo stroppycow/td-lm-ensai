@@ -25,7 +25,6 @@ editor:
 [Exercice 5](/posts/td/td1-exo5.html)
 
 
-::: {.content-hidden when-format="html"}
 
 ### Exercices des séances 2 à 5
 
@@ -52,6 +51,9 @@ editor:
 [Exercice 11](/posts/td/td2-exo11.html)
 
 [Exercice 12](/posts/td/td2-exo12.html)
+
+
+::: {.content-hidden when-format="html"}
 
 ### Exercices des séances 6 à 8
 

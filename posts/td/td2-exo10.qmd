@@ -2,9 +2,9 @@
 title: "TD 2 - Exercice 10 - ANOVA à 1 facteur : effet du dosage d’un médicament"
 lang: fr
 author: "Théo Leroy"
-date: "17 octobre 2025"
+date: "23 septembre 2026"
 params:
-  question_courante: 6
+  question_courante: 0
 format:
   live-html:
     code-background: true

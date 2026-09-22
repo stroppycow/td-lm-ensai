@@ -2,9 +2,9 @@
 title: "TD 2 - Exercice 2"
 lang: fr
 author: "Théo Leroy"
-date: "17 septembre 2025"
+date: "23 septembre 2026"
 params:
-  question_courante: 3
+  question_courante: 0
 format:
   live-html:
     code-background: true
@@ -55,17 +55,27 @@ $\textrm{SCR}_c$.
 ::: callout-tip
 ## Indications
 
-Relire les slides 92 et 93 du cours
+Relire les slides 94 et 95 du cours
 :::
 
 ::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
-On utilise le test de Fisher. La statistique de test s’écrit
+On utilise le test de Fisher. On suppose $R$ de rang $q$ (les $q$
+contraintes sont indépendantes), de sorte que le modèle contraint est
+bien emboîté dans le modèle initial. La statistique de test s'écrit
 
 $$
 F=\frac{n-p}{q}\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}
 $$
+
+Intuitivement, $\textrm{SCR}_c-\textrm{SCR}\geq 0$ mesure la
+dégradation de l'ajustement lorsqu'on impose les contraintes $R\beta=0$ :
+plus $F$ est grand, plus contraindre le modèle coûte cher en
+qualité d'ajustement, et plus on est enclin à rejeter $H_0$.
+
+
+
 :::
 
 :::
@@ -79,22 +89,190 @@ normalité n’est faite sur $\epsilon$ ?
 ::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
-Sous $H_0$ et si $\epsilon\sim\mathcal{N}(0,\sigma^2 I_n)$,
+
+**Cas gaussien**
+
+D'apèrs le cours, si $\epsilon \sim \mathcal{N}\left(0, \sigma^2 I_n\right)$, sous $H_0$,
 
 $$
-F \sim F(q, n-p)
+F \sim F(q,\,n-p) 
 $$
 
-Si on n’impose pas l’hypothèse de normalité, il n’existe en général pas
-de loi exacte $F(q,n-p)$ pour la statistique. Toutefois, sous quelques
-conditions régulières (erreurs i.i.d. de variance finie, conditions
-d’identifiabilité, $p$ fixé et $n\to\infty$, etc.), on obtient un
-résultat asymptotique $F$ converge en loi vers $\tfrac{1}{q}\chi^2_q$.
+**Sans hypothèse de normalité**
 
-En pratique, pour des échantillons de grande taille, le test de Fisher
-reste donc valide approximativement même sans normalité stricte des
-$\epsilon$
+Le résultat exact ci-dessus repose entièrement sur la normalité de
+$\epsilon$ . Sans cette hypothèse, la loi de $F$ n'est en général
+ni $F(q,n-p)$, ni même connue car elle dépend de
+la loi précise de $\epsilon$.
+
+On peut néanmoins obtenir un résultat asymptotique (remarque de la slide 66) et montrer que sous quelques conditions faibles que
+
+$$F \overset{d}{\longrightarrow} \chi^2(q)/q$$
+Ce résultat asymptotique coïncide avec la
+loi limite de $F(q,n-p)$.
+
+Pour rappel, une loi de Fisher peut être définie comme le rapport de deux lois du  $\chi^2$ ajustées avec leur nommbre de degrés de liberté et indépendantes. Ainsi, lorsque $n\to\infty$, le
+dénominateur $\chi^2_{n-p}/(n-p)$ converge alors vers $1$ par la loi
+des grands nombres.
 :::
+
+:::
+
+::: {.content-hidden when-format="html"}
+
+::: {.callout-note collapse="true"}
+## Démonstration détaillée
+
+Sous $H_0$, $\hat\beta$ est un vecteur gaussien
+(combinaison linéaire de $\epsilon$), donc $R\hat\beta$ l'est aussi,
+de moyenne nulle sous $H_0$ et de matrice de covariance
+$\sigma^2 R\left(X^{'} X\right)^{-1}R^{'}$. 
+
+On peut montrer (cf. cours) que la
+somme des carrés supplémentaire s'écrit comme la forme quadratique
+
+$$
+\textrm{SCR}_c-\textrm{SCR}=(R\hat\beta)^{'}\big[R(X^{'} X)^{-1}R^{'}\big]^{-1}(R\hat\beta)
+$$
+
+et que, sous $H_0$ :
+
+- $(\textrm{SCR}_c-\textrm{SCR})/\sigma^2 \sim \chi^2(q)$,
+- $\textrm{SCR}/\sigma^2 \sim \chi^2(n-p)$,
+- ces deux quantités sont indépendantes,
+
+ce qui donne, par définition de la loi de Fisher (rapport de deux
+$\chi^2$ indépendants divisés par leurs degrés de liberté) :
+
+$$
+F=\frac{(\textrm{SCR}_c-\textrm{SCR})/q}{\textrm{SCR}/(n-p)}\sim F(q,\,n-p) \quad \text{(exactement, pour tout } n\text{)}.
+$$
+
+**1. Expression de l'estimateur contraint.** On minimise
+$\|y-X\beta\|^2$ sous la contrainte $R\beta=0$. Le lagrangien s'écrit
+$L(\beta,\lambda)=(y-X\beta)^\top(y-X\beta)+2\lambda^\top R\beta$, et
+les conditions du premier ordre donnent
+$X^\top X\beta=X^\top y-R^\top\lambda$, soit
+$\beta=\hat\beta-(X^\top X)^{-1}R^\top\lambda$, où
+$\hat\beta=(X^\top X)^{-1}X^\top y$ est l'estimateur non contraint. En
+injectant dans la contrainte $R\beta=0$, on obtient
+$\lambda=A^{-1}R\hat\beta$ avec $A:=R(X^\top X)^{-1}R^\top$, d'où
+
+$$
+\hat\beta_c=\hat\beta-(X^\top X)^{-1}R^\top A^{-1}R\hat\beta.
+$$
+
+**2. La forme quadratique.** Posons
+$M:=X(X^\top X)^{-1}R^\top A^{-1}R\hat\beta\in\mathbb{R}^n$, de sorte
+que $X\hat\beta_c=X\hat\beta-M$. Alors, avec $\hat\epsilon:=y-X\hat\beta$
+le résidu non contraint,
+
+$$
+y-X\hat\beta_c=\hat\epsilon+M.
+$$
+
+Or $\hat\epsilon\perp\textrm{Col}(X)$ (orthogonalité des résidus des
+MCO) et $M\in\textrm{Col}(X)$ (puisque $M=X\times(\cdot)$), donc
+$\hat\epsilon^\top M=0$ et, par Pythagore,
+
+$$
+\textrm{SCR}_c=\|\hat\epsilon+M\|^2=\textrm{SCR}+\|M\|^2.
+$$
+
+En développant $\|M\|^2=M^\top M$ et en utilisant
+$R(X^\top X)^{-1}X^\top X(X^\top X)^{-1}R^\top=R(X^\top X)^{-1}R^\top=A$,
+tous les termes se simplifient et il reste
+
+$$
+\textrm{SCR}_c-\textrm{SCR}=\|M\|^2=(R\hat\beta)^\top A^{-1}(R\hat\beta).
+$$
+
+**3. Loi de $(\textrm{SCR}_c-\textrm{SCR})/\sigma^2$.** Comme
+$\hat\beta=\beta+(X^\top X)^{-1}X^\top\epsilon$ et
+$\epsilon\sim\mathcal N(0,\sigma^2I_n)$, on a
+$\hat\beta\sim\mathcal N\big(\beta,\sigma^2(X^\top X)^{-1}\big)$, donc
+sous $H_0$ : $R\hat\beta\sim\mathcal N(0,\sigma^2A)$. Le résultat
+classique « si $Z\sim\mathcal N(0,\Sigma)$ avec $\Sigma$ inversible de
+taille $q$, alors $Z^\top\Sigma^{-1}Z\sim\chi^2_q$ » donne alors
+
+$$
+\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2}=\frac{1}{\sigma^2}(R\hat\beta)^\top A^{-1}(R\hat\beta)\sim\chi^2_q.
+$$
+
+**4. Loi de $\textrm{SCR}/\sigma^2$ et indépendance.** On a
+$\textrm{SCR}=\epsilon^\top(I_n-P_X)\epsilon$, où
+$P_X=X(X^\top X)^{-1}X^\top$ est le projecteur orthogonal sur
+$\textrm{Col}(X)$ ; $I_n-P_X$ est un projecteur de rang $n-p$, d'où
+(résultat classique sur les formes quadratiques gaussiennes)
+$\textrm{SCR}/\sigma^2\sim\chi^2_{n-p}$.
+
+Pour l'indépendance : sous $H_0$, $\hat\epsilon=(I_n-P_X)\epsilon$ et
+$R\hat\beta=R(X^\top X)^{-1}X^\top\epsilon$ sont deux transformations
+linéaires du même vecteur gaussien $\epsilon\sim\mathcal N(0,\sigma^2I_n)$.
+Deux transformations linéaires $A_1\epsilon$ et $A_2\epsilon$ d'un tel
+vecteur sont indépendantes dès que $A_1A_2^\top=0$. Ici,
+
+$$
+(I_n-P_X)\big[X(X^\top X)^{-1}R^\top\big]=\big[(I_n-P_X)X\big](X^\top X)^{-1}R^\top=0,
+$$
+
+car $(I_n-P_X)X=0$. Donc $\hat\epsilon$ et $R\hat\beta$ sont
+indépendants, et par conséquent $\textrm{SCR}$ (fonction de
+$\hat\epsilon$ seul) et $\textrm{SCR}_c-\textrm{SCR}$ (fonction de
+$R\hat\beta$ seul) le sont également.
+:::
+
+**Sans hypothèse de normalité.** Le résultat exact ci-dessus repose
+entièrement sur la normalité de $\epsilon$ (c'est elle qui garantit
+que $\hat\beta$ est gaussien et que les deux formes quadratiques sont
+indépendantes). Sans cette hypothèse, la loi de $F$ n'est en général
+**ni exactement $F(q,n-p)$, ni connue sous forme close**, et dépend de
+la loi précise de $\epsilon$.
+
+On peut néanmoins obtenir un résultat asymptotique. Supposons que les
+$\epsilon_i$ soient i.i.d., centrés, de variance $\sigma^2$ finie, et
+que $\tfrac{1}{n}X^\top X \to \Sigma$ (matrice inversible) quand
+$n\to\infty$, avec $p$ fixé. Le théorème central limite (appliqué à
+$\hat\beta-\beta=(X^\top X)^{-1}X^\top\epsilon$) donne alors
+
+$$
+\sqrt{n}(\hat\beta-\beta)\xrightarrow{d}\mathcal{N}(0,\sigma^2\Sigma^{-1}),
+$$
+
+et donc, sous $H_0$ ($R\beta=0$), par continuité de $\beta\mapsto R\beta$ :
+
+$$
+\sqrt{n}\,R\hat\beta\xrightarrow{d}\mathcal{N}\big(0,\sigma^2 R\Sigma^{-1}R^\top\big).
+$$
+
+Par le théorème de Slutsky et le théorème de continuité appliqués à la
+forme quadratique associée, on en déduit que
+
+$$
+n\,(R\hat\beta)^\top\big[R(X^\top X/n)^{-1}R^\top\big]^{-1}(R\hat\beta)=\textrm{SCR}_c-\textrm{SCR}\ \xrightarrow{d}\ \sigma^2\chi^2_q.
+$$
+
+Par ailleurs, $\textrm{SCR}/(n-p)$ est un estimateur convergent de
+$\sigma^2$ (loi des grands nombres), donc
+$\textrm{SCR}/(n-p)\xrightarrow{p}\sigma^2$. En combinant les deux
+convergences (Slutsky à nouveau) :
+
+$$
+qF=\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}/(n-p)}\ \xrightarrow{d}\ \chi^2_q,
+\qquad\text{soit}\qquad
+F\ \xrightarrow{d}\ \frac{1}{q}\chi^2_q.
+$$
+
+**Conséquence pratique.** Ce résultat asymptotique coïncide avec la
+loi limite de $F(q,n-p)$ elle-même lorsque $n-p\to\infty$ (le
+dénominateur $\chi^2_{n-p}/(n-p)$ converge alors vers $1$ par la loi
+des grands nombres). Autrement dit, même sans normalité de $\epsilon$,
+comparer $F$ aux quantiles de $F(q,n-p)$ — ou, de façon équivalente,
+comparer $qF$ aux quantiles de $\chi^2_q$ — reste **asymptotiquement
+valide** pour $n$ grand, mais ce n'est plus **exact** à distance
+finie : sur de petits échantillons et en présence de non-normalité
+(erreurs à queues lourdes, asymétriques, etc.), le niveau réel du test
+peut s'écarter sensiblement du niveau nominal.
 
 :::
 
@@ -113,8 +291,7 @@ détermination du modèle initial (respectivement du modèle contraint).
 
 ::: answer
 Par définition du coefficient de détermination (avec $\mathrm{SCT}$ la
-somme totale des carrés et $\mathrm{SCE}$ la somme des carrés expliqués)
-:
+somme totale des carrés et $\mathrm{SCE}$ la somme des carrés expliqués) :
 
 $$
 \begin{align*}
