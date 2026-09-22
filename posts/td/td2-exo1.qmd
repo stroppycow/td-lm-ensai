@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 9
+  question_courante: 0
 format:
   live-html:
     code-background: true
@@ -217,7 +217,7 @@ Commentons la sortie détaillée donnée par la fonction générique
         la manière suivante : "Lorsque la circonférence d'un arbre
         augmente d'un centimètre, sa hauteur moyenne augmente d'environ
         0,26 mètre, soit 26 centimètres." Il s'agit ici d'une simple
-        association statistique et non d'un lien de causalité.
+        association/corrélation statistique et non d'un lien de causalité.
 
     -   La seconde colonne ( <tt>Std. Error</tt>) contient les
         écarts-types estimés des estimateurs $\widehat{\beta}_1$ et

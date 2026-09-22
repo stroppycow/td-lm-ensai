@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 10
+  question_courante: 0
 format:
   live-html:
     code-background: true
@@ -59,8 +59,25 @@ différentes variables.
 
 ::: answer
 
-On charge les données du fichier `icecream-R.dat` en {{< iconify logos:r-lang >}} sous forme de
-`data.frame`.
+On regarde le contenu du fichier `icecream-R.dat` avant de l’importer en {{< iconify logos:r-lang >}} :
+
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| edit: false
+#| echo: false
+readLines("data/icecream-R.dat", n = 5, encoding = "UTF-8") |>
+  paste0(collapse = "\n") |>
+  cat()
+```
+
+
+Il s’agit d’un fichier plat dont le séparateur est la tabulation. La première ligne contient un en-tête qui indique le nom des variables.
+
+On charge alors les données du fichier `icecream-R.dat`  dans {{< iconify logos:r-lang >}} sous la forme d’un `data.frame`.
+
+
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -156,7 +173,7 @@ cette régression et commenter le signe des coefficients estimés.
 
 ::: answer
 On effectue la régression
-$\texttt{Consumption}_i = \beta_1+\beta_2\texttt{Price}_i+\beta_3\texttt{Income}_i+\beta_4\texttt{Temp}_i+\varepsilon_i$
+$\texttt{Consumption}_i = \beta_1+\beta_2\texttt{Price}_i+\beta_3\texttt{Income}_i+\beta_4\texttt{Temp}_i+\epsilon_i$
 à l'aide de la fonction `lm` disponible nativement dans
 {{< iconify logos:r-lang >}}. On cherche ainsi une estimation de
 $\beta_1$, $\beta_2$, $\beta_3$ et $\beta_4$ à l'aide de la méthode des
@@ -186,7 +203,7 @@ La première colonne de la partie notée <tt>Coefficients</tt> de la
 sortie `summary` donne la valeur des coefficients estimés.
 
 Sans regarder les valeurs, on peut d'abord observer les signes des
-estimations comme le propose l'énoncé. La consommation semble décroître
+estimations comme le propose l'énoncé. La consommation semble décroître en moyenne
 avec l'augmentation du prix (signe négatif pour
 $\widehat{\beta}_2 < 0$), augmenter avec les revenus des ménages (signe
 positif $\widehat{\beta}_3 > 0$) et avec la température (signe positif
@@ -292,7 +309,7 @@ $$
     plus la constante)
 -   $q=1$ car il y a une seule contrainte dans le modèle contraint (le
     coefficient associé au prix est nul $\beta_{2}=0$)
--   $SCR$ est la somme des carrés des résidus $\widehat{\varepsilon}_i$
+-   $SCR$ est la somme des carrés des résidus $\widehat{\epsilon}_i$
     dans le modèle complet et $SCR_c$ dans l'équivalent dans le modèle
     contraint
 

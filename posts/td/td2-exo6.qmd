@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 3
+  question_courante: 0
 format:
   live-html:
     code-background: true
