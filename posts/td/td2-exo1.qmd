@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 0
+  question_courante: 8
 format:
   live-html:
     code-background: true
@@ -136,7 +136,7 @@ grid()
 #| fig-align: center
 ggplot2::ggplot(
   data = data_eucalyptus,
-  mapping = aes(x = circ, y = ht)
+  mapping = ggplot2::aes(x = circ, y = ht)
 ) +
   ggplot2::labs(x = "Circonférence", y = "Hauteur") + 
   ggplot2::geom_point()
@@ -317,6 +317,108 @@ Commentons la sortie détaillée donnée par la fonction générique
     significativité globale du modèle. Il n'est pas très utile ici car
     il est équivalent au test de Student $H_0 : \beta_2 = 0$ contre
     $H_1 : \beta_2 \neq 0$.
+    
+::: {.callout-note collapse="true"}
+### Accès aux différentes valeurs calulées en R via `lm`
+
+
+**Accès à** $\widehat{\beta}$
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+# Méthode 1
+fit_lm_eucalyptus$coefficients
+
+# Méthode 2
+coefficients(fit_lm_eucalyptus)
+
+# Méthode 3
+summary(fit_lm_eucalyptus)$coefficients[,"Estimate"]
+
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+# Méthode 1
+fit_lm_eucalyptus$coefficients
+
+# Méthode 2
+fit_lm_eucalyptus |> coefficients()
+
+# Méthode 3
+summary(fit_lm_eucalyptus)$coefficients[,"Estimate"]
+```
+:::
+
+**Accès à** $\widehat{\sigma}$
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#Méthode 1
+sigma(fit_lm_eucalyptus)
+
+#Méthode 2
+summary(fit_lm_eucalyptus)$sigma
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#Méthode 1
+fit_lm_eucalyptus |> sigma()
+
+#Méthode 2
+summary(fit_lm_eucalyptus)$sigma
+```
+:::
+
+
+**Accès à** $\widehat{\mathbb{V}}\left[\widehat{\beta} \right]$
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+# Méthode 1
+vcov(fit_lm_eucalyptus)
+
+# Méthode 2
+summary(fit_lm_eucalyptus)$cov.unscaled*sigma(fit_lm_eucalyptus)**2
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+# Méthode 1
+fit_lm_eucalyptus |> vcov()
+
+# Méthode 2
+summary(fit_lm_eucalyptus)$cov.unscaled*sigma(fit_lm_eucalyptus)**2
+```
+:::
+
+
+
+:::
+    
+
 :::
 
 :::
