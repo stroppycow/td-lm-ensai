@@ -32,11 +32,11 @@ Soit $Y$ une variable aléatoire réelle (variable à expliquer) et $X = (X_1, \
 
 On considère le **modèle de régression linéaire multiple** défini par :
 
-$$Y = \beta_0 + \beta_1 X_1 + \dots + \beta_p X_p + \epsilon$$
+$$Y = \beta_1 X_1 + \dots + \beta_p X_p + \epsilon$$
 
 où :
 
-- $\beta = (\beta_0, \beta_1, \dots, \beta_p) \in \mathbb{R}^{p+1}$ est le vecteur des paramètres inconnus à estimer,
+- $\beta = (\beta_1, \dots, \beta_p) \in \mathbb{R}^{p}$ est le vecteur des paramètres inconnus à estimer,
 - $\epsilon$ est une variable aléatoire réelle appelée **erreur du modèle** ou **bruit**.
 
 En notation matricielle, pour $n$ observations indépendantes $(Y_i, X_{i1}, \dots, X_{ip})$ pour $i = 1, \dots, n$, le modèle s'écrit :
@@ -46,8 +46,8 @@ $$Y = X\beta + \epsilon$$
 où :
 
 - $Y = \begin{pmatrix} Y_1 \\ \vdots \\ Y_n \end{pmatrix}$ est le vecteur des variables à expliquer,
-- $X = \begin{pmatrix} 1 & X_{11} & \cdots & X_{1p} \\ \vdots & \vdots & \ddots & \vdots \\ 1 & X_{n1} & \cdots & X_{np} \end{pmatrix}$ est la matrice des variables explicatives de taille $n \times (p+1)$ (la première colonne correspond à l'intercept $\beta_0$),
-- $\beta = \begin{pmatrix} \beta_0 \\ \beta_1 \\ \vdots \\ \beta_p \end{pmatrix}$ est le vecteur des paramètres,
+- $X = \begin{pmatrix} X_{11} & \cdots & X_{1p} \\ \vdots & \ddots & \vdots \\ X_{n1} & \cdots & X_{np} \end{pmatrix}$ est la matrice des variables explicatives de taille $n \times p$,
+- $\beta = \begin{pmatrix} \beta_1 \\ \vdots \\ \beta_p \end{pmatrix}$ est le vecteur des paramètres,
 - $\epsilon = \begin{pmatrix} \epsilon_1 \\ \vdots \\ \epsilon_n \end{pmatrix}$ est le vecteur des erreurs.
 
 
