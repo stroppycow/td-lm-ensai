@@ -51,6 +51,24 @@ où :
 - $\epsilon = \begin{pmatrix} \epsilon_1 \\ \vdots \\ \epsilon_n \end{pmatrix}$ est le vecteur des erreurs.
 
 
+## M-estimateurs et estimateur des moindres carrés ordinaires
+
+Les **M-estimateurs** (maximum likelihood-type estimators) sont une classe générale d'estimateurs définis comme solution d'un problème d'optimisation. Pour un modèle de régression linéaire $Y = X\beta + \epsilon$, un M-estimateur $\widehat{\beta}$ est défini par :
+
+$$\widehat{\beta} = \arg\min_{\beta \in \mathbb{R}^p} \sum\limits_{i=1}^n \rho(Y_i - X_i^T\beta)$$
+
+où $\rho : \mathbb{R} \to \mathbb{R}$ est une fonction de coût (ou fonction objectif) donnée.
+
+Le **choix de la fonction $\rho$** détermine le type d'estimateur obtenu :
+
+- **Moindres carrés ordinaires (MCO)** : $\rho(u) = u^2$ (ou $\rho(u) = \frac{u^2}{2}$)
+  - L'estimateur des moindres carrés ordinaires est donc le M-estimateur avec $\rho(u) = u^2$ :
+  $$\widehat{\beta}^{MCO} = \arg\min_{\beta \in \mathbb{R}^p} \sum\limits_{i=1}^n (Y_i - X_i^T\beta)^2 = \arg\min_{\beta \in \mathbb{R}^p} \|Y - X\beta\|^2$$
+
+- **Moindres carrés absolus (L1)** : $\rho(u) = |u|$ (régression LAD - Least Absolute Deviations)
+- **Huber** : fonction combinant les approches L1 et L2 pour une robustesse aux outliers
+
+
 ::: {#prp-prime}
 ### Estimateur des moindres carrés ordinaires sous contrainte
 
