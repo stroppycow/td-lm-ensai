@@ -53,6 +53,12 @@ editor:
 [Exercice 12](/posts/td/td2-exo12.html)
 
 
+### Divers
+
+[Rappels](/posts/divers/rappels.html)
+
+
+
 ::: {.content-hidden when-format="html"}
 
 ### Exercices des séances 6 à 8

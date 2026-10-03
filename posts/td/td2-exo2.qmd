@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 0
+  question_courante: 3
 format:
   live-html:
     code-background: true
@@ -118,12 +118,357 @@ des grands nombres.
 
 :::
 
-::: {.content-hidden when-format="html"}
 
 ::: {.callout-note collapse="true"}
 ## Démonstration détaillée
 
-Sous $H_0$, $\hat\beta$ est un vecteur gaussien
+
+::: {#def-est-mco-contr}
+### Estimateur des moindres carrés ordinaires sous contrainte
+
+<br> Soit un modèle de régression linéaire multiple où l'on cherche à
+estimer un vecteur de paramètres $\beta \in \mathbb{R}^p$ à partir d'un
+système $Y = X\beta + \epsilon$, avec :
+
+- $Y$ une vecteur alétoire réel de dimension $n$
+- $X \in \mathcal{M}_{n,p}(\mathbb{R})$ : la matrice des variables
+  explicatives (supposée de rang plein $p$).
+
+L'estimateur des moindres carrés ordinaires sous contrainte, noté
+$\widehat{\beta}_c$, est la solution du problème d'optimisation suivant
+:
+
+$$
+\begin{align*}
+\widehat{\beta}_c &= \underset{\mathbf{b} \in \mathbb{R}^p}{\textrm{argmin}} \ \sum\limits_{i=1}^n \left\|Y-X\mathbf{b}\right\|^2 \quad \text{sous la contrainte :} \quad R\mathbf{b} = r \\
+&= \underset{(b_1, \dots, b_p) \in \mathbb{R}^p}{\textrm{argmin}} \ \sum\limits_{i=1}^n \left(Y_i - \left(X_{i}^{(1)}b_1+ X_{i}^{(2)}b_2+ X_{i}^{(p)}b_p\right)\right)^2 \quad \text{sous la contrainte :} \quad R\mathbf{b} = r
+\end{align*}
+$$
+
+Où :
+
+- $R \in \mathcal{M}_{q,p}(\mathbb{R})$ est une matrice de contraintes
+  de rang $q$ (avec $q < p$).
+- $r \in \mathbb{R}^q$ est le vecteur des valeurs imposées aux
+  combinaisons linéaires de $\beta$.
+:::
+
+::: {#prp-est-mco-contr}
+### Expression de l'estimateur des moindres carrés ordinaires sous contrainte
+
+<br> L'estimateur des moindres carrés ordinaires sous contrainte, noté
+$\widehat{\beta}_c$, vaut :
+
+$$\widehat{\beta}_c = \widehat{\beta} + \left(X^{'}X\right)^{-1}R^{'}\left(R\left(X^{'}X\right)^{-1}R^{'}\right)^{-1}\left(r - R\widehat{\beta}\right)$$
+
+où $\widehat{\beta}$ est l'estimateur des moindres carrés ordinaires.
+
+[Preuve]{.underline}
+
+Nous voulons minimiser la fonction convexe $S(\mathbf{b}) = \left\|Y - X\mathbf{b}\right\|^2$
+sous la contrainte linéaire $R\mathbf{b} = r$. Écrivons le lagrangien associé
+:
+$$
+\begin{align*}
+\mathcal{L}(\mathbf{b}, \mathbf{\lambda}) &= S(\mathbf{b}) - \mathbf{\lambda}'(R\mathbf{b} - r) \\
+&= \left\|Y - X\mathbf{b}\right\|^2 - \mathbf{\lambda}^{'}(R\mathbf{b} - r) \\
+&= \left(Y - X\mathbf{b}\right)^{'}\left(Y - X\mathbf{b}\right)-  \mathbf{\lambda}^{'}(R\mathbf{b} - r) \\
+&= Y^{'}Y-\mathbf{b}^{'}X^{'}Y-Y^{'}X\mathbf{b} + \mathbf{b}^{'}X^{'}X\mathbf{b}-\mathbf{\lambda}^{'}R\mathbf{b} + \mathbf{\lambda}^{'}r
+\end{align*}
+$$
+
+[Conditions du premier ordre (conditions nécessaires)]{.underline}
+
+Pour qu'un point $(\widehat{\beta}_c, \widehat{\lambda})$ soit un point
+critique, les dérivées partielles du lagrangien doivent s'annuler :
+
+$$
+\begin{align*}
+\frac{\partial \mathcal{L}}{\partial \mathbf{b}} &= -X'Y-X'Y+\left(X^{'}X+\left(X^{'}X\right)^{'}\right)\mathbf{b} - R'\mathbf{\lambda}  = -2X'Y + 2X^{'}X\mathbf{b} - R'\mathbf{\lambda}  \\
+\frac{\partial \mathcal{L}}{\partial \mathbf{\lambda}} &= -R\mathbf{b}+r = -(R\mathbf{b} - r) 
+\end{align*}
+$$
+
+Ce qui donne le système d'équations suivant en
+$(\widehat{\beta}_c, \widehat{\lambda})$ :
+
+$$
+\begin{cases}
+-2X^{'}Y + 2X^{'}X\widehat{\beta}_c - R^{'}\widehat{\lambda} = 0 \\
+R\widehat{\beta}_c - r = 0
+\end{cases} \quad (1)
+$$
+
+Multiplions à gauche la première équation de (1) par $R(X'X)^{-1}$, nous
+obtenons :
+
+$$
+\begin{align*}
+-2R\left(X^{'}X\right)^{-1}X^{'}Y + 2R\left(X^{'}X\right)^{-1}X^{'}X\widehat{\beta}_c - R\left(X^{'}X\right)^{-1}R^{'}\widehat{\lambda} &= 0 \\
+-2R\left(X^{'}X\right)^{-1}X^{'}Y + 2R\widehat{\beta}_c - R\left(X^{'}X\right)^{-1}R^{'}\widehat{\lambda} &= 0 \\
+-2R\left(X^{'}X\right)^{-1}X^{'}Y+ 2r - R\left(X^{'}X\right)^{-1}R^{'}\widehat{\lambda} &= 0
+\end{align*}$$
+
+où nous avons utilisé la deuxième équation $R\widehat{\beta}_c = r$ à la
+deuxième ligne.
+
+D'où
+
+$$ R\left(X^{'}X\right)^{-1}R^{'}\widehat{\lambda}=2\left(r-R\left(X^{'}X\right)^{-1}X^{'}Y\right)$$
+
+Montrons que la matrice $R\left(X^{'}X\right)^{-1}R^{'} \in \mathcal{M}_{q}(\mathbb{R})$  est inversible. Pour cela, montrons que $\mathrm{ker}\left(R\left(X^{'}X\right)^{-1}R^{'}\right)=\{0_q \}$ :
+
+
+Soit $u\in\mathbb{R}^q$ tel que
+
+$$
+R\left(X^{'}X\right)^{-1}R^{'}u=0
+$$
+
+En multipliant à gauche par $u^{'}$, on obtient
+
+$$
+\left(R'u\right)^{'}\left(X^{'}X\right)^{-1}(R'u)=0_q
+$$
+
+Puisque $X$ est de rang colonne plein, $X^{'}X$ est définie positive, et donc $\left(X^{'}X\right)^{-1}$ l'est également. Ainsi,
+
+$$
+\left(R^{'}u\right)^{'}\left(X^{'}X\right)^{-1}\left(R^{'}u\right)=0_q
+\quad\Longrightarrow\quad R'u=0_q
+$$
+
+Par ailleurs, $R$ est de rang plein par lignes, donc $R^{'}$ est injective. On en déduit
+
+$$
+R^{'}u=0_q \quad\Longrightarrow\quad u=0_q
+$$
+
+Ainsi,
+
+$$
+\ker\left(R\left(X^{'}X\right)^{-1}R'\right)=\{0_q\}
+$$
+
+ce qui montre que $R\left(X^{'}X\right)^{-1}R^{'}$ est inversible.
+                                                
+
+
+Nous obtenons alors pour $\widehat{\lambda}$ :
+
+$$\widehat{\lambda} = 2 \left(R\left(X^{'}X\right)^{-1}R^{'} \right)^{-1}\left(r-R\left(X^{'}X\right)^{-1}X^{'}Y\right)$$
+
+Remplaçons ensuite $\widehat{\lambda}$ par cette expression dans la
+première équation du système (1) :
+
+$$-2X^{'}Y + 2X^{'}X\widehat{\beta}_c - 2R^{'}\left(R\left(X^{'}X\right)^{-1}R^{'} \right)^{-1}\left(r-R\left(X^{'}X\right)^{-1}X^{'}Y\right) = 0$$
+
+d'où nous déduisons $\widehat{\beta}_c$ :
+
+$$\begin{align*}
+\widehat{\beta}_c &= \left(X^{'}X\right)^{-1}X^{'}Y + \left(X^{'}X\right)^{-1}R^{'}\left(R\left(X^{'}X\right)^{-1}R^{'} \right)^{-1}\left(r-R\left(X^{'}X\right)^{-1}X^{'}Y\right) \\
+&= \widehat{\beta} + \left(X^{'}X\right)^{-1}R^{'}\left(R\left(X^{'}X\right)^{-1}R^{'} \right)^{-1}\left(r-R\left(X^{'}X\right)^{-1}X^{'}Y\right)
+\end{align*}$$
+
+[Conditions du second ordre (conditions suffisantes)]{.underline}
+
+Pour que ce point critique soit un minimum global, il faut que le
+Hessien du lagrangien par rapport à $\mathbf{b}$ soit défini positif.
+Calculons les dérivées secondes :
+
+$$\frac{\partial^2 \mathcal{L}}{\partial \mathbf{b} \partial \mathbf{b}^{'}} =  2X^{'}X$$
+
+Puisque $X \in \mathcal{M}_{n,p}(\mathbb{R})$ est de rang plein $p$,
+la matrice $X^{'}X$ est inversible et définie positive. Ainsi, le Hessien
+est défini positif, ce qui garantit que :
+
+- Le problème d'optimisation est convexe (fonction objectif
+  convexe + contraintes linéaires)
+- Tout point critique est un minimum global unique
+
+:::
+
+::: {#def-residu-contr}
+### Somme des carrés des résidus du modèle contraint
+
+<br> 
+Soient,
+
+ - $R \in \mathcal{M}_{q,p}(\mathbb{R})$ une matrice de contraintes
+  de rang $q$ (avec $q < p$).
+ - et $r \in \mathbb{R}^q$  le vecteur des valeurs imposées aux
+  combinaisons linéaires de $\beta$.
+
+On appelle vecteur des résidus du modèle de régression linéaire contraint par la relation $R\beta=r$, la vecteur aléatoire
+
+$$
+\widehat{\epsilon}_c = Y - X\widehat{\beta}_c
+$$
+où $\widehat{\beta}_c$ est l'estimateur des moindres carrés ordinaires sous contrainte $R\beta=r$
+
+La somme des carrés des résidus du modèle contraint $\textrm{SRC}_c$ est défini par :
+
+$$
+\textrm{SRC}_c = \left\| Y - X\widehat{\beta}_c \right\|^2
+$$
+
+:::
+
+
+::: {#prp-residu-contr}
+### Différence entre la somme des carrés des résidus du modèle contraint et la somme des carrés des résidus du modèle non contraint
+
+<br>
+Soient,
+
+ - $R \in \mathcal{M}_{q,p}(\mathbb{R})$ une matrice de contraintes
+  de rang $q$ (avec $q < p$).
+ - et $r \in \mathbb{R}^q$  le vecteur des valeurs imposées aux
+  combinaisons linéaires de $\beta$.
+  
+On a 
+
+$$\textrm{SCR}_c-\textrm{SCR}=\left(R\widehat{\beta}-r\right)^{'}\left(R\left(X^{'} X\right)^{-1}R^{'}\right)^{-1}\left(R\widehat{\beta}-r\right)$$
+[Preuve]{.underline}
+
+$$
+\begin{align*}
+\textrm{SCR}_c &=  \left\| Y - X\widehat{\beta}_c \right\|^2 \\
+&= \left(Y-X\widehat{\beta}_c \right)^{'}\left(Y-X\widehat{\beta}_c \right) \\
+&= \left(Y-X\left(\widehat{\beta}+M\right) \right)^{'}\left(Y-X\left(\widehat{\beta}+M\right) \right) \ \textrm{avec} \ M=\left(X^{'}X\right)^{-1}R^{'}\left(R\left(X^{'}X\right)^{-1}R^{'}\right)^{-1}\left(r - R\widehat{\beta}\right) \\
+&= \underbrace{\left(Y-X\widehat{\beta} \right)^{'}\left(Y-X\widehat{\beta} \right)}_{\textrm{SRC}}-\left(Y-X\widehat{\beta} \right)^{'}XM-M^{'}X^{'}\left(Y-X\widehat{\beta} \right)+M^{'}X^{'}XM
+\end{align*}
+$$
+
+Or 
+
+$$
+\begin{align*}
+\left(Y-X\widehat{\beta} \right)^{'}XM &= Y^{'}XM-\widehat{\beta}^{'}X^{'}XM=Y^{'}XM-Y^{'}X\left(X^{'}X\right)^{-1}X^{'}XM= Y^{'}XM-Y^{'}XM=0 \\
+M^{'}X^{'}\left(Y-X\widehat{\beta} \right) &= M^{'}X^{'}Y-M^{'}X^{'}X\widehat{\beta} = M^{'}X^{'}Y-M^{'}X^{'}X\left(X^{'}X\right)^{-1}X^{'}Y =  M^{'}X^{'}Y - M^{'}X^{'}Y = 0  \\
+M^{'}X^{'}XM &=  \left(r - R\widehat{\beta}\right)^{'}\left(R\left(X^{'}X\right)^{-1}R^{'}\right)^{-1}R\left(X^{'}X\right)^{-1}X^{'}X\left(X^{'}X\right)^{-1}R^{'}\left(R\left(X^{'}X\right)^{-1}R^{'}\right)^{-1}\left(r - R\widehat{\beta}\right) \\
+&=\left(r - R\widehat{\beta}\right)^{'}\left(R\left(X^{'}X\right)^{-1}R^{'}\right)^{-1}\left(r - R\widehat{\beta}\right)
+\end{align*}
+$$
+
+D'où
+
+$$\textrm{SCR}_c-\textrm{SCR}=\left(R\widehat{\beta}-r\right)^{'}\left(R\left(X^{'} X\right)^{-1}R^{'}\right)^{-1}\left(R\widehat{\beta}-r\right)$$
+
+:::
+
+
+::: {#prp-residu-contr}
+
+### Loi de $\textrm{SCR}_c-\textrm{SCR}/\sigma^2$
+<br>
+
+Sous l'hypothèse $\epsilon \sim \mathcal{N}\left(0_{n,1}, \sigma^2I_n \right)$ et $H_0: R\beta=0$
+
+où
+
+- $R \in \mathcal{M}_{q,p}(\mathbb{R})$ est une matrice de contraintes
+  de rang $q$ (avec $q < p$).
+- $r \in \mathbb{R}^q$ est le vecteur des valeurs imposées aux
+  combinaisons linéaires de $\beta$.
+
+On a
+
+$$\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2} \underset{(H_0)}{\sim} \chi^2(q)$$
+[Preuve]{.underline}
+
+On suppose que $X \in \mathcal{M}_{n,p}(\mathbb{R})$ est telle que $\textrm{rg}(X)=p$ 
+
+Montrons dans un premier temps que $R\widehat{\beta}$ est un vecteur gaussien et déterminons l'espérance et la matrice de variance-covariance associées.
+
+$$\widehat{\beta}=\left(X^{'}X\right)^{-1}X^{'}Y=\left(X^{'}X\right)^{-1}X^{'}(X\beta+\epsilon)=\beta+\left(X^{'}X\right)^{-1}X^{'}\epsilon$$
+On pose $A=\left(X^{'}X\right)^{-1}X^{'}$.
+
+Sous l'hypothèse de normalité des erreurs où $\epsilon \sim \mathcal{N}\left(0_{n,1}, \sigma^2I_n \right)$, par propriété sur les vecteurs gaussien 
+
+$$\widehat{\beta} \sim \mathcal{N}\left(A0_{n,1} +\beta, A(\sigma^2I_n) A^{'}\right)$$
+
+On peut simplifier l'expression de la matrice de variance covariable de $\widehat{\beta}$.
+
+$$A(\sigma^2I_n) A^{'}=\sigma^2AA^{'} =\sigma^2\left(\left(X^{'}X\right)^{-1}X^{'}\right)\left(\left(X^{'}X\right)^{-1}X^{'}\right)^{'}=\sigma^2\left(\left(X^{'}X\right)^{-1}X^{'}\right)\left(X\left(\left(X^{'}X\right)^{-1}\right)^{'}\right)$$
+
+car la transposée du produit de deux matrices est égale au produit de leurs transposées pris dans l'ordre inverse.
+
+Par ailleurs, $X^{'}X \in \mathcal{M}_{p,p}(\mathbb{R})$ est symétrique (car $(X^{'}X)^{'}=X^{'}X$) et inversible (car $\textrm{rg}(X)=p$) donc $\left(X^{'}X\right)^{-1}$ est également symétrique. Ainsi,
+
+
+$$
+\begin{align*}
+A(\sigma^2I_n) A^{'}&=\sigma^2\left(\left(X^{'}X\right)^{-1}X^{'}\right)\left(X\left(\left(X^{'}X\right)^{-1}\right)^{'}\right) \\
+&=\sigma^2\left(\left(X^{'}X\right)^{-1}X^{'}\right)\left(X\left(X^{'}X\right)^{-1}\right) \\
+&=\sigma^2\left(X^{'}X\right)^{-1}
+\end{align*}
+$$
+
+$$\widehat{\beta} \sim \mathcal{N}\left(\beta, \sigma^2\left(X^{'}X\right)^{-1}\right)$$
+
+De même, par propriété sur les vecteurs gaussien,
+
+$$R\widehat{\beta} \sim \mathcal{N}\left(R\beta, \sigma^2R\left(X^{'}X\right)^{-1}R^{'}\right)$$
+
+
+Ainsi sous $H_0: R\beta=0$,
+
+$$R\widehat{\beta} \underset{H_0}{\sim} \mathcal{N}\left(0_{q,1}, \sigma^2R\left(X^{'}X\right)^{-1}R^{'}\right)$$
+
+Montrons maintenant que 
+
+$$\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2} \underset{(H_0)}{\sim} \chi^2(q)$$
+
+
+
+
+
+:::
+
+#### Estimateur des moindres carrés ordinaires sous contraints
+
+
+$$
+\widehat{\beta}_c = \widehat{\beta} + (X'X)^{-1}R'[R(X'X)^{-1}R']^{-1}(r - R\widehat{\beta}).
+$$
+
+Nous voulons minimiser $S(\beta)$ sous la contrainte $R\beta = r$. Écrivons le lagrangien :
+\[
+\mathcal{L} = S(\beta) - \lambda'(R\beta - r).
+\]
+
+Les conditions de Lagrange permettent d'obtenir un minimum :
+\[
+\begin{cases}
+\frac{\partial \mathcal{L}}{\partial \beta} = -2X'Y + 2X'X\hat{\beta}_c - R'\hat{\lambda} = 0, \\
+\frac{\partial \mathcal{L}}{\partial \lambda} = R\hat{\beta}_c - r = 0,
+\end{cases}
+\]
+
+Multiplions à gauche la première égalité par $R(X'X)^{-1}$, nous obtenons
+\begin{align*}
+-2R(X'X)^{-1}X'Y &+ 2R(X'X)^{-1}X'\hat{\beta}_c - R(X'X)^{-1}R'\hat{\lambda} &= 0 \\
+-2R(X'X)^{-1}X'Y &+ 2R\hat{\beta}_c - R(X'X)^{-1}R'\hat{\lambda} &= 0 \\
+-2R(X'X)^{-1}X'Y &+ 2r - R(X'X)^{-1}R'\hat{\lambda} &= 0.
+\end{align*}
+
+Nous obtenons alors pour $\hat{\lambda}$ :
+\[
+\hat{\lambda} = 2 \left[ R(X'X)^{-1}R' \right]^{-1} \left[ r - R(X'X)^{-1}X'Y \right].
+\]
+
+Remplaçons ensuite $\hat{\lambda}$ par cette expression dans la première équation :
+\[
+-2X'Y + 2X'X\hat{\beta}_c - 2R' \left[ R(X'X)^{-1}R' \right]^{-1} \left[ r - R(X'X)^{-1}X'Y \right] = 0,
+\]
+
+d'où nous déduisons $\hat{\beta}_c$ :
+\begin{align*}
+\hat{\beta}_c &= (X'X)^{-1}X'Y + (X'X)^{-1}R'[R(X'X)^{-1}R']^{-1}(r - R\hat{\beta}) \\
+&= \hat{\beta} + (X'X)^{-1}R'[R(X'X)^{-1}R']^{-1}(r - R\hat{\beta}).
+\end{align*}
+est un vecteur gaussien
 (combinaison linéaire de $\epsilon$), donc $R\hat\beta$ l'est aussi,
 de moyenne nulle sous $H_0$ et de matrice de covariance
 $\sigma^2 R\left(X^{'} X\right)^{-1}R^{'}$. 
@@ -220,7 +565,6 @@ car $(I_n-P_X)X=0$. Donc $\hat\epsilon$ et $R\hat\beta$ sont
 indépendants, et par conséquent $\textrm{SCR}$ (fonction de
 $\hat\epsilon$ seul) et $\textrm{SCR}_c-\textrm{SCR}$ (fonction de
 $R\hat\beta$ seul) le sont également.
-:::
 
 **Sans hypothèse de normalité.** Le résultat exact ci-dessus repose
 entièrement sur la normalité de $\epsilon$ (c'est elle qui garantit

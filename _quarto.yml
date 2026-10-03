@@ -22,6 +22,7 @@ project:
     - posts/td/td2-exo10.qmd
     - posts/td/td2-exo11.qmd
     - posts/td/td2-exo12.qmd
+    - posts/divers/rappels.qmd
   preview: 
     timeout: 3600
     navigate: false

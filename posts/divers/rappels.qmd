@@ -73,7 +73,7 @@ Le **choix de la fonction $\rho$** détermine le type d'estimateur obtenu :
 ### Estimateur des moindres carrés ordinaires sous contrainte
 
 <br> Soit un modèle de régression linéaire multiple où l'on cherche à
-estimer1 un vecteur de paramètres $\beta \in \mathbb{R}^p$ à partir d'un
+estimer un vecteur de paramètres $\beta \in \mathbb{R}^p$ à partir d'un
 système $Y = X\beta + \epsilon$, avec :
 
 - $Y$ une vecteur alétoire réel de dimension $d$
@@ -84,8 +84,7 @@ L'estimateur des moindres carrés ordinaires sous contrainte, noté
 $\widehat{\beta}_c$, est la solution du problème d'optimisation suivant
 :
 
-$$\hat{\beta}_c = \arg\min_{\beta \in \mathbb{R}^k} \quad (Y - X\beta)'(Y - X\beta)$$
-$$\text{sous la contrainte :} \quad R\beta = r$$
+$$\hat{\beta}_c = \underset{(b_1, \dots, b_p) \in \mathbb{R}^p}{\textrm{argmin}} \ \sum\limits_{i=1}^n \left\|Y_i - \left(X_{i}^{(1)}b_1+ X_{i}^{(2)}b_2+ X_{i}^{(p)}b_p\right)\right\|^2 \quad \text{sous la contrainte :} \quad R\beta = r$$
 
 Où :
 
