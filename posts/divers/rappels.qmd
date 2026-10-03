@@ -1,0 +1,53 @@
+---
+title: "Rappels et résultats"
+lang: fr
+author: "Théo Leroy"
+format:
+  live-html:
+    code-background: true
+    toc: true
+    page-layout: full
+webr:
+  render-df: gt-interactive
+fig-align: center
+filters: 
+  - diagram
+  - custom-callout
+editor: 
+  mode: source
+  markdown: 
+    wrap: 72
+custom-callout:    
+  answer:
+    color: "#CCCCCC"
+    icon: true
+    icon-symbol: "📝"
+    appearance: "default"
+    title: "Correction"
+---
+
+::: {#prp-prime}
+### Estimateur des moindres carrés ordinaires sous contrainte
+
+<br> Soit un modèle de régression linéaire multiple où l'on cherche à
+estimer1 un vecteur de paramètres $\beta \in \mathbb{R}^p$ à partir d'un
+système $Y = X\beta + \epsilon$, avec :
+
+- $Y$ une vecteur alétoire réel de dimension $d$
+- $X \in \mathcal{M}_{n,p}(\mathbb{R})$ : la matrice des variables
+  explicatives (supposée de rang plein $p$).
+
+L'estimateur des moindres carrés ordinaires sous contrainte, noté
+$\widehat{\beta}_c$, est la solution du problème d'optimisation suivant
+:
+
+$$\hat{\beta}_c = \arg\min_{\beta \in \mathbb{R}^k} \quad (Y - X\beta)'(Y - X\beta)$$
+$$\text{sous la contrainte :} \quad R\beta = r$$
+
+Où :
+
+- $R \in \mathbb{R}^{m \times k}$ est une matrice de contraintes de rang
+  $q$ (avec $q < p$).
+- $r \in \mathbb{R}^m$ est le vecteur des valeurs imposées aux
+  combinaisons linéaires de $\beta$.
+:::
