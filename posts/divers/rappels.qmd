@@ -28,11 +28,11 @@ custom-callout:
 
 ## Modèle de régression linéaire multiple
 
-Soit $Y$ une variable aléatoire réelle (variable à expliquer) et $X = (X_1, \dots, X_p)$ un vecteur aléatoire de $\mathbb{R}^p$ (variables explicatives). On suppose que $X$ et $Y$ sont définis sur un même espace probabilisé $(\Omega, \mathcal{A}, \mathbb{P})$. 
+Soit $Y$ une variable aléatoire réelle (variable à expliquer) et $X = (X_1, \dots, X_p)$ un vecteur de variables explicatives. On suppose que $X_1 = 1$ (variable déterministe) et que $(X_2, \dots, X_p)$ est un vecteur aléatoire de $\mathbb{R}^{p-1}$. On suppose que $X$ et $Y$ sont définis sur un même espace probabilisé $(\Omega, \mathcal{A}, \mathbb{P})$. 
 
 On considère le **modèle de régression linéaire multiple** défini par :
 
-$$Y = \beta_1 X_1 + \dots + \beta_p X_p + \epsilon$$
+$$Y = \beta_1 X_1 + \dots + \beta_p X_p + \epsilon = \beta_1 + \beta_2 X_2 + \dots + \beta_p X_p + \epsilon$$
 
 où :
 
@@ -46,7 +46,7 @@ $$Y = X\beta + \epsilon$$
 où :
 
 - $Y = \begin{pmatrix} Y_1 \\ \vdots \\ Y_n \end{pmatrix}$ est le vecteur des variables à expliquer,
-- $X = \begin{pmatrix} X_{11} & \cdots & X_{1p} \\ \vdots & \ddots & \vdots \\ X_{n1} & \cdots & X_{np} \end{pmatrix}$ est la matrice des variables explicatives de taille $n \times p$,
+- $X = \begin{pmatrix} 1 & X_{12} & \cdots & X_{1p} \\ \vdots & \vdots & \ddots & \vdots \\ 1 & X_{n2} & \cdots & X_{np} \end{pmatrix}$ est la matrice des variables explicatives de taille $n \times p$ (la première colonne correspond à $X_1 = 1$),
 - $\beta = \begin{pmatrix} \beta_1 \\ \vdots \\ \beta_p \end{pmatrix}$ est le vecteur des paramètres,
 - $\epsilon = \begin{pmatrix} \epsilon_1 \\ \vdots \\ \epsilon_n \end{pmatrix}$ est le vecteur des erreurs.
 
