@@ -414,7 +414,7 @@ $$R\widehat{\beta} \sim \mathcal{N}\left(R\beta, \sigma^2R\left(X^{'}X\right)^{-
 
 Ainsi sous $H_0: R\beta=0$,
 
-$$R\widehat{\beta} \underset{H_0}{\sim} \mathcal{N}\left(0_{q,1}, \sigma^2R\left(X^{'}X\right)^{-1}R^{'}\right)$$
+$$R\widehat{\beta} \underset{(H_0)}{\sim} \mathcal{N}\left(0_{q,1}, \sigma^2R\left(X^{'}X\right)^{-1}R^{'}\right)$$
 
 Montrons maintenant que 
 
@@ -477,7 +477,7 @@ On peut montrer (cf. cours) que la
 somme des carrés supplémentaire s'écrit comme la forme quadratique
 
 $$
-\textrm{SCR}_c-\textrm{SCR}=(R\hat\beta)^{'}\big[R(X^{'} X)^{-1}R^{'}\big]^{-1}(R\hat\beta)
+\textrm{SCR}_c-\textrm{SCR}=\left(R\widehat\beta\right)^{'}\big[R(X^{'} X)^{-1}R^{'}\big]^{-1}(R\widehat\beta)
 $$
 
 et que, sous $H_0$ :

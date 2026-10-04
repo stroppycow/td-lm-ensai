@@ -1,6 +1,7 @@
 #!/bin/sh
 sudo add-apt-repository ppa:inkscape.dev/stable && apt-get update && sudo apt-get install -y inkscape texlive-fonts-recommended
 tlmgr update --self && tlmgr install luatex85 && tlmgr install tkz-tab
+curl -LsSf https://mistral.ai/vibe/install.sh | bash
 curl -sSL https://git.io/get-mo -o mo
 chmod +x mo
 sudo mv mo /usr/local/bin/
