@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 8
+  question_courante: 9
 format:
   live-html:
     code-background: true
@@ -720,8 +720,53 @@ l’estimation ?
 ::: {.content-visible when-meta="is_answer_print_6"}
 
 ::: answer
+L'intervalle de confiance pour la droite de régression au point $x_0$ est donné par la formule suivante, sous l'hypothèse de gaussianité des erreurs :
+
+$$I C_{1-\alpha}\left(\beta_1 + \beta_2 x_0\right)=\left[\widehat{\beta}_1+\widehat{\beta}_2x_0 \pm q_{1-\alpha/2}^{\mathcal{T}_{n-p}} \hat{\sigma}\sqrt{\frac{1}{n}+\frac{\left(x_0-\overline{x_n}\right)^2}{\sum\limits_{i=1}^n \left(x_i - \overline{x_n} \right)^2}}\right]$$
+
+où $\hat{\sigma}$ est l'estimation de l'écart-type des erreurs.
+
+On peut calculer manuellement cet intervalle de confiance pour chaque valeur de $x_0$ puis tracer les bornes.
+
 ::: {.panel-tabset group="language"}
 ### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| fig-align: center
+n <- nrow(data_eucalyptus)
+p <- 2L
+beta_1_hat <- fit_lm_eucalyptus$coefficients[1]
+beta_2_hat <- fit_lm_eucalyptus$coefficients[2]
+x_bar <- mean(data_eucalyptus$circ)
+var_x <- var(data_eucalyptus$circ)
+q975 <- qt(p = 0.975, df = n-p)
+sigma_hat <- sigma(fit_lm_eucalyptus)
+
+newdata <- data.frame(circ = seq(from = 25, to = 70, by = 0.1))
+newdata$fit <- beta_1_hat + newdata$circ*beta_2_hat
+newdata$pm <- q975*sigma_hat*sqrt(1/n+(newdata$circ-x_bar)**2/((n-1)*var_x))
+newdata$lwr <- newdata$fit - newdata$pm
+newdata$upr <- newdata$fit + newdata$pm
+
+plot(
+  x = data_eucalyptus$circ,
+  y = data_eucalyptus$ht,
+  type = "p",
+  xlab = "Circonférence",
+  ylab = "Hauteur",
+  pch = 3,
+  col = "grey60"
+)
+abline(fit_lm_eucalyptus, col = "red")
+lines(newdata$circ, newdata$lwr, col = "red", lty = 2)
+lines(newdata$circ, newdata$upr, col = "red", lty = 2)
+grid()
+
+```
+
+On peut aussi utiliser directement la fonction `predict` qui permet de calculer les intervalles de confiance autour des valeurs ajustées.
 
 ```{webr}
 #| envir: baser
@@ -756,6 +801,51 @@ grid()
 #| envir: tdv
 #| autorun: true
 #| fig-align: center
+n <- nrow(data_eucalyptus)
+p <- 2L
+beta_1_hat <- fit_lm_eucalyptus$coefficients[1]
+beta_2_hat <- fit_lm_eucalyptus$coefficients[2]
+x_bar <- data_eucalyptus |> dplyr::pull(circ) |> mean()
+var_x <- data_eucalyptus |> dplyr::pull(circ) |> var()
+q975 <- qt(p = 0.975, df = n-p)
+sigma_hat <- sigma(fit_lm_eucalyptus)
+
+newdata <- data.frame(circ = seq(from = 25, to = 80, by = 0.1))
+newdata$fit <- beta_1_hat + newdata$circ*beta_2_hat
+newdata$pm <- q975*sigma_hat*sqrt(1/n+(newdata$circ-x_bar)**2/((n-1)*var_x))
+newdata$lwr <- newdata$fit - newdata$pm
+newdata$upr <- newdata$fit + newdata$pm
+
+confint_val <- newdata |>
+  tibble::as_tibble()
+
+ggplot2::ggplot() +
+  ggplot2::labs(x = "Circonférence", y = "Hauteur") + 
+  ggplot2::geom_point(
+    data = data_eucalyptus,
+    mapping = ggplot2::aes(x = circ, y = ht),
+    col = "grey70"
+  ) + 
+ ggplot2::geom_ribbon(
+   data = confint_val,
+   mapping = ggplot2::aes(ymin = lwr, ymax = upr, x = circ),
+   fill = "red",
+   alpha = 0.5
+ ) +
+ ggplot2::geom_abline(
+    intercept = fit_lm_eucalyptus$coefficients[1],
+    slope = fit_lm_eucalyptus$coefficients[2],
+    col = "red"
+  ) + 
+ ggplot2::theme_light()
+```
+
+On peut aussi utiliser directement la fonction `predict` qui permet de calculer les intervalles de confiance autour des valeurs ajustées.
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+#| fig-align: center
 newdata <- data.frame(circ = seq(from = 25, to = 80, by = 0.1))
 confint_val <- predict(
   object = fit_lm_eucalyptus,
@@ -764,6 +854,7 @@ confint_val <- predict(
 ) |>
   tibble::as_tibble() |>
   cbind(newdata)
+
 
 ggplot2::ggplot() +
   ggplot2::labs(x = "Circonférence", y = "Hauteur") + 
