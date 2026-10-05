@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 3
+  question_courante: 0
 format:
   live-html:
     code-background: true
@@ -86,6 +86,7 @@ Quelle loi suit cette statistique sous $H_0$ lorsque $\epsilon$ suit une
 loi normale ? Que peut-on dire de sa loi si aucune hypothèse de
 normalité n’est faite sur $\epsilon$ ?
 
+
 ::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
@@ -94,41 +95,20 @@ normalité n’est faite sur $\epsilon$ ?
 
 D'apèrs le cours, si $\epsilon \sim \mathcal{N}\left(0, \sigma^2 I_n\right)$, sous $H_0$,
 
-$$
-F \sim F(q,\,n-p) 
-$$
-
-**Sans hypothèse de normalité**
-
-Le résultat exact ci-dessus repose entièrement sur la normalité de
-$\epsilon$ . Sans cette hypothèse, la loi de $F$ n'est en général
-ni $F(q,n-p)$, ni même connue car elle dépend de
-la loi précise de $\epsilon$.
-
-On peut néanmoins obtenir un résultat asymptotique (remarque de la slide 66) et montrer que sous quelques conditions faibles que
-
-$$F \overset{d}{\longrightarrow} \chi^2(q)/q$$
-Ce résultat asymptotique coïncide avec la
-loi limite de $F(q,n-p)$.
-
-Pour rappel, une loi de Fisher peut être définie comme le rapport de deux lois du  $\chi^2$ ajustées avec leur nommbre de degrés de liberté et indépendantes. Ainsi, lorsque $n\to\infty$, le
-dénominateur $\chi^2_{n-p}/(n-p)$ converge alors vers $1$ par la loi
-des grands nombres.
-:::
-
-:::
+$$F \sim F(q,\ n-p) $$
 
 
 ::: {.callout-note collapse="true"}
-## Démonstration détaillée
 
+
+### Preuve détaillée
 
 ::: {#lem-rang-plein-inversibilite}
 
 Soit $(n,p) \in \mathbb{N}^*$ avec $p \leq n$.
 Soit $X \in \mathcal{M}_{n,p}(\mathbb{R})$.
 
-Si $\text{rg}(X)=p$ alors, $X^{'}X$ est définie positive.
+Si $\text{rg}(X)=p$ alors, $X^{'}X$ est une matrice symétrique définie positive.
 
 
 ::: {.callout-note collapse="true"}
@@ -201,12 +181,90 @@ $$
 
 :::
 
-::: {#lem-inversibilite-sigma-contr}
+
+::: {#lem-inverse-sdp}
+
+Soit $A \in \mathcal{M}_n(\mathbb{R})$ une matrice symétrique définie positive. Alors $A$ est inversible, son inverse $A^{-1}$ est symétrique et définie positive.
+
+
+::: {.callout-note collapse="true"}
+
+#### Preuve
+
+**Existence et symétrie de l'inverse**
+
+Puisque $A$ est définie positive, pour tout $x \in \mathbb{R}^n$ avec $x \neq 0_n$, on a $x^{'}Ax > 0$. En particulier, si $Ax = 0_n$, alors $x^{'}Ax = 0$, ce qui implique $x = 0_n$. Ainsi, $\text{Ker}(A) = \{0_n\}$ et $A$ est inversible.
+
+De plus, comme $A$ est symétrique ($A' = A$), on a :
+
+$$(A^{-1})' = (A')^{-1} = A^{-1}$$
+
+Donc $A^{-1}$ est également symétrique.
+
+
+
+**$A^{-1}$ est définie positive**
+
+Soit $x \in \mathbb{R}^n$ tel que $x \neq 0_n$. Montrons que $x^{'}A^{-1}x > 0$.
+
+Posons $y = A^{-1}x$. Comme $A$ est inversible et $x \neq 0_n$, on a $y \neq 0_n$.
+
+Alors :
+
+$$x^{'}A^{-1}x = x^{'}y = (Ay)^{'}y = y^{'}A^{'}y = y^{'}Ay$$
+
+puisque $A$ est symétrique. Comme $A$ est définie positive et $y \neq 0_n$, on a $y^{'}Ay > 0$.
+
+Donc $x^{'}A^{-1}x > 0$, ce qui prouve que $A^{-1}$ est définie positive.
+
+:::
+
+:::
+
+
+::: {#lem-dp-sigma-contr}
 
 Soient $n \in \mathbb{N}^*, \ p \in \mathbb{N}^*, q \in \mathbb{N}^*$ avec $q \leq p \leq n$. Pour toute matrice $X \in \mathcal{M}_{n,p}(\mathbb{R})$ où $\text{rg}(X) = p$, et $R \in \mathcal{M}_{q,p}(\mathbb{R})$ où $\text{rg}(R) = q$, 
 
-$$R\left(X^{'}X\right)^{-1}R^{'} \in \mathcal{M}_{q}(\mathbb{R}) \ \text{est inversible} $$ 
+$$R\left(X^{'}X\right)^{-1}R^{'} \in \mathcal{M}_{q}(\mathbb{R}) \ \text{ est symétrique définie positive.}$$
 
+::: {.callout-note collapse="true"}
+
+#### Preuve
+
+Montrons que la matrice $M = R\left(X^{'}X\right)^{-1}R^{'} \in \mathcal{M}_{q}(\mathbb{R})$ est symétrique définie positive.
+
+
+
+**Symétrie**
+
+Montrons que $M' = M$ :
+
+$$M' = \left(R\left(X^{'}X\right)^{-1}R'\right)' = R\left(\left(X^{'}X\right)^{-1}\right)'R' = R\left(X^{'}X\right)^{-1}R' = M$$
+
+car $(X'X)' = X'X$, donc $(X'X)^{-1}$ est symétrique.
+
+
+
+**Définie positive**
+
+Soit $u \in \mathbb{R}^q$ tel que $u \neq 0_q$. Montrons que $u'Mu > 0$ :
+
+$$
+$u'Mu = u'R\left(X^{'}X\right)^{-1}R'u = \left(R'u\right)'\left(X^{'}X\right)^{-1}\left(R'u\right)
+$$
+
+
+Puisque $R$ est de rang plein par lignes, $R'$ est injective. Donc $R'u \neq 0_p$ (sinon $u = 0_q$ par injectivité).
+
+Par ailleurs, $X$ est de rang colonne plein, donc $X'X$ est définie positive (d'après @lem-rang-plein-inversibilite), et donc $\left(X^{'}X\right)^{-1}$ l'est également (d'après @lem-inverse-sdp).
+
+Ainsi, $\left(R'u\right)'\left(X^{'}X\right)^{-1}\left(R'u\right) > 0$, ce qui prouve que $M$ est définie positive.
+
+Une matrice symétrique définie positive étant inversible, on en déduit que $M$ est inversible.
+
+
+:::
 
 :::
 
@@ -313,7 +371,9 @@ $$\widehat{\beta}_c = \widehat{\beta} + \left(X^{'}X\right)^{-1}R^{'}\left(R\lef
 
 où $\widehat{\beta}$ est l'estimateur des moindres carrés ordinaires.
 
-[Preuve]{.underline}
+::: {.callout-note collapse="true"}
+
+#### Preuve
 
 Nous voulons minimiser la fonction convexe $S(\mathbf{b}) = \left\|Y - X\mathbf{b}\right\|^2$
 sous la contrainte linéaire $R\mathbf{b} = r$. Écrivons le lagrangien associé
@@ -366,45 +426,7 @@ D'où
 
 $$ R\left(X^{'}X\right)^{-1}R^{'}\widehat{\lambda}=2\left(r-R\left(X^{'}X\right)^{-1}X^{'}Y\right)$$
 
-Montrons que la matrice $R\left(X^{'}X\right)^{-1}R^{'} \in \mathcal{M}_{q}(\mathbb{R})$  est inversible. Pour cela, montrons que $\mathrm{ker}\left(R\left(X^{'}X\right)^{-1}R^{'}\right)=\{0_q \}$ :
-
-
-Soit $u\in\mathbb{R}^q$ tel que
-
-$$
-R\left(X^{'}X\right)^{-1}R^{'}u=0
-$$
-
-En multipliant à gauche par $u^{'}$, on obtient
-
-$$
-\left(R'u\right)^{'}\left(X^{'}X\right)^{-1}(R'u)=0_q
-$$
-
-Puisque $X$ est de rang colonne plein, $X^{'}X$ est définie positive, et donc $\left(X^{'}X\right)^{-1}$ l'est également. Ainsi,
-
-$$
-\left(R^{'}u\right)^{'}\left(X^{'}X\right)^{-1}\left(R^{'}u\right)=0_q
-\quad\Longrightarrow\quad R'u=0_q
-$$
-
-Par ailleurs, $R$ est de rang plein par lignes, donc $R^{'}$ est injective. On en déduit
-
-$$
-R^{'}u=0_q \quad\Longrightarrow\quad u=0_q
-$$
-
-Ainsi,
-
-$$
-\ker\left(R\left(X^{'}X\right)^{-1}R'\right)=\{0_q\}
-$$
-
-ce qui montre que $R\left(X^{'}X\right)^{-1}R^{'}$ est inversible.
-                                                
-
-
-Nous obtenons alors pour $\widehat{\lambda}$ :
+$R\left(X^{'}X\right)^{-1}R^{'} \in \mathcal{M}_{q}(\mathbb{R})$  est symétrique définie positive d'après @lem-dp-sigma-contr donc inversible d'après @lem-inverse-sdp. Nous obtenons alors pour $\widehat{\lambda}$ :
 
 $$\widehat{\lambda} = 2 \left(R\left(X^{'}X\right)^{-1}R^{'} \right)^{-1}\left(r-R\left(X^{'}X\right)^{-1}X^{'}Y\right)$$
 
@@ -438,6 +460,8 @@ est défini positif, ce qui garantit que :
 
 :::
 
+:::
+
 ::: {#def-residu-contr}
 ### Somme des carrés des résidus du modèle contraint
 
@@ -465,6 +489,7 @@ $$
 :::
 
 
+
 ::: {#prp-residu-contr}
 ### Différence entre la somme des carrés des résidus du modèle contraint et la somme des carrés des résidus du modèle non contraint
 
@@ -479,7 +504,12 @@ Soient,
 On a 
 
 $$\textrm{SCR}_c-\textrm{SCR}=\left(R\widehat{\beta}-r\right)^{'}\left(R\left(X^{'} X\right)^{-1}R^{'}\right)^{-1}\left(R\widehat{\beta}-r\right)$$
-[Preuve]{.underline}
+
+
+::: {.callout-note collapse="true"}
+
+#### Preuve
+
 
 $$
 \begin{align*}
@@ -508,6 +538,9 @@ $$\textrm{SCR}_c-\textrm{SCR}=\left(R\widehat{\beta}-r\right)^{'}\left(R\left(X^
 :::
 
 
+:::
+
+
 ::: {#prp-forme-quadratique-gaussienne}
 ### Forme quadratique d'une variable gaussienne multivariée
 <br>
@@ -520,7 +553,10 @@ $$
 $$
 suit une loi du $\chi^2$ à $n$ degrés de liberté, notée $\chi^2(n)$.
 
-[Preuve]{.underline}
+::: {.callout-note collapse="true"}
+
+#### Preuve
+
 
 Puisque $\Sigma$ est une matrice symétrique réelle, le théorème spectral assure l'existence d'une matrice orthogonale ${P} \in \mathcal{M}_n(\mathbb{R})$ et d'une matrice diagonale $D = \operatorname{diag}(\lambda_1, \dots, \lambda_n)$ où $\lambda_1, \dots, \lambda_n$ sont les valeurs propres de $\Sigma$ , telles que :
 
@@ -589,10 +625,12 @@ $$
 
 :::
 
+:::
+
 
 ::: {#prp-loi-residu-contr}
 
-### Loi de $\textrm{SCR}_c-\textrm{SCR}/\sigma^2$
+### Loi de $(\textrm{SCR}_c-\textrm{SCR})/\sigma^2$
 <br>
 
 Sous l'hypothèse $\epsilon \sim \mathcal{N}\left(0_{n,1}, \sigma^2I_n \right)$ et $H_0: R\beta=0$
@@ -608,7 +646,9 @@ On a
 
 $$\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2} \underset{(H_0)}{\sim} \chi^2(q)$$
 
-[Preuve]{.underline}
+::: {.callout-note collapse="true"}
+
+#### Preuve
 
 On suppose que $X \in \mathcal{M}_{n,p}(\mathbb{R})$ est telle que $\textrm{rg}(X)=p$ 
 
@@ -632,7 +672,7 @@ Montrons maintenant que
 
 $$\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2} \underset{(H_0)}{\sim} \chi^2(q)$$
 
-D'après @prp-forme-quadratique-gaussienne comme et comme $R\widehat{\beta} \underset{(H_0)}{\sim} \mathcal{N}\left(0_{q,1}, \sigma^2R\left(X^{'}X\right)^{-1}R^{'}\right)$
+D'après @prp-forme-quadratique-gaussienne et comme $R\widehat{\beta} \underset{(H_0)}{\sim} \mathcal{N}\left(0_{q,1}, \sigma^2R\left(X^{'}X\right)^{-1}R^{'}\right)$ où $\Sigma= \sigma^2R\left(X^{'}X\right)^{-1}R^{'}$ est symétrique définie positive d'après @lem-dp-sigma-contr 
 
 $$
 \left(R\widehat{\beta}\right)^{'}\left(\sigma^2R\left(X^{'}X\right)^{-1}R^{'}\right)^{-1}R\widehat{\beta} \underset{(H_0)}{\sim} \chi^2(q)
@@ -654,15 +694,270 @@ $$
 \frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2}  \underset{(H_0)}{\sim} \chi^2(q)
 $$
 
-
-
-
-
+:::
 
 
 :::
 
+::: {#prp-loi-residu}
+
+### Loi de $\textrm{SCR}/\sigma^2$
+<br>
+
+Soit un modèle de régression linéaire multiple où l'on cherche à
+estimer un vecteur de paramètres $\beta \in \mathbb{R}^p$ à partir d'un
+système $Y = X\beta + \epsilon$, avec :
+
+- $Y$ un vecteur alétoire réel de dimension $n$
+- $\epsilon$  un vecteur alétoire réel de dimension $n$ tel que $\epsilon \sim \mathcal{N}\left(0_{n,1}, \sigma^2I_n \right)$
+- $X \in \mathcal{M}_{n,p}(\mathbb{R})$ : la matrice des variables
+  explicatives (supposée de rang plein $p$)
+  
+
+On a
+
+$$\frac{\textrm{SCR}}{\sigma^2} \sim \chi^2(n-p)$$
+
+::: {.callout-note collapse="true"}
+
+#### Preuve
+
+Soit $\widehat{\beta}$ l'estimateur des moindres carrés ordinaires de $\beta$ et $\widehat{\epsilon} = Y - X\widehat{\beta}$ le vecteur des résidus.
+Par définition, la somme des carrés des résidus est
+
+$$\textrm{SCR} = \|\widehat{\epsilon}\|^2 = \widehat{\epsilon}'\widehat{\epsilon} = (Y - X\widehat{\beta})'(Y - X\widehat{\beta})$$
+
+On a $\widehat{\beta} = (X'X)^{-1}X'Y$. Notons $H = X(X'X)^{-1}X'$.
+
+Alors
+
+$$Y - X\widehat{\beta} = Y - X(X'X)^{-1}X'Y = (I_n - H)Y$$
+
+Donc
+
+$$\textrm{SCR} = Y'(I_n - H)'(I_n - H)Y = Y'(I_n - H)Y$$
+
+car $I_n - H$ est symétrique (puisque $H$ est symétrique).
+
+Sous l'hypothèse $\epsilon \sim \mathcal{N}(0_{n,1}, \sigma^2 I_n)$, on a $Y = X\beta + \epsilon \sim \mathcal{N}(X\beta, \sigma^2 I_n)$.  
+
+Ainsi, 
+
+$$(I_n - H)Y \sim \underbrace{\mathcal{N}((I_n - H)X\beta, \sigma^2 (I_n - H)I_n(I_n - H)')}_{= \mathcal{N}(0_{n,1}, \sigma^2 (I_n - H))}$$
+
+car
+
+- $(I_n - H)X = X - HX = X - X(X'X)^{-1}X'X = X - X = 0$ (car $HX = X$)
+- $(I_n - H)' = I_n - H' = I_n - H$ (car $H$ est symétrique)
+- $(I_n - H)(I_n - H) = I_n - 2H + H^2 = I_n - H$ (car $H$ est idempotente : $H^2 = H$)
+
+La matrice $I_n - H$ est donc symétrique idempotente de rang $n - p$ (car $\text{rg}(I_n - H) = \text{tr}(I_n - H) = n - \text{tr}(H) = n - p$).
+
+On peut alors écrire
+
+$$\frac{\textrm{SCR}}{\sigma^2} = \frac{1}{\sigma^2} Y'(I_n - H)Y = Y' (\sigma^2 (I_n - H))^{-1} Y$$
+
+Puisque $(I_n - H)Y \sim \mathcal{N}(0_{n,1}, \sigma^2 (I_n - H))$ et que $I_n - H$ est symétrique définie positive (car c'est un projecteur orthogonal non nul), 
+d'après @prp-forme-quadratique-gaussienne, on a
+
+$$\frac{\textrm{SCR}}{\sigma^2} \sim \chi^2(n - p)$$
+
 :::
+
+
+:::
+
+
+
+::: {#prp-independance-scr}
+
+### Indépendance de $\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2}$ et $\frac{\textrm{SCR}}{\sigma^2}$
+<br>
+
+Sous l'hypothèse $\epsilon \sim \mathcal{N}\left(0_{n,1}, \sigma^2I_n \right)$ et $H_0: R\beta=0$,
+
+les variables aléatoires $\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2}$ et $\frac{\textrm{SCR}}{\sigma^2}$ sont indépendantes.
+
+::: {.callout-note collapse="true"}
+
+#### Preuve
+
+D'après @prp-loi-residu et @prp-loi-residu-contr, on sait que sous $H_0$ :
+
+$$\frac{\textrm{SCR}}{\sigma^2} \sim \chi^2(n-p) \quad \text{et} \quad \frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2} \sim \chi^2(q)$$
+
+Pour montrer leur indépendance, utilisons une décomposition directe basée sur les erreurs $\epsilon$.
+
+On écrit $Y = X\beta + \epsilon$ avec $\epsilon \sim \mathcal{N}(0_{n,1}, \sigma^2 I_n)$.
+
+L'estimateur des MCO est $\widehat{\beta} = \beta + (X'X)^{-1}X'\epsilon$, donc les résidus s'écrivent :
+
+$$Y - X\widehat{\beta} = (I_n - H)\epsilon \quad \text{où} \quad H = X(X'X)^{-1}X'$$
+
+Ainsi,
+
+$$\frac{\textrm{SCR}}{\sigma^2} = \frac{1}{\sigma^2}\left((I_n - H)\epsilon\right)'\left((I_n - H)\epsilon\right) = \frac{1}{\sigma^2}\epsilon'(I_n - H)\epsilon$$
+
+
+D'autre part, d'après @prp-residu-contr, on a sous $H_0$ :
+
+$$\textrm{SCR}_c - \textrm{SCR} = \left(R\widehat{\beta}\right)'\left(R\left(X'X\right)^{-1}R'\right)^{-1}\left(R\widehat{\beta}\right)$$
+
+Or sous $H_0$, $R\beta = 0$, donc $R\widehat{\beta} = R(\widehat{\beta} - \beta) = R(X'X)^{-1}X'\epsilon$.
+
+Ainsi,
+
+$$
+\begin{align*}
+\frac{\textrm{SCR}_c - \textrm{SCR}}{\sigma^2} &= \frac{1}{\sigma^2}\left(R(X'X)^{-1}X'\epsilon\right)'\left(R\left(X'X\right)^{-1}R'\right)^{-1}\left(R(X'X)^{-1}X'\epsilon\right) \\
+&= \frac{1}{\sigma^2}\epsilon'X(X'X)^{-1}R'\left(R\left(X'X\right)^{-1}R'\right)^{-1}R(X'X)^{-1}X'\epsilon
+\end{align*}
+$$
+
+Notons $u = \frac{1}{\sigma}(I_n - H)\epsilon$ et $v = \frac{1}{\sigma}X(X'X)^{-1}R'\left(R\left(X'X\right)^{-1}R'\right)^{-1}R(X'X)^{-1}X'\epsilon$.
+Alors $\frac{\textrm{SCR}}{\sigma^2} = u'u$ et $\frac{\textrm{SCR}_c - \textrm{SCR}}{\sigma^2} = v'v$.
+
+**Orthogonalité de $u$ et $v$** :
+
+Montrons que $u$ et $v$ sont non corrélés :
+
+$$
+\begin{align*}
+\mathbb{E}[uv'] &= \mathbb{E}\left[\frac{1}{\sigma^2}(I_n - H)\epsilon\epsilon'X(X'X)^{-1}R'\left(R\left(X'X\right)^{-1}R'\right)^{-1}R(X'X)^{-1}X'\right] \\
+&= \frac{1}{\sigma^2}(I_n - H)\mathbb{E}[\epsilon\epsilon']X(X'X)^{-1}R'\left(R\left(X'X\right)^{-1}R'\right)^{-1}R(X'X)^{-1}X'
+\end{align*}
+$$
+
+Or $\mathbb{E}[\epsilon\epsilon'] = \sigma^2 I_n$, donc
+
+$$
+\begin{align*}
+\mathbb{E}[uv'] &= \frac{1}{\sigma^2}(I_n - H)\sigma^2 I_n X(X'X)^{-1}R'\left(R\left(X'X\right)^{-1}R'\right)^{-1}R(X'X)^{-1}X' \\
+&= (I_n - H)X(X'X)^{-1}R'\left(R\left(X'X\right)^{-1}R'\right)^{-1}R(X'X)^{-1}X'
+\end{align*}
+$$
+
+Mais $(I_n - H)X = 0$, donc $\mathbb{E}[uv'] = 0$.
+
+**Indépendance** :
+
+Le vecteur $(u, v)$ est une transformation linéaire de $\epsilon$, qui est gaussien. Donc $(u, v)$ est gaussien.
+
+Comme $u$ et $v$ sont non corrélés et joints gaussiens, ils sont indépendants.
+
+Par conséquent, toute fonction de $u$ (dont $\frac{\textrm{SCR}}{\sigma^2} = u'u$) est indépendante de toute fonction de $v$ (dont $\frac{\textrm{SCR}_c - \textrm{SCR}}{\sigma^2} = v'v$).
+
+:::
+
+:::
+
+
+::: {#prp-loi-F-fisher}
+
+### Loi de la statistique de Fisher sous $H_0$
+<br>
+
+Sous l'hypothèse $\epsilon \sim \mathcal{N}\left(0_{n,1}, \sigma^2I_n \right)$ et $H_0: R\beta=0$, 
+
+la statistique de test
+
+$$F = \frac{n-p}{q}\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}$$ 
+
+suit une loi de Fisher à $q$ et $n-p$ degrés de liberté :
+
+$$F \underset{(H_0)}{\sim} \mathcal{F}(q,\ n-p)$$
+
+::: {.callout-note collapse="true"}
+
+#### Preuve
+
+D'après @prp-loi-residu-contr et @prp-loi-residu , on sait que sous $H_0$ :
+
+$$
+\frac{\textrm{SCR}_c - \textrm{SCR}}{\sigma^2} \sim \chi^2(q), \quad \frac{\textrm{SCR}}{\sigma^2} \sim \chi^2(n-p),
+$$
+
+et que ces deux variables sont indépendantes (voir @prp-independance-scr).
+
+Réécrivons la statistique $F$ en fonction de ces quantités :
+
+$$
+F = \frac{n-p}{q}\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}} = \frac{n-p}{q} \cdot \frac{\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2}}{\frac{\textrm{SCR}}{\sigma^2}} = \frac{\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2} / q}{\frac{\textrm{SCR}}{\sigma^2} / (n-p)}
+$$
+
+Ainsi, $F$ est le rapport de deux variables aléatoires indépendantes :
+
+- Le numérateur $\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2} / q \sim \frac{\chi^2(q)}{q}$
+- Le dénominateur $\frac{\textrm{SCR}}{\sigma^2} / (n-p) \sim \frac{\chi^2(n-p)}{n-p}$
+
+Par définition d'une loi de Fisher, le rapport de deux variables indépendantes $\frac{\chi^2_1/d_1}{\chi^2_2/d_2}$ où $\chi^2_1 \sim \chi^2(d_1)$ et $\chi^2_2 \sim \chi^2(d_2)$ suit une loi $\mathcal{F}(d_1, d_2)$.
+
+Par conséquent, $F \underset{(H_0)}{\sim} \mathcal{F}(q,\ n-p)$.
+
+:::
+
+:::
+
+:::
+
+
+**Cas sans hypothèse de normalité**
+
+Le résultat exact ci-dessus repose entièrement sur la normalité de
+$\epsilon$ . Sans cette hypothèse, la loi de $F$ n'est en général
+ni $F(q,n-p)$, ni même connue car elle dépend de
+la loi précise de $\epsilon$.
+
+On peut néanmoins obtenir un résultat asymptotique (remarque de la slide 66) et montrer que sous quelques conditions faibles que
+
+$$F \overset{d}{\longrightarrow} \chi^2(q)/q$$
+
+::: {.callout-note collapse="true"}
+
+### Preuve détaillée
+
+Sous $H_0$, on a $F = \frac{n-p}{q}\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}$.
+
+On peut réécrire $F$ comme :
+
+$$F = \frac{1}{q}\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2} \cdot \frac{n-p}{\textrm{SCR}/\sigma^2}$$
+
+Par le théorème de Slutsky, si $\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2} \overset{d}{\longrightarrow} \chi^2(q)$ et $\frac{n-p}{\textrm{SCR}/\sigma^2} \overset{p}{\longrightarrow} 1$, alors $F \overset{d}{\longrightarrow} \frac{\chi^2(q)}{q}$.
+
+**Convergence de $\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2}$ vers $\chi^2(q)$** :
+
+D'après les propriétés asymptotiques des MCO sous contraintes, sous des conditions de normalité asymptotique, on a :
+
+$$\frac{\textrm{SCR}_c-\textrm{SCR}}{\sigma^2} \overset{d}{\longrightarrow} \chi^2(q)$$
+
+Ceci vient du fait que sous $H_0$, $R\widehat{\beta} \overset{d}{\longrightarrow} \mathcal{N}(0_q, \sigma^2 R(X'X)^{-1}R')$ asymptotiquement (par le TCL), 
+et donc $\frac{1}{\sigma^2}(R\widehat{\beta})'[R(X'X)^{-1}R']^{-1}(R\widehat{\beta}) \overset{d}{\longrightarrow} \chi^2(q)$.
+
+**Convergence de $\frac{\textrm{SCR}}{\sigma^2}$ vers $n-p$** :
+
+On sait que $\mathbb{E}[\textrm{SCR}] = \sigma^2(n-p)$ (propriété classique des MCO).
+
+De plus, par le TCL, $\frac{\textrm{SCR} - \mathbb{E}[\textrm{SCR}]}{\sqrt{\text{Var}(\textrm{SCR})}} \overset{d}{\longrightarrow} \mathcal{N}(0,1)$.
+
+Donc $\frac{\textrm{SCR}}{\sigma^2} = \frac{\textrm{SCR} - \sigma^2(n-p)}{\sigma^2} + (n-p) \overset{p}{\longrightarrow} n-p$,
+car $\frac{\textrm{SCR} - \sigma^2(n-p)}{\sigma^2} = \frac{\textrm{SCR} - \mathbb{E}[\textrm{SCR}]}{\sigma^2} \overset{p}{\longrightarrow} 0$.
+
+
+:::
+
+Ce résultat asymptotique coïncide avec la loi limite de $F(q,n-p)$.
+
+Pour rappel, une loi de Fisher peut être définie comme le rapport de deux lois du  $\chi^2$ ajustées avec leur nommbre de degrés de liberté et indépendantes. Ainsi, lorsque $n\to\infty$, le
+dénominateur $\chi^2_{n-p}/(n-p)$ converge alors vers $1$ par la loi
+des grands nombres.
+
+:::
+
+:::
+
+
+
+
 
 ## Question 3
 

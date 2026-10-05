@@ -45,18 +45,44 @@ définit
 $$\rho(Y, X) = \sup\limits_{\beta} \textrm{cor}(Y, X\beta)$$
 
 où $\textrm{cor}$ désigne la corrélation empirique. Cette quantité est
-donc la corrélation maximale que l’on peut obtenir entre $Y$ et une
+donc la corrélation maximale que l'on peut obtenir entre $Y$ et une
 combinaison linéaire des variables explicatives.
 
 ## Question 1
 
 Montrer que
 
-$$ \textrm{cor}(Y, X\beta) =  \frac{\left(X\hat{\beta}-\overline{Y}\mathbb{1}\right)^{'}\left(X\beta-\overline{X}\beta\mathbb{1}\right)}{\left\| Y-\overline{Y}\mathbb{1}\right\|\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|}$$
+$$ \textrm{cor}(Y, X\beta) =  \frac{\left(X\widehat{\beta}-\overline{Y}\mathbb{1}\right)^{'}\left(X\beta-\overline{X}\beta\mathbb{1}\right)}{\left\| Y-\overline{Y}\mathbb{1}\right\|\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|}$$ 
 
-où $\hat{\beta}$ est l’estimateur par MCO de la régression de $Y$ sur
+où $\widehat{\beta}$ est l'estimateur par MCO de la régression de $Y$ sur
 $X$, et $\overline{X}$ désigne le vecteur des $p$ moyennes empiriques de
 chaque variable explicative.
+
+::: {.content-visible when-meta="is_answer_print_1"}
+
+::: answer
+
+Par définition, la corrélation empirique entre $Y$ et $X\beta$ est :
+
+$$\textrm{cor}(Y, X\beta) = \frac{\textrm{Cov}(Y, X\beta)}{\sqrt{\text{Var}(Y)}\sqrt{\text{Var}(X\beta)}}$$ 
+
+où $\textrm{Cov}(Y, X\beta) = \frac{1}{n}(Y - \overline{Y}\mathbb{1})'(X\beta - \overline{X\beta}\mathbb{1})$ est la covariance empirique,
+$\text{Var}(Y) = \frac{1}{n}\|Y - \overline{Y}\mathbb{1}\|^2$ et $\text{Var}(X\beta) = \frac{1}{n}\|X\beta - \overline{X\beta}\mathbb{1}\|^2$.
+
+En substituant, on obtient après simplification :
+
+$$\textrm{cor}(Y, X\beta) = \frac{(Y - \overline{Y}\mathbb{1})'(X\beta - \overline{X\beta}\mathbb{1})}{\left\| Y-\overline{Y}\mathbb{1}\right\|\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|}$$
+
+Or, par les propriétés des MCO, on a $X\widehat{\beta} - \overline{Y}\mathbb{1} = \widehat{Y} - \overline{Y}\mathbb{1}$. 
+De plus, $(Y - \overline{Y}\mathbb{1})'(X\beta - \overline{X\beta}\mathbb{1}) = (Y - \overline{Y}\mathbb{1})'X\beta$ car le terme constant s'annule dans la covariance.
+
+Donc :
+
+$$\textrm{cor}(Y, X\beta) = \frac{(X\widehat{\beta}-\overline{Y}\mathbb{1})'(X\beta-\overline{X}\beta\mathbb{1})}{\left\| Y-\overline{Y}\mathbb{1}\right\|\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|}$$
+
+:::
+
+:::
 
 ## Question 2
 
@@ -64,12 +90,105 @@ En déduire que pour tout $\beta$, $\textrm{cor}(Y,X\beta)^2 =  R^2$, où
 $R^2$ est le coefficient de corrélation multiple de la régression de $Y$
 sur $X$.
 
+::: {.content-visible when-meta="is_answer_print_2"}
+
+::: answer
+
+D'après la Question 1, on a :
+
+$$\textrm{cor}(Y, X\beta)^2 = \frac{\left[(X\widehat{\beta}-\overline{Y}\mathbb{1})'(X\beta-\overline{X}\beta\mathbb{1})\right]^2}{\left\| Y-\overline{Y}\mathbb{1}\right\|^2\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|^2}$$
+
+Or, par les propriétés des MCO, on sait que $X\widehat{\beta}$ est la projection orthogonale de $Y$ sur l'espace colonne de $X$.
+
+On a l'identité :
+
+$$
+\begin{align*}
+\left\| Y - \overline{Y}\mathbb{1}\right\|^2 &= \left\| Y - X\widehat{\beta}\right\|^2 + \left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2 \\
+&= \textrm{SCR} + \textrm{SCE}
+\end{align*}
+$$
+
+où SCR est la somme des carrés des résidus et SCE est la somme des carrés expliqués.
+
+Le coefficient de corrélation multiple $R^2$ est défini par :
+
+$$R^2 = \frac{\textrm{SCE}}{\textrm{SCT}} = \frac{\textrm{SCE}}{\textrm{SCR} + \textrm{SCE}} = \frac{\left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2}{\left\| Y - \overline{Y}\mathbb{1}\right\|^2}$$
+
+D'autre part, par l'inégalité de Cauchy-Schwarz, on a :
+
+$$
+\left[(X\widehat{\beta}-\overline{Y}\mathbb{1})'(X\beta-\overline{X}\beta\mathbb{1})\right]^2 \leq \left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2 \left\| X\beta - \overline{X}\beta\mathbb{1}\right\|^2
+$$
+
+Donc :
+
+$$
+\textrm{cor}(Y, X\beta)^2 \leq \frac{\left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2 \left\| X\beta - \overline{X}\beta\mathbb{1}\right\|^2}{\left\| Y-\overline{Y}\mathbb{1}\right\|^2\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|^2} = \frac{\left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2}{\left\| Y - \overline{Y}\mathbb{1}\right\|^2} = R^2
+$$
+
+:::
+
+:::
+
 ## Question 3
 
 Montrer que la borne précédente est atteinte lorsque
-$\beta = \hat{\beta}$.
+$\beta = \widehat{\beta}$.
+
+::: {.content-visible when-meta="is_answer_print_3"}
+
+::: answer
+
+D'après la Question 2, on a $\textrm{cor}(Y,X\beta)^2 \leq R^2$ avec égalité si et seulement si :
+
+$$
+\left[(X\widehat{\beta}-\overline{Y}\mathbb{1})'(X\beta-\overline{X}\beta\mathbb{1})\right]^2 = \left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2 \left\| X\beta - \overline{X}\beta\mathbb{1}\right\|^2
+$$
+
+Par l'inégalité de Cauchy-Schwarz, l'égalité a lieu si et seulement si $X\widehat{\beta} - \overline{Y}\mathbb{1}$ et $X\beta - \overline{X}\beta\mathbb{1}$ sont colinéaires, c'est-à-dire s'il existe $\lambda \in \mathbb{R}$ tel que :
+
+$$X\widehat{\beta} - \overline{Y}\mathbb{1} = \lambda (X\beta - \overline{X}\beta\mathbb{1})$$
+
+Or, $X\widehat{\beta} - \overline{Y}\mathbb{1} = X\widehat{\beta} - \overline{X\widehat{\beta}}\mathbb{1}$ (car le modèle contient une constante, donc $\overline{X\widehat{\beta}} = \overline{Y}$).
+
+De même, $X\beta - \overline{X}\beta\mathbb{1} = X\beta - \overline{X\beta}\mathbb{1}$.
+
+Donc l'égalité a lieu si $X\widehat{\beta} - \overline{X\widehat{\beta}}\mathbb{1} = \lambda (X\beta - \overline{X\beta}\mathbb{1})$, c'est-à-dire si $\widehat{\beta} = \lambda \beta$ (à une constante près).
+
+Mais comme $\widehat{\beta}$ est l'estimateur qui minimise la somme des carrés des résidus, et que la corrélation est maximisée lorsque $\beta = \widehat{\beta}$, on en déduit que la borne est atteinte pour $\beta = \widehat{\beta}$.
+
+En effet, lorsque $\beta = \widehat{\beta}$, on a $X\beta = X\widehat{\beta}$, donc :
+
+$$\textrm{cor}(Y, X\widehat{\beta})^2 = \frac{\left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2}{\left\| Y - \overline{Y}\mathbb{1}\right\|^2} = R^2$$
+
+:::
+
+:::
 
 ## Question 4
 
 Conclure que $\rho(Y, X)^2 = R^2$ justifiant la terminologie
 "coefficient de corrélation multiple".
+
+::: {.content-visible when-meta="is_answer_print_4"}
+
+::: answer
+
+D'après les Questions 2 et 3, on a :
+
+$$\rho(Y, X) = \sup\limits_{\beta} \textrm{cor}(Y, X\beta)$$
+
+Et pour tout $\beta$, $\textrm{cor}(Y, X\beta)^2 \leq R^2$ avec égalité si et seulement si $\beta = \widehat{\beta}$.
+
+Donc :
+
+$$\rho(Y, X)^2 = \sup\limits_{\beta} \textrm{cor}(Y, X\beta)^2 = \sup\limits_{\beta} R^2 = R^2$$
+
+car $R^2$ ne dépend pas de $\beta$ (c'est une caractéristique du modèle de régression de $Y$ sur $X$).
+
+Ainsi, $\rho(Y, X)^2 = R^2$, ce qui justifie le nom de "coefficient de corrélation multiple" pour $R^2$.
+
+:::
+
+:::
