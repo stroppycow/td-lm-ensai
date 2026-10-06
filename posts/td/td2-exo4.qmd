@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 0
+  question_courante: 6
 format:
   live-html:
     code-background: true
@@ -54,6 +54,64 @@ $\hat{\epsilon}$.
 $\widehat{Y}$ est la projection orthogonale de $Y$ sur $[X]$ (i.e.
 l'espace vectoriel engendré par $\mathbb{1}$ et les $X^{(k)}$).
 
+::: {.callout-note collapse="true" icon=false}
+### Détail ($X(X^{'}X)^{-1}X^{'}$ matrice de projection orthogonale sur $[X]$)
+
+En notant $X = \left(\mathbb{1} \mid X^{(1)} \mid \dots \mid X^{(p)}\right)$
+la matrice de design de taille $n \times (p+1)$, on a
+$[X] = \mathrm{Vect}\left(\mathbb{1}, X^{(1)}, \dots, X^{(p)}\right) = \mathrm{Im}(X)$.
+
+Par proriété sur l'estimateur des moindres carrés ordinaires lorsque les variables $X^{(k)}$ ne sont pas linéairement liées.
+
+$$
+\widehat{Y} = X\hat{\beta} = \underbrace{X\left(X'X\right)^{-1}X'}_{=: P} Y,
+$$
+
+On peut montrer que la matrice $P$ est bien la matrice de projection
+orthogonale sur $[X]$. Pour le vérifier, montrons qu'elle est symétrique,
+idempotente et d'image $[X]$.
+
+**(i) Symétrie.** $X'X$ est symétrique, donc son inverse aussi :
+
+$$
+P' = \left(X\left(X'X\right)^{-1}X'\right)^{'} = X\left(\left(X'X\right)^{-1}\right)^{'} X' = P .
+$$
+
+**(ii) Idempotence.**
+
+$$
+P^2 = X\left(X'X\right)^{-1}\underbrace{X'X}_{= I_{p+1}}\left(X'X\right)^{-1}X' = P .
+$$
+
+**(iii) Image égale à $[X]$.** 
+
+[Inclusion]{.underline} : $\mathrm{Im}(P) \subset \mathrm{Im}(X)$
+
+Soit $y \in \mathrm{Im}(P)$, il existe $x$ tel que
+$$y= Px=X(X^{'}X)^{-1}X^{'}x=Xu \ \text{avec } u =(X^{'}X)^{-1}X^{'}x$$
+
+D'où $y \in \mathrm{Im}(X)$.
+
+[Inclusion]{.underline} $\mathrm{Im}(X) \subset \mathrm{Im}(P)$
+
+Soit $y \in \mathrm{Im}(X)$, il existe $x$ tel que $y= Xx$.
+
+Comme
+$$Py = X(X^{'}X)^{-1}X^{'}y = X(X^{'}X)^{-1}X^{'}Xx=Xx=y$$
+Donc $y \in \mathrm{Im}(X)$.
+
+
+
+**Conclusion.** Pour tout $Y$, on a $PY \in [X]$ et
+$Y - PY \in \ker(P)$. Comme $P$ est symétrique,
+$\ker(P) = \mathrm{Im}(P)^{\perp} = [X]^{\perp}$ : si $PY = 0$, alors
+pour tout $Z \in [X]$, $\langle Y, Z \rangle = \langle Y, PZ \rangle = \langle PY, Z \rangle = 0$.
+Ainsi $P$ réalise la décomposition $Y = PY + (I - P)Y$ avec
+$PY \in [X]$ et $Y - PY \perp [X]$. La projection orthogonale sur un
+sous-espace étant unique, $P= P_{[X]}$ est bien la matrice de projection
+orthogonale sur $[X]$, et $\widehat{Y} = PY$.
+:::
+
 ![](/static/img/representation-variables.svg){fig-align="center"}
 
 :::
@@ -72,11 +130,44 @@ $$
 \end{align}
 $$
 
+
+::: callout-tip
+## Indications
+
+On peut utiliser le théorème de Pythagore dans cette question,
+
+Pour tous $u, v \in \mathbb{R}^n$,
+
+$$
+\left\| u + v \right\|^2 = \left\| u \right\|^2 + 2\langle u, v \rangle + \left\| v \right\|^2 .
+$$
+
+Si $u \perp v$,
+c'est à dire $\langle u, v \rangle = 0$ : le terme croisé
+s'annule et $\left\| u + v \right\|^2 = \left\| u \right\|^2 + \left\| v \right\|^2$.
+Il suffit donc de vérifier que les deux côtés de chaque triangle sont
+orthogonaux.
+
+:::
+
 ::: {.content-visible when-meta="is_answer_print_2"}
 
 ::: answer
+
+[Première égalité]{.underline}
+
 D'après le théorème de Pythagore dans le triangle $0$, $Y$ et
-$\widehat{Y}$,
+$\widehat{Y}$ Ce triangle  a pour côtés $\widehat{Y}$ et $\widehat{\epsilon}$, et on a bien
+$Y = \widehat{Y} + \widehat{\epsilon}$
+
+De plus,
+$$
+\left\langle \widehat{Y}, \widehat{\varepsilon} \right\rangle = \left(PY\right)^{'}(I - P)Y = Y'P'\left(I - P\right)Y = Y'P\left(I - P\right)Y = 0,
+$$
+
+car $P' = P$ (symétrie) et $P(I - P) = P - P^2 = 0$ (idempotence).
+
+Donc d'après le théorème de Pythagore,
 
 $$
 \left\| Y\right\|^2 =  \left\| \widehat{\varepsilon} \right\|^2 + \left\| \widehat{Y}  \right\|^2 
@@ -88,8 +179,32 @@ $$
 \sum\limits_{i=1}^n y_i^2 = \sum\limits_{i=1}^n \widehat{\varepsilon}_i^2+ \sum\limits_{i=1}^n \widehat{y}_i^2 
 $$
 
-De même, en appliquant le théorème de Pythagore dans le triangle $Y$,
-$\widehat{Y}$ et $\overline{y}\mathbb{1}$, on a:
+[Deuxième égalité]{.underline}
+
+De même, on va appliquer le théorème de Pythagore dans le triangle $Y$,
+$\widehat{Y}$ et $\overline{y}\mathbb{1}$. 
+
+
+Ce triangle a pour côtés $\widehat{\epsilon}$ et
+$\widehat{Y} - \overline{y}\mathbb{1}$, et on a bien
+$Y - \overline{y}\mathbb{1} = \left(\widehat{Y} - \overline{y}\mathbb{1}\right) + \widehat{\epsilon}$.
+
+Le point clé est que $\mathbb{1}$ est une colonne de la matrice de
+design $X$, donc $\mathbb{1} \in [X]$ et, par stabilité de $[X]$ par
+combinaison linéaire,
+
+$$
+\overline{y}\mathbb{1} \in [X] \quad \text{et} \quad \widehat{Y} - \overline{y}\mathbb{1} \in [X] .
+$$
+
+Comme $\widehat{\epsilon} \in [X]^{\perp}$, on en déduit
+
+$$
+\left\langle \widehat{\epsilon}, \widehat{Y} - \overline{y}\mathbb{1} \right\rangle = 0 ,
+$$
+
+ce qui autorise l'application du théorème de Pythagore au triangle $Y$,
+$\widehat{Y}$, $\overline{y}\mathbb{1}$
 
 $$
 \left\| Y-\overline{y} \mathbb{1} \right\|^2 =  \left\| \widehat{\varepsilon} \right\|^2 + \left\| \widehat{Y} - \overline{y} \mathbb{1}\right\|^2 
@@ -100,6 +215,7 @@ c'est à dire
 $$ 
 \sum\limits_{i=1}^n \left(y_i-\overline{y}\right)^2 = \sum\limits_{i=1}^n \widehat{\varepsilon}_i^2+ \sum\limits_{i=1}^n \left(\widehat{y}_i-\overline{y}\right)^2 
 $$
+
 
 :::
 
