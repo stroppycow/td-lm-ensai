@@ -358,8 +358,8 @@ car::vif(modele_q2)
 
 Certaines valeurs sont élevées (un premier seuil d’alerte est
 généralement 5), ce qui confirme qu’il y a un problème de
-multicolinéarité entre certaines variables et donc que les tests de
-Student ne sont pas rejetés.
+multicolinéarité entre certaines variables et donc que les hypothèses nulles des tests de
+Student ne sont pas rejetées.
 
 :::
 
@@ -733,7 +733,7 @@ satisfaisante car
 
 **Test d’homoscédasticité des résidus**
 
-::: callout-note
+::: {.callout-note collapse="true"}
 ### Test de Breusch-Pagan
 
 Le test de Breusch-Pagan permet de tester l’homoscédasticité. Il
@@ -779,7 +779,7 @@ On ne rejette pas $H_0$ au seuil 5 %. L'homoscédasticité est vérifiée.
 
 **Test de non-corrélation des résidus**
 
-::: callout-note
+::: {.callout-note collapse="true"}
 ### Tests de Durbin-Watson et Breusch-Godfrey
 
 Les tests de Durbin-Watson et Breusch-Godfrey permettent de tester la
@@ -901,7 +901,7 @@ ggplot2::ggplot(
 :::
 
 Le nuage de points et la corrélation linéaire confirment l'existence
-d'un lien linéaire fort entre $\texttt{maxO3}$ et sa valeur de la
+d'un lien linéaire assez fort entre $\texttt{maxO3}$ et sa valeur de la
 veille.
 
 :::
