@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 0
+  question_courante: 10
 format:
   live-html:
     code-background: true
@@ -45,17 +45,33 @@ custom-callout:
 {{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
 Le jeu de données `ozone.txt` contient la concentration maximale d’ozone ($\texttt{maxO3}$)
-mesurée chaque jour de l’été 2001 à Rennes. Il contient également les températures, la nébulosité et la vitesse du vent mesurés à 9h, 12h et 15h (respectivement $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$, $\texttt{Ne9}$, $\texttt{Ne12}$, $\texttt{Ne15}$ et $\texttt{Vx9}$, $\texttt{Vx12}$, $\texttt{Vx15}$), ainsi que la direction principale du vent et la présence ou non de pluie. On désire expliquer au mieux la concentration d’ozone à l’aide des variables disponibles dans le jeu de données.
+mesurée chaque jour de l’été 2001 à Rennes. Il contient également les températures, la nébulosité et la vitesse du vent mesurées à 9h, 12h et 15h (respectivement $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$, $\texttt{Ne9}$, $\texttt{Ne12}$, $\texttt{Ne15}$ et $\texttt{Vx9}$, $\texttt{Vx12}$, $\texttt{Vx15}$), ainsi que la direction principale du vent et la présence ou non de pluie. On désire expliquer au mieux la concentration d’ozone à l’aide des variables disponibles dans le jeu de données.
 
 ## Question 1
 
-Analyser le nuage de points et la corrélation linéaire entre $\texttt{maxO3}$ et chacune des variables quantitatives disponibles (c’est à dire $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$, $\texttt{Ne9}$, $\texttt{Ne12}$, $\texttt{Ne15}$, $\texttt{Vx9}$, $\texttt{Vx12}$ et $\texttt{Vx15}$). Est-il raisonnable de supposer qu’il existe un lien linéaire entre $\texttt{maxO3}$ et ces variables ?
+Analyser le nuage de points et la corrélation linéaire entre $\texttt{maxO3}$ et chacune des variables quantitatives disponibles (c’est-à-dire $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$, $\texttt{Ne9}$, $\texttt{Ne12}$, $\texttt{Ne15}$, $\texttt{Vx9}$, $\texttt{Vx12}$ et $\texttt{Vx15}$). Est-il raisonnable de supposer qu’il existe un lien linéaire entre $\texttt{maxO3}$ et ces variables ?
 
 ::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
 
-On charge les données du fichier `ozone.txt` en {{< iconify logos:r-lang >}} sous forme de `data.frame`.
+On regarde le contenu du fichier `ozone.txt` avant de l’importer en {{< iconify logos:r-lang >}} :
+
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| edit: false
+#| echo: false
+readLines("data/ozone.txt", n = 5, encoding = "UTF-8") |>
+  paste0(collapse = "\n") |>
+  cat()
+```
+
+
+Il s’agit d’un fichier plat dont le séparateur est l’espace et dans lequel les valeurs non numériques sont entourées de guillemets droits doubles (`"`). La première ligne contient un en-tête qui indique le nom des variables, à l’exception du numéro de ligne.
+
+On charge alors les données du fichier `ozone.txt` en {{< iconify logos:r-lang >}} sous forme de `data.frame`.
 
 ::: {.panel-tabset group="language"}
 
@@ -82,8 +98,12 @@ data_ozone <- readr::read_delim(
   file = "data/ozone.txt",
   col_types = "_cnnnnnnnnnncc",
   col_names = c(
-    "date","maxO3","T9","T12","T15","Ne9","Ne12","Ne15",
-    "Vx9","Vx12","Vx15","vent","pluie"
+    "date",
+    "maxO3",
+    "T9", "T12", "T15",
+    "Ne9", "Ne12", "Ne15",
+    "Vx9", "Vx12", "Vx15",
+    "vent", "pluie"
   ),
   skip = 1,
   delim = " ",
@@ -96,10 +116,14 @@ data_ozone
 
 Le fichier chargé contient bien 122 observations avec les variables
 $\texttt{maxO3}$ pour la concentration maximale d’ozone mesurée chaque jour
-(exprimée en mètre), $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$ pour les températures, $\texttt{Ne9}$, $\texttt{Ne12}$, $\texttt{Ne15}$ pour les nébulosités et $\texttt{Vx9}$, $\texttt{Vx12}$ et $\texttt{Vx15}$ pour la
-vitesse du vent.
+(vraisemblablement en µg/m³), $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$ pour les
+températures (probablement en degrés Celsius), $\texttt{Ne9}$,
+$\texttt{Ne12}$, $\texttt{Ne15}$ pour les nébulosités (sans doute en octas)
+et $\texttt{Vx9}$, $\texttt{Vx12}$ et $\texttt{Vx15}$ pour la vitesse du vent (a priori
+en m/s, probablement projetée sur un axe fixe, d’où les valeurs
+signées).
 
-On représente ces données dans des plans ou l'axe des ordonnées est
+On représente ces données dans des plans où l'axe des ordonnées est
 toujours $\texttt{maxO3}$ : la variable à expliquer.
 
 ::: {.panel-tabset group="language"}
@@ -175,7 +199,7 @@ question précédente ? Tester également la significativité globale du modèle
 ::: answer
 
 On effectue la régression
-$$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T9}_i+\beta_3\texttt{T12}_i+\beta_4\texttt{T15}_i+\beta_5\texttt{Ne9}_i+\beta_6\texttt{Ne12}_i+\beta_7\texttt{Ne15}_i+\beta_8\texttt{Vx9}_i+\beta_9\texttt{Vx12}_i+\beta_{10}\texttt{Vx15}_i+\varepsilon_i$$
+$$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T9}_i+\beta_3\texttt{T12}_i+\beta_4\texttt{T15}_i+\beta_5\texttt{Ne9}_i+\beta_6\texttt{Ne12}_i+\beta_7\texttt{Ne15}_i+\beta_8\texttt{Vx9}_i+\beta_9\texttt{Vx12}_i+\beta_{10}\texttt{Vx15}_i+\epsilon_i$$
 à l'aide de la fonction `lm` disponible nativement dans
 {{< iconify logos:r-lang >}}. On cherche ainsi une estimation du vecteur
 $\beta$ à l'aide de la méthode des moindres carrés ordinaires (MCO).
@@ -206,16 +230,16 @@ summary(modele_q2)
 ```
 :::
 
-Les résultats de cette estimations sont assez peut cohérents avec les
+Les résultats de cette estimation sont assez peu cohérents avec les
 intuitions de la question 1. Selon le test de significativité de
 Student, aucune variable ne semble significative dans ce modèle, à
 l'exception peut-être de $\texttt{Vx9}$ au seuil $\alpha =0,05$. Ces résultats
 sont assez surprenants, surtout compte tenu des nuages de points
-observés précédemment. En particulier, $\texttt{Vx9}$` ne semblait pas être la
+observés précédemment. En particulier, $\texttt{Vx9}$ ne semblait pas être la
 variable la plus pertinente pour expliquer $\texttt{maxO3}$.
 
-Par ailleurs le test de significativité globale de Fisher (dernière
-ligne de la sortie) donne une p-value bien inférieure à $0,05$ donc on
+Par ailleurs, le test de significativité globale de Fisher (dernière
+ligne de la sortie) donne une p-valeur bien inférieure à $0,05$ donc on
 rejette l'hypothèse nulle $H_0: \ \beta_2 = \dots =  \beta_{10}=0$. Cette
 issue du test de Fisher semble également entrer en contradiction avec
 les tests de Student précédents.
@@ -237,7 +261,7 @@ pairs(
 
 pairs(
   x = data_ozone[,c("Ne9", "Ne12", "Ne15")],
-  main = "Matrice des nuages de points sur les nébuloistés"
+  main = "Matrice des nuages de points sur les nébulosités"
 )
 
 pairs(
@@ -262,7 +286,7 @@ GGally::ggpairs(
 GGally::ggpairs(
     data = {data_ozone |> dplyr::filter(!is.na(Ne9) & !is.na(Ne12) & !is.na(Ne15))},
     columns  = c("Ne9", "Ne12", "Ne15"),
-    title = "Matrice des nuages de points sur les nébuloistés",
+    title = "Matrice des nuages de points sur les nébulosités",
     upper = list(continuous = "cor"),
     diag = NULL
 )
@@ -276,7 +300,7 @@ GGally::ggpairs(
 ```
 :::
 
-Comme la multicolinéarité n'est pas parfaite $X^{\prime} X$, reste
+Comme la multicolinéarité n'est pas parfaite, $X^{\prime} X$ reste
 inversible mais a une inverse qui prend de très grandes valeurs. La
 conséquence est que la variance des estimateurs est très grande (puisque
 $\mathbb{V}(\hat{\beta})=\sigma^2\left(X^{\prime} X\right)^{-1}$ ).
@@ -311,7 +335,7 @@ VIF_j=\frac{1}{1-R_j^2}
 $$
 
 où $R_j^2$ est le $R^2$ dans la régression de $X^{(j)}$ par rapport
-aux autres variables explicatives
+aux autres variables explicatives.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -344,15 +368,15 @@ Student ne sont pas rejetés.
 
 ## Question 4
 
-On décide d’enlever des variables au modèle précédent. Quelles variables semblet-il naturel d’enlever au vu de la question précédente ? Ajuster le nouveau modèle proposé et répéter les analyses effectuées dans les deux questions précédentes.
+On décide d’enlever des variables au modèle précédent. Quelles variables semble-t-il naturel d’enlever au vu de la question précédente ? Ajuster le nouveau modèle proposé et répéter les analyses effectuées dans les deux questions précédentes.
 
 ::: {.content-visible when-meta="is_answer_print_4"}
 
 ::: answer
 
-On peut retenir, une variable parmi chaque groupe (température,
-nébulosité et vitesse du vente). On peut sélectionner par exemple celle
-qui est le plus correlée avec la variable $\texttt{maxO3}$ à chaque fois.
+On peut retenir une variable parmi chaque groupe (température,
+nébulosité et vitesse du vent). On peut sélectionner par exemple celle
+qui est la plus corrélée avec la variable $\texttt{maxO3}$ à chaque fois.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -418,7 +442,7 @@ tend à diminuer lorsqu'on retire des variables, même si celles-ci ne
 sont pas significatives. Toutefois, il est plus pertinent de se
 concentrer sur le $R_a^2$ : celui-ci reste similaire entre le
 sous-modèle (0.6612) et le modèle global (0.6633), ce qui valide notre
-approche. Nous n'avons pas perdu vraiment d'information $67\  \%$ de la variance reste expliquée par le modèle.
+approche. Nous n'avons pas vraiment perdu d'information : $67\  \%$ de la variance reste expliquée par le modèle.
 
 :::
 
@@ -426,9 +450,9 @@ approche. Nous n'avons pas perdu vraiment d'information $67\  \%$ de la variance
 
 ## Question 5 {#question-5}
 
-Mettre en oeuvre une sélection automatique du meilleur sous-modèle possible du
+Mettre en œuvre une sélection automatique du meilleur sous-modèle possible du
 "gros" modèle ajusté dans la [question 2](#question-2), selon le critère BIC. On pourra utiliser la
-fonction  `regsubsets` de la libraire `leaps` (puis `plot.regsubsets`) ou `step`. Comparer
+fonction `regsubsets` de la librairie `leaps` (puis `plot.regsubsets`) ou `step`. Comparer
 le modèle retenu avec le modèle choisi à la question précédente.
 
 ::: {.content-visible when-meta="is_answer_print_5"}
@@ -444,14 +468,14 @@ $$\textrm{BIC}=n \ln\left( \frac{S C R}{n}\right)+(p+1) \ln(n)$$
 restreint)**
 
 La fonction `regsubsets` du package `leaps` permet de calculer toutes
-les combinaisons de modèle posible. Appliquer la fonction `plot` permet
+les combinaisons de modèles possibles. Appliquer la fonction `plot` permet
 ensuite de visualiser le résultat.
 
 ::: {.panel-tabset group="language"}
 ### Base R
 
 ```{webr}
-#| envir: tdv
+#| envir: baser
 #| autorun: true
 res_regsubset <- leaps::regsubsets(
   maxO3 ~ T9 + T12 + T15 + Ne9 + Ne12 + Ne15 + Vx9 + Vx12 + Vx15,
@@ -480,7 +504,7 @@ modèle à 2 variables,... en les classant du pire (en bas) au meilleur
 (en haut), selon le critère BIC. Les variables sélectionnées dans chaque
 modèle sont grisées. Si on se réfère à cette sélection, on choisirait
 donc le modèle avec les variables $\texttt{T12}$, $\texttt{Ne9}$ et $\texttt{Vx9}$ (ce choix est
-donc différent du modèle que l’on avait retenu de façon naive ci-dessus)
+différent du modèle que l’on avait retenu de façon naïve ci-dessus).
 
 **Recherche pas à pas (à privilégier quand il y a beaucoup de
 variables)**
@@ -488,14 +512,14 @@ variables)**
 La fonction `step` permet de sélectionner un modèle pas à pas. Il existe
 plusieurs types (backward, forward, hybride). Contrairement à la
 procédure exhaustive, les procédures pas à pas ne parcourent pas tous
-les sous-modèles possibles. Ils peuvent donc éventuellement "rater" le
+les sous-modèles possibles. Elles peuvent donc éventuellement "rater" le
 meilleur modèle.
 
 ::: {.panel-tabset group="language"}
 ### Base R
 
 ```{webr}
-#| envir: tdv
+#| envir: baser
 #| autorun: true
 #BIC backward
 cat("BIC backward\n")
@@ -578,7 +602,7 @@ mêmes résultats que précédemment avec la recherche exhaustive.
 
 On retient le modèle :
 
-$$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T12}_i+\beta_3\texttt{Ne9}_i+\beta_4\texttt{Vx9}_i+\varepsilon_i$$
+$$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T12}_i+\beta_3\texttt{Ne9}_i+\beta_4\texttt{Vx9}_i+\epsilon_i$$
 
 :::
 
@@ -594,14 +618,49 @@ que BIC. Les modèles retenus sont-ils les mêmes ? Si non, lequel semble préf�
 ::: answer
 
 Pour la méthode exhaustive, il est possible d'afficher le classement
-selon d'autres critères en ajustant l'option `scale`de la fonction
-`regsubsets`.
+selon d'autres critères en ajustant l'option `scale` de la fonction
+`regsubsets`. On notera que `plot.regsubsets` ne propose que les critères
+`"bic"`, `"Cp"`, `"adjr2"` et `"rss"` : l'AIC n'y figure pas, c'est
+pourquoi on se limite ici au $R^2$ ajusté et au $C_p$ de Mallows (on
+pourrait sinon recalculer l'AIC à la main à partir des SCR fournis par
+`summary(regsubsets)`).
+
+::: {.callout-note collapse="true"}
+### Rappel : $R^2$ ajusté et $C_p$ de Mallows
+
+Pour rappel, pour un modèle contenant une constante, le $R^2$ ajusté vaut
+
+$$
+R_a^2 = 1 - \frac{n-1}{n-p}\frac{\textrm{SCR}}{\textrm{SCT}}
+$$
+
+où $\textrm{SCT} = \sum\limits_{i=1}^n (Y_i - \bar{Y})^2$ ne dépend pas du modèle choisi
+et $\textrm{SCR} = \sum\limits_{i=1}^n (Y_i - \hat{Y}_i)^2$ est propre au modèle
+considéré. Entre deux modèles, on privilégie celui qui a le $R_a^2$ le
+plus élevé.
+
+Le $C_p$ de Mallows vise à estimer l'erreur de prévision
+$\mathbb{E}\left(\lVert \tilde{Y} - X\hat{\beta} \rVert^2\right)$ pour un
+vecteur $\tilde{Y}$ indépendant de $Y$ mais qui suit la même loi, afin de
+mesurer la performance prédictive du modèle sur de nouveaux individus. Il
+l'estime comme ceci :
+
+$$
+C_p = \frac{\textrm{SCR}}{\hat{\sigma}^2} - n + 2p
+$$
+
+où $p$ est le nombre de variables explicatives du modèle considéré,
+$SCR$ la somme des carrés des résidus du modèle considéré, et
+$\hat{\sigma}^2$ l'estimation de $\sigma^2$ obtenue dans le plus gros
+modèle (celui contenant les $p_{\max}$ variables explicatives). Parmi
+tous les modèles testés, on retient celui qui a le $C_p$ le plus faible.
+:::
 
 ::: {.panel-tabset group="language"}
 ### Base R
 
 ```{webr}
-#| envir: tdv
+#| envir: baser
 #| autorun: true
 plot(res_regsubset, scale = "adjr2")
 plot(res_regsubset, scale = "Cp")
@@ -617,7 +676,7 @@ plot(res_regsubset, scale = "Cp")
 ```
 :::
 
-Le résultat est identique avec les $R^2$ ajustés et les $C_p$ de Mallows
+Le résultat est identique avec les $R^2$ ajustés et les $C_p$ de Mallows,
 mais l'issue est différente par rapport à la question précédente avec le
 critère BIC. On retiendrait aussi la variable $\texttt{T9}$. Comme elle
 est très corrélée à la variable $\texttt{T12}$, il semble raisonnable de
@@ -643,7 +702,7 @@ On analyse les résidus graphiquement avec la fonction `plot`.
 ### Base R
 
 ```{webr}
-#| envir: tdv
+#| envir: baser
 #| autorun: true
 modele_q5 <- lm(formula  = maxO3 ~T12 + Ne9 + Vx9, data = data_ozone) 
 par(mfrow= c(2, 2))
@@ -665,11 +724,11 @@ Un examen graphique des résidus révèle une distribution aléatoire
 satisfaisante car
 
 -   aucune structure ni hétéroscédasticité n'est apparente (graphique en
-    haut à droite des résidus et valeurs ajustées) ;
--   compatible avec une loi normale, bien que cela importe peu compte
-    tenu du nombre d’observations (graphique en haut à droite - QQ plot)
+    haut à gauche des résidus et valeurs ajustées) ;
+-   la distribution est compatible avec une loi normale, bien que cela importe peu compte
+    tenu du nombre d’observations (graphique en haut à droite : le QQ plot)
     ;
--   aucun individu atypique n'est détecté (graphique en bas à droite -
+-   aucun individu atypique n'est détecté (graphique en bas à droite avec
     distances de Cook)
 
 **Test d’homoscédasticité des résidus**
@@ -680,7 +739,7 @@ satisfaisante car
 Le test de Breusch-Pagan permet de tester l’homoscédasticité. Il
 s'implémente sous {{< iconify logos:r-lang >}} avec la fonction `bptest` de la librairie `lmtest`.
 
-On suppose que $\varepsilon_i$ a une variance
+On suppose que $\epsilon_i$ a une variance
 $\sigma_i^2=\sigma^2+z_i'\gamma$
 
 -   $z_i$ est un vecteur de $k$ variables à choisir qui pourraient
@@ -702,7 +761,7 @@ $$
 ### Base R
 
 ```{webr}
-#| envir: tdv
+#| envir: baser
 #| autorun: true
 lmtest::bptest(modele_q5)
 ```
@@ -723,13 +782,13 @@ On ne rejette pas $H_0$ au seuil 5 %. L'homoscédasticité est vérifiée.
 ::: callout-note
 ### Tests de Durbin-Watson et Breusch-Godfrey
 
-Le tests de Durbin-Watson et Breusch-Godfrey permettent de tester la non
-corrélation des résidus. Ils s'implémentent sous {{< iconify logos:r-lang >}} avec la fonction
+Les tests de Durbin-Watson et Breusch-Godfrey permettent de tester la
+non-corrélation des résidus. Ils s'implémentent sous {{< iconify logos:r-lang >}} avec la fonction
 `dwtest` et `bgtest` de la librairie `lmtest`.
 
-On suppose que $\varepsilon_i$ sont auto-corrélées à l'ordre $r$, i.e.
+On suppose que $\epsilon_i$ sont auto-corrélées à l'ordre $r$, i.e.
 
-$$\varepsilon_i = \rho_1\varepsilon_{i-1}+\dots+\rho_r\varepsilon_{i-r}+\eta_i$$
+$$\epsilon_i = \rho_1\epsilon_{i-1}+\dots+\rho_r\epsilon_{i-r}+\eta_i$$
 où les $\eta_i$ sont $\texttt{iid}$ suivant une
 $\mathcal{N}\left(0, \sigma^2\right)$.
 
@@ -748,7 +807,7 @@ $$
 ### Base R
 
 ```{webr}
-#| envir: tdv
+#| envir: baser
 #| autorun: true
 lmtest::dwtest(modele_q5)
 lmtest::bgtest(modele_q5)
@@ -769,7 +828,7 @@ une auto-corrélation dans les résidus, ce qui n’est pas surprenant
 puisque la variable d’intérêt, $\texttt{maxO3}$, est temporelle : la
 valeur d'un jour donné est liée à celle de la veille, et cela se
 manifeste dans les résidus du modèle. Cette observation indique que
-l’hypothèse usuelle $\mathbb{V}(\varepsilon)=\sigma^2I_n$ n'est pas
+l’hypothèse usuelle $\mathbb{V}(\epsilon)=\sigma^2I_n$ n'est pas
 respectée ici. Bien qu'on puisse voir cela comme une contrainte, c’est
 en réalité une occasion d'améliorer le modèle initial : la corrélation
 temporelle n'a pas été prise en compte, offrant ainsi un levier pour
@@ -781,9 +840,9 @@ enrichir notre modélisation en intégrant cette dépendance.
 
 ## Question 8
 
-Afin de résoudre le problème d’auto-corrélation des résidus, on propose d’ajouter la
+Afin de résoudre le problème d’auto-corrélation des résidus, on propose d’ajouter le
 maximum d’ozone de la veille dans le modèle. Créer cette variable, que l’on nommera
-$\texttt{maxO3v}$ et ajouter-la au jeu de données. Observe-t-on un lien linéaire entre $\texttt{maxO3}$
+$\texttt{maxO3v}$ et l’ajouter au jeu de données. Observe-t-on un lien linéaire entre $\texttt{maxO3}$
 et $\texttt{maxO3v}$ ?
 
 ::: {.content-visible when-meta="is_answer_print_8"}
@@ -797,12 +856,18 @@ maximum d'ozone de la veille.
 ### Base R
 
 ```{webr}
-#| envir: tdv
+#| envir: baser
 #| autorun: true
 data_ozone_q8 <- data_ozone
 data_ozone_q8$maxO3v <- c(NA, data_ozone$maxO3[1:(nrow(data_ozone)-1)])
-plot(data_ozone_q8$maxO3v, data_ozone_q8$maxO3)
-cor(data_ozone_q8$maxO3, data_ozone_q8$maxO3v, use='pairwise.complete.obs')
+cor_maxO3v <- cor(data_ozone_q8$maxO3, data_ozone_q8$maxO3v, use='pairwise.complete.obs')
+plot(
+  x = data_ozone_q8$maxO3v,
+  y = data_ozone_q8$maxO3,
+  xlab = "Maximum d'ozone de la veille (maxO3v)",
+  ylab = "Maximum d'ozone du jour (maxO3)"
+)
+legend("topleft", bty = "n", legend = paste("r =", round(cor_maxO3v, 3)))
 ```
 
 ### Tidyverse
@@ -814,11 +879,24 @@ data_ozone_q8 <- data_ozone |>
   dplyr::mutate(
     maxO3v = dplyr::lag(maxO3)
   )
+cor_maxO3v <- cor(data_ozone_q8$maxO3, data_ozone_q8$maxO3v, use = 'pairwise.complete.obs')
 ggplot2::ggplot(
   data = data_ozone_q8,
-  mapping = ggplot2::aes(x = maxO3, y = maxO3v)
-) + geom_point()
-cor(data_ozone_q8$maxO3, data_ozone_q8$maxO3v, use = 'pairwise.complete.obs')
+  mapping = ggplot2::aes(x = maxO3v, y = maxO3)
+) +
+  ggplot2::labs(
+    x = "Maximum d'ozone de la veille (maxO3v)",
+    y = "Maximum d'ozone du jour (maxO3)"
+  ) +
+  ggplot2::geom_point(na.rm = TRUE) +
+  ggplot2::annotate(
+    geom = "text",
+    x = -Inf,
+    y = Inf,
+    hjust = 0,
+    vjust = 1,
+    label = paste("r =", round(cor_maxO3v, 3))
+  )
 ```
 :::
 
@@ -846,7 +924,7 @@ On ajoute la covariable $\texttt{maxO3v}$ au modèle de la question 5.
 ### Base R
 
 ```{webr}
-#| envir: tdv
+#| envir: baser
 #| autorun: true
 modele_q9 <- lm(formula  = maxO3 ~ T12 + Ne9 + Vx9 + maxO3v, data = data_ozone_q8)
 summary(modele_q9)
@@ -871,7 +949,7 @@ l’analyse des résidus.
 ### Base R
 
 ```{webr}
-#| envir: tdv
+#| envir: baser
 #| autorun: true
 par(mfrow= c(2, 2))
 plot(modele_q9)
@@ -890,11 +968,11 @@ Un examen graphique des résidus révèle une distribution aléatoire
 satisfaisante car
 
 -   aucune structure ni hétéroscédasticité n'est apparente (graphique en
-    haut à droite des résidus et valeurs ajustées) ;
--   compatible avec une loi normale, bien que cela importe peu compte
-    tenu du nombre d’observations (graphique en haut à droite - QQ plot)
+    haut à gauche des résidus et valeurs ajustées) ;
+-   la distribution est compatible avec une loi normale, bien que cela importe peu compte
+    tenu du nombre d’observations (graphique en haut à droite : le QQ plot)
     ;
--   aucun individu atypique n'est détecté (graphique en bas à droite -
+-   aucun individu atypique n'est détecté (graphique en bas à droite avec les
     distances de Cook)
 
 **Test d’homoscédasticité des résidus**
@@ -903,9 +981,9 @@ satisfaisante car
 ### Base R
 
 ```{webr}
-#| envir: tdv
+#| envir: baser
 #| autorun: true
-lmtest::bptest(modele_q5)
+lmtest::bptest(modele_q9)
 ```
 
 ### Tidyverse
@@ -925,7 +1003,7 @@ On ne rejette pas $H_0$ au seuil 5 %. L'homoscédasticité est confirmée.
 ### Base R
 
 ```{webr}
-#| envir: tdv
+#| envir: baser
 #| autorun: true
 lmtest::dwtest(modele_q9)
 lmtest::bgtest(modele_q9)
@@ -948,6 +1026,7 @@ d'autocorrélation est confirmée.
 
 :::
 
+
 ## Question 10
 
 Comparer ce dernier modèle au modèle sans $\texttt{maxO3v}$ à l’aide d’un test de Fisher et en comparant les différents critères de sélection (AIC, BIC, Cp de Mallows, R² ajusté).
@@ -956,13 +1035,13 @@ Comparer ce dernier modèle au modèle sans $\texttt{maxO3v}$ à l’aide d’un
 
 ::: answer
 
-**Test de Fisher sur des modèles emboités**
+**Test de Fisher sur des modèles emboîtés**
 
 ::: {.panel-tabset group="language"}
 ### Base R
 
 ```{webr}
-#| envir: tdv
+#| envir: baser
 #| autorun: true
 car::linearHypothesis(
   modele_q9,
@@ -982,7 +1061,7 @@ car::linearHypothesis(
 ```
 :::
 
-Le test de Fisher sur les modèle emboité confirme la significativité de
+Le test de Fisher sur les modèles emboîtés confirme la significativité de
 la variable $\texttt{maxO3v}$.
 
 **Critères de sélection**
@@ -991,7 +1070,7 @@ la variable $\texttt{maxO3v}$.
 ### Base R
 
 ```{webr}
-#| envir: tdv
+#| envir: baser
 #| autorun: true
 cp_mallows <- function(lm_model, lm_full) {
   # Nombre d'observations
