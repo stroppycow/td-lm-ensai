@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 0
+  question_courante: 7
 format:
   live-html:
     code-background: true
@@ -38,14 +38,14 @@ de l’exercice précédent.
 
 ## Question 1
 
-Quelle loi suit la statistique $F$ ? Montrer que lorsque $n \to 1$, cette loi est équivalente
+Quelle loi suit la statistique $F$ ? Montrer que lorsque $n \to \infty$, cette loi est équivalente
 à une loi $\chi^2(1)$.
 
 ::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
 
-Si le modèle est Gaussien, alors sous $H_{0}: \beta_{p}=0, F$ suit une
+Si le modèle est Gaussien, alors sous $H_{0}: \beta_{p}=0$, $F$ suit une
 loi $F(1, n-p)$.
 
 Or par définition d'une loi de Fisher,
@@ -54,19 +54,18 @@ $$
 F(1, n-p)=\frac{\chi^{2}(1) / 1}{\chi^{2}(n-p) /(n-p)}
 $$
 
-En notant $U_{n}$ une variable aléatoire suivant une loi
-$\chi^{2}(n-p) /(n-p)$, on a la représentation
+où les deux variables $\chi^{2}$ sont **indépendantes**. En notant
+$W$ une variable suivant une loi $\chi^{2}(n-p)$ et en posant
 
 $$
-U_{n}=\frac{1}{n-p} \sum_{i=1}^{n-p} Z_{i}^{2}
+U_{n}=\frac{W}{n-p}=\frac{1}{n-p} \sum_{i=1}^{n-p} Z_{i}^{2}
 $$
 
-où les $Z_{i}$ sont i.i.d. $\mathcal{N}(0,1)$.
+où les $Z_{i}$ sont i.i.d. $\mathcal{N}(0,1)$, on peut donc écrire
+$F = Z^2 / U_n$ avec $Z \sim \mathcal{N}(0,1)$ indépendante de $U_n$.
 
-Par application de la loi faible des grands nombres, on a donc
-$U_{n} \rightarrow \mathbb{E}\left(Z_{1}^{2}\right)=1$ en probabilité.
-D'après le lemme de Slutsky,
-$n \rightarrow \infty, F(1, n-p) \rightarrow \chi^{2}(1)$ en loi.
+Par application de la loi faible des grands nombres, $U_{n} \rightarrow \mathbb{E}\left(Z_{1}^{2}\right)=1$ en probabilité.
+D'après le lemme de Slutsky, lorsque $n \rightarrow \infty$, $F$ converge donc en loi vers $\chi^{2}(1)$.
 
 :::
 
@@ -105,8 +104,17 @@ $F(1, n-p)$ et $F_{\chi^{2}(1)}$ la fonction de répartition d'une
 $\chi^{2}(1)$, on a 
 
 $$
-\mathbb{P}(F>1)=1-F_{1, n-p}(1) \underset{n \rightarrow \infty}{\longrightarrow} 1-F_{\chi^{2}(1)}(1) \approx 0,32
+\mathbb{P}(F>1)=1-F_{1, n-p}(1) \underset{n \rightarrow \infty}{\longrightarrow} 1-F_{\chi^{2}(1)}(1)
 $$
+
+Or $\chi^{2}(1) = Z^{2}$ avec $Z \sim \mathcal{N}(0,1)$, donc
+
+$$
+1-F_{\chi^{2}(1)}(1)=\mathbb{P}(Z^{2}>1)=\mathbb{P}(|Z|>1)=2(1-\Phi(1)) \approx 0{,}32
+$$
+
+où $\Phi$ désigne la fonction de répartition de la loi
+$\mathcal{N}(0,1)$.
 
 :::
 
@@ -126,8 +134,10 @@ $F(1, n-p)$ et $F_{\chi^{2}(1)}$ la fonction de répartition d'une
 $\chi^{2}(1)$, on a
 
 $$
-\mathbb{P}(F>2)=1-F_{1, n-p}(2) \underset{n \rightarrow \infty}{\longrightarrow} 1-F_{\chi^{2}(1)}(2) \approx 0,16
+\mathbb{P}(F>2)=1-F_{1, n-p}(2) \underset{n \rightarrow \infty}{\longrightarrow} 1-F_{\chi^{2}(1)}(2)
 $$
+
+De même, $1-F_{\chi^{2}(1)}(2)=\mathbb{P}(|Z|>\sqrt{2})=2(1-\Phi(\sqrt{2})) \approx 0{,}16$.
 
 :::
 
@@ -141,9 +151,15 @@ Même question si la décision est basée sur le critère AIC.
 
 ::: answer
 
-Le critère AIC est similaire au critère du $C_{p}$ de Mallows lorsque
-$n \rightarrow \infty$, on obtient donc le même résultat que dans la
-question précédente.
+D'après la question 6 de l'exercice 8, on inclut $X^{(p)}$ selon le
+critère AIC si $F>2(n-p)/n$. Lorsque $n \rightarrow \infty$, ce seuil
+tend vers $2$ : le critère AIC est donc asymptotiquement équivalent au
+critère du $C_{p}$ de Mallows, et on obtient le même résultat que dans
+la question précédente :
+
+$$
+\mathbb{P}(F>2(n-p)/n) \underset{n \rightarrow \infty}{\longrightarrow} 1-F_{\chi^{2}(1)}(2) \approx 0{,}16
+$$
 
 :::
 
@@ -161,30 +177,42 @@ D'après la question 6 de l'exercice 8, quand $n$ est grand, on inclut
 $X^{(p)}$ selon le BIC si $F>\log(n)$.
 
 
-**Intuition :  ** $\mathbb{P}(F>\log n) \rightarrow 0$
+**Intuition :  ** $\mathbb{P}(F>\log n) \rightarrow 0$, car le seuil
+$\log n$ s'éloigne vers l'infini alors que la loi de $F$ se stabilise
+vers une loi fixe.
 
 Plus rigoureusement, comme $F$ dépend de $n$,
-$\mathbb{P}(F>\log n) \rightarrow 0$ n'est pas si immédiat. On a vu que $F_{1, n-p}(x) \rightarrow F_{\chi^{2}(1)}(x)$
-pour tout $x$ (c'est la convergence en loi). Les fonctions
-$F_{\mathcal{F}(1, n-p)}(.)$ étant continues et croissantes, cette
-convergence simple implique la convergence uniforme d'après le second
-théorème de Dini. Ainsi,
-$$\left\|F_{1, n-p}-F_{\chi^{2}(1)}\right\|_{\infty} \rightarrow 0$$
-
-Donc,
+$\mathbb{P}(F>\log n) \rightarrow 0$ n'est pas si immédiat : la
+convergence en loi de $F$ vers $\chi^{2}(1)$, qui donne
+$F_{1, n-p}(x) \rightarrow F_{\chi^{2}(1)}(x)$ pour tout $x$ **fixe**,
+ne s'applique pas directement en un point $x = \log n$ qui dépend de
+$n$. Reprenons plutôt la représentation de la question 1 :
+$F = Z^{2}/U_{n}$, où $Z \sim \mathcal{N}(0,1)$ ne dépend pas de $n$
+et $U_{n} \rightarrow 1$ en probabilité. On écrit
 
 $$
-\begin{align*}
-\mathbb{P}(F > \log(n)) &= 1 - F_{1, n-p}(\log(n)) \\
-&=\left|F_{1, n-p}(\log n)-F_{\chi^{2}(1)}(\log n)+F_{\chi^{2}(1)}(\log n)-1\right| \\
-&\leq\left|F_{1, n-p}(\log n)-F_{\chi^{2}(1)}(\log n)\right|+\left|F_{\chi^{2}(1)}(\log n)-1\right| \\
-&\leq\left\|F_{1, n-p}-F_{\chi^{2}(1)}\right\|_{\infty}+\left|F_{\chi^{2}(1)}(\log n)-1\right|
-\end{align*}
+\frac{F}{\log n} = \frac{Z^{2}}{\log n} \cdot \frac{1}{U_{n}}
 $$
 
-Le premier terme tend vers 0 par convergence uniforme, et le second
-aussi car $F_{\chi^{2}(1)}(x) \rightarrow 1$ lorsque
-$x \rightarrow \infty$.
+D'une part $Z^{2}/\log n \rightarrow 0$ presque sûrement, car $Z^{2}$
+est une variable aléatoire fixée (qui ne dépend pas de $n$) et
+$\log n \rightarrow \infty$. D'autre part $1/U_{n} \rightarrow 1$ en
+probabilité. Le lemme de Slutsky donne donc
+
+$$
+\frac{F}{\log n} \longrightarrow 0 \quad \text{en probabilité}.
+$$
+
+On en déduit enfin
+
+$$
+\mathbb{P}(F > \log n)
+= \mathbb{P}\left(\frac{F}{\log n} > 1\right)
+\longrightarrow 0,
+$$
+
+puisque $F/\log n$ converge en probabilité vers $0$, donc vers une
+constante $< 1$.
 
 :::
 
@@ -199,11 +227,25 @@ une variable en trop dans le modèle ?
 
 ::: answer
 
+Les questions précédentes se résument ainsi :
+
+| Critère | Seuil sur $F$ | $\mathbb{P}(\text{inclure } X^{(p)})$ quand $n \rightarrow \infty$ |
+|---|---|---|
+| Test de Fisher (niveau $\alpha$) | $f_{1, n-p}(1-\alpha)$ | $\alpha$ |
+| $R^{2}$ ajusté | $1$ | $\approx 0{,}32$ |
+| $C_{p}$ de Mallows | $2$ | $\approx 0{,}16$ |
+| AIC | $2(n-p)/n \rightarrow 2$ | $\approx 0{,}16$ |
+| BIC | $\approx \log n \rightarrow \infty$ | $0$ |
+
 Pour tous les critères, à l'exception du BIC, la probabilité de
 sélectionner le mauvais modèle (celui incluant $X^{(p)}$) demeure
-positive même lorsque $n \rightarrow \infty$. Seul le BIC assure la
-sélection du bon modèle lorsque $n \rightarrow \infty$, ce qui en fait
-le critère préférable sous cet aspect.
+positive même lorsque $n \rightarrow \infty$ : ni le test de Fisher
+(erreur de première espèce $\alpha$), ni le $R^{2}$ ajusté, ni le
+$C_{p}$ ou l'AIC ne sont garantis de sélectionner le bon modèle à
+grande taille d'échantillon. Seul le BIC, dont le seuil
+$\log n$ diverge, assure la sélection du bon modèle lorsque
+$n \rightarrow \infty$ (on dit que le BIC est *cohérent*), ce qui en
+fait le critère préférable sous cet aspect.
 
 :::
 
