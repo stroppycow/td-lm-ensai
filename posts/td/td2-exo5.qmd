@@ -64,9 +64,22 @@ chaque variable explicative.
 
 Par définition, la corrélation empirique entre $Y$ et $X\beta$ est :
 
-$$\textrm{cor}(Y, X\beta) = \frac{\textrm{Cov}(Y, X\beta)}{\sqrt{\text{Var}(Y)}\sqrt{\text{Var}(X\beta)}}$$ 
+$$\textrm{cor}(Y, X\beta) = \frac{\textrm{Cov}(Y, X\beta)}{\sqrt{\textrm{Var}(Y)}\sqrt{\textrm{Var}(X\beta)}}$$ 
 
-où $\textrm{Cov}(Y, X\beta) = \frac{1}{n}(Y - \overline{Y}\mathbb{1})'(X\beta - \overline{X\beta}\mathbb{1})$ est la covariance empirique,
+où
+
+ - $\textrm{Cov}(Y, X\beta)$ est la covariance empirique entre les vecteurs $Y$ et $X\beta$
+ - $\textrm{Var}(Y)$ est la variance empirique du vecteur $Y$
+ - $\textrm{Var}(X\beta)$ est la variance empirique du vecteur $X\beta$
+
+
+On explicite chaque composante :
+$$
+\begin{align*}
+\textrm{Cov}(Y, X\beta) = \frac{1}{n}\sum\limits_{i=1}^n \left(Y_i-\overline{Y}\right)\left(\sum\limits_{k=1}^p X_i^{(k)}\beta_k - \frac{1}{n}\sum\limits_{j=1}^n\sum\limits_{\ell=1}^p X_j^{(\ell)}\beta_\ell \right)
+\end{align*}
+$$
+
 $\text{Var}(Y) = \frac{1}{n}\|Y - \overline{Y}\mathbb{1}\|^2$ et $\text{Var}(X\beta) = \frac{1}{n}\|X\beta - \overline{X\beta}\mathbb{1}\|^2$.
 
 En substituant, on obtient après simplification :
@@ -86,7 +99,7 @@ $$\textrm{cor}(Y, X\beta) = \frac{(X\widehat{\beta}-\overline{Y}\mathbb{1})'(X\b
 
 ## Question 2
 
-En déduire que pour tout $\beta$, $\textrm{cor}(Y,X\beta)^2 =  R^2$, où
+En déduire que pour tout $\beta$, $\textrm{cor}(Y,X\beta)^2 \leq R^2$, où
 $R^2$ est le coefficient de corrélation multiple de la régression de $Y$
 sur $X$.
 

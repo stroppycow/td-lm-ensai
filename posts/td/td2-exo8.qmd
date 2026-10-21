@@ -34,19 +34,19 @@ On considère un modèle de régression linéaire visant à expliquer $Y$ en fon
 $X^{(1)}, \dots, X^{(p)}$. On désire choisir entre le modèle avec $X^{(p)}$ et le modèle sans $X^{(p)}$ (les autres
 variables étant incluses dans les deux cas), sur la base d’un échantillon de $n$ individus.
 
-On not $F$ la statistique :
+On note $F$ la statistique :
 
 $$
 F=(n-p)\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}}
 $$
 
-où $\textrm{SCR}$ désigne la somme des carrés résiduelle dans le modèle avec $\textrm{X}^{(p)}$, et $\textrm{SCR}_c$ désigne
-la somme des carrés résiduelle dans le modèle sans $\textrm{X}^{(p)}$.
+où $\textrm{SCR}$ désigne la somme des carrés résiduelle dans le modèle avec $X^{(p)}$, et $\textrm{SCR}_c$ désigne
+la somme des carrés résiduelle dans le modèle sans $X^{(p)}$.
 
 ## Question 1
 
 En appliquant un test de Fisher de modèles emboités, selon quelle règle de décision,
-basée sur $F$, choisira-t-on d’inclure la variable $\textrm{X}^{(p)}$ dans le modèle ?
+basée sur $F$, choisira-t-on d’inclure la variable $X^{(p)}$ dans le modèle ?
 
 
 ::: {.content-visible when-meta="is_answer_print_1"}
@@ -63,7 +63,7 @@ La variable $X^{(p)}$ est incluse si l'hypothèse $H_{1}$ est retenue,
 c'est-à-dire si $F > q_{1-\alpha}^{\mathcal{F}\left(1, \ n-p\right)}$,
 où $q_{1-\alpha}^{\mathcal{F}\left(1, \ n-p\right)}$ représente le
 quantile d'ordre $1-\alpha$ de la loi de Fisher $(1, n-p)$. Cette règle
-de décision exige de fixer le niveau de test $\alpha$. On choisi souvent
+de décision exige de fixer le niveau de test $\alpha$. On choisit souvent
 par convention $\alpha=0.05$.
 
 :::
@@ -87,8 +87,9 @@ Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère du $R^2$ ajust
 
 ::: answer
 
+
 On inclut $X^{(p)}$ si $R_{a}^{2}$ dans le modèle avec $X^{(p)}$ est
-supérieur au $R_{a}^{2}$ dans le modèle sans $X^{(p)}$, c'est à dire si
+supérieur au $R_{a}^{2}$ dans le modèle sans $X^{(p)}$, c'est-à-dire si
 
 $$
 \underbrace{1-\frac{n-1}{n-p} \frac{\textrm{SCR}}{\textrm{SCT}}}_{R_a^{2} \textrm{ dans le modèle avec } X^{(p)}}>\underbrace{1-\frac{n-1}{n-(p-1)} \frac{\textrm{SCR}_{c}}{\textrm{SCT}}}_{R_a^{2} \textrm{ dans le modèle sans } X^{(p)}}
@@ -106,11 +107,13 @@ $$
 -\frac{n-1}{n-p} \frac{\textrm{SCR}}{\textrm{SCT}} & >-\frac{n-1}{n-(p-1)} \frac{\textrm{SCR}_{c}}{\textrm{SCT}} \\
 \frac{\textrm{SCR}}{n-p} & < \frac{\textrm{SCR}_{c}}{n-(p-1)} \\
 (n-p+1)\textrm{SCR} & <(n-p) \textrm{SCR}_{c} \\
-(n-p) \textrm{SCR}+\textrm{SCR} & >(n-p) \textrm{SCR}_{c} \\
+(n-p) \textrm{SCR}+\textrm{SCR} & <(n-p) \textrm{SCR}_{c} \\
 \textrm{SCR} & <(n-p)\left(\textrm{SCR}_{c}-\textrm{SCR}\right) \\
 1 & <F
 \end{align*}
 $$
+
+Ainsi, selon le critère du $R^2$ ajusté, on inclut $X^{(p)}$ si $F>1$.
 
 :::
 
@@ -136,15 +139,15 @@ Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère du $C_p$ de Ma
 ::: answer
 
 On inclut $X^{(p)}$ si le $C_p$ dans le modèle avec $X^{(p)}$ est
-inférieur au $C_p$ dans le modèle sans $X^{(p)}$, c'est à dire si
+inférieur au $C_p$ dans le modèle sans $X^{(p)}$, c'est-à-dire si
 
 $$
 \begin{align*}
 \underbrace{\frac{\textrm{SCR}}{\hat{\sigma}^{2}}-n+2p}_{C_p \textrm{ dans le modèle avec } X^{(p)}} &< \underbrace{\frac{\textrm{SCR}_c}{\hat{\sigma}^{2}}-n+2(p-1)}_{C_p \textrm{ dans le modèle sans } X^{(p)}} \\
 \frac{\textrm{SCR}}{\hat{\sigma}^{2}} &< \frac{\textrm{SCR}_c}{\hat{\sigma}^{2}}-2 \\
-2 &< \frac{\textrm{SCR}_c-SRC}{\hat{\sigma}^{2}}
+2 &< \frac{\textrm{SCR}_c-\textrm{SCR}}{\hat{\sigma}^{2}}
 \end{align*} 
-$$ Or $\hat{\sigma}^{2}=\frac{SCR}{n-p}$ donc $F>2$ .
+$$ Or $\hat{\sigma}^{2}=\frac{\textrm{SCR}}{n-p}$, donc $2 < (n-p)\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}} = F$ : on inclut $X^{(p)}$ si $F>2$.
 
 :::
 
@@ -168,7 +171,7 @@ Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère AIC si $F > (n
 ::: answer 
 
 On inclut $X^{(p)}$ si l'AIC dans le modèle avec $X^{(p)}$ est inférieur
-à l'AIC dans le modèle sans $X^{(p)}$, c'est à dire si
+à l'AIC dans le modèle sans $X^{(p)}$, c'est-à-dire si
 
 $$
 \begin{align*}
@@ -180,7 +183,7 @@ e^{\frac{2}{n}} &< \frac{\textrm{SCR}_c}{\textrm{SCR}} \\
 \end{align*} 
 $$
 
-Donc $F > (n-p)\left(e^{\frac{2}{n}} - 1\right)$
+Le membre de droite vaut $(n-p)\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}} = F$ : on inclut donc $X^{(p)}$ si $F > (n-p)\left(e^{\frac{2}{n}} - 1\right)$.
 
 :::
 
@@ -203,7 +206,7 @@ Montrer qu’on décidera d’inclure $X^{(p)}$ selon le critère BIC si $F > (n
 ::: answer
 
 On inclut $X^{(p)}$ si le BIC dans le modèle avec $X^{(p)}$ est
-inférieur au BIC dans le modèle sans $X^{(p)}$, c'est à dire si
+inférieur au BIC dans le modèle sans $X^{(p)}$, c'est-à-dire si
 
 $$
 \begin{align*}
@@ -215,7 +218,7 @@ e^{\frac{\log(n)}{n}} &< \frac{\textrm{SCR}_c}{\textrm{SCR}} \\
 \end{align*} 
 $$
 
-Donc $F > (n-p)\left(e^{\frac{\log(n)}{n}} - 1\right)$
+Le membre de droite vaut $(n-p)\frac{\textrm{SCR}_c-\textrm{SCR}}{\textrm{SCR}} = F$ : on inclut donc $X^{(p)}$ si $F > (n-p)\left(e^{\frac{\log(n)}{n}} - 1\right)$.
 
 :::
 
@@ -231,6 +234,18 @@ de $X^{(p)}$) au moins conservatif (i.e. ayant tendance à accepter plus facilem
 de $X^{(p)}$). On pourra utiliser un développement limité pour l’étude des critères AIC
 et BIC, en supposant que $n$ est suffisamment grand.
 
+::: {.callout-note collapse="true"}
+### Lien avec l'erreur de type I
+
+Inclure $X^{(p)}$ revient à rejeter $H_0 : \beta_p = 0$ (question 1) :
+l'inclure à tort est une erreur de type I. Chaque critère aboutit à
+une règle de la forme $F > s$, dont l'erreur de type I est
+$\mathbb{P}_{H_0}(F > s)$, avec $F \sim \mathcal{F}(1, \ n-p)$ sous
+$H_0$. Plus le seuil $s$ est élevé, plus cette probabilité est faible :
+on retrouve ici la définition usuelle d'une procédure conservatrice (
+une procédure dont l'erreur de type I est minimisée). 
+:::
+
 ::: {.content-visible when-meta="is_answer_print_6"}
 
 ::: answer
@@ -238,25 +253,42 @@ et BIC, en supposant que $n$ est suffisamment grand.
 Pour le critère AIC, on a vu que l'on inclut $X^{(p)}$ si
 $F>(n-p)\left(e^{2 / n}-1\right)$. Or, lorsque
 $n \rightarrow \infty,\left(e^{2 / n}-1\right) \sim 2 / n$, de telle
-sorte que le seuil est équivalent à 2 . Ainsi lorsque $n$ est grand, le
-critère AIC devient similaire au critère du $C_{p}$ de Mallows.
+sorte que le seuil est équivalent à $2(n-p)/n \approx 2$. Ainsi lorsque
+$n$ est grand, le critère AIC devient similaire au critère du $C_{p}$
+de Mallows (le seuil de l'AIC est même légèrement inférieur à celui du
+$C_p$, qui vaut exactement $2$, l'AIC étant donc légèrement moins
+conservatif que le $C_p$).
 
 Pour le critère BIC, le seuil est $(n-p)\left(e^{\log n / n}-1\right)$,
 or $\left(e^{\log n / n}-1\right) \sim \log n / n$ et le seuil est
-équivalent à $\log n$. Selon BIC (et si $n$ est grand) on inclut donc
+équivalent à $\frac{n-p}{n}\log n \approx \log n$. Selon BIC (et si
+$n$ est grand) on inclut donc
 $X^{(p)}$ si $F>\log n$.
 
 Pour les critères considérés, on a d'autant plus de facilité à inclure
-$X^{(p)}$ que le seuil $s$ dans la règle $F>s$ est faible. Etant donné
-les seuils calculés précédemment, les critères se classent donc ainsi,
-du plus conservatif (tendance à rejeter plus facilement $X^{(p)}$ ), au
-moins conservatif (tendance à l'accepter) :
+$X^{(p)}$ que le seuil $s$ dans la règle $F>s$ est faible. Les seuils
+calculés aux questions précédentes se résument ainsi :
+
+| Critère | On inclut $X^{(p)}$ si |
+|---|---|
+| Test de Fisher à 5 % | $F > q_{0.95}^{\mathcal{F}(1, \ n-p)} \in [3.8, \ 5]$ dès que $n - p > 10$ |
+| $R^2$ ajusté | $F > 1$ |
+| $C_p$ de Mallows | $F > 2$ |
+| AIC | $F > (n-p)\left(e^{2/n}-1\right) \approx 2$ |
+| BIC | $F > (n-p)\left(e^{\log n / n}-1\right) \approx \log n$ |
+
+Dès que $\log n > 5$ (soit $n \gtrsim 150$), ces seuils vérifient
 
 $$
-\textrm{BIC} \leq \text { test } F \leq C_{p} \approx \textrm{AIC} \leq R_{a}^{2}
+\underbrace{\log n}_{\textrm{BIC}} \ > \ \underbrace{q_{0.95}^{\mathcal{F}(1, \ n-p)}}_{\textrm{test } F} \ > \ \underbrace{2}_{C_p} \ \approx \ \underbrace{2(n-p)/n}_{\textrm{AIC}} \ > \ \underbrace{1}_{R_a^2}
 $$
 
-dès que $\log n > 5$. Cette hiérarchie peut aussi s’interpréter en
+et les critères se classent donc ainsi, du plus conservatif (tendance
+à rejeter plus facilement $X^{(p)}$), au moins conservatif (tendance à
+l'accepter) : BIC, puis test $F$, puis $C_p$ et AIC, puis $R_a^2$.
+
+
+Cette hiérarchie peut aussi s’interpréter en
 fonction de la tendance à conserver des modèles plus complexes : le
 critère $R_{a}^{2}$ privilégie généralement les modèles les plus
 complets, tandis que le BIC favorise des modèles plus parcimonieux. Ces

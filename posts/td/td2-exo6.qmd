@@ -77,11 +77,11 @@ c & d \\
 \end{pmatrix}
 $$
 
-$M$ est inversible si et seulement si $\det(M) = ad-cb \neq 0$ et
+$M$ est inversible si et seulement si $\det(M) = ad-bc \neq 0$ et
 dans ce cas
 
 $$
-M^{-1}=\frac{1}{ad-cb}\begin{pmatrix}
+M^{-1}=\frac{1}{ad-bc}\begin{pmatrix}
 d & -b \\
 -c & a \\
 \end{pmatrix}
@@ -166,8 +166,8 @@ $$
 347,5 \\
 261,5
 \end{pmatrix} =\frac{1}{87}\begin{pmatrix} 
-38920 -38963,5 \\
-(-51777,5)+52038.5
+38920 - 38963,5 \\
+(-51777,5)+52038,5
 \end{pmatrix} =
 \frac{1}{87}\begin{pmatrix}
 -43,5 \\
@@ -178,9 +178,11 @@ $$
 \end{pmatrix}
 $$
 
-À première vue, les estimations $\widehat{\beta}_n$ sont assez
-différentes $\widehat{\beta}_{n-1}$ alors que les données sont presque
-les mêmes.
+Alors que les données sont presque identiques (les entrées de $X'X$ et
+de $X'Y$ changent d'au plus $1\ \%$ après la suppression d'une seule
+observation), les estimations sont radicalement différentes :
+$\widehat{\beta}_n = (1, 1)'$ contre $\widehat{\beta}_{n-1} =
+(-0,5, 3)'$. Le premier coefficient change même de signe. 
 
 :::
 
@@ -205,21 +207,52 @@ $\left.x_{i, j}\right):$
 
 $$
 \begin{aligned}
-\hat{\rho}_n & =\frac{\sum\limits_{i=1}^n\left(x_{i, 1}-\bar{x}_1\right)\left(x_{i, 2}-\bar{x}_2\right)}{\sqrt{\sum\limits_{i=1}^n\left(x_{i, 1}-\bar{x}_1\right)^2 \sum\limits_{i=1}^n\left(x_{i, 2}-\bar{x}_2\right)^2}} \\
+\widehat{\rho}_n & =\frac{\sum\limits_{i=1}^n\left(x_{i, 1}-\bar{x}_1\right)\left(x_{i, 2}-\bar{x}_2\right)}{\sqrt{\sum\limits_{i=1}^n\left(x_{i, 1}-\bar{x}_1\right)^2 \sum\limits_{i=1}^n\left(x_{i, 2}-\bar{x}_2\right)^2}} \\
 & =\frac{\sum\limits_{i=1}^n x_{i, 1} x_{i, 2}}{\sqrt{\sum\limits_{i=1}^n x_{i, 1}^2 \sum\limits_{i=1}^n x_{i, 2}^2}}
 \end{aligned}
 $$
 
-car $\bar{x}_1=\bar{x}_2=0$ par hypothèse. Or
+car $\bar{x}_1=\bar{x}_2=0$ par hypothèse. Or, en écrivant la matrice
+des variables explicatives
 
 $$
-X^{\prime} X=\left(\begin{array}{cc}
+X=\begin{pmatrix}
+x_{1, 1} & x_{1, 2} \\
+\vdots & \vdots \\
+x_{n, 1} & x_{n, 2}
+\end{pmatrix}
+$$
+
+On a: 
+
+$$
+X^{\prime} X=\begin{pmatrix}
+x_{1, 1} & \cdots & x_{n, 1} \\
+x_{1, 2} & \cdots & x_{n, 2}
+\end{pmatrix}\begin{pmatrix}
+x_{1, 1} & x_{1, 2} \\
+\vdots & \vdots \\
+x_{n, 1} & x_{n, 2}
+\end{pmatrix}=\left(\begin{array}{cc}
 \sum\limits_{i=1}^n x_{i, 1}^2 & \sum\limits_{i=1}^n x_{i, 1} x_{i, 2} \\
 \sum\limits_{i=1}^n x_{i, 1} x_{i, 2} & \sum\limits_{i=1}^n x_{i, 2}^2
 \end{array}\right)
 $$
 
-Donc $\hat{\rho}_n=150 / \sqrt{200 \times 113} \approx 0,9979$.
+En identifiant avec la matrice $X'X$ donnée dans l'énoncé :
+
+$$
+\sum\limits_{i=1}^n x_{i, 1}^2 = 200, \qquad
+\sum\limits_{i=1}^n x_{i, 1} x_{i, 2} = 150, \qquad
+\sum\limits_{i=1}^n x_{i, 2}^2 = 113.
+$$
+
+Donc
+$$
+\hat{\rho}_n=150 / \sqrt{200 \times 113} = \frac{150}{\sqrt{22600}} \approx 0,9978
+$$
+Les deux variables explicatives
+sont presque parfaitement corrélées linéairement.
 
 :::
 
@@ -233,15 +266,78 @@ Commenter.
 
 ::: answer
 
-Cette situation met en évidence le problème de la multicolinéarité :
-lorsque deux variables explicatives sont fortement corrélées, même si la
-matrice $X'X$ reste inversible, l'estimateur $\hat{\beta}$ devient très instable, avec une variance très élevée. Concrètement, cela signifie que l’ajout ou le
-retrait d’un seul individu peut entraîner une variation radicale de la
-valeur de $\hat{\beta}$. C'est ce que l'on observe ici, indépendamment de la taille de l'échantillon, même si $n$ est de l'ordre du million. Une telle situation est évidemment indésirable sur le plan statistique. Cela nous
-incite donc à identifier et à corriger ce problème en pratique. On peut
-le détecter, entre autres, grâce au calcul des VIF, et le résoudre en
-supprimant par exemple la variable la moins pertinente parmi celles en
-cause.
+Cette situation met en évidence le problème de la multicolinéarité : les deux variables explicatives
+sont quasi parfaitement corrélées
+($\widehat{\rho}_n \approx 0{,}9978$), ce qui dégrade fortement la précision
+de l'estimateur des MCO.
+
+Pour rappel, la variance de l'estimateur est
+$\mathbb{V}(\widehat{\beta}_n) = \sigma^2 (X^{'}X)^{-1}$. 
+
+Or ici, 
+
+$$
+\left( X^{'} X \right)^{-1} = \frac{1}{\sum\limits_{i=1}^n x_{i,1}^2\sum\limits_{i=1}^n x_{i,2}^2 - \left(\sum\limits_{i=1}^n x_{i,1} x_{i,2} \right)^2}\begin{pmatrix}
+\sum\limits_{i=1}^n x_{i, 2}^2 & -\sum\limits_{i=1}^n x_{i, 1} x_{i, 2} \\
+-\sum\limits_{i=1}^n x_{i, 1} x_{i, 2} & \sum\limits_{i=1}^n x_{i, 1}^2  
+\end{pmatrix}
+$$
+
+Or, pour des variables centrées :
+
+
+$$
+\widehat{\rho}_n=\frac{\sum\limits_{i=1}^n x_{i, 1} x_{i, 2}}{\sqrt{\sum\limits_{i=1}^n x_{i, 1}^2 \sum\limits_{i=1}^n x_{i, 2}^2}} \Longleftrightarrow 1 - \widehat{\rho}_n^2 = \frac{\sum\limits_{i=1}^n x_{i, 1}^2 \sum\limits_{i=1}^n x_{i, 2}^2- \left( \sum\limits_{i=1}^n x_{i, 1} x_{i, 2} \right)^2}{\sum\limits_{i=1}^n x_{i, 1}^2 \sum\limits_{i=1}^n x_{i, 2}^2} \Longleftrightarrow \frac{1}{1-\widehat{\rho}_n^2} = \frac{\sum\limits_{i=1}^n x_{i, 1}^2 \sum\limits_{i=1}^n x_{i, 2}^2}{\sum\limits_{i=1}^n x_{i, 1}^2 \sum\limits_{i=1}^n x_{i, 2}^2- \left( \sum\limits_{i=1}^n x_{i, 1} x_{i, 2} \right)^2}
+$$
+
+On peut expliciter :
+
+$$
+\mathbb{V}(\widehat{\beta}_{n_1}) = \frac{\sigma^2}{\sum\limits_{i=1}^n x_{i,1}^2}\frac{1}{1-\widehat{\rho}_n^2},
+\qquad
+\mathbb{V}(\widehat{\beta}_{n_2}) = \frac{\sigma^2}{\sum\limits_{i=1}^n x_{i,2}^2}\frac{1}{1-\widehat{\rho}_n^2}.
+$$
+
+Plus $\widehat{\rho}_n$ est proche de 1 en valeur absolue, plus les variances de
+$\widehat{\beta}_{n_1}$ et $\widehat{\beta}_{n_2}$.
+
+
+::: {.content-hidden when-format="html"}
+
+Le facteur $\frac{1}{1-\rho^2}$, appelé facteur d'inflation de la
+variance (VIF), vaut ici
+
+$$
+\mathrm{VIF} = \frac{1}{1-\hat{\rho}_n^2} = \frac{22600}{100} = 226 :
+$$
+
+la variance de chaque coefficient est environ $226$ fois plus élevée que
+si les deux variables étaient non corrélées (les écarts-types,
+$\sqrt{226} \approx 15$ fois plus grands). C'est cohérent avec les
+termes diagonaux de $(X'X)^{-1}$ calculés à la [question 1](#question-1) :
+$\mathrm{Var}(\hat{\beta}_1) = 1{,}13\,\sigma^2$ et
+$\mathrm{Var}(\hat{\beta}_2) = 2\,\sigma^2$, alors qu'ils seraient de
+l'ordre de $\sigma^2/200$ et $\sigma^2/113$ sans corrélation. On
+repère en pratique une colinéarité problématique à un VIF supérieur à
+$10$ : nous en sommes très loin.
+
+:::
+
+Un estimateur à très forte variance est très
+sensible aux données : il suffit d'un petit changement dans
+l'échantillon pour que l'estimation se déplace fortement. C'est
+exactement ce que l'on a observé à la [question 1](#question-1), où $\widehat{\beta}$
+passe de $(1, 1)'$ à $(-0{,}5, 3)'$ après le retrait d'un seul individu
+(le premier coefficient change même de signe) alors que les
+données ont à peine changé. Ce phénomène ne dépend pas de la taille de
+l'échantillon tant que la corrélation subsiste.
+
+Une telle situation est évidemment indésirable sur le plan
+statistique : les coefficients, très sensibles à la moindre variation
+des données, ne sont pas interprétables individuellement. Cela nous
+incite donc à identifier et à corriger ce problème : on le détecte,
+entre autres, grâce au calcul des VIF, et on le résout par exemple en
+supprimant la variable la moins pertinente parmi celles en cause.
 
 :::
 
