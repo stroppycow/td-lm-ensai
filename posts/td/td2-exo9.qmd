@@ -4,7 +4,9 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 7
+  question_courante: 0
+webr:
+  render-df: gt-interactive
 format:
   live-html:
     code-background: true
@@ -30,7 +32,7 @@ custom-callout:
 {{< include ./../../_extensions/conditionnal.qmd >}}
 {{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
-On se place dans le cadre de l’exercice précédent, mais on suppose de plus que la variable
+On se place dans le cadre de l'[exercice précédent](./td2-exo8.qmd), mais on suppose de plus que la variable
 $X^{(p)}$ n’est pas significative dans le modèle (i.e. son coefficient est nul dans la régression)
 et que les résidus sont i.i.d. gaussiens. On admet les résultats énoncés dans les questions
 de l’exercice précédent.
@@ -54,7 +56,7 @@ $$
 F(1, n-p)=\frac{\chi^{2}(1) / 1}{\chi^{2}(n-p) /(n-p)}
 $$
 
-où les deux variables $\chi^{2}$ sont **indépendantes**. En notant
+où les deux variables $\chi^{2}$ sont indépendantes. En notant
 $W$ une variable suivant une loi $\chi^{2}(n-p)$ et en posant
 
 $$
@@ -81,7 +83,7 @@ quelle est la probabilité de décider (à tort) d’inclure la variable $X^{(p)
 ::: answer
 
 On décide (à tort) d'inclure la variable $X^{(p)}$ si
-$F>f_{1, n-p}(1-\alpha)$ où $f_{1, n-p}(1-\alpha)$ est le quantile
+$F> q_{1-\alpha}^{\mathcal{F}\left(1, \ n-p\right)}$ où $q_{1-\alpha}^{\mathcal{F}\left(1, \ n-p\right)}$ est le quantile
 d'ordre $1-\alpha$ d'une loi $F(1, n-p)$. La probabilité que cela se
 produise vaut $\alpha$. $\alpha$ est l'erreur de première espèce que
 l'on choisit.
@@ -94,12 +96,15 @@ l'on choisit.
 
 Vers quoi tend la probabilité précédente si on base la décision sur le $R^2_a$ ?
 
+
 ::: {.content-visible when-meta="is_answer_print_3"}
 
 ::: answer
 
 On inclut la variable $X^{(p)}$ selon le critère du $R^{2}$ ajusté si
-$F>1$. En notant $F_{1, n-p}$ la fonction de répartition d'une
+$F>1$ (seuil établi à l'[exercice 8, question
+2](./td2-exo8.qmd#question-2)). En notant $F_{1, n-p}$ la fonction de
+répartition d'une
 $F(1, n-p)$ et $F_{\chi^{2}(1)}$ la fonction de répartition d'une
 $\chi^{2}(1)$, on a 
 
@@ -116,6 +121,42 @@ $$
 où $\Phi$ désigne la fonction de répartition de la loi
 $\mathcal{N}(0,1)$.
 
+
+::: {.callout-note collapse="true"}
+#### Vérification numérique avec R
+
+Pour une loi de Fisher à $(d_1, d_2)$ degrés de liberté, la valeur
+$F_{1, d_2}(x) = \mathbb{P}(F(d_1, d_2) \leq x)$ de la fonction de
+répartition en $x$ s'obtient avec la fonction `pf` :
+
+```         
+pf(q = x, df1 = d1, df2 = d2)
+```
+
+De même, pour une loi du chi-2 à $d$ degrés de liberté,
+$F_{\chi^{2}(d)}(x)$ s'obtient avec la fonction `pchisq` :
+
+```         
+pchisq(q = x, df = d)
+```
+
+On vérifie numériquement sous {{< iconify logos:r-lang >}}, pour un
+modèle contenant $p = 2$ variables (donc $n - p$ degrés de liberté
+pour diverses tailles d'échantillon) :
+
+```{webr}
+#| envir: baser
+#| autorun: true
+sapply(
+  X = c(30, 50, 100, 1000),
+  FUN = function(n){ 1 - pf(q = 1, df1 = 1, df2 = n - 2) }
+)
+# Limite quand n -> infini :
+1 - pchisq(q = 1, df = 1)
+```
+
+:::
+
 :::
 
 :::
@@ -129,7 +170,9 @@ Même question si la décision est basée sur le $C_p$ de Mallows.
 ::: answer
 
 On inclut la variable $X^{(p)}$ selon le critère du $C_p$ de Mallows si
-$F>2$. En notant $F_{1, n-p}$ la fonction de répartition d'une
+$F>2$ (seuil établi à l'[exercice 8, question
+3](./td2-exo8.qmd#question-3)). En notant $F_{1, n-p}$ la fonction de
+répartition d'une
 $F(1, n-p)$ et $F_{\chi^{2}(1)}$ la fonction de répartition d'une
 $\chi^{2}(1)$, on a
 
@@ -138,6 +181,24 @@ $$
 $$
 
 De même, $1-F_{\chi^{2}(1)}(2)=\mathbb{P}(|Z|>\sqrt{2})=2(1-\Phi(\sqrt{2})) \approx 0{,}16$.
+
+::: {.callout-note collapse="true"}
+#### Vérification numérique avec R
+
+On vérifie numériquement sous {{< iconify logos:r-lang >}} :
+
+```{webr}
+#| envir: baser
+#| autorun: true
+sapply(
+  X = c(30, 50, 100, 1000),
+  FUN = function(n){ 1 - pf(q = 2, df1 = 1, df2 = n - 2) }
+)
+# Limite quand n -> infini :
+1 - pchisq(q = 2, df = 1)
+```
+
+:::
 
 :::
 
@@ -151,15 +212,37 @@ Même question si la décision est basée sur le critère AIC.
 
 ::: answer
 
-D'après la question 6 de l'exercice 8, on inclut $X^{(p)}$ selon le
+D'après la [question 6 de l'exercice
+8](./td2-exo8.qmd#question-6), on inclut $X^{(p)}$ selon le
 critère AIC si $F>2(n-p)/n$. Lorsque $n \rightarrow \infty$, ce seuil
-tend vers $2$ : le critère AIC est donc asymptotiquement équivalent au
+tend vers $2$ : le critère AIC est donc asymptotiquement équivalent au
 critère du $C_{p}$ de Mallows, et on obtient le même résultat que dans
 la question précédente :
 
 $$
 \mathbb{P}(F>2(n-p)/n) \underset{n \rightarrow \infty}{\longrightarrow} 1-F_{\chi^{2}(1)}(2) \approx 0{,}16
 $$
+
+::: {.callout-note collapse="true"}
+#### Vérification numérique avec R
+
+On vérifie numériquement sous {{< iconify logos:r-lang >}} avec le
+seuil AIC exact $(n-p)\left(e^{2/n}-1\right)$ établi à l'[exercice 8,
+question 4](./td2-exo8.qmd#question-4) :
+
+```{webr}
+#| envir: baser
+#| autorun: true
+sapply(
+  X = c(30, 50, 100, 1000),
+  FUN = function(n){ 1 - pf(q = (n - 2)*(exp(2/n) - 1), df1 = 1, df2 = n - 2) }
+)
+# Limite quand n -> infini :
+1 - pchisq(q = 2, df = 1)
+```
+
+
+:::
 
 :::
 
@@ -173,7 +256,9 @@ Même question si la décision est basée sur le critère BIC.
 
 ::: answer
 
-D'après la question 6 de l'exercice 8, quand $n$ est grand, on inclut
+D'après la [question 6 de l'exercice
+8](./td2-exo8.qmd#question-6) (le seuil exact étant établi à la
+[question 5](./td2-exo8.qmd#question-5)), quand $n$ est grand, on inclut
 $X^{(p)}$ selon le BIC si $F>\log(n)$.
 
 
@@ -184,9 +269,10 @@ vers une loi fixe.
 Plus rigoureusement, comme $F$ dépend de $n$,
 $\mathbb{P}(F>\log n) \rightarrow 0$ n'est pas si immédiat : la
 convergence en loi de $F$ vers $\chi^{2}(1)$, qui donne
-$F_{1, n-p}(x) \rightarrow F_{\chi^{2}(1)}(x)$ pour tout $x$ **fixe**,
+$F_{1, n-p}(x) \rightarrow F_{\chi^{2}(1)}(x)$ pour tout $x$ fixe,
 ne s'applique pas directement en un point $x = \log n$ qui dépend de
-$n$. Reprenons plutôt la représentation de la question 1 :
+$n$. Reprenons plutôt la représentation de la
+[question 1](#question-1) :
 $F = Z^{2}/U_{n}$, où $Z \sim \mathcal{N}(0,1)$ ne dépend pas de $n$
 et $U_{n} \rightarrow 1$ en probabilité. On écrit
 
@@ -194,25 +280,54 @@ $$
 \frac{F}{\log n} = \frac{Z^{2}}{\log n} \cdot \frac{1}{U_{n}}
 $$
 
-D'une part $Z^{2}/\log n \rightarrow 0$ presque sûrement, car $Z^{2}$
-est une variable aléatoire fixée (qui ne dépend pas de $n$) et
-$\log n \rightarrow \infty$. D'autre part $1/U_{n} \rightarrow 1$ en
-probabilité. Le lemme de Slutsky donne donc
+D'une part $Z^{2}/\log n \rightarrow 0$ presque sûrement (donc en
+loi), car $Z^{2}$ est une variable aléatoire fixée (qui ne dépend pas
+de $n$) et $\log n \rightarrow \infty$. D'autre part $1/U_{n}
+\rightarrow 1$ en probabilité. Le lemme de Slutsky (version produit :
+si $X_{n} \rightarrow X$ en loi et $Y_{n} \rightarrow c$ en
+probabilité, alors $X_{n}Y_{n} \rightarrow cX$ en loi) donne donc
 
 $$
-\frac{F}{\log n} \longrightarrow 0 \quad \text{en probabilité}.
+\frac{F}{\log n} = \frac{Z^{2}}{\log n} \cdot \frac{1}{U_{n}} \overset{d}{\longrightarrow} 0 \times 1 = 0
 $$
 
-On en déduit enfin
+Comme cette limite est une constante, la convergence en loi est
+équivalente à la convergence en probabilité : $F/\log n \rightarrow 0$
+en probabilité. On en déduit enfin
 
 $$
 \mathbb{P}(F > \log n)
 = \mathbb{P}\left(\frac{F}{\log n} > 1\right)
-\longrightarrow 0,
+= \mathbb{P}\left(\left|\frac{F}{\log n} - 0\right| > 1\right)
+\underset{n \rightarrow \infty}{\longrightarrow} 0.
 $$
 
-puisque $F/\log n$ converge en probabilité vers $0$, donc vers une
-constante $< 1$.
+Deux points justifient cette conclusion :
+
+1. Comme $F$ est un rapport de sommes de carrés, $F \geq 0$, donc
+$F/\log n \geq 0$ et l'événement $\{F/\log n > 1\}$ coïncide avec
+$\{|F/\log n - 0| > 1\}$ ;
+2. Par définition, la convergence en probabilité de $F/\log n$ vers
+$0$ signifie que $\mathbb{P}(|F/\log n - 0| > \varepsilon)
+\rightarrow 0$ pour tout $\varepsilon > 0$ fixé, en particulier
+pour $\varepsilon = 1$.
+
+::: {.callout-note collapse="true"}
+#### Vérification numérique avec R
+
+On vérifie numériquement sous {{< iconify logos:r-lang >}} que cette
+probabilité décroît bien vers $0$ :
+
+```{webr}
+#| envir: baser
+#| autorun: true
+sapply(
+  X = c(30, 50, 100, 1000, 10000),
+  FUN = function(n){ 1 - pf(q = log(n), df1 = 1, df2 = n - 2) }
+)
+```
+
+:::
 
 :::
 
@@ -231,11 +346,11 @@ Les questions précédentes se résument ainsi :
 
 | Critère | Seuil sur $F$ | $\mathbb{P}(\text{inclure } X^{(p)})$ quand $n \rightarrow \infty$ |
 |---|---|---|
-| Test de Fisher (niveau $\alpha$) | $f_{1, n-p}(1-\alpha)$ | $\alpha$ |
-| $R^{2}$ ajusté | $1$ | $\approx 0{,}32$ |
-| $C_{p}$ de Mallows | $2$ | $\approx 0{,}16$ |
-| AIC | $2(n-p)/n \rightarrow 2$ | $\approx 0{,}16$ |
-| BIC | $\approx \log n \rightarrow \infty$ | $0$ |
+| [Test de Fisher](./td2-exo8.qmd#question-1) (niveau $\alpha$) | $q_{1-\alpha}^{\mathcal{F}\left(1, \ n-p\right)}$ | $\alpha$ |
+| [$R^{2}$ ajusté](./td2-exo8.qmd#question-2) | $1$ | $\approx 0{,}32$ |
+| [$C_{p}$ de Mallows](./td2-exo8.qmd#question-3) | $2$ | $\approx 0{,}16$ |
+| [AIC](./td2-exo8.qmd#question-4) | $2(n-p)/n \rightarrow 2$ | $\approx 0{,}16$ |
+| [BIC](./td2-exo8.qmd#question-5) | $\approx \log n \rightarrow \infty$ | $0$ |
 
 Pour tous les critères, à l'exception du BIC, la probabilité de
 sélectionner le mauvais modèle (celui incluant $X^{(p)}$) demeure
@@ -244,8 +359,8 @@ positive même lorsque $n \rightarrow \infty$ : ni le test de Fisher
 $C_{p}$ ou l'AIC ne sont garantis de sélectionner le bon modèle à
 grande taille d'échantillon. Seul le BIC, dont le seuil
 $\log n$ diverge, assure la sélection du bon modèle lorsque
-$n \rightarrow \infty$ (on dit que le BIC est *cohérent*), ce qui en
-fait le critère préférable sous cet aspect.
+$n \rightarrow \infty$,
+ce qui en fait le critère préférable sous cet aspect.
 
 :::
 
