@@ -40,7 +40,6 @@ centré. On considère ici la situation où les variables $\epsilon_i$ ne sont p
 non-corrélées, mais de façon générale $\mathbb{V}\left[\epsilon\right] = \Sigma$ où $\Sigma$ est une matrice inversible. On suppose
 dans cet exercice que $\Sigma$ est connue (il conviendra dans la pratique de l’estimer).
 
-L'objectif de l'exercice est double : (i) construire l'estimateur des **moindres carrés généralisés** (MCG), obtenu en pondérant les observations par la matrice $\Sigma^{-1}$ afin de tenir compte de la structure de covariance des erreurs ; (ii) montrer, une fois $\Sigma$ supposée connue, que cet estimateur domine les MCO au sens du coût quadratique.
 
 ## Question 1
 
@@ -104,13 +103,15 @@ $$
 \mathbb{V}\left[\widehat{\beta}\right]&=\mathbb{V}\left[\left(X^{\prime} X\right)^{-1} X^{\prime} Y\right] \\
 &=\mathbb{V}\left[\left(X^{\prime} X\right)^{-1} X^{\prime}(X\beta+\epsilon)\right] \\
 &=\left(\left(X^{\prime} X\right)^{-1} X^{\prime}\right) \mathbb{V}\left[X\beta+\epsilon\right] \left(\left(X^{\prime} X\right)^{-1} X^{\prime}\right)^{\prime} \\
-&= \left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}\left[X\beta + \epsilon\right] X\left(X^{\prime} X\right)^{-1} \\
-&= \left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}\left[\epsilon\right] X\left(X^{\prime} X\right)^{-1} \\
+&= \left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}\left[X\beta + \epsilon\right] X\left(X^{\prime} X\right)^{-1} \ \textrm{car la transposée d'une inverse est l'inverse de la transposée} \\
+&= \left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}\left[\epsilon\right] X\left(X^{\prime} X\right)^{-1} \ \textrm{car} X\beta \textrm{ est déterministe}\\
 &=\left(X^{\prime} X\right)^{-1} X^{\prime} \Sigma X\left(X^{\prime} X\right)^{-1}
 \end{align*}
 $$
 
-Deux étapes implicites méritent d'être soulignées : le développement de la transposée $\left(\left(X^{\prime} X\right)^{-1} X^{\prime}\right)^{\prime}=X\left(X^{\prime} X\right)^{-1}$ (la transposée d'une inverse est l'inverse de la transposée, et $X^{\prime}X$ est symétrique), et la disparition du terme déterministe $X\beta$ dans le calcul de variance.
+
+::: {.callout-note collapse="true"}
+### Remarque
 
 Dans le cas homoscédastique $\Sigma=\sigma^2 I_n$, cette expression se simplifie :
 
@@ -119,6 +120,7 @@ $$
 $$
 
 on retrouve la variance classique du théorème de Gauss-Markov. Dans le cas général en revanche, la variance des MCO dépend du couple $\left(X,\Sigma\right)$ et l'estimateur n'est plus optimal : la [question 3](#question-3) construit l'estimateur qui pondère par $\Sigma^{-1}$, et la [question 4](#question-4) montrera qu'il domine alors les MCO.
+:::
 
 :::
 
@@ -395,7 +397,6 @@ $$
 \end{align*}
 $$
 
-Le calcul est calqué sur celui de la [question 2](#question-2) : développement de la transposée par symétrie de $\Sigma^{-1}$ et de $X^{\prime}\Sigma^{-1}X$, élimination du terme déterministe $X\beta$, $\mathbb{V}\left[\epsilon\right]=\Sigma$, puis simplification du terme central $X^{\prime}\Sigma^{-1}\Sigma\Sigma^{-1}X = X^{\prime}\Sigma^{-1}X$. Fait remarquable : le « sandwich » de la question 2 se réduit ici au simple $\left(X^{\prime}\Sigma^{-1}X\right)^{-1}$, qui ne dépend que de $X$ et de $\Sigma$ — c'est cette matrice que l'on comparera à la variance des MCO à la [question 4](#question-4).
 
 
 
