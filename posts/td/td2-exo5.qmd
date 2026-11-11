@@ -48,7 +48,7 @@ où $\textrm{cor}$ désigne la corrélation empirique. Cette quantité est
 donc la corrélation maximale que l'on peut obtenir entre $Y$ et une
 combinaison linéaire des variables explicatives.
 
-## Question 1
+## Question 1 {#question-1}
 
 Montrer que
 
@@ -64,30 +64,23 @@ chaque variable explicative.
 
 Par définition, la corrélation empirique entre $Y$ et $X\beta$ est :
 
-$$\textrm{cor}(Y, X\beta) = \frac{\textrm{Cov}(Y, X\beta)}{\sqrt{\textrm{Var}(Y)}\sqrt{\textrm{Var}(X\beta)}}$$ 
+$$\textrm{cor}(Y, X\beta) = \frac{\textrm{Cov}(Y, X\beta)}{\sqrt{\text{Var}(Y)}\sqrt{\text{Var}(X\beta)}}$$ 
 
-où
-
- - $\textrm{Cov}(Y, X\beta)$ est la covariance empirique entre les vecteurs $Y$ et $X\beta$
- - $\textrm{Var}(Y)$ est la variance empirique du vecteur $Y$
- - $\textrm{Var}(X\beta)$ est la variance empirique du vecteur $X\beta$
-
-
-On explicite chaque composante :
-$$
-\begin{align*}
-\textrm{Cov}(Y, X\beta) = \frac{1}{n}\sum\limits_{i=1}^n \left(Y_i-\overline{Y}\right)\left(\sum\limits_{k=1}^p X_i^{(k)}\beta_k - \frac{1}{n}\sum\limits_{j=1}^n\sum\limits_{\ell=1}^p X_j^{(\ell)}\beta_\ell \right)
-\end{align*}
-$$
-
+où $\textrm{Cov}(Y, X\beta) = \frac{1}{n}(Y - \overline{Y}\mathbb{1})'(X\beta - \overline{X}\beta\mathbb{1})$ est la covariance empirique,
 $\text{Var}(Y) = \frac{1}{n}\|Y - \overline{Y}\mathbb{1}\|^2$ et $\text{Var}(X\beta) = \frac{1}{n}\|X\beta - \overline{X\beta}\mathbb{1}\|^2$.
 
 En substituant, on obtient après simplification :
 
-$$\textrm{cor}(Y, X\beta) = \frac{(Y - \overline{Y}\mathbb{1})'(X\beta - \overline{X\beta}\mathbb{1})}{\left\| Y-\overline{Y}\mathbb{1}\right\|\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|}$$
+$$
+\begin{align*}
+\textrm{cor}(Y, X\beta) &= \frac{(Y - \overline{Y}\mathbb{1})'(X\beta - \overline{X}\beta\mathbb{1})}{\left\| Y-\overline{Y}\mathbb{1}\right\|\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|} \\
+&= \frac{(Y - \widehat{Y} + \widehat{Y}  - \overline{Y}\mathbb{1})'(X\beta - \overline{X}\beta\mathbb{1})}{\left\| Y-\overline{Y}\mathbb{1}\right\|\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|} \\
+&= \frac{(Y - \widehat{Y})'(X\beta - \overline{X}\beta\mathbb{1})}{\left\| Y-\overline{Y}\mathbb{1}\right\|\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|} + \frac{(\widehat{Y}  - \overline{Y}\mathbb{1})'(X\beta - \overline{X}\beta\mathbb{1})}{\left\| Y-\overline{Y}\mathbb{1}\right\|\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|}
+\end{align*}
+$$
 
-Or, par les propriétés des MCO, on a $X\widehat{\beta} - \overline{Y}\mathbb{1} = \widehat{Y} - \overline{Y}\mathbb{1}$. 
-De plus, $(Y - \overline{Y}\mathbb{1})'(X\beta - \overline{X\beta}\mathbb{1}) = (Y - \overline{Y}\mathbb{1})'X\beta$ car le terme constant s'annule dans la covariance.
+Le terme de gauche de cette dernière somme est nul car $Y - \widehat{Y} \in [X]^\perp$ et 
+$X\beta - \overline{X}\beta\mathbb{1} \in [X]$ car $\mathbb{1} \in [X]$ par hypothèse donc leur produit scalaire est nul.
 
 Donc :
 
@@ -97,9 +90,9 @@ $$\textrm{cor}(Y, X\beta) = \frac{(X\widehat{\beta}-\overline{Y}\mathbb{1})'(X\b
 
 :::
 
-## Question 2
+## Question 2 {#question-2}
 
-En déduire que pour tout $\beta$, $\textrm{cor}(Y,X\beta)^2 \leq R^2$, où
+En déduire que pour tout $\beta$, $\textrm{cor}(Y,X\beta)^2 \leq  R^2$, où
 $R^2$ est le coefficient de corrélation multiple de la régression de $Y$
 sur $X$.
 
@@ -107,44 +100,43 @@ sur $X$.
 
 ::: answer
 
-D'après la Question 1, on a :
+D'après la [question  1](#question-1), on a :
 
-$$\textrm{cor}(Y, X\beta)^2 = \frac{\left[(X\widehat{\beta}-\overline{Y}\mathbb{1})'(X\beta-\overline{X}\beta\mathbb{1})\right]^2}{\left\| Y-\overline{Y}\mathbb{1}\right\|^2\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|^2}$$
+$$\textrm{cor}(Y, X\beta) = \frac{\left[(X\widehat{\beta}-\overline{Y}\mathbb{1})'(X\beta-\overline{X}\beta\mathbb{1})\right]}{\left\| Y-\overline{Y}\mathbb{1}\right\|^2\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|}$$
 
-Or, par les propriétés des MCO, on sait que $X\widehat{\beta}$ est la projection orthogonale de $Y$ sur l'espace colonne de $X$.
+D'après l'inégalité de Cauchy-Schwarz, on a :
 
-On a l'identité :
+$$\left|(X\widehat{\beta}-\overline{Y}\mathbb{1})'(X\beta-\overline{X}\beta\mathbb{1})\right| \leq 
+\left\| X\widehat{\beta}-\overline{Y}\mathbb{1} \right\|
+\left\| X\beta-\overline{X}\beta\mathbb{1} \right\|
+$$
+En élevant au carré, on a :
+
+$$\left((X\widehat{\beta}-\overline{Y}\mathbb{1})'(X\beta-\overline{X}\beta\mathbb{1})\right)^2 \leq 
+\left\| X\widehat{\beta}-\overline{Y}\mathbb{1} \right\|^2
+\left\| X\beta-\overline{X}\beta\mathbb{1} \right\|^2
+$$
+D'où
 
 $$
-\begin{align*}
-\left\| Y - \overline{Y}\mathbb{1}\right\|^2 &= \left\| Y - X\widehat{\beta}\right\|^2 + \left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2 \\
-&= \textrm{SCR} + \textrm{SCE}
-\end{align*}
+\textrm{cor}(Y, X\beta)^2 \leq \frac{\left\| X\widehat{\beta}-\overline{Y}\mathbb{1} \right\|^2
+}{\left\| Y-\overline{Y}\mathbb{1}\right\|^2}
 $$
-
-où SCR est la somme des carrés des résidus et SCE est la somme des carrés expliqués.
-
 Le coefficient de corrélation multiple $R^2$ est défini par :
 
-$$R^2 = \frac{\textrm{SCE}}{\textrm{SCT}} = \frac{\textrm{SCE}}{\textrm{SCR} + \textrm{SCE}} = \frac{\left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2}{\left\| Y - \overline{Y}\mathbb{1}\right\|^2}$$
-
-D'autre part, par l'inégalité de Cauchy-Schwarz, on a :
-
-$$
-\left[(X\widehat{\beta}-\overline{Y}\mathbb{1})'(X\beta-\overline{X}\beta\mathbb{1})\right]^2 \leq \left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2 \left\| X\beta - \overline{X}\beta\mathbb{1}\right\|^2
-$$
+$$R^2 = \frac{\textrm{SCE}}{\textrm{SCT}} = = \frac{\left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2}{\left\| Y - \overline{Y}\mathbb{1}\right\|^2}$$
 
 Donc :
 
 $$
-\textrm{cor}(Y, X\beta)^2 \leq \frac{\left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2 \left\| X\beta - \overline{X}\beta\mathbb{1}\right\|^2}{\left\| Y-\overline{Y}\mathbb{1}\right\|^2\left\| X\beta-\overline{X}\beta\mathbb{1}\right\|^2} = \frac{\left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2}{\left\| Y - \overline{Y}\mathbb{1}\right\|^2} = R^2
+\textrm{cor}(Y, X\beta)^2 \leq   R^2
 $$
 
 :::
 
 :::
 
-## Question 3
+## Question 3 {#question-3}
 
 Montrer que la borne précédente est atteinte lorsque
 $\beta = \widehat{\beta}$.
@@ -153,7 +145,7 @@ $\beta = \widehat{\beta}$.
 
 ::: answer
 
-D'après la Question 2, on a $\textrm{cor}(Y,X\beta)^2 \leq R^2$ avec égalité si et seulement si :
+D'après la [question 2](#question-2), on a $\textrm{cor}(Y,X\beta)^2 \leq R^2$ avec égalité si et seulement si :
 
 $$
 \left[(X\widehat{\beta}-\overline{Y}\mathbb{1})'(X\beta-\overline{X}\beta\mathbb{1})\right]^2 = \left\| X\widehat{\beta} - \overline{Y}\mathbb{1}\right\|^2 \left\| X\beta - \overline{X}\beta\mathbb{1}\right\|^2
@@ -179,7 +171,7 @@ $$\textrm{cor}(Y, X\widehat{\beta})^2 = \frac{\left\| X\widehat{\beta} - \overli
 
 :::
 
-## Question 4
+## Question 4 {#question-4}
 
 Conclure que $\rho(Y, X)^2 = R^2$ justifiant la terminologie
 "coefficient de corrélation multiple".
@@ -188,7 +180,7 @@ Conclure que $\rho(Y, X)^2 = R^2$ justifiant la terminologie
 
 ::: answer
 
-D'après les Questions 2 et 3, on a :
+D'après les questions [2](#question-2) et [2](#question-3), on a :
 
 $$\rho(Y, X) = \sup\limits_{\beta} \textrm{cor}(Y, X\beta)$$
 

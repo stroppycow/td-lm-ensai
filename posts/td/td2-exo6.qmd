@@ -293,13 +293,13 @@ $$
 On peut expliciter :
 
 $$
-\mathbb{V}(\widehat{\beta}_{n_1}) = \frac{\sigma^2}{\sum\limits_{i=1}^n x_{i,1}^2}\frac{1}{1-\widehat{\rho}_n^2},
+\mathbb{V}(\widehat{\beta}_{n_1}) = \frac{\sigma^2}{\sum\limits_{i=1}^n x_{i,1}^2}\frac{1}{1-\widehat{\rho}_n^2}
 \qquad
-\mathbb{V}(\widehat{\beta}_{n_2}) = \frac{\sigma^2}{\sum\limits_{i=1}^n x_{i,2}^2}\frac{1}{1-\widehat{\rho}_n^2}.
+\mathbb{V}(\widehat{\beta}_{n_2}) = \frac{\sigma^2}{\sum\limits_{i=1}^n x_{i,2}^2}\frac{1}{1-\widehat{\rho}_n^2}
 $$
 
 Plus $\widehat{\rho}_n$ est proche de 1 en valeur absolue, plus les variances de
-$\widehat{\beta}_{n_1}$ et $\widehat{\beta}_{n_2}$.
+$\widehat{\beta}_{n_1}$ et $\widehat{\beta}_{n_2}$ sont grandes.
 
 
 ::: {.content-hidden when-format="html"}
