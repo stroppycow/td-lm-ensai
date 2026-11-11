@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 0
+  question_courante: 4
 format:
   live-html:
     code-background: true
@@ -37,24 +37,37 @@ $$
 
 où  $\beta \in \mathbb{R}^p$, $X$ est une matrice de taille $n \times p$ et $\epsilon$ est un vecteur aléatoire de taille $n$,
 centré. On considère ici la situation où les variables $\epsilon_i$ ne sont plus homoscédastiques et
-non-corrélés, mais de façon générale $V(\epsilon) = \Sigma$ où $\Sigma$ est une matrice inversible. On suppose
+non-corrélées, mais de façon générale $\mathbb{V}\left[\epsilon\right] = \Sigma$ où $\Sigma$ est une matrice inversible. On suppose
 dans cet exercice que $\Sigma$ est connue (il conviendra dans la pratique de l’estimer).
+
+L'objectif de l'exercice est double : (i) construire l'estimateur des **moindres carrés généralisés** (MCG), obtenu en pondérant les observations par la matrice $\Sigma^{-1}$ afin de tenir compte de la structure de covariance des erreurs ; (ii) montrer, une fois $\Sigma$ supposée connue, que cet estimateur domine les MCO au sens du coût quadratique.
 
 ## Question 1
 
-Préciser la matrice $\Sigma$ lorsque les variables $\epsilon_i$ sont non-corrélés mais hétéroscédastiques
+Préciser la matrice $\Sigma$ lorsque les variables $\epsilon_i$ sont non-corrélées mais hétéroscédastiques
 de variance $\sigma_i^2$ $(i = 1, \dots, n)$.
 
 
 ::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
-On a :
-$\Sigma = \textrm{diag}\left(\sigma_{1}^{2}, \ldots, \sigma_{n}^{2}\right)$
+Dans ce cas, on a :
+
+$$
+\Sigma = \textrm{diag}\left(\sigma_{1}^{2}, \ldots, \sigma_{n}^{2}\right) = \begin{pmatrix}
+\sigma_1^2 & 0 & \cdots & \cdots & 0 \\
+0 & \sigma_2^2 & 0 & \vdots & 0 \\
+\vdots & \ddots & \ddots & \ddots & \vdots \\
+0 & \cdots & 0 & \sigma_{n-1}^2 & 0 \\
+0 & \cdots & 0 & 0 & \sigma_n^2
+\end{pmatrix}
+$$
 
 Il s’agit d’une matrice diagonale dont les éléments sur la diagonale
 sont les valeurs du vecteur
 $\left(\sigma_{1}^{2}, \ldots, \sigma_{n}^{2}\right)$.
+
+Les éléments diagonaux valent $\mathbb{V}\left[\epsilon_i\right]=\sigma_i^2$ : ce sont les variances, dites hétéroscédastiques car elles diffèrent d'un individu à l'autre. Les éléments hors-diagonale sont les covariances $\operatorname{Cov}\left(\epsilon_i,\epsilon_j\right)$, $i \neq j$, nulles ici puisque les $\epsilon_i$ sont non corrélées. 
 
 :::
 
@@ -62,7 +75,7 @@ $\left(\sigma_{1}^{2}, \ldots, \sigma_{n}^{2}\right)$.
 
 ## Question 2
 
-Déterminer l’espérance et la variance de l’estimateur $\hat{\beta}$ des moindres carrés ordinaires
+Déterminer l’espérance et la variance de l’estimateur $\widehat{\beta}$ des moindres carrés ordinaires
 (dans le cas général d’une matrice $\Sigma$ quelconque).
 
 
@@ -71,29 +84,41 @@ Déterminer l’espérance et la variance de l’estimateur $\hat{\beta}$ des mo
 ::: answer
 
 L'estimateur des MCO vaut
-$\hat{\beta}=\left(X^{\prime} X\right)^{-1} X^{\prime} Y$, d'où
+$\widehat{\beta}=\left(X^{\prime} X\right)^{-1} X^{\prime} Y$ (ce qui suppose que $X$ est de plein rang colonne, afin que $X^{\prime}X$ soit inversible), d'où
 
 $$
 \begin{align*}
-\mathbb{E}(\hat{\beta})&=\mathbb{E}\left(\left(X^{\prime} X\right)^{-1} X^{\prime} Y(X\beta + \varepsilon)\right) \\
-&= \beta + \left(X^{\prime} X\right)^{-1} X^{\prime}\mathbb{E}(\varepsilon) \\
-&=\beta
+\mathbb{E}\left[\widehat{\beta}\right]&=\mathbb{E}\left[\left(X^{\prime} X\right)^{-1} X^{\prime} Y\right] \\
+&=\mathbb{E}\left[\left(X^{\prime} X\right)^{-1} X^{\prime} (X\beta + \epsilon)\right] \\
+&=\mathbb{E}\left[\left(X^{\prime} X\right)^{-1} X^{\prime} X\beta\right] + \mathbb{E}\left[\left(X^{\prime} X\right)^{-1} X^{\prime}\epsilon\right] \ \textrm{par linéarité de l'espérance}\\
+&=\left(X^{\prime} X\right)^{-1}\left( X^{\prime}X \right)\beta + \left(X^{\prime} X\right)^{-1} X^{\prime}\mathbb{E}\left[\epsilon\right] \ \textrm{car les matrices sont déterministes}\\
+&=\beta \ \textrm{car} \ \beta \ \textrm{est déterministe et } \mathbb{E}\left[\epsilon\right]=0 \ \textrm{par hypothèse}
 \end{align*}
 $$
 
-par linéarité de l'espérance et car $\mathbb{E}(\varepsilon)=0$
 
 Par ailleurs,
 
 $$
 \begin{align*}
-\mathbb{V}(\hat{\beta})&=
-\left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}(Y) X\left(X^{\prime} X\right)^{-1} \\
-&= \left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}(X\beta + \varepsilon) X\left(X^{\prime} X\right)^{-1} \\
-&= \left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}(\varepsilon) X\left(X^{\prime} X\right)^{-1} \\
+\mathbb{V}\left[\widehat{\beta}\right]&=\mathbb{V}\left[\left(X^{\prime} X\right)^{-1} X^{\prime} Y\right] \\
+&=\mathbb{V}\left[\left(X^{\prime} X\right)^{-1} X^{\prime}(X\beta+\epsilon)\right] \\
+&=\left(\left(X^{\prime} X\right)^{-1} X^{\prime}\right) \mathbb{V}\left[X\beta+\epsilon\right] \left(\left(X^{\prime} X\right)^{-1} X^{\prime}\right)^{\prime} \\
+&= \left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}\left[X\beta + \epsilon\right] X\left(X^{\prime} X\right)^{-1} \\
+&= \left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{V}\left[\epsilon\right] X\left(X^{\prime} X\right)^{-1} \\
 &=\left(X^{\prime} X\right)^{-1} X^{\prime} \Sigma X\left(X^{\prime} X\right)^{-1}
 \end{align*}
 $$
+
+Deux étapes implicites méritent d'être soulignées : le développement de la transposée $\left(\left(X^{\prime} X\right)^{-1} X^{\prime}\right)^{\prime}=X\left(X^{\prime} X\right)^{-1}$ (la transposée d'une inverse est l'inverse de la transposée, et $X^{\prime}X$ est symétrique), et la disparition du terme déterministe $X\beta$ dans le calcul de variance.
+
+Dans le cas homoscédastique $\Sigma=\sigma^2 I_n$, cette expression se simplifie :
+
+$$
+\mathbb{V}\left[\widehat{\beta}\right]=\sigma^2\left(X^{\prime}X\right)^{-1},
+$$
+
+on retrouve la variance classique du théorème de Gauss-Markov. Dans le cas général en revanche, la variance des MCO dépend du couple $\left(X,\Sigma\right)$ et l'estimateur n'est plus optimal : la [question 3](#question-3) construit l'estimateur qui pondère par $\Sigma^{-1}$, et la [question 4](#question-4) montrera qu'il domine alors les MCO.
 
 :::
 
@@ -102,16 +127,151 @@ $$
 ## Question 3
 
 
-Pour $S \in R^n$ et $T \in R^n$, on définit le produit scalaire entre $S$ et $T$ associé à la
-matrice $\Sigma^{-1}$ par $S'\Sigma^{-1}T$, et donc la norme de $T$ associée à $\Sigma^{-1}$ est $\left\| T\right\|^2_{\Sigma}=T'\Sigma^{-1}T$.
+Pour $S \in \mathbb{R}^n$ et $T \in \mathbb{R}^n$, on définit le produit scalaire entre $S$ et $T$ associé à la
+matrice $\Sigma^{-1}$ par $S'\Sigma^{-1}T$, et donc la norme de $T$ associée à $\Sigma^{-1}$ est telle que $\left\| T\right\|_{\Sigma}^2=T'\Sigma^{-1}T$.
+
+::: {.callout-note collapse="true"}
+### Preuve qu'il s'agit bien d'un produit scalaire
+
+::: {#lem-matrice-covariance-inversible-implique-sdp}
+<br>
+Une matrice de variance-covariance inversible est une matrice symétrique définie positive.
+
+::: {.callout-note collapse="true"}
+#### Preuve
+
+Soit $X$ un vecteur aléatoire de $\mathbb{R}^n$ à second moment fini. Sa matrice de covariance est
+
+$$\Sigma = E\!\left[(X - E[X])(X - E[X])^{\prime}\right].$$
+
+Posons $Y = X - E[X]$ (vecteur centré). Alors $\Sigma = E[YY^{\prime}]$. Montrons que $\Sigma$ est matrice symétrique définie positive.
 
 
-Montrer que la forme explicite de l’estimateur $\hat{\beta}_G$ des moindres carrés généralisés
-défini comme le minimiseur de $\left\| Y-X\beta\right\|^2_{\Sigma}=T'\Sigma^{-1}T$ est
+**Symétrie**
+
+Pour tout $\omega$, la matrice $YY^{\prime}$ (colonne $\times$ ligne) est symétrique. Donc :
+
+$$\Sigma^{\prime} = \bigl(E[YY^{\prime}]\bigr)^{\prime} = E\!\left[(YY^{\prime})^{\prime}\right] = E[YY^{\prime}] = \Sigma.$$
+
+
+**Semi-défini positivité**
+
+Pour tout $u \in \mathbb{R}^n$ :
+
+$$u^{\prime}\Sigma u = u^{\prime}\,E[YY^{\prime}]\,u = E\!\left[u^{\prime}YY^{\prime}u\right] = E\!\left[\bigl(u^{\prime}Y\bigr)^2\right] \geq 0.$$
+
+C'est la variance de la variable aléatoire $u^{\prime}Y$. Donc $\Sigma$ est symétrique semi-définie positive.
+
+
+**Positivité**
+
+Par le théorème spectral (applicable car $\Sigma$ est symétrique réelle), il existe une matrice orthogonale $Q$ et des réels $\lambda_1, \dots, \lambda_n \geq 0$ tels que :
+
+$$\Sigma = Q\,\text{diag}(\lambda_1, \dots, \lambda_n)\,Q^{\prime}.$$
+
+Puisque $\Sigma$ est inversible :
+
+$$0 \neq \det \Sigma = \lambda_1 \lambda_2 \cdots \lambda_n \implies \lambda_1, \dots, \lambda_n > 0.$$
+
+Enfin, pour tout $u \neq 0$, en posant $v = Q^{\prime}u \neq 0$ (car $Q$ est inversible) :
+
+$$u^{\prime}\Sigma u = v^{\prime}\,\text{diag}(\lambda_1, \dots, \lambda_n)\,v = \sum_{i=1}^n \lambda_i\, v_i^2 > 0,$$
+
+la somme étant strictement positive car au moins un $v_i \neq 0$ et tous les $\lambda_i > 0$.
+
+**Conclusion**
+
+$$\boxed{\Sigma \text{ est symétrique définie positive.}}$$
+
+:::
+
+:::
+
+::: {#lem-inverse-sdp}
+<br>
+Soit $A \in \mathcal{M}_n(\mathbb{R})$ une matrice symétrique définie positive. Alors $A$ est inversible, son inverse $A^{-1}$ est symétrique et définie positive.
+
+
+::: {.callout-note collapse="true"}
+
+#### Preuve
+
+**Existence et symétrie de l'inverse**
+
+Puisque $A$ est définie positive, pour tout $x \in \mathbb{R}^n$ avec $x \neq 0_n$, on a $x^{'}Ax > 0$. En particulier, si $Ax = 0_n$, alors $x^{'}Ax = 0$, ce qui implique $x = 0_n$. Ainsi, $\text{Ker}(A) = \{0_n\}$ et $A$ est inversible.
+
+De plus, comme $A$ est symétrique ($A' = A$), on a :
+
+$$(A^{-1})' = (A')^{-1} = A^{-1}$$
+
+Donc $A^{-1}$ est également symétrique.
+
+
+
+**$A^{-1}$ est définie positive**
+
+Soit $x \in \mathbb{R}^n$ tel que $x \neq 0_n$. Montrons que $x^{'}A^{-1}x > 0$.
+
+Posons $y = A^{-1}x$. Comme $A$ est inversible et $x \neq 0_n$, on a $y \neq 0_n$.
+
+Alors :
+
+$$x^{'}A^{-1}x = x^{'}y = (Ay)^{'}y = y^{'}A^{'}y = y^{'}Ay$$
+
+puisque $A$ est symétrique. Comme $A$ est définie positive et $y \neq 0_n$, on a $y^{'}Ay > 0$.
+
+Donc $x^{'}A^{-1}x > 0$, ce qui prouve que $A^{-1}$ est définie positive.
+
+:::
+
+:::
+
+::: {#verif-produit-scalaire}
+<br>
+**Vérification des axiomes du produit scalaire**
+
+Les deux résultats ci-dessus montrent que, $\Sigma$ étant la matrice de
+covariance (inversible) de $\epsilon$, la matrice $\Sigma^{-1}$ est
+symétrique définie positive. Il reste à vérifier que
+$\langle \cdot, \cdot \rangle_{\Sigma} : (S, T) \mapsto S'\Sigma^{-1}T$
+satisfait les axiomes d'un produit scalaire sur $\mathbb{R}^n$ :
+
+* **Bilinéarité** : pour tous $S, T_1, T_2 \in \mathbb{R}^n$ et
+  $\lambda, \mu \in \mathbb{R}$, par linéarité du produit matriciel,
+$$
+S'\Sigma^{-1}(\lambda T_1 + \mu T_2)
+= \lambda \, S'\Sigma^{-1}T_1 + \mu \, S'\Sigma^{-1}T_2,
+$$
+  et de même en la première variable, ce qui fait de
+  $\langle \cdot,\cdot\rangle_{\Sigma}$ une forme bilinéaire.
+* **Symétrie** : pour tous $S, T \in \mathbb{R}^n$, le scalaire
+  $S'\Sigma^{-1}T$ est sa propre transposée et $(\Sigma^{-1})' = \Sigma^{-1}$,
+  donc
+$$
+S'\Sigma^{-1}T = \bigl(S'\Sigma^{-1}T\bigr)' = T'(\Sigma^{-1})'S = T'\Sigma^{-1}S.
+$$
+* **Positivité définie** : pour tout $T \in \mathbb{R}^n$,
+$$
+\langle T, T \rangle_{\Sigma} = T'\Sigma^{-1}T \geq 0,
+$$
+  avec égalité si et seulement si $T = 0_n$, par stricte définition
+  positive de $\Sigma^{-1}$.
+
+$\langle \cdot,\cdot\rangle_{\Sigma}$ est donc une forme bilinéaire
+symétrique définie positive : c'est bien un produit scalaire, et
+$\|T\|_{\Sigma} = \sqrt{T'\Sigma^{-1}T}$ est la norme associée.
+:::
+
+
+:::
+
+
+Montrer que la forme explicite de l’estimateur $\widehat{\beta}_G$ des moindres carrés généralisés
+défini comme le minimiseur de $\left\| Y-X\beta\right\|^2_{\Sigma}=(Y-X\beta)'\Sigma^{-1}(Y-X\beta)$ est
 
 
 $$
-\hat{\beta}_G = (X'\Sigma^{-1}X)^{-1}X'\Sigma^{-1}Y
+\widehat{\beta}_G = (X'\Sigma^{-1}X)^{-1}X'\Sigma^{-1}Y
 $$
 
 En déduire son espérance et sa variance.
@@ -123,42 +283,121 @@ En déduire son espérance et sa variance.
 
 On cherche à minimiser la fonction
 $g: \beta \mapsto \left\|Y-X\beta \right\|_{\Sigma}$ comme
-$x \mapsto x^2$ est strictement croissante sur $\mathbb{R_+}$ cela
+$x \mapsto x^2$ est strictement croissante sur $\mathbb{R}_+$, cela
 revient à minimiser
 $f: \beta \mapsto \left\|Y-X\beta \right\|_{\Sigma}^2$
 
-D'après les définitions posées dans l'énnoncé,
+D'après les définitions posées dans l'énoncé,
 $$
 \begin{aligned}
-f(\beta) & =(Y-X \beta)^{\prime} \Sigma^{-1}(Y-X \beta) \\
-& =Y^{\prime} \Sigma^{-1} Y-Y^{\prime} \Sigma^{-1} X \beta-\beta^{\prime} X^{\prime} \Sigma^{-1} Y+\beta^{\prime} X^{\prime} \Sigma^{-1} X \beta .
+f(\beta) &=  \left\|Y-X\beta \right\|_{\Sigma}^2 \\
+&=(Y-X \beta)^{\prime} \Sigma^{-1}(Y-X \beta) \\
+&=Y^{\prime} \Sigma^{-1} Y-Y^{\prime} \Sigma^{-1} X \beta-\beta^{\prime} X^{\prime} \Sigma^{-1} Y+\beta^{\prime} X^{\prime} \Sigma^{-1} X \beta .
 \end{aligned}
 $$
+
+**Condition du premier ordre**
 
 Lorsqu'on calcule le gradient, on a :
 $$ \nabla f(\beta)=-2 X^{\prime} \Sigma^{-1} Y+2 X^{\prime} \Sigma^{-1} X \beta$$
 
-Cette quantité s'annule en $\hat{\beta}_G$ qui est donc la solution
+::: {.callout-note collapse="true"}
+### Rappel sur le calcul du gradient
+
+Ce gradient se calcule à l'aide de règles classiques :
+
+* forme linéaire : $\nabla_{\beta}(c'\beta) = c$ et $\nabla_{\beta}(\beta^{\prime}c) = c$  ;
+* forme quadratique : $\nabla_{\beta}(\beta'M\beta) = (M + M')\beta$, qui
+  vaut $2M\beta$ lorsque $M$ est symétrique.
+
+où l'on a posé $c = X'\Sigma^{-1}Y \in \mathbb{R}^p$ et $M = X'\Sigma^{-1}X$.
+
+:::
+
+
+
+
+Cette quantité s'annule en un unique point, solution du système linéaire
+$X'\Sigma^{-1}X\beta = X'\Sigma^{-1}Y$, à savoir
+
+$$
+\widehat{\beta}_G = \left(X'\Sigma^{-1}X\right)^{-1}X'\Sigma^{-1}Y
+$$
+
+sous réserve que la matrice $X'\Sigma^{-1}X$ soit inversible,
+sans quoi $\widehat{\beta}_G$ ne serait pas définie.
+
+**Inversibilité de $X'\Sigma^{-1}X$**
+
+Posons $M = X'\Sigma^{-1}X$.
+Comme $\Sigma^{-1}$ est symétrique, $M$ l'est également :
+
+$$M' = X'(\Sigma^{-1})'X = X'\Sigma^{-1}X = M.$$
+
+De plus, pour tout $u \in \mathbb{R}^p$,
+
+$$u'Mu = (Xu)'\Sigma^{-1}(Xu) \geq 0,$$
+
+par définition positive de $\Sigma^{-1}$, avec égalité si et seulement
+si $Xu = 0$. En supposant que $X$ est de plein rang (l'hypothèse
+standard en régression linéaire), qui assure $Xu \neq 0$ dès que
+$u \neq 0_p$ et donc finalement que la matrice $M$ est donc symétrique définie positive.
+Toute matrice symétrique définie positive est inversible, son noyau
+étant réduit à $\{0_p\}$ : c'est précisément ce
+[lemme](#lem-inverse-sdp). La matrice $X'\Sigma^{-1}X$ est
+donc inversible et $\widehat{\beta}_G$ est bien définie.
+
+**Condition du second ordre** 
+
+Montrons que ce point critique $\widehat{\beta}_G$ est bien un minimum.
+
+La hessienne de $f$ ne dépend pas de
+$\beta$ et vaut
+
+$$\nabla^2 f(\beta) = 2X'\Sigma^{-1}X,$$
+
+matrice que nous venons de montrer symétrique définie positive en tout
+point. La condition du second ordre est donc satisfaite : $f$ est
+strictement convexe et son point critique $\widehat{\beta}_G$ en est
+l'unique minimum global. $\widehat{\beta}_G$ est bien la solution
 recherchée.
 
-On en déduit :
-$$
-\begin{align*}
-\mathbb{E}\left(\hat{\beta}_G\right)&=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \mathbb{E}(Y) \\
-&=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} X \beta \\
-&=\beta
-\end{align*}
-$$
+**Espérance et variance de l'estimateur des moindres carrés généralisés**
 
-et
+On en déduit l'espérance en suivant la même démarche qu'à la [question 2](#question-2) :
 
 $$
 \begin{align*}
-\mathbb{V}\left(\hat{\beta}_G\right) & =\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \mathbb{V}(Y) \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
-& =\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \Sigma \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
-& =\left(X^{\prime} \Sigma^{-1} X\right)^{-1} 
+\mathbb{E}\left[\widehat{\beta}_G\right]&=\mathbb{E}\left[\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} Y\right] \\
+&=\mathbb{E}\left[\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1}\left(X \beta+\epsilon\right)\right] \\
+&=\mathbb{E}\left[\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} X \beta\right]+\mathbb{E}\left[\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \epsilon\right] \ \textrm{par linéarité de l'espérance}\\
+&=\left(X^{\prime} \Sigma^{-1} X\right)^{-1}\left(X^{\prime} \Sigma^{-1} X\right)\mathbb{E}\left[\beta\right]+\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1}\, \mathbb{E}\left[\epsilon\right] \ \textrm{par linéarité de l'espérance}\\
+&=\beta \ \textrm{car } \beta \textrm{ est déterministe et } \mathbb{E}\left[\epsilon\right]=0 \textrm{ par hypothèse.}
 \end{align*}
 $$
+
+L'estimateur $\widehat{\beta}_G$ est donc sans biais. 
+
+
+Sa variance se
+calcule comme à la [question 2](#question-2) : pour toute matrice
+déterministe $A$ et tout vecteur aléatoire $Z$,
+$\mathbb{V}\left[AZ\right]=A\,\mathbb{V}\left[Z\right]A^{\prime}$.
+
+$$
+\begin{align*}
+\mathbb{V}\left[\widehat{\beta}_G\right]&=\mathbb{V}\left[\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} Y\right] \\
+&=\mathbb{V}\left[\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1}\left(X\beta+\epsilon\right)\right] \\
+&=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \, \mathbb{V}\left[X\beta+\epsilon\right] \, \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
+&=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \, \mathbb{V}\left[\epsilon\right] \, \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \ \textrm{car } X\beta \textrm{ est déterministe}\\
+&=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \Sigma \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
+&=\left(X^{\prime}\Sigma^{-1}X\right)^{-1}
+\end{align*}
+$$
+
+Le calcul est calqué sur celui de la [question 2](#question-2) : développement de la transposée par symétrie de $\Sigma^{-1}$ et de $X^{\prime}\Sigma^{-1}X$, élimination du terme déterministe $X\beta$, $\mathbb{V}\left[\epsilon\right]=\Sigma$, puis simplification du terme central $X^{\prime}\Sigma^{-1}\Sigma\Sigma^{-1}X = X^{\prime}\Sigma^{-1}X$. Fait remarquable : le « sandwich » de la question 2 se réduit ici au simple $\left(X^{\prime}\Sigma^{-1}X\right)^{-1}$, qui ne dépend que de $X$ et de $\Sigma$ — c'est cette matrice que l'on comparera à la variance des MCO à la [question 4](#question-4).
+
+
 
 :::
 
@@ -166,60 +405,133 @@ $$
 
 ## Question 4
 
-Montrer que la matrice de covariance entre $\hat{\beta}$ et $\hat{\beta}_G$ est égale à la matrice de variancecovariance
-de $\hat{\beta}_G$. En déduire que $\hat{\beta}_G$ est meilleur que $\hat{\beta}$ au sens du coût quadratique.
+Montrer que la matrice de covariance entre $\widehat{\beta}$ et $\widehat{\beta}_G$ est égale à la matrice de variance-covariance
+de $\widehat{\beta}_G$. En déduire que $\widehat{\beta}_G$ est meilleur que $\widehat{\beta}$ au sens du coût quadratique.
 
 ::: {.content-visible when-meta="is_answer_print_4"}
 
 ::: answer
 
-Par définition
+**Déterminons l'expression de la matrice de covariance entre $\widehat{\beta}$ et $\widehat{\beta}_G$.**
+
+Par définition, on a :
 $$
-\operatorname{Cov}\left(\hat{\beta}, \hat{\beta}_G\right)=\mathbb{E}\left((\hat{\beta}-\mathbb{E}(\hat{\beta}))\left(\hat{\beta}_G-\mathbb{E}\left(\hat{\beta}_G\right)\right)^{\prime}\right)
+\operatorname{Cov}\left[\widehat{\beta}, \ \widehat{\beta}_G\right]=\mathbb{E}\left[\left(\widehat{\beta}-\mathbb{E}\left[\widehat{\beta}\right]\right)\left(\widehat{\beta}_G-\mathbb{E}\left[\widehat{\beta}_G\right]\right)^{\prime}\right]
 $$
 
-Or
-$$
-\hat{\beta}-\mathbb{E}(\hat{\beta})=\hat{\beta}-\beta=\left(X^{\prime} X\right)^{-1} X^{\prime}(X\beta+\varepsilon)-\beta=\left(X^{\prime} X\right)^{-1} X^{\prime} \varepsilon
-$$
-
-De même
-$$
-\hat{\beta}_G-\mathbb{E}\left(\hat{\beta}_G\right)=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \varepsilon
-$$
-
-Ainsi, puisque
-
-$$
-\mathbb{E}\left(\varepsilon \varepsilon^{\prime}\right)=\mathbb{V}(\varepsilon)=\Sigma
-$$
-
-car $\varepsilon$ est centrée
-
+Or, d'après la [question 2](#question-2),
 $$
 \begin{align*}
-\operatorname{Cov}\left(\hat{\beta}, \hat{\beta}_G\right) & =\mathbb{E}\left(\left(X^{\prime} X\right)^{-1} X^{\prime} \epsilon \epsilon^{\prime} \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1}\right) \\
-& =\left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{E}\left(\epsilon \epsilon^{\prime}\right) \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
-& =\left(X^{\prime} X\right)^{-1} X^{\prime} \Sigma \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
-& =\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
-&=\mathbb{V}\left(\hat{\beta}_G\right) 
+\widehat{\beta}-\mathbb{E}\left[\widehat{\beta}\right]&=\widehat{\beta}-\beta \\
+&=\left(X^{\prime} X\right)^{-1} X^{\prime}(X\beta+\epsilon)-\beta \\
+&=\left(X^{\prime} X\right)^{-1} X^{\prime}\epsilon +\left(X^{\prime} X\right)^{-1} X^{\prime}X\beta-\beta \\
+&=\left(X^{\prime} X\right)^{-1} X^{\prime} \epsilon
 \end{align*}
 $$
 
-On peut conclure comme dans la preuve du théorème de Gauss-Markov : pour
-tout $u \in \mathbb{R}^p$, l'égalité précédente implique que
-$\operatorname{Cov}\left(u^{\prime} \hat{\beta}, u^{\prime} \hat{\beta}_G\right)=\mathbb{V}\left(u^{\prime} \hat{\beta}_G\right)$.
-Or par Cauchy-Schwartz :
+et d'après la [question 3](#question-3), 
 $$
-\operatorname{Cov}\left(u^{\prime} \hat{\beta}, u^{\prime} \hat{\beta}_G\right) \leq \sqrt{\mathbb{V}\left(u^{\prime} \hat{\beta}\right) \mathbb{V}\left(u^{\prime} \hat{\beta}_G\right)}
+\begin{align*}
+\widehat{\beta}_G-\mathbb{E}\left[\widehat{\beta}_G\right]&=\widehat{\beta}_G-\beta  \\
+&=\left(X'\Sigma^{-1}X\right)^{-1}X'\Sigma^{-1}Y-\beta \\
+&=\left(X'\Sigma^{-1}X\right)^{-1}X'\Sigma^{-1}(X\beta+\epsilon)-\beta \\
+&=\left(X'\Sigma^{-1}X\right)^{-1}X'\Sigma^{-1}\epsilon + \left(X'\Sigma^{-1}X\right)^{-1}X'\Sigma^{-1}X\beta -\beta\\
+&=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \epsilon
+\end{align*}
 $$
 
-Ce qui signifie par l’égalité précédente que pour tout
-$u \in \mathbb{R}^p$
+En combinant ces deux dernières expressions, on obtient :
 
 $$
-\mathbb{V}\left(u^{\prime} \hat{\beta}_G \right) \leq \sqrt{\mathbb{V}\left(u^{\prime} \hat{\beta}\right) \mathbb{V}\left(u^{\prime} \hat{\beta}_G\right)}
+\begin{align*}
+\operatorname{Cov}\left[\widehat{\beta}, \widehat{\beta}_G\right] &= \mathbb{E}\left[\left(\left(X^{\prime} X\right)^{-1} X^{\prime} \epsilon\right) \left(\left(X^{\prime} \Sigma^{-1} X\right)^{-1} X^{\prime} \Sigma^{-1} \epsilon \right)^{\prime} \right] \\
+&=\mathbb{E}\left[\left(X^{\prime} X\right)^{-1} X^{\prime} \epsilon \epsilon^{\prime} \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1}\right] \\
+&=\left(X^{\prime} X\right)^{-1} X^{\prime} \mathbb{E}\left[\epsilon \epsilon^{\prime}\right] \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
+&=\left(X^{\prime} X\right)^{-1} X^{\prime} \Sigma \Sigma^{-1} X\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \ \textrm{car} \ \mathbb{E}\left[\epsilon \epsilon^{\prime}\right]=\mathbb{V}\left[\epsilon\right]=\Sigma  \textrm{ comme } \epsilon   \textrm{ est centrée}\\
+&=\left(X^{\prime} \Sigma^{-1} X\right)^{-1} \\
+&=\mathbb{V}\left[\widehat{\beta}_G\right] 
+\end{align*}
 $$
+
+**Montrons que $\widehat{\beta}_G$ est meilleur que $\widehat{\beta}$ au sens du coût quadratique** 
+
+Les deux estimateurs sont sans biais
+([question 2](#question-2) pour $\widehat{\beta}$, [question 3](#question-3)
+pour $\widehat{\beta}_G$), de sorte que leur coût quadratique se réduit à
+leur variance : pour tout $u \in \mathbb{R}^p$ et tout estimateur sans
+biais $\tilde{\beta}$ de $\beta$,
+
+$$
+\mathbb{E}\left[\left(u^{\prime}\tilde{\beta} - u^{\prime}\beta\right)^2\right]
+= \mathbb{V}\left[u^{\prime}\tilde{\beta}\right].
+$$
+
+Montrer que $\widehat{\beta}_G$ est meilleur que $\widehat{\beta}$ au sens
+du coût quadratique revient donc exactement à établir
+
+$$
+\forall u \in \mathbb{R}^p, \qquad
+\mathbb{V}\left[u^{\prime}\widehat{\beta}_G\right] \leq \mathbb{V}\left[u^{\prime}\widehat{\beta}\right],
+$$
+
+autrement dit, que la matrice
+$\mathbb{V}\left[\widehat{\beta}\right]-\mathbb{V}\left[\widehat{\beta}_G\right]$
+est symétrique semi-définie positive.
+
+On peut conclure comme dans la preuve du théorème de Gauss-Markov. Pour
+tout $u \in \mathbb{R}^p$, l'égalité
+$\operatorname{Cov}\left[\widehat{\beta}, \widehat{\beta}_G\right]=\mathbb{V}\left[\widehat{\beta}_G\right]$
+implique, par bilinéarité de la covariance,
+
+$$
+\operatorname{Cov}\left[u^{\prime} \widehat{\beta}, u^{\prime} \widehat{\beta}_G\right]
+= u^{\prime}\operatorname{Cov}\left[\widehat{\beta}, \widehat{\beta}_G\right]u
+= u^{\prime}\mathbb{V}\left[\widehat{\beta}_G\right]u
+= \mathbb{V}\left[u^{\prime} \widehat{\beta}_G\right].
+$$
+
+Or, par Cauchy-Schwarz :
+
+$$
+\operatorname{Cov}\left[u^{\prime} \widehat{\beta}, u^{\prime} \widehat{\beta}_G\right]
+\leq \sqrt{\mathbb{V}\left[u^{\prime} \widehat{\beta}\right] \, \mathbb{V}\left[u^{\prime} \widehat{\beta}_G\right]}.
+$$
+
+En combinant les deux encadrés : si
+$\mathbb{V}\left[u^{\prime}\widehat{\beta}_G\right]=0$, l'inégalité
+recherchée est triviale ; sinon, en élevant au carré puis en divisant par
+$\mathbb{V}\left[u^{\prime}\widehat{\beta}_G\right]>0$,
+
+$$
+\mathbb{V}\left[u^{\prime} \widehat{\beta}_G\right]^2
+\leq \mathbb{V}\left[u^{\prime} \widehat{\beta}\right] \, \mathbb{V}\left[u^{\prime} \widehat{\beta}_G\right]
+\qquad \Longrightarrow \qquad
+\mathbb{V}\left[u^{\prime} \widehat{\beta}_G\right]
+\leq \mathbb{V}\left[u^{\prime} \widehat{\beta}\right].
+$$
+
+C'est exactement ce qu'il fallait montrer : $\widehat{\beta}_G$ est
+meilleur que $\widehat{\beta}$ au sens du coût quadratique.
+
+On peut même préciser l'écart entre les deux estimateurs. En développant
+la variance de la différence et en réutilisant
+$\operatorname{Cov}\left[\widehat{\beta}, \widehat{\beta}_G\right]=\mathbb{V}\left[\widehat{\beta}_G\right]$ :
+
+$$
+\mathbb{V}\left[\widehat{\beta}-\widehat{\beta}_G\right]
+= \mathbb{V}\left[\widehat{\beta}\right] + \mathbb{V}\left[\widehat{\beta}_G\right]
+- \operatorname{Cov}\left[\widehat{\beta}, \widehat{\beta}_G\right]
+- \operatorname{Cov}\left[\widehat{\beta}_G, \widehat{\beta}\right]
+= \mathbb{V}\left[\widehat{\beta}\right] - \mathbb{V}\left[\widehat{\beta}_G\right].
+$$
+
+Le gain apporté par les moindres carrés généralisés est donc exactement la
+matrice de variance de la différence $\widehat{\beta}-\widehat{\beta}_G$,
+matrice de variance donc symétrique semi-définie positive. Enfin, dans le
+cas homoscédastique $\Sigma = \sigma^2 I_n$, on vérifie que
+$\widehat{\beta}_G = \left(\tfrac{1}{\sigma^2}X^{\prime}X\right)^{-1}\tfrac{1}{\sigma^2}X^{\prime}Y
+= \widehat{\beta}$ : les deux estimateurs coïncident, le gain est nul, et
+l'on retrouve le cadre du théorème de Gauss-Markov.
 :::
 
 :::
