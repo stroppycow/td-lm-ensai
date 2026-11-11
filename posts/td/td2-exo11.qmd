@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 0
+  question_courante: 5
 format:
   live-html:
     code-background: true
@@ -43,15 +43,15 @@ custom-callout:
 {{< include ./../../_extensions/conditionnal.qmd >}}
 {{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
-On considère de nouveau les données `ozone.txt` étudiées dans l’exercice 7. On désire
+On considère de nouveau les données `ozone.txt` étudiées dans l’[exercice 7](./td2-exo7.qmd). On désire
 tirer profit des variables qualitatives présentes dans le jeu de données (c’est à dire la
 présence ou non de pluie, et la direction principale du vent) pour éventuellement améliorer
-le modèle construit dans l’exercice 7.
+le modèle construit dans l’[exercice 7](./td2-exo7.qmd).
 
 
 ## Question 1
 
-On reprend le modèle sélectionné dans l’exercice 7, soit $\texttt{maxO3}$ en fonction de
+On reprend le modèle sélectionné dans l’[exercice 7](./td2-exo7.qmd), soit $\texttt{maxO3}$ en fonction de
 $\texttt{T12}$, $\texttt{Ne9}$, $\texttt{Vx9}$ et $\texttt{maxO3v}$ où $\texttt{maxO3v}$ représente la concentration maximale en ozone de la veille (créer cette variable si besoin). Ajuster ce modèle sur les données.
 
 ::: {.content-visible when-meta="is_answer_print_1"}
@@ -89,7 +89,7 @@ data_ozone
 data_ozone <- readr::read_delim(
   file = "data/ozone.txt",
   col_names = c(
-    "date","maxO3","T9","T12","T15","Ne9","Ne12","Ne15",
+    "id","date","maxO3","T9","T12","T15","Ne9","Ne12","Ne15",
     "Vx9","Vx12","Vx15","vent","pluie"
   ),
   col_types = readr::cols(
@@ -121,17 +121,17 @@ data_ozone
 
 Le fichier chargé contient bien 122 observations avec les variables
 $\texttt{maxO3}$ pour la concentration maximale d’ozone mesurée chaque jour
-(exprimée en mètre), $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$ pour les températures, $\texttt{Ne9}$,
+(vraisemblablement en µg/m³, cf. l’exercice 7), $\texttt{T9}$, $\texttt{T12}$, $\texttt{T15}$ pour les températures, $\texttt{Ne9}$,
 $\texttt{Ne12}$, $\texttt{Ne15}$ pour les nébulosités, $\texttt{Vx9}$, $\texttt{Vx12}$, $\texttt{Vx15}$ pour la
 vitesse du vent, $\texttt{vent}$ pour la direction du vent et $\texttt{pluie}$ pour le
 niveau de pluie.
 
-On ajoute également la concentration maximale d’ozone mesurée la veille
-identifié comme variable pertinente. Elle est à la fois explicative et
-corrige les problèmes d'autocorrélation des résidus.
+On ajoute également la concentration maximale d’ozone de la veille
+($\texttt{maxO3v}$), identifiée comme variable pertinente à l’[exercice 7](./td2-exo7.qmd) : elle est à la
+fois explicative et corrige les problèmes d’autocorrélation des résidus.
 
 On effectue la régression
-$$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T12}_i+\beta_3\texttt{Ne9}_i+\beta_4\texttt{Vx9}_i+\beta_5\texttt{maxO3v}_i+\varepsilon_i$$
+$$\texttt{maxO3}_i = \beta_1+\beta_2\texttt{T12}_i+\beta_3\texttt{Ne9}_i+\beta_4\texttt{Vx9}_i+\beta_5\texttt{maxO3v}_i+\epsilon_i$$
 à l'aide de la fonction `lm` disponible nativement dans
 {{< iconify logos:r-lang >}}. On cherche ainsi une estimation du vecteur
 $\beta$ à l'aide de la méthode des moindres carrés ordinaires (MCO).
@@ -155,6 +155,10 @@ fit_q1 <- lm(formula = maxO3 ~T12 + Ne9 + Vx9 + maxO3v, data = data_ozone)
 summary(fit_q1)
 ```
 :::
+
+Certains jours comportent des mesures manquantes : la fonction `lm` ignore par
+défaut les observations incomplètes (`na.action = na.omit`) et l'ajustement
+porte donc ici sur 106 des 122 journées.
 
 :::
 
@@ -249,12 +253,12 @@ Graphiquement, on constate un lien. La quantité maximale d'ozone sur une
 journée ($\texttt{maxO3}$) est moindre lorsque le temps est pluvieux.
 
 Afin de confirmer cette analyse graphique on pourrait effectuer un test
-de Student d'égalité des moyennes dans deux groupes (slide 27 du cours)
+de Student d'égalité des moyennes dans deux groupes (slide 33 du cours)
 sous l'hypothèse que la distribution de $\texttt{maxO3}$ est gaussienne et de
 même variance $\sigma^2$ dans chaque groupe. Toutefois l’égalité des
-variances ici ne semble pas vraiment vérifiée ici au vu des boxplots. On
+variances ne semble pas vraiment vérifiée au vu des boîtes à moustaches. On
 peut d'ailleurs tester cette égalité des variances avec le test de
-Levene ou le test de Bartlett (slide 146).
+Levene ou le test de Bartlett (slide 153).
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -278,11 +282,11 @@ bartlett.test(maxO3 ~ pluie, data = data_ozone)
 ```
 :::
 
-L'hypothèse nulle d'égalité des variance est rejetée pour ces deux tests
+L'hypothèse nulle d'égalité des variances est rejetée pour ces deux tests
 au niveau $\alpha=0.05$ car les p-valeurs sont bien inférieures à
 $\alpha$.
 
-On peut alors effectuer un test de Welch qui est une adapatation du test
+On peut alors effectuer un test de Welch qui est une adaptation du test
 de Student lorsque les deux populations ont des variances différentes.
 
 ::: {.panel-tabset group="language"}
@@ -312,7 +316,7 @@ variable $\texttt{maxO3}$ diffèrent entre les journées avec et sans pluie.
 
 ## Question 3
 
-Ajouter au modèle de la première question la variable $\texttt{pluie}$ de manière la plus
+Ajouter au modèle de la [première question](#question-1) la variable $\texttt{pluie}$ de manière la plus
 générale possible (i.e. en incluant une interaction avec chaque variable en plus d’un
 effet sur la constante). Tester la significativité de ces ajouts en effectuant un test de
 Fisher de modèles emboités entre ce modèle et le modèle initial.
@@ -341,7 +345,7 @@ $$
 \beta_8{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i\texttt{Vx9}_i \\ &+
 \beta_9\texttt{maxO3v}_i+
 \beta_{10}{\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i\texttt{maxO3v}_i \\ &+
-\varepsilon_i
+\epsilon_i
 \end{align*}
 $$
 
@@ -354,13 +358,13 @@ $$
 \beta_5\texttt{Ne9}_i+
 \beta_7\texttt{Vx9}_i+
 \beta_9\texttt{maxO3v}_i+
-\varepsilon_i \ \textrm{si} \ {\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i = 0 \\
+\epsilon_i \ \textrm{si} \ {\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i = 0 \\
 (\beta_1+\beta_2)+
 (\beta_3+\beta_4)\texttt{T12}_i+
 (\beta_5+\beta_6)\texttt{Ne9}_i+
 (\beta_7+\beta_8)\texttt{Vx9}_i+
 (\beta_9+\beta_{10})\texttt{maxO3v}_i+
-\varepsilon_i \ \textrm{si} \ {\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i = 1 \\
+\epsilon_i \ \textrm{si} \ {\mathbb{1}_{\texttt{pluie}=\texttt{Sec}}}_i = 1 \\
 \end{cases}
 $$
 
@@ -377,7 +381,7 @@ comme référence pour rendre le modèle identifiable (c'est à dire
 #| autorun: true
 fit_q3 <- lm(formula = maxO3 ~ pluie + T12 + T12:pluie + Ne9 + Ne9:pluie + Vx9 + Vx9:pluie + maxO3v + maxO3v:pluie, data = data_ozone)
 # Alternative plus concise
-# fit_q3 <- lm(formula = (maxO3 ~T12 + Ne9 + Vx9 + maxO3v)*pluie, data = data_ozone)
+# fit_q3 <- lm(formula = maxO3 ~ (T12 + Ne9 + Vx9 + maxO3v)*pluie, data = data_ozone)
 summary(fit_q3)
 ```
 
@@ -388,7 +392,7 @@ summary(fit_q3)
 #| autorun: true
 fit_q3 <- lm(formula = maxO3 ~ pluie + T12 + T12*pluie + Ne9 + Ne9*pluie + Vx9 + Vx9*pluie + maxO3v + maxO3v*pluie, data = data_ozone)
 # Alternative plus concise
-# fit_q3 <- lm(formula = (maxO3 ~T12 + Ne9 + Vx9 + maxO3v)*pluie, data = data_ozone)
+# fit_q3 <- lm(formula = maxO3 ~ (T12 + Ne9 + Vx9 + maxO3v)*pluie, data = data_ozone)
 summary(fit_q3)
 ```
 :::
@@ -413,6 +417,19 @@ car::vif(fit_q3)
 car::vif(fit_q3)
 ```
 :::
+
+Comme attendu, les VIF des termes impliquant $\texttt{pluie}$ sont très élevés :
+chaque interaction $x \times \texttt{pluie}$ est fortement corrélée à la variable
+$x$ et à l'indicatrice de pluie, ce qui gonfle les erreurs standards et rend les
+tests de Student individuels peu significatifs. C'est un phénomène classique avec
+les interactions ; `car` signale d'ailleurs que le VIF usuel n'est pas adapté aux
+termes d'ordre supérieur et propose l'option `type = "predictor"` pour un
+diagnostic plus pertinent. 
+
+
+Dans tous les cas, le test global de Fisher de
+modèles emboîtés ci-dessous reste valide : c'est la bonne approche pour juger
+l'apport de ces termes pris dans leur ensemble.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -444,7 +461,7 @@ interactions associées.
 
 Tester de même le modèle plus simple dans lequel seul un effet additif de la variable
 $\texttt{pluie}$ est intégré, et non ses interactions avec les autres variables. Le résultat est-il
-en désaccord avec l’analyse graphique de la question 2 ? Comment expliquer le résultat ?
+en désaccord avec l’analyse graphique de la [question 2](#question-2) ? Comment expliquer le résultat ?
 
 ::: {.content-visible when-meta="is_answer_print_4"}
 
@@ -462,7 +479,7 @@ $$
 \beta_4\texttt{Ne9}_i+
 \beta_5\texttt{Vx9}_i+
 \beta_6\texttt{maxO3v}_i+
-\varepsilon_i
+\epsilon_i
 \end{align*}
 $$
 
@@ -472,7 +489,7 @@ $$
 ```{webr}
 #| envir: baser
 #| autorun: true
-fit_q4 <- lm(formula = maxO3 ~ pluie + T12 + Ne9  + Vx9 +  + maxO3v , data = data_ozone)
+fit_q4 <- lm(formula = maxO3 ~ pluie + T12 + Ne9 + Vx9 + maxO3v , data = data_ozone)
 summary(fit_q4)
 anova(fit_q1, fit_q4)
 ```
@@ -489,11 +506,15 @@ anova(fit_q1, fit_q4)
 :::
 
 Le résultat du modèle montre que le coefficient de la variable pluie
-pour la condition "Sec" n'est pas significativement différent de celui
-pour "Pluie" (le coefficient estimé représente leur différence et n'est
-pas significatif). De plus, le test de comparaison avec le modèle
-initial confirme que la variable pluie n’apporte pas d’information
-utile. Ce constat peut sembler surprenant par rapport à la question 2,
+pour la condition "Sec" n’est pas significativement différent de celui
+pour "Pluie" : l’estimation de leur différence vaut environ 1,9 µg/m³,
+avec une p-valeur d’environ 0,57. De plus, le test de Fisher de comparaison avec
+le modèle initial confirme que la variable pluie n’apporte pas d’information
+utile (p ≈ 0,57 — on retrouve la même p-valeur car, avec un seul
+paramètre supplémentaire, le test de Student et le test de Fisher sont
+équivalents : la statistique de test vérifie $F = t^2$).
+
+Ce constat peut sembler surprenant par rapport à la [question 2](#question-2),
 mais il n’y a pas de contradiction : l’effet de la pluie est absorbé par
 les autres variables (température, nébulosité, vitesse du vent). Une
 fois ces variables intégrées, la présence ou non de pluie ne fournit
@@ -514,7 +535,10 @@ et étudier la pertinence d’inclure un effet vent dans le modèle initial.
 
 ::: answer
 
-On trace les boxplots selon les modalités de la variables vent.
+On trace les boîtes à moustaches selon les modalités de la variable vent. Les
+distributions semblent différer : la concentration maximale d’ozone est plus
+élevée les jours de vent d’Est (médiane ≈ 109) que les jours de vent de
+Nord ou d’Ouest (médianes ≈ 81 et 76).
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -538,7 +562,7 @@ boxplot(
 # Boxplot
 ggplot2::ggplot(
   data = subset(data_ozone, !is.na(vent) & !is.na(maxO3)),
-  mapping = ggplot2::aes(x = pluie, y = maxO3, fill = pluie)
+  mapping = ggplot2::aes(x = vent, y = maxO3, fill = vent)
 ) +
   ggplot2::geom_boxplot(alpha = 0.7) +
   ggplot2::labs(
@@ -625,9 +649,36 @@ anova(fit_q1, fit_q5)
 ```
 :::
 
-Les conclusions sont similaires à celles obtenues avec la variable pluie
-: il ne paraît pas pertinent d’ajouter la variable $\texttt{vent}$ ni les
-interactions associées dans le modèle.
+Comme à la [question 4](#question-4), on peut aussi tester le modèle dans
+lequel la variable $\texttt{vent}$ intervient uniquement en effet additif :
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+fit_q5_additif <- lm(formula = maxO3 ~ T12 + Ne9 + Vx9 + maxO3v + vent, data = data_ozone)
+anova(fit_q1, fit_q5_additif)
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+fit_q5_additif <- lm(formula = maxO3 ~ T12 + Ne9 + Vx9 + maxO3v + vent, data = data_ozone)
+anova(fit_q1, fit_q5_additif)
+```
+:::
+
+Tout comme pour la pluie, ni le simple effet additif de la variable
+$\texttt{vent}$ (p ≈ 0,95), ni ses interactions avec les variables
+météorologiques (p ≈ 0,90), n’apportent d’information au-delà du modèle
+initial. L’effet apparent de la direction du vent mis en évidence par l’ANOVA
+à un facteur (p ≈ 0,02) est donc, lui aussi, un facteur de confusion :
+les directions de vent sont associées à des conditions météorologiques
+différentes, déjà captées par $\texttt{T12}$, $\texttt{Ne9}$ et $\texttt{Vx9}$.
 
 :::
 
