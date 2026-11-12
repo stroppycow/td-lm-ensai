@@ -56,7 +56,24 @@ vérifiées ?
 
 ::: answer
 
-On charge les données du fichier `chemical.txt` en {{< iconify logos:r-lang >}} sous forme de `data.frame`.
+On regarde le contenu du fichier `chemical.txt` avant de l’importer en {{< iconify logos:r-lang >}} :
+
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| edit: false
+#| echo: false
+readLines("data/chemical.txt", n = 5, encoding = "UTF-8") |>
+  paste0(collapse = "\n") |>
+  cat()
+```
+
+
+Il s’agit d’un fichier plat dont le séparateur est l’espace et dans lequel les valeurs non numériques sont entourées de guillemets droits doubles (`"`). La première ligne contient un en-tête qui indique le nom des variables, à l’exception du numéro de ligne.
+
+On charge alors les données du fichier `chemical.txt` dans {{< iconify logos:r-lang >}} sous la forme d’un `data.frame`.
+
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -85,10 +102,11 @@ data_chemical
 #| autorun: true
 data_chemical <- readr::read_delim(
   file = "data/chemical.txt",
-  col_names = c("dose", "concent"),
+  col_names = c("id", "dose", "concent"),
   col_types = readr::cols(
     readr::col_skip(),
-    readr::col_factor(levels = c("dose25", "dose50", "dose100", "dose200"))
+    readr::col_factor(levels = c("dose25", "dose50", "dose100", "dose200")),
+    readr::col_double()
   ),
   skip = 1,
   delim = " ",
@@ -99,7 +117,7 @@ data_chemical
 :::
 
 Le fichier chargé contient bien les 40 observations attendues (4 groupes $\times$ 10 individus) avec les 
-variables $\texttt{dose}$ pour la dose de principae actif administrée et $\texttt{concent}$ pour la 
+variables $\texttt{dose}$ pour la dose de principe actif administrée et $\texttt{concent}$ pour la 
 concentration dans le sang d'un certain produit chimique.
 
 
@@ -129,8 +147,6 @@ ggplot2::ggplot(data=data_chemical, mapping=ggplot2::aes(x=dose, y=concent)) +
 ```
 :::
 
-Graphiquement, les variances ne  présentent pas d’homogénéité entre les groupes définis par les différentes modalités de dose, ce qui contredit l’hypothèse d’homoscédasticité requise pour l’ANOVA.
-
 ::: {.callout-note collapse="true"}
 ### Rappel sur les diagrammes en boîte
 
@@ -140,6 +156,23 @@ statistiques ci-dessous :
 
 ![](/static/img/boxplot.svg){fig-align="center"}
 :::
+
+
+La lecture du graphique invite à distinguer deux aspects. 
+
+
+D’une part, la médiane de la concentration
+semble croître avec le dosage : il paraît y avoir des différences de concentration en substance
+active entre les groupes cliniques, ce qui rend pertinent l’usage d’une ANOVA pour tester
+formellement l’effet du dosage. 
+
+
+D’autre part, l’étendue des boîtes à moustaches (donc la
+dispersion intra-groupe) augmente nettement avec le niveau du dosage : les variances ne
+présentent pas d’homogénéité entre les groupes définis par les différentes modalités de dose,
+ce qui contredit l’hypothèse d’homoscédasticité requise pour l’ANOVA. 
+
+
 
 :::
 
@@ -309,7 +342,9 @@ Ce modèle n’est pas de plein rang et donc non identifiable car $\mathbb{1}=\m
 
 Il faut donc imposer une contrainte par exemple $\alpha_1=0$ comme le propose {{< iconify logos:r-lang >}} par défaut.
 
-On estime ce modèle puis on teste la significativité du facteur $\texttt{dose}$ avec la fonction `anova`. L'hypothèse nulle $H_0$ est $\alpha_2=\alpha_3=\alpha_4=0$
+On estime ce modèle puis on teste la significativité du facteur $\texttt{dose}$ avec la fonction `anova`.
+
+L'hypothèse nulle $H_0$ est $\alpha_2=\alpha_3=\alpha_4=0$
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -331,7 +366,7 @@ anova(reg)
 ```
 :::
 
-La p-valeur du test de Fisher est très faible. On rejette donc $H_0$ c'est à dire qu’il y a au moins une moyenne de $ln(\texttt{concent})$ qui
+La p-valeur du test de Fisher est très faible. On rejette donc $H_0$ c'est à dire qu’il y a au moins une moyenne de $\ln(\texttt{concent})$ qui
 diffère des autres selon le dosage effectué.
 
 ::: {.callout-note collapse="true"}
@@ -362,6 +397,8 @@ On retrouve ces quantités dans la sorties de la fonction `anova`.
 
 On pouvait calculer toutes ces valeurs sans utiliser directement la fonction `anova`.
 
+
+
 ::: {.panel-tabset group="language"}
 ### Base R
 
@@ -382,13 +419,13 @@ Y_i_bar <- sapply(
 S2_inter <- sum(n_i*(Y_i_bar-rep(Y_bar, I))**2)
 S2_intra <- sum((log(data_chemical$concent)-Y_i_bar[data_chemical$dose])**2)
 Fstat <- (S2_inter/(I-1))/(S2_intra/(n-I))
-pval <- 1-pf(q = Fstat, df1 = I-1, n-I)
+pval <- pf(q = Fstat, df1 = I-1, df2 = n-I, lower.tail = FALSE)
 cat(paste0("I-1 = ", I-1,"\n"))
 cat(paste0("S²inter = ",S2_inter,"\n"))
 cat(paste0("S²inter / (I-1) = ",S2_inter/(I-1),"\n"))
 cat(paste0("n-I = ", n-I,"\n"))
 cat(paste0("S²intra = ",S2_intra,"\n"))
-cat(paste0("S²intra / (I-1) = ",S2_intra/(n-I),"\n"))
+cat(paste0("S²intra / (n-I) = ",S2_intra/(n-I),"\n"))
 cat(paste0("F = ",Fstat,"\n"))
 cat(paste0("p-value = ",pval,"\n"))
 
@@ -430,17 +467,33 @@ S2_intra <- data_chemical |>
   sum()
   
 Fstat <- (S2_inter/(I-1))/(S2_intra/(n-I))
-pval <- 1-pf(q = Fstat, df1 = I-1, n-I)
+pval <- pf(q = Fstat, df1 = I-1, df2 = n-I, lower.tail = FALSE)
 
 cat(paste0("I-1 = ", I-1,"\n"))
 cat(paste0("S²inter = ",S2_inter,"\n"))
 cat(paste0("S²inter / (I-1) = ",S2_inter/(I-1),"\n"))
 cat(paste0("n-I = ", n-I,"\n"))
 cat(paste0("S²intra = ",S2_intra,"\n"))
-cat(paste0("S²intra / (I-1) = ",S2_intra/(n-I),"\n"))
+cat(paste0("S²intra / (n-I) = ",S2_intra/(n-I),"\n"))
 cat(paste0("F = ",Fstat,"\n"))
 cat(paste0("p-value = ",pval,"\n"))
 ```
+:::
+
+::: {.callout-warning collapse="true"}
+### Pourquoi pas `1 - pf(Fstat, I-1, n-I)` ?
+
+On pourrait être tenté de calculer la p-valeur par soustraction :
+$1 - F_{\mathcal{F}(I-1,\,n-I)}(\texttt{Fstat})$. Mais ici la statistique de test est si grande que la
+fonction de répartition vaut $0,99999999999999845$ : dans un nombre à virgule flottante double
+précision (environ 16 chiffres significatifs), la soustraction $1 - 0,99999999999999845$
+ne conserve plus que 1 à 2 chiffres significatifs de la p-valeur. C'est un phénomène
+d'*annulation catastrophique* : on obtient `1.554312e-15` au lieu de la valeur exacte
+`1.575217e-15` (celle affichée par `anova`).
+
+L'argument `lower.tail = FALSE` évalue directement la queue de distribution, sans soustraction,
+et donc sans perte de précision. C'est la méthode utilisée en interne par `anova`, d'où le léger
+écart observé si l'on code `1 - pf(...)` à la main.
 :::
 
 :::
@@ -480,19 +533,121 @@ summary(reg)
 
 Le modèle inclut une constante `(Intercept)` ainsi que des variables indicatrices pour les modalités $\texttt{dose50}$, $\texttt{dose100}$ et $\texttt{dose200}$. La modalité $\texttt{dose25}$, absente du modèle, sert de modalité de référence.
 
+::: {.callout-note collapse="true"}
+### Contrastes par défaut et convention de nommage dans {{< iconify logos:r-lang >}}
+
+Quand une variable catégorielle (un `factor`) entre dans la formule d'un `lm`, {{< iconify logos:r-lang >}}
+la remplace automatiquement par des variables indicatrices selon un jeu de *contrastes*. Ces
+règles, purement conventionnelles, déterminent la paramétrisation du modèle : elles n'affectent
+ni l'ajustement, ni le test de Fisher global, mais seulement l'interprétation des coefficients
+ligne à ligne.
+
+#### Contraste par défaut (pour un facteur non-ordonné)
+
+Pour un facteur non ordonné (c'est le cas ici pour $\texttt{dose}$), {{< iconify logos:r-lang >}} utilise
+`contr.treatment` (codage de référence, dit aussi *dummy coding*) : la première modalité du
+facteur sert de référence et chacune des $I-1$ autres modalités est codée par une indicatrice.
+C'est exactement la contrainte $\alpha_1=0$ évoquée à la [question 4](#question-4).
+
+#### Choix de la modalité de référence pour les contrastes de type traitement
+
+Il s'agit du premier niveau du facteur, dans l'ordre
+des niveaux tel qu'il a été défini (ou l'ordre alphanumérique par défaut, qui donne souvent une
+référence peu pertinente (ici `dose100` !). D'où l'intérêt de réordonner explicitement les
+niveaux dès l'import, comme à la [question 1](#question-1), pour que `dose25` soit la
+référence. On peut aussi la changer a posteriori avec `relevel` ou `factor(..., levels = ...)`.
+
+
+#### Convention de nommage pour les contrastes de type traitement
+
+Chaque indicatrice est nommée en concaténant le nom de la variable
+et celui de la modalité, par exemple `dose` + `dose50` $\to$ `dosedose50` : c'est pourquoi la
+sortie affiche ici les coefficients `dosedose50`, `dosedose100` et `dosedose200`, dont le nom
+paraît étrange à force de répéter le mot *dose*. La modalité de référence, elle, n'apparaît
+jamais dans la liste des coefficients.
+
+
+#### Facteur ordonné
+
+Un `factor` déclaré `ordered = TRUE` reçoit par défaut des contrastes
+polynomiaux (`contr.poly`) : les coefficients ne s'interprètent alors plus comme des écarts à
+une référence mais comme des composantes de tendance. En notant $j \in \{1,\dots,4\}$ le rang
+de la modalité (l'ordre des niveaux du facteur), le modèle s'écrit
+
+$$
+\ln(\texttt{concent}_{ij}) = m + a_1 P_1(j) + a_2 P_2(j) + a_3 P_3(j) + \varepsilon_{ij}
+$$
+
+où $P_1$, $P_2$ et $P_3$ sont des polynômes orthogonaux de degrés 1, 2 et 3 (d'où les
+coefficients nommés `dose.L`, `dose.Q`, `dose.C`), construits par `contr.poly(4)` :
+
+| Dosage | $P_1$ (`.L`) | $P_2$ (`.Q`) | $P_3$ (`.C`) |
+|---|---|---|---|
+| 25 mg | $-0{,}671$ | $0{,}5$ | $-0{,}224$ |
+| 50 mg | $-0{,}224$ | $-0{,}5$ | $0{,}671$ |
+| 100 mg | $0{,}224$ | $-0{,}5$ | $-0{,}671$ |
+| 200 mg | $0{,}671$ | $0{,}5$ | $0{,}224$ |
+
+Les tests de Student associés valent alors respectivement « y a-t-il une tendance linéaire
+croissante/décroissante ? », « y a-t-il une incurvation ? », « y a-t-il un changement
+d'incurvation ? ». Sur nos données, on obtiendrait `dose.L` $\approx 1{,}48$ (très
+significatif : la concentration croît avec la dose), `dose.Q` $\approx -0{,}33$
+(significatif, p $\approx 0{,}003$ : une incurvation, cohérente avec l'effet de seuil qu'on observera à la [question 6](#question-6)) et `dose.C` $\approx 0{,}02$ (non significatif).
+Dans un plan équilibré comme ici, les contrastes sont orthogonaux deux à deux et à
+l'intercept : la constante $m$ est la moyenne générale et les tests sont indépendants. À
+noter enfin que `contr.poly` assimile par défaut les niveaux à des positions $1, 2, 3, 4$
+régulièrement espacées, et non aux valeurs réelles des dosages ; on peut fournir un espacement
+réaliste via l'argument `contrasts` de `lm`.
+
+
+#### Changer les contrastes
+
+On peut changer le choix de {{< iconify logos:r-lang >}} globalement via `options(contrasts = ...)`, ou modèle par
+modèle via l'argument `contrasts` de `lm`. 
+
+Par exemple `contr.sum` impose la contrainte
+$\sum\limits_j \alpha_j = 0$ : les coefficients deviennent des écarts des moyennes de groupes à la
+moyenne générale. 
+
+
+Deux paramétrisations différentes donnent les mêmes prédictions, le même
+$R^2$ et la même statistique de Fisher, mais des tests de Student différents.
+:::
+
+
 
 L’interprétation des coefficients, et donc des tests de Student associés, dépend de la contrainte 
 qui a été choisie initialement.
 
 * La constante (3.6151) correspond à la moyenne dans la modalité de référence, c’est à dire la moyenne de $\ln(\texttt{concent})$ pour les observations ayant la modalité $\texttt{dose25}$. Les résultats du test de Student donnés sur cette première ligne permettent de déterminer ici si la moyenne de $\ln(\texttt{concent})$ dans la modalité $\texttt{dose25}$ est significativement différente de 0.
-* L’estimation associée à $\texttt{dose50}$ (1.0072) correspondent à la différence entre la moyenne dans la modalité
+* L’estimation associée à $\texttt{dose50}$ (1.0072) correspond à la différence entre la moyenne dans la modalité
 $\texttt{dose50}$ et la moyenne dans la modalité $\texttt{dose25}$. Les résultats du test de Student donnés sur cette deuxième ligne permettent de déterminer ici si la moyenne de $\ln(\texttt{concent})$ dans la modalité $\texttt{dose50}$ est significativement différente de celle dans la modalité $\texttt{dose25}$.
-* L’estimation associée à $\texttt{dose100}$ (1.6380) correspondent à la différence entre la moyenne dans la modalité
+* L’estimation associée à $\texttt{dose100}$ (1.6380) correspond à la différence entre la moyenne dans la modalité
 $\texttt{dose100}$ et la moyenne dans la modalité $\texttt{dose25}$. Les résultats du test de Student donnés sur cette troisième ligne permettent de déterminer ici si la moyenne de $\ln(\texttt{concent})$ dans la modalité $\texttt{dose100}$ est significativement différente de celle dans la modalité $\texttt{dose25}$.
-* L’estimation associée à $\texttt{dose200}$ (1.9945) correspondent à la différence entre la moyenne dans la modalité
+* L’estimation associée à $\texttt{dose200}$ (1.9945) correspond à la différence entre la moyenne dans la modalité
 $\texttt{dose200}$ et la moyenne dans la modalité $\texttt{dose25}$. Les résultats du test de Student donnés sur cette quatrième ligne permettent de déterminer ici si la moyenne de $\ln(\texttt{concent})$ dans la modalité $\texttt{dose200}$ est significativement différente de celle dans la modalité $\texttt{dose25}$.
 
-Tous ces tests de Student concluent que les coeffcients sont significatifs sont significatifs.
+Tous ces tests de Student concluent que les coefficients sont significativement différents de zéro.
+
+Les dernières lignes de la sortie de `summary` se commentent également :
+
+* **`Residual standard error: 0.3199 on 36 degrees of freedom`** : estimation de l'écart-type
+résiduel $\hat{\sigma}=\sqrt{\dfrac{S^2_{\textrm{intra}}}{n-I}}$. On retrouve dans cette valeur
+la moyenne des carrés résiduels de la sortie `anova` de la [question 4](#question-4) :
+$\sqrt{0.1023}=0.3199$. Concrètement, à dosage fixé, les valeurs de
+$\ln(\texttt{concent})$ s'écartent en moyenne de l'ordre de $0{,}32$ de la moyenne de leur groupe.
+* **`Multiple R-squared: 0.8616`** : le coefficient de détermination $R^2$ mesure la part de la
+variabilité de $\ln(\texttt{concent})$ expliquée par le dosage :
+$R^2=\dfrac{S^2_{\textrm{inter}}}{S^2_{\textrm{inter}}+S^2_{\textrm{intra}}}
+=\dfrac{22.938}{22.938+3.684}\approx 0{,}86$. Environ 86 % de la variabilité des
+log-concentrations est ainsi imputable à l'effet du dosage. La valeur `Adjusted R-squared`
+($0.8501$) en est une version pénalisée pour le nombre de paramètres estimés, qui sert surtout à
+comparer des modèles de tailles différentes.
+* **`F-statistic: 74.72 on 3 and 36 DF, p-value: 1.575e-15`** : c'est exactement la statistique
+du test de Fisher de significativité globale du facteur $\texttt{dose}$ déjà obtenue à la
+[question 4](#question-4) via `anova` (même valeur $F$, même p-valeur, mêmes degrés de liberté).
+Le `summary` fournit donc, en plus des tests de Student terme à terme, une répétition du test
+global d'égalité des moyennes.
 
 :::
 
@@ -510,9 +665,9 @@ du résultat).
 
 ::: answer
 
-La sortie commentée à la question précédente indique que la modalité $\texttt{dose25}$ présente une moyenne de $\ln(\texttt{concent})$ significativement inférieure à celle des autres dosages, avec une différence de l'ordre de 1 à 2 unités. Cependant, la comparaison entre les autres dosages est moins évidente. Bien qu'une tendance à l'augmentation de $\ln(\texttt{concent})$ avec le dosage soit observée, il n'est pas clair si cette augmentation est significative, notamment entre les modalités $\texttt{dose100}$ et $\texttt{dose200}$.
+La sortie commentée à la [question précédente](#question-5) indique que la modalité $\texttt{dose25}$ présente une moyenne de $\ln(\texttt{concent})$ significativement inférieure à celle des autres dosages, avec une différence de l'ordre de 1 à 2 unités. Cependant, la comparaison entre les autres dosages est moins évidente. Bien qu'une tendance à l'augmentation de $\ln(\texttt{concent})$ avec le dosage soit observée, il n'est pas clair si cette augmentation est significative, notamment entre les modalités $\texttt{dose100}$ et $\texttt{dose200}$.
 
-Pour résoudre cette incertitude, le test de Tukey est appliqué. Ce test permet de comparer les moyennes deux à deux tout en garantissant un niveau de confiance simultané de 5 % (ou tout autre seuil choisi). En outre, le test de Tukey fournit des intervalles de confiance (IC) simultanés à 95 %, ce qui signifie que la probabilité que toutes les différences de moyennes appartiennent à ces intervalles est de 95 %.
+Pour résoudre cette incertitude, le test de Tukey est appliqué. Ce test permet de comparer les moyennes deux à deux tout en garantissant un niveau de confiance simultané de 95 %, soit un risque d’erreur global de 5 % (ou tout autre seuil choisi). En outre, le test de Tukey fournit des intervalles de confiance (IC) simultanés à 95 %, ce qui signifie que la probabilité que toutes les différences de moyennes appartiennent à ces intervalles est de 95 %.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -533,11 +688,14 @@ plot(TukeyHSD(aov(reg)), las = 1)
 # Mise en oeuvre du test de Tukey
 tukey <- TukeyHSD(aov(reg))
 
-# Génération de la sortie graphique
+# Tableau des comparaisons deux à deux avec bornes de l’intervalle et p-valeurs ajustées
 tukey_df <- as.data.frame(tukey$dose)
 tukey_df <- tukey_df |>
-  dplyr::mutate(comparison = rownames(tukey_df))
+  dplyr::mutate(comparison = rownames(tukey_df), .before = 1)
 
+tukey_df
+
+# Représentation graphique des intervalles de confiance
 ggplot2::ggplot(tukey_df, ggplot2::aes(x = comparison, y = diff)) +
   ggplot2::geom_point(size = 3) +
   ggplot2::geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.2) +
@@ -552,7 +710,7 @@ ggplot2::ggplot(tukey_df, ggplot2::aes(x = comparison, y = diff)) +
 ```
 :::
 
-En analysant les p-values des tests ainsi que les intervalles de confiance (IC), on observe que la dernière différence n'est pas significativement différente de 0. Cela indique un gain significatif lors de l'augmentation du dosage jusqu'à 100, mais un effet seuil semble apparaître, car le gain n'est plus significatif lorsque l'on passe de 100 à 200.
+En analysant les p-valeurs des tests ainsi que les intervalles de confiance (IC), on observe que la dernière différence ($\texttt{dose200} - \texttt{dose100}$) n'est pas significativement différente de 0. Cela indique un gain significatif lors de l'augmentation du dosage jusqu'à 100 mg, mais un effet seuil semble apparaître, car le gain n'est plus significatif lorsque l'on passe de 100 mg à 200 mg.
 
 :::
 

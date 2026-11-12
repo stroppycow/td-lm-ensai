@@ -346,7 +346,7 @@ Les questions précédentes se résument ainsi :
 
 | Critère | Seuil sur $F$ | $\mathbb{P}(\text{inclure } X^{(p)})$ quand $n \rightarrow \infty$ |
 |---|---|---|
-| [Test de Fisher](./td2-exo8.qmd#question-1) (niveau $\alpha$) | $q_{1-\alpha}^{\mathcal{F}\left(1, \ n-p\right)}$ | $\alpha$ |
+| [Test de Fisher](./td2-exo8.qmd#question-1) (niveau $\alpha$) | $q_{1-\alpha}^{F\left(1, \ n-p\right)}$ | $\alpha$ |
 | [$R^{2}$ ajusté](./td2-exo8.qmd#question-2) | $1$ | $\approx 0{,}32$ |
 | [$C_{p}$ de Mallows](./td2-exo8.qmd#question-3) | $2$ | $\approx 0{,}16$ |
 | [AIC](./td2-exo8.qmd#question-4) | $2(n-p)/n \rightarrow 2$ | $\approx 0{,}16$ |

@@ -180,7 +180,7 @@ Conclure que $\rho(Y, X)^2 = R^2$ justifiant la terminologie
 
 ::: answer
 
-D'après les questions [2](#question-2) et [2](#question-3), on a :
+D'après les questions [2](#question-2) et [3](#question-3), on a :
 
 $$\rho(Y, X) = \sup\limits_{\beta} \textrm{cor}(Y, X\beta)$$
 
