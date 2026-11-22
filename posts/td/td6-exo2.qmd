@@ -54,10 +54,6 @@ $$
 
 ::: answer
 
-En notant, $p =  \mathbb{P}(Y = 1)$, $f_0(\cdot)$ la densité conditionnelle de $X$
-sachant que $Y = 0$ et $f_1(.)$ la densité conditionnelle de $X$ sachant
-que $Y = 1$.
-
 D'après la formule de Bayes,
 
 $$
@@ -71,6 +67,12 @@ $$
 \end{aligned}
 $$
 
+En particulier, $h(x)$ n'est autre que le *logit* de la probabilité
+conditionnelle :
+$$h(x)=\log\left(\frac{\mathbb{P}(Y=1 \mid X=x)}{1-\mathbb{P}(Y=1 \mid X=x)}\right),$$
+de sorte que $\mathbb{P}(Y=1 \mid X=x)$ s'obtient comme la sigmoïde
+(logit inverse) de $h(x)$.
+
 :::
 
 :::
@@ -78,8 +80,8 @@ $$
 ## Question 2
 
 On rappelle qu’une loi sur $\mathbb{R}^d$ fait partie de la famille exponentielle si sa densité
-s’écrit $a(x)b(x)e^{\theta^{'}T(x)}$, pour un certain paramètre 
-$\theta \in \mathbb{R}^q$, où $a$ et $b$ sont des fonctions positives 
+s’écrit $a(x)\,b(\theta)\,e^{\theta^{'}\cdot T(x)}$, pour un certain paramètre 
+$\theta \in \mathbb{R}^q$, où $a : \mathbb{R}^d \to \mathbb{R}_+$ et $b : \mathbb{R}^q \to \mathbb{R}_+$ sont des fonctions positives 
 et $T : \mathbb{R}^d \longrightarrow \mathbb{R}^q$ est une fonction 
 appelée statistique suffisante.
 
@@ -92,25 +94,50 @@ dont on précisera le paramètre et les variables.
 
 ::: answer
 
-D'après l'énoncé
-$$f_0(x)=a(x) b\left(\theta_0\right) e^{\theta_0 \cdot T(x)} \textrm{ et }
-f_1(x)=a(x) b\left(\theta_1\right) e^{\theta_1 \cdot T(x)}$$
+
+D'après la [question précédente](#question-1),
+
+$$\mathbb{P}(Y=1 \mid X=x)=\frac{1}{1+e^{-h(x)}}$$ 
+
+Il suffit donc de montrer que
+$h(x)$ est affine en une certaine statistique de $x$, ce qui est
+précisément la forme d'un modèle logistique. 
+
+Calculons $h$ lorsque les densités conditionnelles s'écrivent sous la forme
+canonique d'une même famille exponentielle :
+
+$$f_0(x)=a(x)\, b\left(\theta_0\right) e^{\theta_0 \cdot T(x)} \textrm{ et }
+f_1(x)=a(x)\, b\left(\theta_1\right) e^{\theta_1 \cdot T(x)}$$
+
 
 pour deux paramètres $\theta_0$ et $\theta_1$ distincts.
 
-La fonction $h$ de la [question précédente](#question-1) s'écrit donc :
 
 $$
 \begin{align*}
-h(x)&=\log\left(\frac{a(x) b\left(\theta_1\right) e^{\theta_1 \cdot T(x)}p}{a(x) b\left(\theta_0\right) e^{\theta_0 \cdot T(x)}(1-p)}\right) \\
-&= \log\left(\frac{b\left(\theta_1\right)p}{b\left(\theta_0\right)(1-p)} \right)+(\theta_1-\theta_0)T(x) \\
-&= \beta'\tilde{T}(x)
+h(x) &= \log\left(\frac{f_1(x)}{f_0(x)}\right)+\log\left(\frac{p}{1-p}\right) \\
+&=\log\left(\frac{f_1(x)p}{f_0(x)(1-p)}\right) \\
+&=\log\left(\frac{a(x)\, b\left(\theta_1\right) e^{\theta_1 \cdot T(x)}\,p}{a(x)\, b\left(\theta_0\right) e^{\theta_0 \cdot T(x)}\,(1-p)}\right) \\
+&= \log\left(\frac{b\left(\theta_1\right)\,p}{b\left(\theta_0\right)\,(1-p)} \right)+(\theta_1-\theta_0)\cdot T(x) \\
+&= \beta^{\prime}\tilde{T}(x)
 \end{align*}
 $$
 
-où
-$\beta=\left(\log\left(\frac{b\left(\theta_1\right) p}{b\left(\theta_0\right)(1-p)}\right), \theta_1-\theta_0\right)$
-est un vecteur de taille $q+1$ et $\tilde{T}(x)=(1, T(x))$.
+où $\beta$ est un vecteur de taille $q+1$ et $\tilde{T}(x)=(1,\, T(x))$.
+
+En écrivant $T(x) = (T_1(x), \dots, T_q(x))$ et
+$\beta = (\beta_0, \beta_1, \dots, \beta_q)$, le paramètre et les
+variables du modèle logistique sont donc explicitement :
+$$\tilde{T}(x) = (1,\, T_1(x), \dots, T_q(x)),$$
+$$\beta_0 = \log\left(\frac{b\left(\theta_1\right)\,p}{b\left(\theta_0\right)\,(1-p)}\right)
+\quad\text{et}\quad
+\beta_j = \theta_{1,j} - \theta_{0,j} \quad (j = 1, \dots, q),$$
+où $\theta_{k,j}$ désigne la $j$-ième composante de $\theta_k$. Autrement
+dit, le logit de la probabilité conditionnelle s'écrit comme une fonction
+affine des variables $T_1(x), \dots, T_q(x)$ :
+$$\textrm{logit}\left(\mathbb{P}(Y=1 \mid X=x)\right) = h(x)
+= \beta_0 + \sum_{j=1}^{q} \beta_j\, T_j(x)
+= \beta_0 + (\theta_1-\theta_0)\cdot T(x).$$
 
 On a donc d'après la [question précédente](#question-1)
 
@@ -120,6 +147,14 @@ $$
 
 qui est bien un modèle logistique associé aux variables $\tilde{T}(x)$
 et au paramètre $\beta$.
+
+[Conclusion]{.underline} :
+
+Dès que les densités conditionnelles de $X$ sachant $Y$
+appartiennent à une même famille exponentielle et ne diffèrent que par la
+valeur de leur paramètre, le logit de $\mathbb{P}(Y=1 \mid X=x)$ est
+affine en la statistique $T(x)$ : la régression logistique est donc le
+modèle « naturel » pour ce type de données (d'où le titre de l'exercice).
 
 :::
 
