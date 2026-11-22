@@ -2,9 +2,9 @@
 title: "TD 6 - Exercice 3 - Le modèle logistique est naturel (bis)"
 lang: fr
 author: "Théo Leroy"
-date: "14 novembre 2025"
+date: "27 novembre 2026"
 params:
-  question_courante: 0
+  question_courante: 4
 format:
   live-html:
     code-background: true

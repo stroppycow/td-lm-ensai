@@ -2,7 +2,7 @@
 title: "TD 6 - Exercice 1 - Maladie coronarienne"
 lang: fr
 author: "Théo Leroy"
-date: "14 novembre 2025"
+date: "27 novembre 2026"
 params:
   question_courante: 20
 format:
@@ -18,11 +18,7 @@ webr:
       - dplyr
       - readr
       - ggplot2
-      - cowplot
-      - GGally
-      - car
-      - leaps
-      - lmtest
+      - stringr
 editor: 
   mode: source
   markdown: 
@@ -42,19 +38,44 @@ custom-callout:
 {{< include ./../../_extensions/conditionnal.qmd >}}
 {{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
-Le jeu de donnée `chdage.txt`, contient les données
+Le jeu de données [`chdage.txt`](./../../data/chdage.txt) contient les données
 de 100 patients âgés de 20 à 69 ans (variable $\texttt{age}$), présentant pour certains une maladie coronarienne (variable $\texttt{chd}$ valant $\texttt{Yes}$ ou $\texttt{No}$).
 
 ## Question 1
 
-Importer ces données sous {{< iconify logos:r-lang >}} sous la forme d’un `data.frame`. Observer le contenu de chaque variable et transformer leur `class` si nécessaire.
+Importer ces données sous {{< iconify logos:r-lang >}} sous la forme d’un `data.frame`. Observer le contenu de chaque variable et transformer sa `class` si nécessaire.
 
 ::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
 
+On regarde le contenu du fichier `chdage.txt` avant de l’importer en {{< iconify logos:r-lang >}} :
+
+
+```{webr}
+#| envir: baser
+#| autorun: true
+#| edit: false
+#| echo: false
+readLines("data/chdage.txt", n = 5, encoding = "UTF-8") |>
+  paste0(collapse = "\n") |>
+  cat()
+```
+
+
+Il s’agit d’un fichier plat dont le séparateur est l’espace et dans lequel les valeurs non numériques sont entourées de guillemets droits doubles (`"`). La première ligne contient un en-tête qui indique le nom des variables, à l’exception du numéro de ligne.
+
+
+
 On charge les données du fichier `chdage.txt` en {{< iconify logos:r-lang >}} sous forme de
 `data.frame`.
+
+L'argument `colClasses` (version base R) ou `col_types` (version tidyverse)
+permet de fixer la classe de chaque colonne dès l'import : `id` et `age` en
+entiers, `agegrp` et `chd` en facteurs. Sans cet argument, les colonnes
+contenant du texte seraient importées comme des chaînes de caractères
+(`character`) et il faudrait les convertir ensuite, par exemple avec
+`as.factor()`.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -107,7 +128,7 @@ entre les variables $\texttt{chd}$ et $\texttt{age}$.
 ::: answer
 
 Une possibilité est de visualiser les données sous forme de boîtes à
-moustache pour comparer les distributions de l'âge des individus dans
+moustaches pour comparer les distributions de l'âge des individus dans
 les populations ayant ou non une maladie coronarienne.
 
 ::: {.panel-tabset group="language"}
@@ -191,7 +212,7 @@ ggplot2::ggplot(
   data = data_chdage,
   mapping = ggplot2::aes(y = agegrp, fill = chd)
 ) +
-  ggplot2::geom_bar(, position = "fill") +
+  ggplot2::geom_bar(position = "fill") +
   ggplot2::labs(
     x = "Proportion",
     y = "Catégorie d'âge",
@@ -207,6 +228,10 @@ ggplot2::ggplot(
 ```
 :::
 
+On constate que la proportion de malades croît avec l'âge : environ 10 %
+dans la classe 20-29, contre 80 % dans la classe 60-69. Le lien suspecté
+entre `age` et `chd` se confirme donc visuellement.
+
 :::
 
 :::
@@ -219,11 +244,11 @@ Un lien est-t-il apparent ? Quel test statistique simple permettrait de le confi
 
 ::: answer
 
-Dans la question précédente, on observe graphiquement que les individus
+Dans la [question précédente](#question-2), on observe graphiquement que les individus
 malades sont plus âgés que les individus sains. On souhaiterait tester
 si cette différence est significative. Un test simple à mettre en place
-est le test de Student pour comparer deux moyennes dans des
-échantillons.
+est le test de Student (ou test t) pour comparer les moyennes de deux
+échantillons indépendants.
 
 $$H_0: \mu_{\textrm{malade}} = \mu_{\textrm{sain}} $$
 
@@ -247,11 +272,16 @@ t.test(age ~ chd, data = data_chdage, var.equal = TRUE)
 ```
 :::
 
-On rejette l'hypothèse nulle au seuil 5 %. Les moyennes d'âge des deux
-populations sont différentes.
+On rejette donc l'hypothèse nulle au seuil de 5 % : la p-valeur vaut
+environ $4{,}6\times10^{-8}$, et les moyennes d'âge des deux populations
+sont significativement différentes.
 
-Néanmoins, ce test est valable pour des lois normales avec des variances
-égales. Regardons graphiquement si ces conditions sont vérifiées.
+La validité de ce test repose toutefois sur des hypothèses : indépendance
+des deux échantillons (acquise ici par construction), normalité des âges
+dans chaque groupe et égalité des deux variances — d'où le choix
+`var.equal = TRUE`. Si l'égalité des variances n'était pas retenue, on
+utiliserait le test de Welch (`var.equal = FALSE`, valeur par défaut de
+`t.test`). Regardons graphiquement si ces conditions sont plausibles.
 
 ::::: panel-tabset
 ### Histogramme
@@ -343,7 +373,7 @@ ggplot2::ggplot(data = data_chdage, mapping = ggplot2::aes(sample =age)) +
 La normalité est sujette à débat, cependant, on peut dire qu'elle n'est
 pas complètement éloignée, étant donné que les lois semblent être en
 grande partie unimodales et pas excessivement asymétriques (bien que
-légèrement asymétriques tout de même pour les individus malade). De
+légèrement asymétriques tout de même pour les individus malades). De
 plus, l'égalité des variances semble plausible au vu des boxplots.
 
 :::
@@ -380,8 +410,8 @@ $y_i = 1$ si ce dernier a une maladie coronarienne.
 ::: answer
 
 Les variables aléatoires
-$\left(Y_i|(\texttt{age}=x)\right)_{i \in \{1, \dots, n\}}$ sont
-indépendantes de fonction de masse
+$\left(Y_i \mid \texttt{age}=x_i\right)_{i \in \{1, \dots, n\}}$ sont
+indépendantes, de fonction de masse
 $$\mathbb{P}(Y_i=y_i |\texttt{age}=x_i)=p(x_i)^{y_i}(1-p(x_i))^{1-y_i}$$
 
 Ainsi, 
@@ -405,13 +435,17 @@ a. Utiliser les 8 groupes d’âge proposés via la variable $\texttt{agegrp}$ d
 ce qui forme 8 groupes d’individus associés à ces classes. Calculer 
 $\overline{x}_1, \dots , \overline{x}_8$ le milieu de chaque classe d’âge.
 b. Calculer les proportions de $\texttt{chd} = \texttt{Yes}$ dans chaque groupe, notées 
-$\hat{p}_1, \dots , \hat{p}_8$  (on pourra utiliser les fonctions `table` et `prop.table`).
+$\widehat{p}_1, \dots , \widehat{p}_8$  (on pourra utiliser les fonctions `table` et `prop.table`).
 
 ::: {.content-visible when-meta="is_answer_print_6"}
 
 ::: answer
 
 Les milieux des 8 classes d'âges sont :
+
+Pour une classe $[a;b]$, le milieu vaut $(a+b)/2$ (par exemple $24{,}5$
+pour la classe 20-29). Attention : la dernière classe (60-69) est deux
+fois plus large que les sept autres.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -451,7 +485,7 @@ data_milieu_classe
 ```
 :::
 
-On calcule les proportions de malade par classe d'âge.
+On calcule les proportions de malades par classe d'âge ([question 6.b](#question-6)).
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -459,10 +493,14 @@ On calcule les proportions de malade par classe d'âge.
 ```{webr}
 #| envir: baser
 #| autorun: true
-data_prop <- table(data_chdage$agegrp[data_chdage$chd=="Yes"])/table(data_chdage$agegrp)
+# Proportions de "Yes" dans chaque classe d'âge (robuste même si une classe ne contient aucun malade)
+data_prop <- prop.table(
+  x = table(data_chdage$agegrp, data_chdage$chd),
+  margin = 1
+)[, "Yes"]
 data_prop <- data.frame(
-  classe = classes_age,
-  proportion = as.numeric(data_prop[classes_age])
+  classe = names(data_prop),
+  proportion = as.numeric(data_prop)
 )
 data_prop
 ```
@@ -523,7 +561,7 @@ Afin d’analyser la qualité de l’estimation précédente, transformer la var
 $\texttt{chd}$ en variable numérique prenant les deux valeurs 0 et 1, et 
 représenter sur un même graphique le nuage de points de 
 $\texttt{age}$ et $\texttt{chd}$ (recodé) et les proportions estimées dans
-chaque classe $(\overline{x}_k, \hat{p}_k)$ pour $k = 1, \dots , 8$.
+chaque classe $(\overline{x}_k, \widehat{p}_k)$ pour $k = 1, \dots , 8$.
 
 Quelles vertus et quelles limites cette procédure d’estimation a-t-elle ?
 
@@ -567,43 +605,44 @@ log-vraisemblance car la fonction $x \mapsto \ln(x)$ est croissante).
 [Condition du premier ordre]{.underline} :
 
 Déterminons les points critiques.
-$$\nabla \ln L_n\left(\hat{p}_1 \dots, \hat{p}_8\right) = 0$$ Pour tout
-$k \in \{1, \dots, n \}$,
+$$\nabla \ln L_n\left(\widehat{p}_1 \dots, \widehat{p}_8\right) = 0$$ Pour tout
+$k \in \{1, \dots, 8\}$,
 
 $$
 \begin{align*}
-\frac{\partial \ln L_n}{\partial p_k} \left(\hat{p}_1, \dots, \hat{p}_8\right) &= 0 \\
-\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} \left[\frac{y_i}{\hat{p}_k}-\frac{1-y_i}{1-\hat{p}_k}\right] &= 0 \\
-\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} \frac{y_i-\hat{p}_k }{\hat{p}_k(1-\hat{p}_k)} &= 0
+\frac{\partial \ln L_n}{\partial p_k} \left(\widehat{p}_1, \dots, \widehat{p}_8\right) &= 0 \\
+\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} \left[\frac{y_i}{\widehat{p}_k}-\frac{1-y_i}{1-\widehat{p}_k}\right] &= 0 \\
+\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} \frac{y_i-\widehat{p}_k }{\widehat{p}_k(1-\widehat{p}_k)} &= 0
 \end{align*}
 $$
 
 D'où $$
-\hat{p}_k = \frac{\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} y_i}{\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} 1}
-$$ $\hat{p}_k$ correspond à la fréquence empirque d'individus malades
-dans la classe $k$ calculée à la question 6.(b).
+\widehat{p}_k = \frac{\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} y_i}{\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} 1}
+$$ $\widehat{p}_k$ correspond à la fréquence empirque d'individus malades
+dans la classe $k$ calculée à la [question 6.(b)](#question-6).
 
 [Condition du second ordre]{.underline} :
 
 On calcule les dérivées partielles d'ordre 2 :
-$$\forall\ k \in \{1, \dots, 8\}, \frac{\partial^2 \ln L_n}{\partial p_k^2}\left(p_1, \dots, p_8\right)=-\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} \frac{y_i}{p_k^2}+\frac{1-y_i}{(1-p_k)^2} $$
+$$\forall\ k \in \{1, \dots, 8\}, \frac{\partial^2 \ln L_n}{\partial p_k^2}\left(p_1, \dots, p_8\right)=-\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} \left(\frac{y_i}{p_k^2}+\frac{1-y_i}{(1-p_k)^2}\right) < 0 $$
 $$\forall\ (i,j) \in \{1, \dots, 8\}^2 \ \textrm{avec} \ i \neq j, \frac{\partial^2 \ln L_n}{\partial p_i\partial p_j}\left(p_1, \dots, p_8\right)=0 $$
 La matrice hessienne $H$ de la fonction
 $(p_1, \dots, p_8) \mapsto \ln L_n\left(p_1 \dots, p_8\right)$ est donc
-diagonale. De plus comme l'expression
-$-\sum\limits_{\substack{i \in \{1, \dots, n\} \\ x_i =k}} \frac{y_i}{p_k^2}+\frac{1-y_i}{(1-p_k)^2}$
-est toujours strictement négative,
+diagonale. De plus, chaque terme
+$\frac{y_i}{p_k^2}+\frac{1-y_i}{(1-p_k)^2}$
+est strictement positif, donc chaque dérivée seconde est strictement
+négative,
 $\forall \ \left(p_1, \dots, p_8\right) \in ]0, 1[^8, H\left(p_1, \dots, p_8\right)$
 est strictement définie négative donc la fonction
 $(p_1, \dots, p_8) \mapsto \ln L_n\left(p_1 \dots, p_8\right)$ est
 concave.
 
-**Ainsi, le point critique** $\left(\hat{p}_1, \dots, \hat{p}_8\right)$
+**Ainsi, le point critique** $\left(\widehat{p}_1, \dots, \widehat{p}_8\right)$
 est l'unique point de maximum global dans $]0, \ 1[^8$.
 :::
 
-Le graphique demandé est proche d'un de ceux réalisés pour la deuxième
-question avec les classes d'âge.
+Le graphique demandé est proche d'un de ceux réalisés pour la [deuxième
+question](#question-2) avec les classes d'âge.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -674,7 +713,7 @@ graphique_q7 <-
   ) +
    ggplot2::geom_segment(
     data = data_milieu_classe_prop,
-    mapping = aes(
+    mapping = ggplot2::aes(
       x = borne_inf,
       xend=borne_sup,
       y=proportion,
@@ -687,26 +726,29 @@ graphique_q7 <-
   ) +
    ggplot2::geom_point(
     data = data_milieu_classe_prop,
-    mapping = aes(x=borne_inf,y=proportion),
+    mapping = ggplot2::aes(x=borne_inf,y=proportion),
     color= "#F24B4B",
     size=2
   ) +
    ggplot2::geom_point(
     data = data_milieu_classe_prop,
-    mapping = aes(x=borne_sup, y=proportion),
+    mapping = ggplot2::aes(x=borne_sup, y=proportion),
     color= "#F24B4B",
     size=2,
     shape=21,
     fill='white'
   ) +
   ggplot2::labs(x="Âge" , y="Valeur observée ou probabilité prédite") +
-  ggplot2::scale_shape_manual("obs", values=c("obs"=19), labels=c("obs"="Valeur observée"), name = "") +
-  ggplot2::scale_linetype_manual(values=c("p_hat_q7"=1), name="", labels= c("p_hat_q7"="Probabilité prédite")) +
-  ggplot2::scale_color_manual(values=c("p_hat_q7"="#F24B4B"), name="", labels= c("p_hat_q7"="Probabilité prédite")) +
   ggplot2::theme_light() +
   ggplot2::theme(legend.position = "bottom")
 
-graphique_q7
+# Les échelles manuelles sont ajoutées à l'affichage plutôt que stockées dans
+# `graphique_q7` : on pourra ainsi les redéfinir proprement en Q19, sans le
+# warning « Scale for ... is already present ».
+graphique_q7 +
+  ggplot2::scale_shape_manual("obs", values=c("obs"=19), labels=c("obs"="Valeur observée"), name = "") +
+  ggplot2::scale_linetype_manual(values=c("p_hat_q7"=1), name="", labels= c("p_hat_q7"="Probabilité prédite")) +
+  ggplot2::scale_color_manual(values=c("p_hat_q7"="#F24B4B"), name="", labels= c("p_hat_q7"="Probabilité prédite"))
 
 ```
 :::
@@ -716,25 +758,29 @@ graphique_q7
 -   Cette estimation est simple à réaliser car elle ne requiert qu'un
     calcul des fréquences empiriques.
 -   L'hypothèse du modèle est simple à formuler : tous les individus
-    d'un classe d'âge ont la même probabilité d'être malade.
+    d'une classe d'âge ont la même probabilité d'être malade.
 
 **Points négatifs de cette estimation :**
 
 -   La contrepartie de cette hypothèse simple est qu'elle produit une
     estimation peu réaliste en raison de la discontinuité systématique
-    lors d'une passage d'une classe d'âge à la suivante et l'homogénéité
+    lors d'un passage d'une classe d'âge à la suivante, et de l'homogénéité
     imposée au sein de chaque classe d'âge. L'estimation est donc assez
     grossière.
 -   Le modèle est peu parcimonieux car il fait intervenir 8 paramètres
     pour 100 observations.
 -   Ce type de modèle se généralise mal au cas où l'on souhaite faire
-    intervenir plus d'une variable explicative continue. Le nombre de
-    groupe d'individus issus des croisements des variables discrétisées
+    intervenir plus d'une variable explicative continue. -   Le nombre de
+    groupes d'individus issus des croisements des variables discrétisées
     explose rapidement. L'estimation devient alors peu robuste car
     certains regroupements risquent de rassembler peu d'individus. Par
-    ailleurs, il devient difficile d'isoler les effets marginaux d'une
+    d'isoler les effets marginaux d'une
     variable explicative sur la variable à expliquer et donc
     d'interpréter les résultats.
+
+C'est précisément pour lever ces limites qu'on introduit à la [question
+suivante](#question-8) un modèle plus lisse et plus parcimonieux : la régression
+logistique, qui ne fait intervenir que deux paramètres.
 
 :::
 
@@ -759,7 +805,7 @@ Le modèle logistique s'écrit :
 
 $$Y|(\mathtt{age}=x) \sim \mathcal{B}(p(x))$$ avec
 $$ \textrm{logit}(p(x))= \beta_0+\beta_1x \quad \textrm{où} \ \textrm{logit}: p \longmapsto \ln\left(\frac{p}{1-p} \right)$$
-Ce modèle fait intervenir deux pamètres : une constante et un
+Ce modèle fait intervenir deux paramètres : une constante et un
 coefficient associé à l'âge de l'individu.
 
 Pour déterminer l'hypothèse sur l'expression de $p(x)$, il suffit
@@ -777,13 +823,13 @@ $$
 \end{align*}
 $$
 
-Cette expression de $p(x)$ conduit à une courbe en S (c'est une
-sigmoïde). Elle est partiellement compatible avec le graphique précédent
+Cette expression de $p(x)$ conduit à une courbe en forme de « S » (c'est
+une sigmoïde). Elle est partiellement compatible avec le graphique précédent
 si $\beta_1>0$. En effet, dans les deux cas, la probabilité estimée est
-croissante avec $x$ (i.e. l'âge) et elles tendent vers $0$ lorsque
-$x \to -\infty$ et vers $1$ lorsque $x \to + \infty$. Néanmoins elles
-diffèrent notamment car il n'y a plus les effets de seuil comme à la
-question 7.
+croissante avec $x$ (i.e. l'âge) et elle tend vers $0$ lorsque
+$x \to -\infty$ et vers $1$ lorsque $x \to + \infty$. Néanmoins, elle
+diffère du modèle par classes de la [question 7](#question-7) : il n'y a plus d'effet de
+seuil aux bornes des classes d'âge.
 
 ```{ojs}
 //| echo: false
@@ -870,14 +916,13 @@ arrayRange = (start, stop, step) =>
 }
 ```
 
-D'autres fonctions en forme de «S» à valeur dans $\mathbb{R}$ vers
-$]0,1[$ auraient pu être appropriées, notamment des fonctions de
-répartition telles que la fonction de répartition d'une loi Gaussienne
-standard (modèle probit) ou la fonction de répartition d'une loi de
-Gumbel standard (modèle log-log complémentaire), qui sont parmi les plus
-couramment utilisées.
+D'autres fonctions en forme de « S », de $\mathbb{R}$ dans $]0,1[$,
+auraient pu être appropriées, notamment des fonctions de
+répartition telles que la fonction de répartition $\Phi$ d'une loi normale
+standard (modèle probit) ou la fonction $x \mapsto 1-\exp(-\exp(x))$ (lien
+log-log complémentaire), qui sont parmi les plus couramment utilisées.
 
-Il peut être utile de définrir en {{< iconify logos:r-lang >}}, les deux fonctions vectorielles
+Il peut être utile de définir en {{< iconify logos:r-lang >}}, les deux fonctions vectorielles
 suivantes :
 
 ::: {.panel-tabset group="language"}
@@ -907,7 +952,7 @@ logit_inv <- function(x){exp(x)/(1+exp(x))}
 ## Question 9
 
 Ecrire la log-vraisemblance du modèle logistique en fonction de $\beta$ et en déduire le
-système que doit résoudre le maximum de vraisemblance $\hat{\beta}$.
+système que doit résoudre le maximum de vraisemblance $\widehat{\beta}$.
 
 Peut-on résoudre ce système analytiquement ?
 
@@ -938,19 +983,19 @@ $$
 \end{align*}
 $$
 
-On cherche un point critique $(\widehat{\beta_0}, \widehat{\beta_1})$ de
-cette fonction de la log-vraisemblance c'est à dire tel que
-$\nabla \ln L_n\left(\widehat{\beta_0}, \widehat{\beta_1}\right)=0$.
+On cherche un point critique $(\widehat{\beta}_0, \widehat{\beta}_1)$ de
+cette fonction de la log-vraisemblance c'est-à-dire tel que
+$\nabla \ln L_n\left(\widehat{\beta}_0, \widehat{\beta}_1\right)=0$.
 
 $$
-\nabla \ln L_n\left(\widehat{\beta_0}, \widehat{\beta_1}\right) =
+\nabla \ln L_n\left(\widehat{\beta}_0, \widehat{\beta}_1\right) =
 \begin{pmatrix}
-\frac{\partial \ln L_n}{\partial \beta_0}\left(\widehat{\beta_0}, \widehat{\beta_1}\right) \\
-\frac{\partial \ln L_n}{\partial \beta_1}\left(\widehat{\beta_0}, \widehat{\beta_1}\right) 
+\frac{\partial \ln L_n}{\partial \beta_0}\left(\widehat{\beta}_0, \widehat{\beta}_1\right) \\
+\frac{\partial \ln L_n}{\partial \beta_1}\left(\widehat{\beta}_0, \widehat{\beta}_1\right) 
 \end{pmatrix} = 
 \begin{pmatrix}
-\sum\limits_{i=1}^n  \left[y_i-\frac{\exp(\widehat{\beta_0}+\widehat{\beta_1}x_i)}{1+\exp(\widehat{\beta_0}+\widehat{\beta_1}x_i)}\right] \\
-\sum\limits_{i=1}^n  \left[y_i-\frac{\exp(\widehat{\beta_0}+\widehat{\beta_1}x_i)}{1+\exp(\widehat{\beta_0}+\widehat{\beta_1}x_i)}\right]x_i
+\sum\limits_{i=1}^n  \left[y_i-\frac{\exp(\widehat{\beta}_0+\widehat{\beta}_1x_i)}{1+\exp(\widehat{\beta}_0+\widehat{\beta}_1x_i)}\right] \\
+\sum\limits_{i=1}^n  \left[y_i-\frac{\exp(\widehat{\beta}_0+\widehat{\beta}_1x_i)}{1+\exp(\widehat{\beta}_0+\widehat{\beta}_1x_i)}\right]x_i
 \end{pmatrix}
 =
 \begin{pmatrix}
@@ -961,11 +1006,12 @@ $$
 
 On ne peut pas déterminer une solution analytique de l'estimateur du
 maximum de vraisemblance
-$\hat{\boldsymbol{\beta}}=\left(\widehat{\beta_0}, \widehat{\beta_1}\right)$
+$\widehat{\boldsymbol{\beta}}=\left(\widehat{\beta}_0, \widehat{\beta}_1\right)$
 car les équations ne sont pas linéaires en $\boldsymbol{\beta}$.
 
-On va rechercher des solutions approchées numériquement dans la question
-suivante.
+On va donc rechercher des solutions approchées numériquement dans la
+[question suivante](#question-10) : c'est l'algorithme itératif de Newton-Raphson (ou
+scoring de Fisher) qu'utilise `glm`.
 
 :::
 
@@ -985,6 +1031,12 @@ C'est ce qu'on doit faire en pratique. Les arguments sont semblables à
 la fonction `lm`. Il faut faire attention à bien paramétrer l'argument
 `family` sans quoi on estimerait un modèle de régression linéaire
 simple.
+
+Concrètement, `family = binomial(link = "logit")` déclare que la variable
+réponse est binaire (loi de Bernoulli) et que le lien entre $p(x)$ et
+$\beta_0+\beta_1 x$ est le logit. Sans cet argument, `glm` ajusterait par
+défaut un modèle linéaire gaussien (`family = gaussian()`), inadapté à
+une variable à valeurs dans $\{0,1\}$.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -1013,6 +1065,7 @@ de Bernoulli.
 ```{webr}
 #| envir: baser
 #| autorun: true
+# Recodage de `chd` en 0/1 : as.integer(chd) vaut 1 pour "No" et 2 pour "Yes"
 modele_logit <- glm(
   (as.integer(chd)-1L) ~ age,
   family = binomial(link="logit"),
@@ -1026,6 +1079,7 @@ summary(modele_logit)
 ```{webr}
 #| envir: tdv
 #| autorun: true
+# Recodage de `chd` en 0/1 : as.integer(chd) vaut 1 pour "No" et 2 pour "Yes"
 modele_logit <- glm(
   (as.integer(chd)-1L) ~ age,
   family = binomial(link="logit"),
@@ -1035,8 +1089,11 @@ summary(modele_logit)
 ```
 :::
 
-On peut lire l'estimation par maximum de vraissemblance :
-$\widehat{\beta_0} = -5,30945$ et $\widehat{\beta_1} = 0,11092$.
+On peut lire l'estimation par maximum de vraisemblance :
+$\widehat{\beta}_0 = -5,30945$ et $\widehat{\beta}_1 = 0,11092$. La sortie
+fournit aussi les écarts-types estimés (colonne `Std. Error` : 1,13365 et
+0,02406), les statistiques de Wald $z$ et les p-valeurs associées (colonne
+`Pr(>|z|)`).
 
 :::
 
@@ -1053,7 +1110,7 @@ modèle précédent lorsque les 2 individus ont 10 ans d’écart (c’est à di
 ::: answer
 
 La cote (l'odds) pour un individu avec des caractéristiques $x$ est le
-ratio entre la probabilité que l'événement (ici avoir un maladie
+ratio entre la probabilité que l'événement (ici avoir une maladie
 coronarienne) se produise et la probabilité qu'il ne se produise pas.
 
 $$\textrm{odds}(x)=\frac{p(x)}{1-p(x)}$$
@@ -1108,7 +1165,7 @@ ce rapport pour le modèle précédent lorsque les 2 individus ont 10 ans d’é
 
 ::: answer
 
-D'après la question 6, pour le modèle logistique, on a
+D'après la [question 8](#question-8), pour le modèle logistique, on a
 
 $$
 p(x) = \frac{\exp(\beta_0+\beta_1x)}{1+\exp(\beta_0+\beta_1x)}=\frac{1}{1+\exp(-(\beta_0+\beta_1x))}
@@ -1120,6 +1177,10 @@ $$
 
 Contrairement au rapport de cote, le rapport de probabilité dépend de
 l'âge $x_2$.
+
+Numériquement, ce rapport vaut environ 2,79 entre 20 et 30 ans, 2,43 entre
+30 et 40 ans, mais seulement 1,16 entre 60 et 70 ans : l'effet de dix ans
+d'écart s'amortit lorsque la probabilité est déjà élevée.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -1180,7 +1241,7 @@ On rappelle que sous "de bonnes conditions", l’estimateur du maximum de vraise
 $n$ individus vérifie la convergence en loi suivante, lorsque $n \to \infty$,
 
 $$
-J_n(\beta)^{1/2}\left(\hat{\beta}-\beta\right) \overset{\mathcal{L}}{\longrightarrow} \mathcal{N}\left(0_p, I_p\right)
+J_n(\beta)^{1/2}\left(\widehat{\beta}-\beta\right) \overset{\mathcal{L}}{\longrightarrow} \mathcal{N}\left(0_p, I_p\right)
 $$
 
 où $J_n(\beta)$ est la matrice d’information de Fisher. Cette dernière admet l’expression
@@ -1201,18 +1262,18 @@ p_{\beta}(x_1)\left(1-p_{\beta}(x_1)\right) & & 0 \\
 $$
 
 
-Justifier qu’une approximation asymptotique de la loi de $(\hat{\beta}-\beta)$ est $\mathcal{N}\left(0_p, J_n^{-1}(\beta)\right)$
+Justifier qu’une approximation asymptotique de la loi de $(\widehat{\beta}-\beta)$ est $\mathcal{N}\left(0_p, J_n^{-1}(\beta)\right)$
 
 ::: {.content-visible when-meta="is_answer_print_13"}
 
 ::: answer
 
 D'après la convergence en loi rappelée dans l'énoncé, on a
-approximatovement :
-$$J_n(\beta)^{1/2}(\boldsymbol{\hat{\beta}}-\boldsymbol{\beta}) \approx \mathcal{N}(0_2, I_2)$$
+approximativement :
+$$J_n(\beta)^{1/2}(\boldsymbol{\widehat{\beta}}-\boldsymbol{\beta}) \approx \mathcal{N}(0_2, I_2)$$
 
 En multipliant par $J_n(\beta)^{-1/2}$ à gauche, on a :
-$$\boldsymbol{\hat{\beta}}-\boldsymbol{\beta} \approx \mathcal{N}(0_2, J_n(\beta)^{-1})$$
+$$\boldsymbol{\widehat{\beta}}-\boldsymbol{\beta} \approx \mathcal{N}(0_2, J_n(\beta)^{-1})$$
 
 :::
 
@@ -1220,7 +1281,7 @@ $$\boldsymbol{\hat{\beta}}-\boldsymbol{\beta} \approx \mathcal{N}(0_2, J_n(\beta
 
 ## Question 14
 
-Comment peut-on exploiter ce résultat pour estimer l’écart-type de chaque coordonnée de $\hat{\beta}$ ? On donnera la démarche concrète à appliquer, mais on ne demande pas
+Comment peut-on exploiter ce résultat pour estimer l’écart-type de chaque coordonnée de $\widehat{\beta}$ ? On donnera la démarche concrète à appliquer, mais on ne demande pas
 de la mettre en pratique numériquement.
 
 ::: {.content-visible when-meta="is_answer_print_14"}
@@ -1232,14 +1293,15 @@ de la mettre en pratique numériquement.
     Pour cela, on remplace les $p_\beta(x_i)$ dans $W_\beta$ par
     $p_{\widehat{\beta}}(x_i)=\frac{e^{\widehat{\beta}'x_i}}{1+e^{\widehat{\beta}'x_i}}$
 
--   On calcule l'inverse de $J_n(\widehat{\beta})$ qui correspond à une
-    estimation de la matrice de variance covariance de asymptotique de
+-   On calcule l'inverse de $J_n(\widehat{\beta})$, qui fournit une
+    estimation de la matrice de variance-covariance asymptotique de
     $\widehat{\beta}$.
 
--   L'élément diagonal numéro $j$ de cette dernière matrice correspond
-    donc à une estimation de la variance asymptotique de la coordonnée
-    $\widehat{\beta}_j$ . Sa racine carrée constitue ainsi une
-    estimation de l'écart-type de $\widehat{\beta}_j$.
+-   L'élément diagonal n° $j$ de cette matrice fournit donc une estimation
+    de la variance asymptotique de la coordonnée $\widehat{\beta}_j$ ; sa
+    racine carrée est une estimation de l'écart-type de $\widehat{\beta}_j$.
+    C'est précisément ce que calculent `vcov(modele_logit)` et la colonne
+    `Std. Error` de `summary(modele_logit)` sous {{< iconify logos:r-lang >}} .
 
 :::
 
@@ -1249,14 +1311,63 @@ de la mettre en pratique numériquement.
 
 Cette procédure d’estimation est utilisée par la fonction `glm`. 
 En utilisant sa sortie, donner une estimation de l’écart-type de 
-$\hat{\beta}_0$ et $\hat{\beta}_1$.
+$\widehat{\beta}_0$ et $\widehat{\beta}_1$.
 
 ::: {.content-visible when-meta="is_answer_print_15"}
 
 ::: answer
-Il s'agit de la deuxième colonne dans la sortie de `summary`. Cela nous
-donne un écart type estimé de 1,13365 pour $\widehat{\beta}_0$ et de
-0,02406 pour $\widehat{\beta}_1$.
+Comme vu à la [question 10](#question-10), la sortie de `summary(modele_logit)` (où
+`modele_logit` est le modèle ajusté par `glm` à la question 10) contient un
+tableau de coefficients dont la deuxième colonne, intitulée `Std. Error`,
+donne précisément les écarts-types estimés de $\widehat{\beta}_0$ et
+$\widehat{\beta}_1$. On peut les extraire directement avec {{< iconify logos:r-lang >}} :
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+# Écarts-types estimés : colonne "Std. Error" de summary(modele_logit) (cf. question 10)
+summary(modele_logit)$coefficients[, "Std. Error"]
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+# Écarts-types estimés : colonne "Std. Error" de summary(modele_logit) (cf. question 10)
+summary(modele_logit)$coefficients[, "Std. Error"]
+```
+:::
+
+On peut aussi les calculer à partir de la matrice de variance-covariance
+estimée `vcov(modele_logit)` ([question 14](#question-14)), dont les écarts-types estimés sont
+les racines carrées des éléments diagonaux :
+
+::: {.panel-tabset group="language"}
+### Base R
+
+```{webr}
+#| envir: baser
+#| autorun: true
+# Écarts-types estimés via la matrice de variance-covariance (cf. question 14)
+sqrt(diag(vcov(modele_logit)))
+```
+
+### Tidyverse
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+# Écarts-types estimés via la matrice de variance-covariance (cf. question 14)
+sqrt(diag(vcov(modele_logit)))
+```
+:::
+
+Les deux approches donnent le même résultat : un écart-type estimé de
+1,13365 pour $\widehat{\beta}_0$ et de 0,02406 pour $\widehat{\beta}_1$.
 :::
 
 :::
@@ -1270,8 +1381,8 @@ Construire un intervalle de confiance asymptotique à 95 % pour le paramètre $\
 ::: answer
 
 L'intervalle de confiance asymptotique au niveau de confiance
-$1 − \alpha$ pour $\hat{\beta_1}$ est donnée par :
-$$\left[\hat{\beta}_1 - q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \ ; \ \hat{\beta}_1 + q_{1-\alpha/2}^{\mathcal{N}(0,1)}\hat{\sigma}_1 \right]$$
+$1 − \alpha$ pour $\beta_1$ est donné par :
+$$\left[\widehat{\beta}_1 - q_{1-\alpha/2}^{\mathcal{N}(0,1)}\widehat{\sigma}_1 \ ; \ \widehat{\beta}_1 + q_{1-\alpha/2}^{\mathcal{N}(0,1)}\widehat{\sigma}_1 \right]$$
 
 Cela donne numériquement :
 
@@ -1341,7 +1452,7 @@ confint.default(modele_logit, parm = "age")
 
 ## Question 17
 
-D’après la question précédente, le paramètre $\beta_1$ est-il différent de 0 
+D’après la [question précédente](#question-16), le paramètre $\beta_1$ est-il différent de 0 
 au seuil d’erreur asymptotique 5 % ?
 Quel est le nom de cette procédure de test. 
 Donner la $\textit{p-value}$ associée à ce test et vérifier qu’elle concorde bien avec la sortie de `glm`.
@@ -1354,11 +1465,11 @@ Comme $0$ n'appartient pas à l'intervalle de confiance précédent,
 $\beta_1$ est différent de $0$ au seuil d'erreur asymptotique 5 %.
 
 Le test qui consiste à regarder si un paramètre est nul en s'appuyant
-sur la normalité asymptotique de son estimateur est connue sous le nom
-de "test de Wald".
+sur la normalité asymptotique de son estimateur est connu sous le nom
+de « test de Wald ».
 
 La p-valeur vaut
-$$2\left(1-F_{\mathcal{N(0,1)}}(T)\right) \quad \textrm{avec} \ T=\frac{\widehat{\beta_1}}{\widehat{\sigma_1}}$$
+$$2\left(1-F_{\mathcal{N(0,1)}}(T)\right) \quad \textrm{avec} \ T=\frac{\widehat{\beta}_1}{\widehat{\sigma_1}}$$
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -1378,8 +1489,9 @@ $$2\left(1-F_{\mathcal{N(0,1)}}(T)\right) \quad \textrm{avec} \ T=\frac{\widehat
 ```
 :::
 
-Numériquement on obtient $\textit{p-valeur} = 4,022426\times10^{-06}$.
-C'est la même valeur que dans la sortie de la fonction `glm`.
+Numériquement, la statistique de Wald vaut $z = \widehat{\beta}_1/\widehat{\sigma}_1 \approx 4{,}61$ et on obtient $\textit{p-valeur} \approx 4{,}02\times10^{-6}$.
+C'est la même p-valeur que celle affichée dans la colonne `Pr(>|z|)`
+de la sortie de `summary(glm)`.
 
 :::
 
@@ -1421,24 +1533,24 @@ qchisq(p = alpha, df = d)
 
 On veut tester la significativité globale du modèle avec un test du
 rapport de vraisemblance. On veut vérifier ou non qu'au moins une des
-variables du modèle explique l'évènement d'intérêt. Ici, on a qu'un
-paramètre dans le modèle en dehors de la constante donc on veut tester :
+variables du modèle explique l'évènement d'intérêt. Ici, on n'a qu'un seul
+paramètre dans le modèle en dehors de la constante, donc on veut tester :
 
 $$H_0: \beta_1 = 0 $$ contre $$H_1: \beta_1 \neq 0 $$
 
 Sous $H_0$, on a :
 
-$$2\left( \ln L \left(\hat{\beta}\right) -  \ln L \left(\hat{\beta}_{H_0}\right) \right) \overset{\mathcal{L}}{\longrightarrow} \chi^2(1)$$
+$$2\left( \ln L \left(\widehat{\beta}\right) -  \ln L \left(\widehat{\beta}_{H_0}\right) \right) \overset{\mathcal{L}}{\longrightarrow} \chi^2(1)$$
 Le nombre de degrés de liberté correspond à la différence de paramètres
 entre les deux modèles : ici c'est 1.
 
 Pour $n$ suffisamment grand, on rejette $H_0$ au seuil $\alpha$ si
 
-$$2\left( \ln L \left(\hat{\beta}\right) -  \ln L \left(\hat{\beta}_{H_0}\right) \right) > q_{1-\alpha}^{\chi^2(1)}$$
+$$2\left( \ln L \left(\widehat{\beta}\right) -  \ln L \left(\widehat{\beta}_{H_0}\right) \right) > q_{1-\alpha}^{\chi^2(1)}$$
 
-Cette statistique s'exprime en fonction des déviances du modèle nul
-$D_{H_0}$ et la déviance du modèle estimé $D_{H_1}$. En effet, la
-défiance $D$ d'un modèle (logistque ou autre) vaut :
+Cette statistique s'exprime à l'aide des déviances du modèle nul
+$D_{H_0}$ et du modèle estimé $D_{H_1}$. En effet, la
+déviance $D$ d'un modèle (logistique ou autre) vaut :
 
 $$D = 2(\ln(L_{sat})-\ln(L_{mod}))$$
 
@@ -1484,7 +1596,10 @@ qchisq(p = c(0.9, 0.95, 0.99), df = 1)
 ```
 :::
 
-On rejette donc l'hypothèse nulle aux seuils 10 %, 5 % et 1 %.
+Numériquement, la déviance nulle vaut 136,66 et la déviance résiduelle
+107,35, soit une statistique de test d'environ 29,31, très supérieure au
+quantile $q_{0{,}99}^{\chi^2(1)} \approx 6{,}63$. On rejette donc
+l'hypothèse nulle aux seuils 10 %, 5 % et 1 %.
 
 La p-valeur vaut $1-F_{\chi^2(1)}(T)$ où $T$ est la statistique
 de test.
@@ -1507,7 +1622,7 @@ de test.
 ```
 :::
 
-On retrouve la même p-valeur avec la foncion `anova`.
+On retrouve la même p-valeur (environ $6{,}2\times10^{-8}$) avec la fonction `anova`.
 
 ::: {.panel-tabset group="language"}
 ### Base R
@@ -1533,8 +1648,8 @@ anova(modele_logit, test = "Chisq")
 
 ## Question 19
 
-Reprendre le graphique effectué à la question 7 et superposer (sous forme d’une
-courbe) les valeurs prédites $\hat{p}(x)$ par le modèle logistique, calculées pour une grille de valeurs de $x$ couvrant l’étendue prise par les observations. On pourra utiliser la fonction `predict` associée à l’option `type="response"`.
+Reprendre le graphique effectué à la [question 7](#question-7) et superposer (sous forme d’une
+courbe) les valeurs prédites $\widehat{p}(x)$ par le modèle logistique, calculées pour une grille de valeurs de $x$ couvrant l’étendue prise par les observations. On pourra utiliser la fonction `predict` associée à l’option `type="response"`.
 
 ::: {.content-visible when-meta="is_answer_print_19"}
 
@@ -1621,16 +1736,17 @@ fake_data <- data.frame(age = seq(from = 20, to = 70, by = 0.1))
 fake_data$p_hat <- predict(modele_logit, newdata=fake_data, type = "response")
 
 
+# `graphique_q7` ne contient pas d'échelle manuelle : on les définit ici une
+# seule fois, avec les deux clés (Q7 et Q8) -> aucun warning « already present ».
 graphique_q19 <- graphique_q7 +
   ggplot2::geom_line(
     data = fake_data,
     mapping = ggplot2::aes(x = age, y=p_hat, lty="p_hat_q8", color="p_hat_q8"),
     linewidth = 1.2
-  ) + 
+  ) +
+  ggplot2::scale_shape_manual("obs", values=c("obs"=19), labels=c("obs"="Valeur observée"), name = "") +
   ggplot2::scale_linetype_manual(values=c("p_hat_q7"=1, "p_hat_q8"=1), name="", labels= c("p_hat_q7"="Probabilité prédite (modèle Q7)", "p_hat_q8"="Probabilité prédite (modèle Q8)")) +
-  ggplot2::scale_color_manual(values=c("p_hat_q7"="#F24B4B", "p_hat_q8"="#3854A6"), name="", labels= c("p_hat_q7"="Probabilité prédite (modèle Q7)", "p_hat_q8"="Probabilité prédite (modèle Q8)")) +
-  ggplot2::theme_light() +
-  ggplot2::theme(legend.position = "bottom")
+  ggplot2::scale_color_manual(values=c("p_hat_q7"="#F24B4B", "p_hat_q8"="#3854A6"), name="", labels= c("p_hat_q7"="Probabilité prédite (modèle Q7)", "p_hat_q8"="Probabilité prédite (modèle Q8)"))
 graphique_q19
 ```
 :::
@@ -1641,7 +1757,7 @@ graphique_q19
 
 ## Question 20
 
-En partant de la convergence en loi de $\hat{\beta}$ rappelée ci-dessus, en déduire un intervalle de confiance au niveau asymptotique 95 % pour $p(x)$.
+En partant de la convergence en loi de $\widehat{\beta}$ rappelée ci-dessus, en déduire un intervalle de confiance au niveau asymptotique 95 % pour $p(x)$.
 Ajouter cet intervalle de confiance pour chaque $x$ considéré au graphique précédent.
 On pourra exploiter avec profit l’option `se=TRUE` de la fonction `predict` dans le cas `type="link"`.
 
@@ -1661,25 +1777,25 @@ Asymptotiquement,
 
 $$
 \begin{align*}
-\boldsymbol{V}(\boldsymbol{\beta})^{1/2}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}) \approx \mathcal{N}(0, I_2)
-&\Longrightarrow \hat{\boldsymbol{\beta}}-\boldsymbol{\beta} \approx \mathcal{N}(0, \boldsymbol{V}(\boldsymbol{\beta})^{-1}) \\
-&\Longrightarrow \begin{pmatrix}1 & x\end{pmatrix}\begin{pmatrix}\hat{\beta_0}-\beta_0 \\ \hat{\beta_1}-\beta_1\end{pmatrix}\approx \mathcal{N}\left(0, \begin{pmatrix}1 & x\end{pmatrix}\boldsymbol{V}(\boldsymbol{\beta})^{-1}\begin{pmatrix}1 \\ x\end{pmatrix}\right) \\
-&\Longrightarrow (\hat{\beta}_0 +\hat{\beta_1}x)-(\beta_0+\beta_1x) \approx \mathcal{N}\left(0, \sigma_0^2 + 2\gamma x+\sigma_{1}^2x^2\right) \\
-&\Longrightarrow \frac{(\hat{\beta}_0 +\hat{\beta_1}x)-(\beta_0+\beta_1x)}{\sqrt{\sigma_0^2 + 2\gamma x+\sigma_{1}^2x^2}} \approx \mathcal{N}\left(0, 1\right) \\
+\boldsymbol{V}(\boldsymbol{\beta})^{1/2}(\widehat{\boldsymbol{\beta}}-\boldsymbol{\beta}) \approx \mathcal{N}(0, I_2)
+&\Longrightarrow \widehat{\boldsymbol{\beta}}-\boldsymbol{\beta} \approx \mathcal{N}(0, \boldsymbol{V}(\boldsymbol{\beta})^{-1}) \\
+&\Longrightarrow \begin{pmatrix}1 & x\end{pmatrix}\begin{pmatrix}\widehat{\beta}_0-\beta_0 \\ \widehat{\beta}_1-\beta_1\end{pmatrix}\approx \mathcal{N}\left(0, \begin{pmatrix}1 & x\end{pmatrix}\boldsymbol{V}(\boldsymbol{\beta})^{-1}\begin{pmatrix}1 \\ x\end{pmatrix}\right) \\
+&\Longrightarrow (\widehat{\beta}_0 +\widehat{\beta}_1x)-(\beta_0+\beta_1x) \approx \mathcal{N}\left(0, \sigma_0^2 + 2\gamma x+\sigma_{1}^2x^2\right) \\
+&\Longrightarrow \frac{(\widehat{\beta}_0 +\widehat{\beta}_1x)-(\beta_0+\beta_1x)}{\sqrt{\sigma_0^2 + 2\gamma x+\sigma_{1}^2x^2}} \approx \mathcal{N}\left(0, 1\right) \\
 \end{align*}
 $$
 
-En remplaçant, les coefficients de la matrice
+En remplaçant les coefficients de la matrice
 $\boldsymbol{V}(\boldsymbol{\beta})^{-1}$ par ceux estimés, on a :
 
 $$
 \begin{align*}
 \tiny
-& \mathbb{P}\left(q_{\alpha/2}^{\mathcal{N}(0,1)} \leq \frac{(\hat{\beta}_0 +\hat{\beta_1}x)-(\beta_0+\beta_1x)}{\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}} \leq q_{1-\alpha/2}^{\mathcal{N}(0,1)} \right) \simeq 1- \alpha \\
-&\Rightarrow \mathbb{P}\left(q_{\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2} \leq \underbrace{(\hat{\beta}_0 +\hat{\beta_1}x)}_{\textrm{logit}(\hat{p}(x))}-\underbrace{(\beta_0+\beta_1x)}_{\textrm{logit}(p(x))} \leq q_{1-\alpha/2}^{\mathcal{N}(0,1)\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}} \right) \simeq 1- \alpha \\
-&\Rightarrow \mathbb{P}\left(\hat{\beta}_0 +\hat{\beta_1}x-q_{1-\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2} \leq \beta_0+\beta_1x \leq \hat{\beta}_0 +\hat{\beta_1}x -q_{\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2} \right) \simeq 1- \alpha \\
-&\Rightarrow \mathbb{P}\left(\textrm{logit}^{-1}\left(\hat{\beta}_0 +\hat{\beta_1}x-q_{1-\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}\right) \leq p(x) \leq \textrm{logit}^{-1}\left(\hat{\beta}_0 +\hat{\beta_1}x -q_{\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2} \right)\right) \simeq 1- \alpha \\
-&\Rightarrow \textrm{IC}_{1-\alpha}\left[p(x)\right] \simeq \left[\textrm{logit}^{-1}\left(\hat{\beta}_0 +\hat{\beta_1}x-q_{1-\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}\right) ; \ \textrm{logit}^{-1}\left( \hat{\beta}_0 +\hat{\beta_1}x+q_{1-\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}\right) \right]
+& \mathbb{P}\left(q_{\alpha/2}^{\mathcal{N}(0,1)} \leq \frac{(\widehat{\beta}_0 +\widehat{\beta}_1x)-(\beta_0+\beta_1x)}{\sqrt{\widehat{\sigma}_0^2 + 2\widehat{\gamma} x+\widehat{\sigma}_{1}^2x^2}} \leq q_{1-\alpha/2}^{\mathcal{N}(0,1)} \right) \simeq 1- \alpha \\
+&\Rightarrow \mathbb{P}\left(q_{\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\widehat{\sigma}_0^2 + 2\widehat{\gamma} x+\widehat{\sigma}_{1}^2x^2} \leq \underbrace{(\widehat{\beta}_0 +\widehat{\beta}_1x)}_{\textrm{logit}(\widehat{p}(x))}-\underbrace{(\beta_0+\beta_1x)}_{\textrm{logit}(p(x))} \leq q_{1-\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\widehat{\sigma}_0^2 + 2\widehat{\gamma} x+\widehat{\sigma}_{1}^2x^2} \right) \simeq 1- \alpha \\
+&\Rightarrow \mathbb{P}\left(\widehat{\beta}_0 +\widehat{\beta}_1x-q_{1-\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\widehat{\sigma}_0^2 + 2\widehat{\gamma} x+\widehat{\sigma}_{1}^2x^2} \leq \beta_0+\beta_1x \leq \widehat{\beta}_0 +\widehat{\beta}_1x -q_{\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\widehat{\sigma}_0^2 + 2\widehat{\gamma} x+\widehat{\sigma}_{1}^2x^2} \right) \simeq 1- \alpha \\
+&\Rightarrow \mathbb{P}\left(\textrm{logit}^{-1}\left(\widehat{\beta}_0 +\widehat{\beta}_1x-q_{1-\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\widehat{\sigma}_0^2 + 2\widehat{\gamma} x+\widehat{\sigma}_{1}^2x^2}\right) \leq p(x) \leq \textrm{logit}^{-1}\left(\widehat{\beta}_0 +\widehat{\beta}_1x -q_{\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\widehat{\sigma}_0^2 + 2\widehat{\gamma} x+\widehat{\sigma}_{1}^2x^2} \right)\right) \simeq 1- \alpha \\
+&\Rightarrow \textrm{IC}_{1-\alpha}\left[p(x)\right] \simeq \left[\textrm{logit}^{-1}\left(\widehat{\beta}_0 +\widehat{\beta}_1x-q_{1-\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\widehat{\sigma}_0^2 + 2\widehat{\gamma} x+\widehat{\sigma}_{1}^2x^2}\right) ; \ \textrm{logit}^{-1}\left( \widehat{\beta}_0 +\widehat{\beta}_1x+q_{1-\alpha/2}^{\mathcal{N}(0,1)}\sqrt{\widehat{\sigma}_0^2 + 2\widehat{\gamma} x+\widehat{\sigma}_{1}^2x^2}\right) \right]
 \end{align*}
 $$
 
@@ -1689,7 +1805,7 @@ Pour faire ce calcul dans {{< iconify logos:r-lang >}} deux options sont envisag
     l'expression qu'on vient d'obtenir.
 -   On peut utiliser l'option `type='link'` et `se=TRUE` dans la
     fonction `predict` qui permet de calculer les termes
-    $\sqrt{\hat{\sigma}_0^2 + 2\hat{\gamma} x+\hat{\sigma}_{1}^2x^2}$
+    $\sqrt{\widehat{\sigma}_0^2 + 2\widehat{\gamma} x+\widehat{\sigma}_{1}^2x^2}$
     via l'attribut `se.fit` et $\widehat{\beta}_0+\widehat{\beta}_1x$
     via l'attribut `fit`.
 
@@ -1752,12 +1868,12 @@ W_beta <- diag(
 )
 
 n_obs <- nrow(data_chdage)
-design_matix <- matrix(
+design_matrix <- matrix(
   data = c(rep(1.0, length = n_obs), data_chdage$age),
   ncol = 2,
   byrow = FALSE
 )
-Vn <- t(design_matix) %*% W_beta  %*%  design_matix
+Vn <- t(design_matrix) %*% W_beta  %*%  design_matrix
 
 Vn_inv <- solve(Vn)
 
@@ -1820,12 +1936,12 @@ W_beta <- diag(
 )
 
 n_obs <- nrow(data_chdage)
-design_matix <- matrix(
+design_matrix <- matrix(
   data = c(rep(1.0, length = n_obs), data_chdage$age),
   ncol = 2,
   byrow = FALSE
 )
-Vn <- t(design_matix) %*% W_beta  %*%  design_matix
+Vn <- t(design_matrix) %*% W_beta  %*%  design_matrix
 
 Vn_inv <- solve(Vn)
 
@@ -1850,9 +1966,9 @@ fake_data$p_hat_sup <- logit_inv(
 )
 
 graphique_q20 <- graphique_q19 +
-  geom_ribbon(
+  ggplot2::geom_ribbon(
     data = fake_data,
-    mapping = aes(x = age, ymin=p_hat_inf, ymax=p_hat_sup),
+    mapping = ggplot2::aes(x = age, ymin=p_hat_inf, ymax=p_hat_sup),
     alpha = 0.5,
     fill = "#3854A6"
   )
@@ -1961,9 +2077,9 @@ fake_data$p_hat_sup <- logit_inv(
 )
   
 graphique_q20 <- graphique_q19 +
-  geom_ribbon(
+  ggplot2::geom_ribbon(
     data = fake_data,
-    mapping = aes(x = age, ymin=p_hat_inf, ymax=p_hat_sup),
+    mapping = ggplot2::aes(x = age, ymin=p_hat_inf, ymax=p_hat_sup),
     alpha = 0.5,
     fill = "#3854A6"
   )

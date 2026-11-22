@@ -2,7 +2,7 @@
 title: "TD 6 - Exercice 2 - Le modèle logistique est naturel"
 lang: fr
 author: "Théo Leroy"
-date: "14 novembre 2025"
+date: "27 novembre 2026"
 params:
   question_courante: 2
 format:
@@ -30,10 +30,12 @@ custom-callout:
 {{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
 
-On dispose d’un couple de variables aléatoires $(X,Y)$ 
-où $Y$ est binaire et $X$ est à valeurs dans $\mathbb{R}^d$. 
-On note $p = \mathbb{P}(Y = 1)$, $f_0(\cdot)$ la densité conditionnelle de $X$ sachant que $Y = 0$ et $f_1(\cdot)$ la densité conditionnelle de $X$
-sachant que $Y = 1$. On note de plus
+On dispose d’un couple de variables aléatoires $(X,Y)$ où $Y$ est binaire et $X$ est à valeurs dans $\mathbb{R}^d$. 
+
+On note $p = \mathbb{P}(Y=1)$, $f_0(\cdot)$ la densité conditionnelle de $X$ sachant que $Y = 0$ et $f_1(\cdot)$ la densité conditionnelle de $X$
+sachant que $Y = 1$.
+
+On note de plus
 
 $$
 h(x)=\log\left(\frac{f_1(x)}{f_0(x)}\right)+\log\left(\frac{p}{1-p}\right) \ , \quad x\in \mathbb{R}^d
@@ -96,7 +98,7 @@ f_1(x)=a(x) b\left(\theta_1\right) e^{\theta_1 \cdot T(x)}$$
 
 pour deux paramètres $\theta_0$ et $\theta_1$ distincts.
 
-La fonction $h$ de la question précédente s'écrit donc :
+La fonction $h$ de la [question précédente](#question-1) s'écrit donc :
 
 $$
 \begin{align*}
@@ -110,7 +112,7 @@ où
 $\beta=\left(\log\left(\frac{b\left(\theta_1\right) p}{b\left(\theta_0\right)(1-p)}\right), \theta_1-\theta_0\right)$
 est un vecteur de taille $q+1$ et $\tilde{T}(x)=(1, T(x))$.
 
-On a donc d'après la question précédente
+On a donc d'après la [question précédente](#question-1)
 
 $$
 \mathbb{P}(Y=1 \mid X=x)=\frac{1}{1+e^{-\beta^{\prime} \cdot \tilde{T}(x)}},

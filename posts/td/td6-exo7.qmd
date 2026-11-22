@@ -2,9 +2,9 @@
 title: "TD 6 - Exercice 7 - Crabes fer à cheval"
 lang: fr
 author: "Théo Leroy"
-date: "5 decembre 2025"
+date: "27 novembre 2026"
 params:
-  question_courante: 0
+  question_courante: 2
 format:
   live-html:
     code-background: true

@@ -54,9 +54,6 @@ editor:
 
 
 
-
-::: {.content-hidden when-format="html"}
-
 ### Exercices des séances 6 à 8
 
 [Exercice 1](/posts/td/td6-exo1.html)
@@ -73,6 +70,8 @@ editor:
 
 [Exercice 7](/posts/td/td6-exo7.html)
 
+
+::: {.content-hidden when-format="html"}
 
 
 ## Rappels de cours
