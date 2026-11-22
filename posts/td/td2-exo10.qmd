@@ -4,7 +4,7 @@ lang: fr
 author: "Théo Leroy"
 date: "23 septembre 2026"
 params:
-  question_courante: 0
+  question_courante: 6
 format:
   live-html:
     code-background: true
@@ -39,10 +39,11 @@ custom-callout:
 {{< include ./../../_extensions/conditionnal.qmd >}}
 {{< include ./../../_extensions/r-wasm/live/_knitr.qmd >}}
 
-Le fichier `chemical.txt` contient la concentration dans le sang (en *ng/ml*) d’un certain 
+Le fichier [`chemical.txt`](./../../data/chemical.txt) contient la concentration dans le sang (en *ng/ml*) d’un certain 
 produit chimique chez 40 patients selon qu’ils ont absorbé un médicament dosé à 
 25, 50, 100 ou 200 mg de substance active (l’almitrine bismesylate). Les patients sont ainsi 
 séparés en 4 groupes de 10 selon le dosage reçu.
+
 
 
 ## Question 1
@@ -487,8 +488,7 @@ On pourrait être tenté de calculer la p-valeur par soustraction :
 $1 - F_{\mathcal{F}(I-1,\,n-I)}(\texttt{Fstat})$. Mais ici la statistique de test est si grande que la
 fonction de répartition vaut $0,99999999999999845$ : dans un nombre à virgule flottante double
 précision (environ 16 chiffres significatifs), la soustraction $1 - 0,99999999999999845$
-ne conserve plus que 1 à 2 chiffres significatifs de la p-valeur. C'est un phénomène
-d'*annulation catastrophique* : on obtient `1.554312e-15` au lieu de la valeur exacte
+ne conserve plus que 1 à 2 chiffres significatifs de la p-valeur. On obtient `1.554312e-15` au lieu de la valeur exacte
 `1.575217e-15` (celle affichée par `anova`).
 
 L'argument `lower.tail = FALSE` évalue directement la queue de distribution, sans soustraction,
@@ -533,8 +533,11 @@ summary(reg)
 
 Le modèle inclut une constante `(Intercept)` ainsi que des variables indicatrices pour les modalités $\texttt{dose50}$, $\texttt{dose100}$ et $\texttt{dose200}$. La modalité $\texttt{dose25}$, absente du modèle, sert de modalité de référence.
 
+
 ::: {.callout-note collapse="true"}
-### Contrastes par défaut et convention de nommage dans {{< iconify logos:r-lang >}}
+### Remarque sur les contrastes
+
+**Contrastes par défaut et convention de nommage dans {{< iconify logos:r-lang >}}**
 
 Quand une variable catégorielle (un `factor`) entre dans la formule d'un `lm`, {{< iconify logos:r-lang >}}
 la remplace automatiquement par des variables indicatrices selon un jeu de *contrastes*. Ces
@@ -542,14 +545,26 @@ règles, purement conventionnelles, déterminent la paramétrisation du modèle 
 ni l'ajustement, ni le test de Fisher global, mais seulement l'interprétation des coefficients
 ligne à ligne.
 
-#### Contraste par défaut (pour un facteur non-ordonné)
+**Contraste par défaut (pour un facteur non-ordonné)**
 
 Pour un facteur non ordonné (c'est le cas ici pour $\texttt{dose}$), {{< iconify logos:r-lang >}} utilise
 `contr.treatment` (codage de référence, dit aussi *dummy coding*) : la première modalité du
 facteur sert de référence et chacune des $I-1$ autres modalités est codée par une indicatrice.
 C'est exactement la contrainte $\alpha_1=0$ évoquée à la [question 4](#question-4).
 
-#### Choix de la modalité de référence pour les contrastes de type traitement
+La matrice de contraste retenue est visible avec la fonction `contrasts` :
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+contrasts(data_chemical$dose)
+```
+
+On y lit les indicatrices : la ligne `dose25` ne contient que des zéros — c'est la modalité
+de référence — tandis que la colonne `dose50` vaut 1 pour les observations de la modalité
+`dose50` et 0 sinon.
+
+**Choix de la modalité de référence pour les contrastes de type traitement**
 
 Il s'agit du premier niveau du facteur, dans l'ordre
 des niveaux tel qu'il a été défini (ou l'ordre alphanumérique par défaut, qui donne souvent une
@@ -557,8 +572,24 @@ référence peu pertinente (ici `dose100` !). D'où l'intérêt de réordonner e
 niveaux dès l'import, comme à la [question 1](#question-1), pour que `dose25` soit la
 référence. On peut aussi la changer a posteriori avec `relevel` ou `factor(..., levels = ...)`.
 
+Vérifions-le sur nos données :
 
-#### Convention de nommage pour les contrastes de type traitement
+```{webr}
+#| envir: tdv
+#| autorun: true
+# ordre des niveaux fixé à l'import (question 1)
+levels(data_chemical$dose)
+
+# sans réordonnancement, l'ordre par défaut est alphabétique :
+# la référence serait "dose100"
+levels(factor(as.character(data_chemical$dose)))
+
+# la référence peut aussi être changée a posteriori
+relevel(data_chemical$dose, ref = "dose200") |> levels()
+```
+
+
+**Convention de nommage pour les contrastes de type traitement**
 
 Chaque indicatrice est nommée en concaténant le nom de la variable
 et celui de la modalité, par exemple `dose` + `dose50` $\to$ `dosedose50` : c'est pourquoi la
@@ -566,8 +597,57 @@ sortie affiche ici les coefficients `dosedose50`, `dosedose100` et `dosedose200`
 paraît étrange à force de répéter le mot *dose*. La modalité de référence, elle, n'apparaît
 jamais dans la liste des coefficients.
 
+La matrice de design effectivement construite s'observe quant à elle avec `model.matrix` :
 
-#### Facteur ordonné
+```{webr}
+#| envir: tdv
+#| autorun: true
+model.matrix(log(concent) ~ dose, data = data_chemical) |> head()
+```
+
+Les noms de colonnes sont exactement ceux des lignes de la sortie `summary(reg)` de la
+question 5.
+
+
+**Changer les contrastes**
+
+On peut changer le choix de {{< iconify logos:r-lang >}} globalement via `options(contrasts = ...)`, ou modèle par
+modèle via l'argument `contrasts` de `lm`. Commençons par déplacer la référence sur
+`dose200` :
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+lm(
+  log(concent) ~ dose,
+  data = data_chemical,
+  contrasts = list(dose = contr.treatment(n = levels(data_chemical$dose), base = 4))
+) |> summary()
+```
+
+L'intercept est devenu la moyenne de ln(concent) pour la modalité `dose200` et les autres
+coefficients des différences par rapport à cette nouvelle référence : ce sont les mêmes
+informations qu'à la question 5, mais lues depuis un autre point de vue.
+
+Changeons à présent complètement de paramétrisation : `contr.sum` impose la contrainte
+$\sum\limits_j \alpha_j = 0$, autrement dit les coefficients deviennent des écarts des moyennes
+de groupes à la moyenne générale :
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+lm(
+  log(concent) ~ dose,
+  data = data_chemical,
+  contrasts = list(dose = contr.sum(n = levels(data_chemical$dose)))
+) |> summary()
+```
+
+Deux paramétrisations différentes donnent les mêmes prédictions, le même
+$R^2$ et la même statistique de Fisher, mais des tests de Student différents.
+
+
+**Facteur ordonné (hors cadre du cours)**
 
 Un `factor` déclaré `ordered = TRUE` reçoit par défaut des contrastes
 polynomiaux (`contr.poly`) : les coefficients ne s'interprètent alors plus comme des écarts à
@@ -575,11 +655,11 @@ une référence mais comme des composantes de tendance. En notant $j \in \{1,\do
 de la modalité (l'ordre des niveaux du facteur), le modèle s'écrit
 
 $$
-\ln(\texttt{concent}_{ij}) = m + a_1 P_1(j) + a_2 P_2(j) + a_3 P_3(j) + \varepsilon_{ij}
+\ln(\texttt{concent}_{ij}) = m + a_1 P_1(j) + a_2 P_2(j) + a_3 P_3(j) + \epsilon_{ij}
 $$
 
 où $P_1$, $P_2$ et $P_3$ sont des polynômes orthogonaux de degrés 1, 2 et 3 (d'où les
-coefficients nommés `dose.L`, `dose.Q`, `dose.C`), construits par `contr.poly(4)` :
+coefficients nommés `dose.L` (*linear*), `dose.Q` (*quadratic*), `dose.C` (*cubic*)), construits par `contr.poly(4)` :
 
 | Dosage | $P_1$ (`.L`) | $P_2$ (`.Q`) | $P_3$ (`.C`) |
 |---|---|---|---|
@@ -588,11 +668,30 @@ coefficients nommés `dose.L`, `dose.Q`, `dose.C`), construits par `contr.poly(4
 | 100 mg | $0{,}224$ | $-0{,}5$ | $-0{,}671$ |
 | 200 mg | $0{,}671$ | $0{,}5$ | $0{,}224$ |
 
-Les tests de Student associés valent alors respectivement « y a-t-il une tendance linéaire
+Vérifions que `contr.poly(4)` renvoie bien ces valeurs :
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+contr.poly(4)
+```
+
+Les tests de Student associés correspondent alors respectivement aux questions « y a-t-il une tendance linéaire
 croissante/décroissante ? », « y a-t-il une incurvation ? », « y a-t-il un changement
 d'incurvation ? ». Sur nos données, on obtiendrait `dose.L` $\approx 1{,}48$ (très
 significatif : la concentration croît avec la dose), `dose.Q` $\approx -0{,}33$
 (significatif, p $\approx 0{,}003$ : une incurvation, cohérente avec l'effet de seuil qu'on observera à la [question 6](#question-6)) et `dose.C` $\approx 0{,}02$ (non significatif).
+
+C'est ce qu'on observe en déclarant le facteur comme ordonné :
+
+```{webr}
+#| envir: tdv
+#| autorun: true
+lm(
+  log(concent) ~ dose,
+  data = {data_chemical |> dplyr::mutate(dose = as.ordered(dose))}
+) |> summary()
+```
 Dans un plan équilibré comme ici, les contrastes sont orthogonaux deux à deux et à
 l'intercept : la constante $m$ est la moyenne générale et les tests sont indépendants. À
 noter enfin que `contr.poly` assimile par défaut les niveaux à des positions $1, 2, 3, 4$
@@ -600,19 +699,29 @@ régulièrement espacées, et non aux valeurs réelles des dosages ; on peut fou
 réaliste via l'argument `contrasts` de `lm`.
 
 
-#### Changer les contrastes
+Comparons enfin ces deux manières de fournir les scores — positions arbitraires $1, 2, 3, 4$, ou dosages réels :
 
-On peut changer le choix de {{< iconify logos:r-lang >}} globalement via `options(contrasts = ...)`, ou modèle par
-modèle via l'argument `contrasts` de `lm`. 
+```{webr}
+#| envir: tdv
+#| autorun: true
+# positions 1, 2, 3, 4 : valeurs par défaut de contr.poly
+lm(
+  log(concent) ~ dose,
+  data = data_chemical,
+  contrasts = list(dose = contr.poly(n = 4))
+) |> summary()
 
-Par exemple `contr.sum` impose la contrainte
-$\sum\limits_j \alpha_j = 0$ : les coefficients deviennent des écarts des moyennes de groupes à la
-moyenne générale. 
+# dosages réels des modalités
+lm(
+  log(concent) ~ dose,
+  data = data_chemical,
+  contrasts = list(dose = contr.poly(n = 4, scores = c(25, 50, 100, 200)))
+) |> summary()
+```
 
 
-Deux paramétrisations différentes donnent les mêmes prédictions, le même
-$R^2$ et la même statistique de Fisher, mais des tests de Student différents.
 :::
+
 
 
 
