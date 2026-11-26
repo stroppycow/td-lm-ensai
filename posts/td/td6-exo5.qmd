@@ -2,7 +2,7 @@
 title: "TD 6 - Exercice 5 - Santé mentale"
 lang: fr
 author: "Théo Leroy"
-date: "5 decembre 2025"
+date: "27 novembre 2026"
 params:
   question_courante: 10
 format:

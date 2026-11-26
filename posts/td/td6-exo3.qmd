@@ -2,9 +2,9 @@
 title: "TD 6 - Exercice 3 - Le modèle logistique est naturel (bis)"
 lang: fr
 author: "Théo Leroy"
-date: "14 novembre 2025"
+date: "27 novembre 2026"
 params:
-  question_courante: 0
+  question_courante: 4
 format:
   live-html:
     code-background: true
@@ -50,7 +50,7 @@ $$
 $$
 
 L’entropie d’un vecteur de variables binaires indépendantes 
-$\left(Y_1,, \dots, Y_n \right)$ est simplement la
+$\left(Y_1, \dots, Y_n\right)$ est simplement la
 somme des entropies individuelles.
 
 ## Question 1
@@ -62,9 +62,9 @@ binaire ?
 ::: {.content-visible when-meta="is_answer_print_1"}
 
 ::: answer
-On maximise l'entropie $$H(p) = -p \log(p)- (1-p)\log(1-p)$$
+On maximise l'entropie $H(p) = -p \log(p) - (1-p)\log(1-p)$
 
-Pour se faire, on annule la dérivée en $p$.
+Pour ce faire, on annule la dérivée par rapport à $p$ :
 
 $$
 \begin{align*}
@@ -75,10 +75,12 @@ H'(p)=-\log(p)-1+\log(1-p)+1=\log\left(\frac{1-p}{p}\right)=0
 \end{align*}
 $$
 
-Il s'agit bien d'un maximum car l'entropie est une fonction concave de
-$p$ (la dérivée seconde est négative).
+La dérivée seconde vaut $H''(p) = -\frac{1}{p} - \frac{1}{1-p} < 0$ sur
+$]0,1[$ : $H$ est strictement concave, donc ce point critique est
+l'unique maximum. (Aux bornes, $H(0) = H(1) = 0$ par prolongement par
+continuité, donc le maximum est bien atteint en $p = 1/2$.)
 
-Le résultat est naturel : la loi la plus "aléatoire" possible est la loi
+Le résultat est naturel : la loi la plus « aléatoire » possible est la loi
 uniforme qui donne la même masse à 0 et à 1.
 
 :::
@@ -100,11 +102,13 @@ $p_i(x_i)$ qui maximisent l’entropie ?
 Il faut trouver les $p_i\left(x_i\right)$ qui maximisent
 
 $$
-\sum\limits_{i=1}^n-p_i\left(x_i\right) \log \left(p_i\left(x_i\right)\right)-\left(1-p_i\left(x_i\right)\right) \log (1-p_i\left(x_i\right))
+\sum\limits_{i=1}^n \left[ -p_i\left(x_i\right) \log \left(p_i\left(x_i\right)\right) - \left(1-p_i\left(x_i\right)\right) \log \left(1-p_i\left(x_i\right)\right) \right]
 $$
 
-On est ramené à la question précédente pour chaque $i$ et la solution
-est $p_i\left(x_i\right)=1 / 2$ pour tout $i$.
+Comme les $Y_i$ sont indépendants, l'entropie totale est la somme des
+entropies individuelles : maximiser cette somme revient à maximiser chaque
+terme séparément. On est donc ramené à la question précédente pour chaque
+$i$, et la solution est $p_i\left(x_i\right) = 1/2$ pour tout $i$.
 
 :::
 
@@ -123,9 +127,9 @@ $$
 (Puisque $x_i$ est un vecteur de taille $d$, il s’agit bien d’un système de $d$ contraintes).
 
 Ces contraintes sont assez naturelles : on souhaite que la moyenne des $x_i$ des individus
-du groupe positif $(y_i = 1)$ coincide avec la moyenne des $x_i$ pondérée par la
-probabilité que $y_i$ vale 1. En particulier (pour la variable constante 1), on souhaite
-que la proportion des $y_i = 1$ coincide avec la somme des probabilités.
+du groupe positif $(y_i = 1)$ coïncide avec la moyenne des $x_i$ pondérée par la
+probabilité que $y_i$ vaut 1. En particulier (pour la variable constante 1), on souhaite
+que la proportion des $y_i = 1$ coïncide avec la somme des probabilités.
 
 Trouver les $p_i(x_i)$ qui maximisent l’entropie tout en satisfaisant
 les contraintes précédentes. On pourra donner la solution à une
@@ -137,10 +141,10 @@ constante (vectorielle) inconnue près.
 
 On introduit $d$ multiplicateurs de Lagrange
 $\lambda_1, \ldots, \lambda_d$. Le problème d'optimisation revient à
-trouver $\left(p_1(x_1), \dots,p_d(x_d)\right)$ qui maximisent le Lagrangien
+trouver $\left(p_1(x_1), \dots, p_n(x_n)\right)$ qui maximisent le Lagrangien
 
 $$
-L=\sum_{i=1}^n\left[-p_i(x_i) \log \left(p_i(x_i)\right)-\left(1-p_i(x_i)\right) \log \left(1-p_i(x_i)\right)\right]+\lambda \cdot\left(\sum_{i=1}^n p_i x_i-\sum_{i=1}^n y_i x_i\right)
+L=\sum_{i=1}^n\left[-p_i(x_i) \log \left(p_i(x_i)\right)-\left(1-p_i(x_i)\right) \log \left(1-p_i(x_i)\right)\right]+\lambda \cdot\left(\sum_{i=1}^n p_i(x_i)\, x_i-\sum_{i=1}^n y_i x_i\right)
 $$
 
 où $\lambda=\left(\lambda_1, \ldots, \lambda_d\right)$. Il convient
@@ -159,11 +163,18 @@ $$
 
 Il reste à trouver $\lambda$. Il doit être tel que les contraintes
 souhaitées soient satisfaites (ce que l'on obtient en dérivant le
-Lagrangien par rapport à chaque composante de $\lambda)$, c'est à dire :
+Lagrangien par rapport à chaque composante de $\lambda)$, c'est-à-dire :
 
 $$
 \sum_{i=1}^n\left(\frac{e^{\lambda \cdot x_i}}{1+e^{\lambda \cdot x_i}}-y_i\right) \cdot x_i=0 .
 $$
+
+Le Lagrangien étant concave en les $p_i(x_i)$ (somme de fonctions
+concaves) et affine en $\lambda$, ces conditions du premier ordre
+caractérisent bien l'unique maximum. En pratique, ce système de $d$
+équations n'a pas de solution analytique : il se résout numériquement,
+par exemple par la méthode de Newton-Raphson — c'est précisément ce que
+fait `glm` dans l'exercice 1.
 
 :::
 
@@ -180,7 +191,8 @@ Quel rapport peut-on faire avec la régression logistique ?
 On constate que la forme de $p_i\left(x_i\right)$ est
 $p_i\left(x_i\right)=\operatorname{logit}^{-1}\left(\lambda \cdot x_i\right)$,
 qui est exactement celle d'un modèle de régression logistique, où le
-paramètre $\lambda$ est solution des équations de vraisemblance. Le
+paramètre $\lambda$ est solution des équations de vraisemblance (les
+équations du score, déjà rencontrées à l'exercice 1, question 9). Le
 point de vue précédent (maximiser l'entropie sous contrainte d'une
 attache aux données) motive donc l'utilisation du modèle logistique pour
 tout $x$ (et non seulement pour les $x_i$ de l'échantillon) :
@@ -188,6 +200,11 @@ tout $x$ (et non seulement pour les $x_i$ de l'échantillon) :
 $$
 p(x)=\mathbb{P}(Y=1 \mid X=x)=\operatorname{logit}^{-1}(\lambda \cdot x)
 $$
+
+
+Ainsi, maximiser l'entropie sous les contraintes d'attache aux données
+revient exactement à estimer le modèle logistique par maximum de
+vraisemblance.
 
 :::
 
